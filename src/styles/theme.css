@@ -1,0 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #eef4ed;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
+
+/* App Layout Container */
+.app-container {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #eef4ed;
+}
+
+/* Sidebar styling matching original screenshots */
+.sidebar-nav {
+  width: 250px;
+  background-color: #0c3619; /* Dark forest green */
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 16px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+/* Main Content Area */
+.main-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #eef4ed;
+  overflow-y: auto;
+}
+
+.content-inner {
+  padding: 24px 40px 40px 40px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Cards */
+.m-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Buttons */
+.btn-primary {
+  background: #11592c;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 9px 18px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #09381b;
+}
+
+.btn-orange {
+  background: #d97706;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 9px 18px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-orange:hover {
+  background: #b45309;
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+}
+
+/* Pills matching screenshots */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pill-flowering { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.pill-vegetative { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.pill-harvest { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+.pill-fruiting { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+.pill-seedling { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
+
+.pill-critical { background: #fee2e2; color: #dc2626; }
+.pill-high { background: #ffeedb; color: #d97706; }
+.pill-medium { background: #fef9c3; color: #ca8a04; }
+.pill-low { background: #dcfce7; color: #15803d; }
+
+.pill-compliant { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.pill-review { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+.pill-noncompliant { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+/* Sub-nav Pill Capsule Tabs */
+.tab-capsule-container {
+  display: inline-flex;
+  background: #e2eae0;
+  padding: 3px;
+  border-radius: 10px;
+  gap: 3px;
+}
+
+.tab-capsule-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4b5563;
+  transition: all 0.15s ease;
+}
+
+.tab-capsule-btn.active {
+  background: #ffffff;
+  color: #11592c;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #d1d5db; transition: .2s; border-radius: 22px;
+}
+.slider:before {
+  position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+  background-color: white; transition: .2s; border-radius: 50%;
+}
+input:checked + .slider { background-color: #11592c; }
+input:checked + .slider:before { transform: translateX(20px); }
