@@ -30,6 +30,8 @@ const safetyIndexData = [
   { day: 'D14', val: 92 },
 ];
 
+const DEFAULT_FARM_PHOTO = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=1000&auto=format&fit=crop&q=80';
+
 const FarmStaffDashboard = ({ activeTab }) => {
   const { validations, handleValidationAction, mlClassifications } = useAuth();
   const [selectedValId, setSelectedValId] = useState(validations[0]?.id || 'val-1');
@@ -60,6 +62,20 @@ const FarmStaffDashboard = ({ activeTab }) => {
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 40);
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+  };
+
+  // Helper to resolve valid photo URL or high-res farm fallback
+  const getDisplayPhoto = (valObj) => {
+    if (!valObj) return DEFAULT_FARM_PHOTO;
+    const url = valObj.photoUrl || valObj.photo_url;
+    if (!url || typeof url !== 'string') return DEFAULT_FARM_PHOTO;
+    if (url.startsWith('data:image')) {
+      return url.length > 300 ? url : DEFAULT_FARM_PHOTO;
+    }
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return DEFAULT_FARM_PHOTO;
   };
 
   // 1. Operations & Verification Dashboard
@@ -106,7 +122,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
             {validations.map((t, idx) => (
               <div key={t.id || idx} style={{
                 display: 'flex',
-                justifySpaceBetween: 'space-between',
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '10px 12px',
                 background: '#f9fafb',
@@ -163,155 +179,166 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 2. Farmer Activity Validation Panel with Large Visible Photo View
-  const renderValidationPanel = () => (
-    <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-          Farmer Activity Validation Panel
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          {validations.length} submissions awaiting field-verification review
-        </p>
-      </div>
+  // 2. Farmer Activity Validation Panel with Double-Layered Guarantee Image Rendering
+  const renderValidationPanel = () => {
+    const photoToRender = selectedValidation ? getDisplayPhoto(selectedValidation) : DEFAULT_FARM_PHOTO;
 
-      {validations.length === 0 ? (
-        <div className="m-card" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', border: '1.5px dashed #cbd5e1' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎉</div>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
-            All Farmer Task Submissions Reviewed!
-          </h3>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: '450px', margin: '0 auto 16px' }}>
-            There are currently no pending farmer activity logs awaiting review. When a farmer submits a new activity log via the mobile app, it will appear here in real time.
+    return (
+      <div>
+        <div style={{ marginBottom: '20px' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+            Farmer Activity Validation Panel
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            {validations.length} submissions awaiting field-verification review
           </p>
-          <span className="pill pill-compliant" style={{ padding: '6px 14px', fontSize: '0.78rem' }}>
-            ✓ Validation Queue 100% Up to Date
-          </span>
         </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px' }}>
-          <div className="m-card">
-            <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Incoming Digital Task Logs</h4>
-            <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '12px' }}>
-              Raw inputs submitted by mobile farmers
+
+        {validations.length === 0 ? (
+          <div className="m-card" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', border: '1.5px dashed #cbd5e1' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎉</div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
+              All Farmer Task Submissions Reviewed!
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: '450px', margin: '0 auto 16px' }}>
+              There are currently no pending farmer activity logs awaiting review. When a farmer submits a new activity log via the mobile app, it will appear here in real time.
+            </p>
+            <span className="pill pill-compliant" style={{ padding: '6px 14px', fontSize: '0.78rem' }}>
+              ✓ Validation Queue 100% Up to Date
             </span>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {validations.map(v => {
-                const isSel = v.id === selectedValId;
-                return (
-                  <div
-                    key={v.id}
-                    onClick={() => setSelectedValId(v.id)}
-                    style={{
-                      padding: '12px',
-                      borderRadius: '10px',
-                      background: isSel ? '#f0fdf4' : '#f9fafb',
-                      border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
-                      <div>
-                        <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
-                          {v.plot} · {v.timestamp}
-                        </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
-                        <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} color="#94a3b8" />
-                  </div>
-                );
-              })}
-            </div>
           </div>
-
-          {selectedValidation && (
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px' }}>
             <div className="m-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Validation Control Card</h4>
-                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
-              </div>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Incoming Digital Task Logs</h4>
+              <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '12px' }}>
+                Raw inputs submitted by mobile farmers
+              </span>
 
-              {/* LARGE VISIBLE PHOTO VIEW CONTAINER */}
-              <div style={{
-                width: '100%', height: '300px', borderRadius: '12px', overflow: 'hidden', background: '#1e293b', marginBottom: '16px', position: 'relative', border: '1px solid #cbd5e1', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-              }}>
-                <img
-                  src={selectedValidation.photoUrl || selectedValidation.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=1000&auto=format&fit=crop&q=80'}
-                  alt="Field verification photo"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=1000&auto=format&fit=crop&q=80';
-                  }}
-                />
-                <div style={{
-                  position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
-                  color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
-                }}>
-                  <MapPin size={14} color="#86efac" /> Field-verification photo · GPS tagged ({selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'})
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
-                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>FARMER</span>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
-                </div>
-                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>PLOT</span>
-                  <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.plot}</strong>
-                </div>
-                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
-                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
-                </div>
-                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>LOCATION</span>
-                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{selectedValidation.location || selectedValidation.gps}</strong>
-                </div>
-              </div>
-
-              <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '12px 14px', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '16px' }}>
-                <span style={{ fontWeight: '800', color: '#166534', display: 'block', marginBottom: '2px' }}>FARMER NOTE / COMMENT: </span>
-                <span style={{ color: '#111827', fontWeight: '700' }}>"{selectedValidation.farmerNote || selectedValidation.notes}"</span>
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>
-                  Staff Evaluation Notes
-                </label>
-                <textarea
-                  value={staffNote}
-                  onChange={(e) => setStaffNote(e.target.value)}
-                  placeholder="Document field check observations, corrections requested, or supporting evidence..."
-                  rows={2}
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <button onClick={handleApprove} className="btn-primary" style={{ justifyContent: 'center', padding: '12px', fontSize: '0.88rem' }}>
-                  ✓ Approve & Commit to Cloud
-                </button>
-                <button onClick={handleReject} style={{
-                  background: '#dc2626', color: '#ffffff', fontWeight: '800', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '0.88rem', cursor: 'pointer'
-                }}>
-                  ✕ Reject / Request Correction
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {validations.map(v => {
+                  const isSel = v.id === selectedValId;
+                  return (
+                    <div
+                      key={v.id}
+                      onClick={() => setSelectedValId(v.id)}
+                      style={{
+                        padding: '12px',
+                        borderRadius: '10px',
+                        background: isSel ? '#f0fdf4' : '#f9fafb',
+                        border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justify: 'space-between'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
+                        <div>
+                          <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
+                            {v.plot} · {v.timestamp}
+                          </div>
+                          <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} color="#94a3b8" />
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
+
+            {selectedValidation && (
+              <div className="m-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Validation Control Card</h4>
+                  <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
+                </div>
+
+                {/* DOUBLE-LAYERED GUARANTEE PHOTO VIEW CONTAINER */}
+                <div style={{
+                  width: '100%',
+                  height: '300px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  background: `#1e293b url("${photoToRender}") center/cover no-repeat`,
+                  marginBottom: '16px',
+                  position: 'relative',
+                  border: '1px solid #cbd5e1',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                }}>
+                  <img
+                    src={photoToRender}
+                    alt="Field verification photo"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={(e) => {
+                      e.target.style.display = 'none'; // Fallback to CSS background image!
+                    }}
+                  />
+                  <div style={{
+                    position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
+                    color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
+                  }}>
+                    <MapPin size={14} color="#86efac" /> Field-verification photo · GPS tagged ({selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'})
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>FARMER</span>
+                    <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>PLOT</span>
+                    <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.plot}</strong>
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
+                    <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
+                  </div>
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>LOCATION</span>
+                    <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{selectedValidation.location || selectedValidation.gps}</strong>
+                  </div>
+                </div>
+
+                <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '12px 14px', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '16px' }}>
+                  <span style={{ fontWeight: '800', color: '#166534', display: 'block', marginBottom: '2px' }}>FARMER NOTE / COMMENT: </span>
+                  <span style={{ color: '#111827', fontWeight: '700' }}>"{selectedValidation.farmerNote || selectedValidation.notes}"</span>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>
+                    Staff Evaluation Notes
+                  </label>
+                  <textarea
+                    value={staffNote}
+                    onChange={(e) => setStaffNote(e.target.value)}
+                    placeholder="Document field check observations, corrections requested, or supporting evidence..."
+                    rows={2}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <button onClick={handleApprove} className="btn-primary" style={{ justifyContent: 'center', padding: '12px', fontSize: '0.88rem' }}>
+                    ✓ Approve & Commit to Cloud
+                  </button>
+                  <button onClick={handleReject} style={{
+                    background: '#dc2626', color: '#ffffff', fontWeight: '800', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '0.88rem', cursor: 'pointer'
+                  }}>
+                    ✕ Reject / Request Correction
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // 3. Machine Learning Audit & Risk Dashboard
   const renderMLAudit = () => (
