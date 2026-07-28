@@ -40,11 +40,12 @@ const MobileAppSimulator = () => {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT (1st, 2nd, 3rd, etc.)
+  // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT (CLOSE HISTORY MODAL & FORCE POPUP)
   useEffect(() => {
     if (activePushNotice) {
       setSelectedAnnouncement(activePushNotice);
-      setShowNotificationModal(true);
+      setShowHistoryModal(false); // Close history modal if open!
+      setShowNotificationModal(true); // Force live push popup!
     }
   }, [activePushNotice]);
 
@@ -65,7 +66,7 @@ const MobileAppSimulator = () => {
   const [soil, setSoil] = useState('Loam · moist');
 
   const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
-  const notificationCount = announcements ? announcements.length : 1;
+  const notificationCount = announcements ? announcements.length : 0;
 
   const handleMobileLogin = (e) => {
     e.preventDefault();
@@ -291,7 +292,7 @@ const MobileAppSimulator = () => {
                       {/* Dynamic Header Notification Bell & Exit Buttons */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
-                          onClick={() => setShowHistoryModal(true)}
+                          onClick={() => { setShowNotificationModal(false); setShowHistoryModal(true); }}
                           style={{
                             background: '#d97706', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0 3px 8px rgba(0,0,0,0.3)'
                           }}
@@ -311,7 +312,7 @@ const MobileAppSimulator = () => {
                     {/* LIVE BROADCAST ANNOUNCEMENT PUSH BANNER */}
                     {latestPushAnnouncement && (
                       <div
-                        onClick={() => { setSelectedAnnouncement(latestPushAnnouncement); setShowNotificationModal(true); }}
+                        onClick={() => { setSelectedAnnouncement(latestPushAnnouncement); setShowHistoryModal(false); setShowNotificationModal(true); }}
                         style={{
                           background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '10px 12px', marginBottom: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'
                         }}
@@ -321,10 +322,10 @@ const MobileAppSimulator = () => {
                         </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#d97706', textTransform: 'uppercase' }}>
-                            📢 LATEST ANNOUNCEMENT
+                            📢 LATEST ANNOUNCEMENT PUSH
                           </div>
                           <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {latestPushAnnouncement.content || latestPushAnnouncement.title}
+                            "{latestPushAnnouncement.content || latestPushAnnouncement.title}"
                           </div>
                         </div>
                         <span style={{ fontSize: '0.7rem', color: '#d97706', fontWeight: '700' }}>View →</span>
@@ -720,11 +721,11 @@ const MobileAppSimulator = () => {
               </div>
             </div>
 
-            {/* Real-Time Single Announcement Push Notification Popup Modal */}
+            {/* Real-Time Single Announcement Push Notification Popup Modal (Z-INDEX 800 HIGHEST) */}
             {showNotificationModal && latestPushAnnouncement && (
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 500
+                background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 800
               }}>
                 <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', animation: 'slideIn 0.2s ease-out' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
