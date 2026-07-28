@@ -27,7 +27,8 @@ import {
   CloudSun,
   ShieldCheck,
   CheckSquare,
-  Beef
+  Beef,
+  TrendingUp
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
@@ -73,6 +74,14 @@ const MobileAppSimulator = () => {
   const [season, setSeason] = useState('Tag-init (Dry)');
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
+  const [isCalculatingAI, setIsCalculatingAI] = useState(false);
+  const [aiResult, setAiResult] = useState({
+    crop: 'Tomato · Diamante',
+    confidence: '87%',
+    output: '412 kg',
+    sacks: '~ 8 sacks',
+    harvestWindow: 'Nov 18 – Dec 02, 2025'
+  });
 
   const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
   const notificationCount = announcements ? announcements.length : 0;
@@ -99,6 +108,30 @@ const MobileAppSimulator = () => {
       alert('✅ Activity Log submitted directly to Farm Staff for cloud validation!');
       setActiveTab('home');
     }, 600);
+  };
+
+  const handleGetSmartRecommendation = () => {
+    setIsCalculatingAI(true);
+    setTimeout(() => {
+      setIsCalculatingAI(false);
+      if (season === 'Tag-ulan (Wet)') {
+        setAiResult({
+          crop: 'Eggplant · Mistisa',
+          confidence: '92%',
+          output: '345 kg',
+          sacks: '~ 7 sacks',
+          harvestWindow: 'Dec 05 – Dec 20, 2025'
+        });
+      } else {
+        setAiResult({
+          crop: 'Tomato · Diamante',
+          confidence: '87%',
+          output: '412 kg',
+          sacks: '~ 8 sacks',
+          harvestWindow: 'Nov 18 – Dec 02, 2025'
+        });
+      }
+    }, 500);
   };
 
   const toggleTaskCompleted = (taskId) => {
@@ -198,7 +231,7 @@ const MobileAppSimulator = () => {
           background: getHeaderBg(),
           color: mobileScreen === 'login' || (!mobileAuth && mobileScreen !== 'splash') ? '#111827' : '#ffffff',
           display: 'flex',
-          justifyContent: 'space-between',
+          justify: 'space-between',
           alignItems: 'center',
           padding: '0 20px',
           fontSize: '0.75rem',
@@ -612,58 +645,108 @@ const MobileAppSimulator = () => {
                   </div>
 
                   <div style={{ padding: '16px' }}>
-                    <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '14px', marginBottom: '14px' }}>
-                      <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#111827', marginBottom: '10px' }}>
+                    {/* Condition Selector Card */}
+                    <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '16px', marginBottom: '14px', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
+                      <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', marginBottom: '12px' }}>
                         Sabihin sa amin ang kondisyon:
                       </h4>
 
-                      <div style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.7rem', fontWeight: '700', color: '#4b5563' }}>Current crop season</label>
-                        <select value={season} onChange={(e) => setSeason(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '700' }}>
+                      <div style={{ marginBottom: '10px' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Current crop season</label>
+                        <select value={season} onChange={(e) => setSeason(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #059669', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>
                           <option value="Tag-init (Dry)">Tag-init (Dry)</option>
                           <option value="Tag-ulan (Wet)">Tag-ulan (Wet)</option>
                         </select>
                       </div>
 
-                      <div style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.7rem', fontWeight: '700', color: '#4b5563' }}>Farm block location</label>
-                        <select value={location} onChange={(e) => setLocation(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '700' }}>
+                      <div style={{ marginBottom: '10px' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Farm block location</label>
+                        <select value={location} onChange={(e) => setLocation(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #059669', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>
                           <option value="Block A · Cupang">Block A · Cupang</option>
                           <option value="Block B · Antipolo">Block B · Antipolo</option>
                         </select>
                       </div>
 
-                      <div style={{ marginBottom: '12px' }}>
-                        <label style={{ fontSize: '0.7rem', fontWeight: '700', color: '#4b5563' }}>Visible soil condition</label>
-                        <select value={soil} onChange={(e) => setSoil(e.target.value)} style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '700' }}>
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Visible soil condition</label>
+                        <select value={soil} onChange={(e) => setSoil(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #059669', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>
                           <option value="Loam · moist">Loam · moist</option>
                           <option value="Clay · dry">Clay · dry</option>
                         </select>
                       </div>
+
+                      <button
+                        onClick={handleGetSmartRecommendation}
+                        style={{
+                          width: '100%', padding: '12px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.85rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                        }}
+                      >
+                        {isCalculatingAI ? 'CALCULATING ML MODEL...' : <><Sparkles size={16} color="#86efac" /> GET SMART RECOMMENDATION</>}
+                      </button>
                     </div>
 
-                    <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '14px', marginBottom: '12px' }}>
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
-                        <span style={{ background: '#059669', color: '#fff', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>RF Classifier</span>
-                        <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Random Forest</span>
+                    {/* RF Classifier Result Card */}
+                    <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '16px', marginBottom: '14px', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                        <span style={{ background: '#059669', color: '#fff', fontSize: '0.65rem', padding: '3px 8px', borderRadius: '4px', fontWeight: '800' }}>RF Classifier</span>
+                        <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>Random Forest</span>
                       </div>
-                      <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>RECOMMENDED CROP VARIETY</div>
-                      <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#059669', marginBottom: '8px' }}>Tomato · Diamante</h2>
 
-                      <div style={{ marginBottom: '10px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: '700', marginBottom: '3px' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '800', textTransform: 'uppercase' }}>RECOMMENDED CROP VARIETY</div>
+                      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0c3619', margin: '4px 0 10px 0' }}>{aiResult.crop}</h2>
+
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: '800', marginBottom: '4px' }}>
                           <span>SUITABILITY CONFIDENCE</span>
-                          <span style={{ color: '#059669' }}>87%</span>
+                          <span style={{ color: '#059669' }}>{aiResult.confidence}</span>
                         </div>
-                        <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ width: '87%', height: '100%', background: '#059669' }} />
+                        <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ width: aiResult.confidence, height: '100%', background: 'linear-gradient(90deg, #10b981, #059669)' }} />
                         </div>
                       </div>
 
-                      <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#6b7280', marginBottom: '4px' }}>ALTERNATIVE CROPS</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '0.75rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Eggplant · Mistisa</span><strong>74%</strong></div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Okra · Smooth Green</span><strong>68%</strong></div>
+                      <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#6b7280', marginBottom: '6px' }}>ALTERNATIVE CROPS</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '6px 10px', borderRadius: '8px' }}>
+                          <span style={{ fontWeight: '700' }}>Eggplant · Mistisa</span>
+                          <span style={{ background: '#e2e8f0', color: '#334155', padding: '2px 8px', borderRadius: '12px', fontWeight: '800', fontSize: '0.7rem' }}>74%</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '6px 10px', borderRadius: '8px' }}>
+                          <span style={{ fontWeight: '700' }}>Okra · Smooth Green</span>
+                          <span style={{ background: '#e2e8f0', color: '#334155', padding: '2px 8px', borderRadius: '12px', fontWeight: '800', fontSize: '0.7rem' }}>68%</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '6px 10px', borderRadius: '8px' }}>
+                          <span style={{ fontWeight: '700' }}>Squash · Suprema</span>
+                          <span style={{ background: '#e2e8f0', color: '#334155', padding: '2px 8px', borderRadius: '12px', fontWeight: '800', fontSize: '0.7rem' }}>52%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RF Regression Yield Prediction Card */}
+                    <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '16px', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                        <span style={{ background: '#452c1e', color: '#fff', fontSize: '0.65rem', padding: '3px 8px', borderRadius: '4px', fontWeight: '800' }}>RF Regression</span>
+                        <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>Yield prediction</span>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <TrendingUp size={22} color="#0c3619" />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#6b7280', textTransform: 'uppercase' }}>ESTIMATED OUTPUT</div>
+                          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#111827' }}>{aiResult.output}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: '700' }}>{aiResult.sacks}</div>
+                        </div>
+                      </div>
+
+                      <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '10px', padding: '10px 12px' }}>
+                        <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#92400e', textTransform: 'uppercase', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Calendar size={13} /> EXPECTED HARVEST WINDOW
+                        </div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#78350f' }}>
+                          {aiResult.harvestWindow}
+                        </div>
                       </div>
                     </div>
                   </div>
