@@ -48,7 +48,10 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleIncomingValidation = (newVal) => {
-      setValidations(prev => [newVal, ...prev]);
+      setValidations(prev => {
+        const exists = prev.some(v => v.id === newVal.id);
+        return exists ? prev : [newVal, ...prev];
+      });
     };
 
     if (broadcastChannel) {
@@ -102,14 +105,18 @@ export const AuthProvider = ({ children }) => {
         if (valData && valData.length > 0) {
           const formattedVals = valData.map(v => ({
             id: String(v.id),
-            farmer: v.farmer || 'Juan Dela Cruz',
+            farmer: v.farmer || 'Mang Juan Dela Cruz',
             plot: v.plot || 'Plot P-007',
-            activity: v.activity,
+            taskType: v.activity || 'Watering',
+            activity: v.activity || 'Watering',
             timestamp: 'Just now',
             urgency: 'Normal',
             urgencyCls: 'pill-low',
+            location: v.gps || '14.586° N · 121.176° E',
             gps: v.gps || '14.586° N · 121.176° E',
+            farmerNote: v.notes || 'Submitted via Farmers Mobile App',
             notes: v.notes || 'Submitted via Farmers Mobile App',
+            photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
             photoAttached: true
           }));
           setValidations(formattedVals);
@@ -146,14 +153,18 @@ export const AuthProvider = ({ children }) => {
         const newRecord = payload.new;
         const newEntry = {
           id: String(newRecord.id),
-          farmer: newRecord.farmer || 'Juan Dela Cruz',
+          farmer: newRecord.farmer || 'Mang Juan Dela Cruz',
           plot: newRecord.plot || 'Plot P-007',
-          activity: newRecord.activity,
+          taskType: newRecord.activity || 'Watering',
+          activity: newRecord.activity || 'Watering',
           timestamp: 'Just now',
           urgency: 'Normal',
           urgencyCls: 'pill-low',
+          location: newRecord.gps || '14.586° N · 121.176° E',
           gps: newRecord.gps || '14.586° N · 121.176° E',
+          farmerNote: newRecord.notes || 'Submitted via Farmers Mobile App',
           notes: newRecord.notes || 'Submitted via Farmers Mobile App',
+          photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
           photoAttached: true
         };
         setValidations(prev => [newEntry, ...prev]);
@@ -239,16 +250,21 @@ export const AuthProvider = ({ children }) => {
 
   const addFarmerSubmission = async (newSub) => {
     const newId = `VAL-${Date.now().toString().slice(-4)}`;
+    const actText = `${newSub.activity} (${newSub.amount || 10} Liters)`;
     const newEntry = {
       id: newId,
-      farmer: 'Juan Dela Cruz',
+      farmer: 'Mang Juan Dela Cruz',
       plot: newSub.plot || 'Plot P-007',
-      activity: `${newSub.activity} (${newSub.amount || 10} Liters)`,
+      taskType: actText,
+      activity: actText,
       timestamp: 'Just now',
       urgency: 'Normal',
       urgencyCls: 'pill-low',
+      location: '14.586° N · 121.176° E',
       gps: '14.586° N · 121.176° E',
+      farmerNote: newSub.note || 'Submitted via Farmers Mobile App',
       notes: newSub.note || 'Submitted via Farmers Mobile App',
+      photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
       photoAttached: true
     };
     setValidations(prev => [newEntry, ...prev]);
@@ -262,7 +278,13 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {}
 
     try {
-      await supabase.from('task_validations').insert([{ farmer: 'Juan Dela Cruz', plot: newEntry.plot, activity: newEntry.activity, notes: newEntry.notes, gps: newEntry.gps }]);
+      await supabase.from('task_validations').insert([{ 
+        farmer: 'Mang Juan Dela Cruz', 
+        plot: newEntry.plot, 
+        activity: newEntry.activity, 
+        notes: newEntry.notes, 
+        gps: newEntry.gps 
+      }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
