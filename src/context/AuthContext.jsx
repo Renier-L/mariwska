@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [tenantInfo] = useState({
     name: 'Antipolo Organic Farming Cooperative',
     id: 'ANT-ORG-001',
-    status: 'Cloud sync · Live (Supabase Connected)'
+    status: 'Cloud sync · Live (Supabase Realtime)'
   });
 
   const [users, setUsers] = useState(initialUsers);
@@ -32,26 +32,49 @@ export const AuthProvider = ({ children }) => {
     'PGS Auditor': { readLogs: true, writeEntries: false, executeValidations: true, bypassAudits: false, accessML: false },
   });
 
-  // Try fetching live announcements from Supabase
+  // Fetch initial announcements & Subscribe to Supabase Realtime changes!
   useEffect(() => {
     async function fetchSupabaseData() {
       try {
-        const { data: annData } = await supabase.from('announcements').select('*');
+        const { data: annData } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
         if (annData && annData.length > 0) {
-          setAnnouncements(annData.map(a => ({
-            id: a.id,
-            title: a.title,
+          const formatted = annData.map(a => ({
+            id: String(a.id),
+            title: a.title || 'Cooperative Broadcast Notice',
             content: a.content,
-            author: a.author,
-            instantPush: a.instant_push,
-            date: new Date(a.created_at).toISOString().split('T')[0]
-          })));
+            author: a.author || 'Liza Cruz (Admin)',
+            instantPush: a.instant_push !== false,
+            date: new Date(a.created_at || Date.now()).toISOString().split('T')[0]
+          }));
+          setAnnouncements(formatted);
         }
       } catch (err) {
-        console.log('Supabase table fallback to local state', err);
+        console.log('Supabase table fallback', err);
       }
     }
     fetchSupabaseData();
+
+    // Supabase Realtime Subscription for Broadcast Announcements
+    const subscription = supabase
+      .channel('realtime_announcements')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
+        const newRecord = payload.new;
+        const newAnn = {
+          id: String(newRecord.id),
+          title: newRecord.title || 'Cooperative Broadcast Notice',
+          content: newRecord.content,
+          author: newRecord.author || 'Liza Cruz (Admin)',
+          instantPush: true,
+          date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0]
+        };
+        setAnnouncements(prev => [newAnn, ...prev]);
+        setActivePushNotice(newAnn);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
 
   const loginAsRole = (roleKey) => {
@@ -86,13 +109,16 @@ export const AuthProvider = ({ children }) => {
       instantPush: true 
     };
     
-    setAnnouncements([newAnn, ...announcements]);
-    
-    // Trigger Instant Live Push Notification Popup Toast
+    setAnnouncements(prev => [newAnn, ...prev]);
     setActivePushNotice(newAnn);
 
     try {
-      await supabase.from('announcements').insert([{ title: 'Cooperative Broadcast Notice', content, author: 'Liza Cruz (Admin)', instant_push: true }]);
+      await supabase.from('announcements').insert([{ 
+        title: 'Cooperative Broadcast Notice', 
+        content, 
+        author: 'Liza Cruz (Admin)', 
+        instant_push: true 
+      }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
