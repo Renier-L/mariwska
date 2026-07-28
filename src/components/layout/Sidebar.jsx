@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
   LayoutDashboard, 
@@ -13,14 +13,11 @@ import {
   Megaphone,
   CheckSquare,
   ShieldAlert,
-  Trees,
-  RefreshCw,
-  Sparkles
+  Trees
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const { currentRole, loginAsRole } = useAuth();
-  const [showRoleMenu, setShowRoleMenu] = useState(false);
 
   let portalTitle = 'Super Admin Portal';
   let navItems = [];
@@ -116,88 +113,24 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </nav>
       </div>
 
-      {/* Bottom Footer Section */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '14px', position: 'relative' }}>
-        {/* Role Switcher Menu Trigger */}
-        <button
-          onClick={() => setShowRoleMenu(!showRoleMenu)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            padding: '8px 12px',
-            borderRadius: '8px',
-            background: 'rgba(255,255,255,0.08)',
-            color: '#a7f3d0',
-            fontSize: '0.75rem',
-            fontWeight: '600',
-            marginBottom: '8px'
-          }}
-        >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <RefreshCw size={12} /> Switch Dashboard
-          </span>
-          <span>▲</span>
-        </button>
-
-        {/* Role Switch Popup */}
-        {showRoleMenu && (
-          <div style={{
-            position: 'absolute',
-            bottom: '80px',
-            left: '0',
-            right: '0',
-            background: '#0a2e15',
-            border: '1px solid #23733b',
-            borderRadius: '10px',
-            padding: '6px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-            zIndex: 200
-          }}>
-            <button
-              onClick={() => { loginAsRole('super_admin'); setShowRoleMenu(false); }}
-              style={{ padding: '8px', borderRadius: '6px', textAlign: 'left', color: '#fff', fontSize: '0.78rem', fontWeight: currentRole === 'super_admin' ? '700' : '400' }}
-            >
-              👑 Super Admin Portal
-            </button>
-            <button
-              onClick={() => { loginAsRole('admin'); setShowRoleMenu(false); }}
-              style={{ padding: '8px', borderRadius: '6px', textAlign: 'left', color: '#fff', fontSize: '0.78rem', fontWeight: currentRole === 'admin' ? '700' : '400' }}
-            >
-              ⚙️ Administrator Console
-            </button>
-            <button
-              onClick={() => { loginAsRole('farm_staff'); setShowRoleMenu(false); }}
-              style={{ padding: '8px', borderRadius: '6px', textAlign: 'left', color: '#fff', fontSize: '0.78rem', fontWeight: currentRole === 'farm_staff' ? '700' : '400' }}
-            >
-              🌾 Farm Staff Validation
-            </button>
-            <button
-              onClick={() => { loginAsRole('mobile_app'); setShowRoleMenu(false); }}
-              style={{ padding: '8px', borderRadius: '6px', textAlign: 'left', color: '#fff', fontSize: '0.78rem', fontWeight: currentRole === 'mobile_app' ? '700' : '400' }}
-            >
-              📱 Farm Mobile App View
-            </button>
-          </div>
-        )}
-
-        {/* Sign Out Link */}
+      {/* Bottom Footer Section: Clean Sign Out Button */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '14px' }}>
         <button
           onClick={() => loginAsRole('login')}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            padding: '8px 12px',
+            padding: '10px 14px',
+            borderRadius: '10px',
             color: '#a7f3d0',
             fontSize: '0.85rem',
-            fontWeight: '500',
-            opacity: 0.9,
-            width: '100%'
+            fontWeight: '600',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            width: '100%',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease'
           }}
         >
           <LogOut size={16} />
