@@ -38,13 +38,14 @@ const MobileAppSimulator = () => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Auto-popup newly published announcement in real time!
+  // Direct dynamic subscription: Whenever announcements array changes, automatically update the mobile popup to the newest announcement!
   useEffect(() => {
-    if (activePushNotice) {
-      setSelectedAnnouncement(activePushNotice);
+    if (announcements && announcements.length > 0) {
+      const newest = announcements[0];
+      setSelectedAnnouncement(newest);
       setShowNotificationModal(true);
     }
-  }, [activePushNotice]);
+  }, [announcements]);
 
   // Form States
   const [mobileNumber, setMobileNumber] = useState('@danilo');
@@ -62,7 +63,7 @@ const MobileAppSimulator = () => {
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
 
-  const latestPushAnnouncement = activePushNotice || announcements[0];
+  const latestPushAnnouncement = announcements[0];
 
   const handleMobileLogin = (e) => {
     e.preventDefault();
