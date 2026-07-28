@@ -11,7 +11,10 @@ import {
   Bell, 
   Printer, 
   Download, 
-  Lock
+  Lock,
+  X,
+  Radio,
+  FileText
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
@@ -46,6 +49,8 @@ const AdminConsole = ({ activeTab }) => {
   );
   const [pushToggle, setPushToggle] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
   const [newUserName, setNewUserName] = useState('');
   const [newUserRole, setNewUserRole] = useState('Farmer');
   const [newUserEmail, setNewUserEmail] = useState('');
@@ -60,7 +65,7 @@ const AdminConsole = ({ activeTab }) => {
   const handlePublish = () => {
     if (!announcementText.trim()) return;
     publishAnnouncement(announcementText, pushToggle);
-    alert('Announcement published cooperative-wide!');
+    alert('Announcement published cooperative-wide to web and mobile clients!');
   };
 
   const handleCreateUser = (e) => {
@@ -88,7 +93,7 @@ const AdminConsole = ({ activeTab }) => {
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
   };
 
-  // 1. System Operations Dashboard (Images 2 & 3)
+  // 1. System Operations Dashboard
   const renderOperations = () => (
     <div>
       <div style={{ marginBottom: '20px' }}>
@@ -96,11 +101,10 @@ const AdminConsole = ({ activeTab }) => {
           System Operations Dashboard
         </h1>
         <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Real-time data pipelines, sessions, and cooperative-wide broadcasts
+          Real-time data pipelines, active sessions, and interactive cooperative-wide broadcasts
         </p>
       </div>
 
-      {/* 4 Stat Cards matching Image 2 */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '600' }}>Active Sessions</div>
@@ -123,7 +127,6 @@ const AdminConsole = ({ activeTab }) => {
         </div>
       </div>
 
-      {/* Real-Time Data Flow Pipeline Area Chart */}
       <div className="m-card" style={{ marginBottom: '20px' }}>
         <div style={{ marginBottom: '14px' }}>
           <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Real-Time Data Flow Pipeline</h4>
@@ -142,8 +145,8 @@ const AdminConsole = ({ activeTab }) => {
         </div>
       </div>
 
-      {/* Global Announcement Publisher matching Images 2 & 3 */}
-      <div className="m-card" style={{ border: '1px solid #fbd38d' }}>
+      {/* Global Announcement Publisher */}
+      <div className="m-card" style={{ border: '1px solid #fbd38d', marginBottom: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <div>
             <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -181,16 +184,119 @@ const AdminConsole = ({ activeTab }) => {
         />
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-          <button className="btn-outline">Save Draft</button>
           <button onClick={handlePublish} className="btn-orange">
             <Megaphone size={16} /> Publish Announcement
           </button>
         </div>
       </div>
+
+      {/* Interactive Announcements List */}
+      <div className="m-card">
+        <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Radio size={16} color="#16a34a" /> Live Cooperative Broadcast Feed (Click to inspect detail)
+        </h4>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {announcements.map((ann) => (
+            <div
+              key={ann.id}
+              onClick={() => setSelectedAnnouncement(ann)}
+              style={{
+                background: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderRadius: '10px',
+                padding: '14px 16px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#111827' }}>
+                    {ann.title || 'Cooperative Announcement'}
+                  </span>
+                  {ann.instantPush && (
+                    <span className="pill pill-high" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
+                      Push Active
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#4b5563', margin: 0 }}>
+                  {ann.content}
+                </p>
+                <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '6px' }}>
+                  Posted by {ann.author || 'Liza Cruz (Admin)'} · {ann.date}
+                </div>
+              </div>
+              <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
+                Inspect Audit →
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Announcement Detail & Audit Modal */}
+      {selectedAnnouncement && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }}>
+          <div className="m-card" style={{ width: '480px', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+              <div>
+                <span className="pill pill-seedling" style={{ fontSize: '0.7rem', marginBottom: '4px', display: 'inline-block' }}>
+                  BROADCAST AUDIT RECORD
+                </span>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
+                  {selectedAnnouncement.title || 'Cooperative Announcement'}
+                </h3>
+              </div>
+              <button onClick={() => setSelectedAnnouncement(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', marginBottom: '14px', fontSize: '0.82rem', color: '#374151' }}>
+              {selectedAnnouncement.content}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.75rem', marginBottom: '16px' }}>
+              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
+                <span style={{ color: '#6b7280', display: 'block' }}>PUBLISHED BY</span>
+                <strong>{selectedAnnouncement.author || 'Liza Cruz (Admin)'}</strong>
+              </div>
+              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
+                <span style={{ color: '#6b7280', display: 'block' }}>DATE</span>
+                <strong>{selectedAnnouncement.date}</strong>
+              </div>
+              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
+                <span style={{ color: '#6b7280', display: 'block' }}>PUSH NOTIFICATION</span>
+                <strong style={{ color: selectedAnnouncement.instantPush ? '#16a34a' : '#6b7280' }}>
+                  {selectedAnnouncement.instantPush ? '✓ Dispatched to 147 clients' : 'Disabled'}
+                </strong>
+              </div>
+              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
+                <span style={{ color: '#6b7280', display: 'block' }}>TARGET AUDIENCE</span>
+                <strong>Cooperative-wide</strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSelectedAnnouncement(null)} className="btn-primary">
+                Close Inspection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
-  // 2. User Accounts & Member Records (Image 4)
+  // 2. User Accounts & Member Records
   const renderUserAccounts = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -339,7 +445,7 @@ const AdminConsole = ({ activeTab }) => {
     </div>
   );
 
-  // 3. Security Roles & Permissions Matrix (Image 5)
+  // 3. Security Roles & Permissions Matrix
   const renderPermissions = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -430,7 +536,7 @@ const AdminConsole = ({ activeTab }) => {
     </div>
   );
 
-  // 4. Administrative Reports (New Image 1)
+  // 4. Administrative Reports
   const renderReports = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -464,30 +570,6 @@ const AdminConsole = ({ activeTab }) => {
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Operational Events (30d)</div>
           <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706' }}>412</div>
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-        <div className="m-card">
-          <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#11592c', marginBottom: '10px' }}>USER ACCOUNTS SUMMARY</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Super Admin</span><strong>3</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Administrators</span><strong>5</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Farm Staff</span><strong>13</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Farmers</span><strong>126</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Suspended</span><strong style={{ color: '#dc2626' }}>2</strong></div>
-          </div>
-        </div>
-
-        <div className="m-card">
-          <h4 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#11592c', marginBottom: '10px' }}>MEMBER PROFILE SNAPSHOT</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Verified profiles</span><strong>118</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Pending verification</span><strong style={{ color: '#d97706' }}>8</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Average tenure</span><strong>4.2 years</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Avg plots per member</span><strong>1.4</strong></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Members with livestock</span><strong>42</strong></div>
-          </div>
         </div>
       </div>
 
