@@ -91,16 +91,45 @@ const MobileAppSimulator = () => {
   const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
   const notificationCount = announcements ? announcements.length : 0;
 
-  const handleFileChange = (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreviewUrl(reader.result);
+  // Compress image to lightweight Data URL (< 20KB) for 100% reliable cross-window & Supabase transmission
+  const processImageFile = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const rawDataUrl = reader.result;
+      const img = new Image();
+      img.src = rawDataUrl;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 400;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedUrl = canvas.toDataURL('image/jpeg', 0.7);
+        setPhotoPreviewUrl(compressedUrl);
         setPhotoAttached(true);
       };
-      reader.readAsDataURL(file);
-    }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    processImageFile(file);
   };
 
   const handleDragOver = (e) => {
@@ -110,14 +139,7 @@ const MobileAppSimulator = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreviewUrl(reader.result);
-        setPhotoAttached(true);
-      };
-      reader.readAsDataURL(file);
-    }
+    processImageFile(file);
   };
 
   const handleMobileLogin = (e) => {
@@ -130,12 +152,14 @@ const MobileAppSimulator = () => {
     e.preventDefault();
     setLogSubmitted(true);
 
+    const finalPhotoUrl = photoPreviewUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60';
+
     addFarmerSubmission({
       activity,
       plot: selectedPlot,
       amount: inputAmount,
       note: logNote,
-      photoUrl: photoPreviewUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60'
+      photoUrl: finalPhotoUrl
     });
 
     setTimeout(() => {
@@ -626,7 +650,7 @@ const MobileAppSimulator = () => {
                         </div>
                       </div>
 
-                      {/* Step 4: Live Working Camera Upload & Drag and Drop File Image */}
+                      {/* Step 4: Compressed Live Camera Upload & Drag-and-Drop Image */}
                       <div style={{ marginBottom: '14px' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
                           4. Take a Photo / Upload Image <span style={{ color: '#dc2626' }}>(Required)</span>
