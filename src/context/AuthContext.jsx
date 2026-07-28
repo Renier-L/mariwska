@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(initialUsers[0]); // Default Rosa Mendoza (Super Admin)
-  const [currentRole, setCurrentRole] = useState('super_admin'); // 'super_admin', 'admin', 'farm_staff', 'mobile_app'
+  const [currentRole, setCurrentRole] = useState('login'); // Start at secure login screen
   const [tenantInfo] = useState({
     name: 'Antipolo Organic Farming Cooperative',
     id: 'ANT-ORG-001',
@@ -30,10 +30,10 @@ export const AuthProvider = ({ children }) => {
 
   const loginAsRole = (roleKey) => {
     setCurrentRole(roleKey);
-    if (roleKey === 'super_admin') setCurrentUser(initialUsers[0]); // Rosa Mendoza
-    else if (roleKey === 'admin') setCurrentUser(initialUsers[1]); // Liza Cruz
-    else if (roleKey === 'farm_staff') setCurrentUser(initialUsers[2]); // Ramon Velasco
-    else if (roleKey === 'mobile_app') setCurrentUser(initialUsers[3]); // Juan Dela Cruz
+    if (roleKey === 'super_admin') setCurrentUser(initialUsers[0]); // Rosa Mendoza (Executive)
+    else if (roleKey === 'admin') setCurrentUser(initialUsers[1]); // Liza Cruz (Admin)
+    else if (roleKey === 'farm_staff') setCurrentUser(initialUsers[2]); // Ramon Velasco (Staff)
+    else if (roleKey === 'mobile_app') setCurrentUser(initialUsers[3]); // Juan Dela Cruz (Farmer)
   };
 
   const toggleUserStatus = (id) => {
@@ -50,6 +50,23 @@ export const AuthProvider = ({ children }) => {
 
   const handleValidationAction = (id, action, notes) => {
     setValidations(validations.filter(v => v.id !== id));
+  };
+
+  const addFarmerSubmission = (newSub) => {
+    const newId = `VAL-${Date.now().toString().slice(-4)}`;
+    const newEntry = {
+      id: newId,
+      farmer: 'Juan Dela Cruz',
+      plot: newSub.plot || 'Plot P-007',
+      activity: `${newSub.activity} (${newSub.amount || 10} Liters)`,
+      timestamp: 'Just now',
+      urgency: 'Normal',
+      urgencyCls: 'pill-low',
+      gps: '14.586° N · 121.176° E',
+      notes: newSub.note || 'Recorded via Farmers Mobile App',
+      photoAttached: true
+    };
+    setValidations([newEntry, ...validations]);
   };
 
   const togglePermission = (role, capability) => {
@@ -79,6 +96,7 @@ export const AuthProvider = ({ children }) => {
       addUser,
       publishAnnouncement,
       handleValidationAction,
+      addFarmerSubmission,
       togglePermission,
       setCurrentRole
     }}>
