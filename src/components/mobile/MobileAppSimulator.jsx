@@ -18,21 +18,29 @@ import {
   Minimize2,
   Phone,
   Lock,
-  CheckCircle2
+  Bell,
+  X,
+  AlertTriangle,
+  Radio
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
-  const { loginAsRole, addFarmerSubmission } = useAuth();
+  const { loginAsRole, addFarmerSubmission, announcements } = useAuth();
   
-  // Mobile states
-  const [mobileAuth, setMobileAuth] = useState(false); // false = Screen 2.1 Native Mobile Login, true = Screen 2.2 Dashboard
-  const [mobileNumber, setMobileNumber] = useState('0917-555-0192');
-  const [pinCode, setPinCode] = useState('••••');
+  // Mobile app navigation state: 'splash', 'login', 'main'
+  const [mobileScreen, setMobileScreen] = useState('home'); // default to dashboard, can toggle to splash or login
+  const [mobileAuth, setMobileAuth] = useState(true);
   
   const [viewMode, setViewMode] = useState('device'); // 'device' or 'full'
   const [activeTab, setActiveTab] = useState('home'); // 'home', 'log', 'ai', 'tasks'
   
-  // Log Form State
+  // Notification Modal state
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+  // Form States
+  const [mobileNumber, setMobileNumber] = useState('@danilo');
+  const [pinCode, setPinCode] = useState('••••••••');
   const [logType, setLogType] = useState('crops');
   const [activity, setActivity] = useState('Watering');
   const [selectedPlot, setSelectedPlot] = useState('Plot P-007');
@@ -46,16 +54,18 @@ const MobileAppSimulator = () => {
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
 
+  const latestPushAnnouncement = announcements.find(a => a.instantPush) || announcements[0];
+
   const handleMobileLogin = (e) => {
     e.preventDefault();
     setMobileAuth(true);
+    setMobileScreen('main');
   };
 
   const handleLogSubmit = (e) => {
     e.preventDefault();
     setLogSubmitted(true);
 
-    // Call dynamic backend API synchronization
     addFarmerSubmission({
       activity,
       plot: selectedPlot,
@@ -65,13 +75,14 @@ const MobileAppSimulator = () => {
 
     setTimeout(() => {
       setLogSubmitted(false);
-      alert('Activity Log posted to cloud database! Real-time task now queued in Farm Staff Panel.');
+      alert('Activity Log submitted to Farm Staff for validation!');
       setActiveTab('home');
     }, 800);
   };
 
   const getHeaderBg = () => {
-    if (!mobileAuth) return '#1E4620';
+    if (mobileScreen === 'splash') return '#0c3619';
+    if (!mobileAuth || mobileScreen === 'login') return '#ffffff';
     if (activeTab === 'tasks') return '#d97706';
     return '#0c3619';
   };
@@ -86,7 +97,7 @@ const MobileAppSimulator = () => {
       padding: '20px 16px',
       fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
     }}>
-      {/* Top Controls Bar */}
+      {/* Simulator Control Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -101,18 +112,27 @@ const MobileAppSimulator = () => {
           className="btn-outline"
           style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', fontSize: '0.8rem' }}
         >
-          <ArrowLeft size={15} /> Back to Web Portal Login
+          <ArrowLeft size={15} /> Exit Mobile View
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#86efac' }}>
-            📱 MARIWSKA Farmer Mobile App
-          </span>
+          <button
+            onClick={() => { setMobileScreen('splash'); setMobileAuth(false); }}
+            style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.72rem' }}
+          >
+            Splash Screen
+          </button>
+          <button
+            onClick={() => { setMobileScreen('login'); setMobileAuth(false); }}
+            style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.72rem' }}
+          >
+            Mobile Login
+          </button>
           <button
             onClick={() => setViewMode(viewMode === 'device' ? 'full' : 'device')}
             style={{
               background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)',
-              padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px'
+              padding: '6px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px'
             }}
           >
             {viewMode === 'device' ? <><Maximize2 size={13} /> Full Screen</> : <><Minimize2 size={13} /> Device View</>}
@@ -120,7 +140,7 @@ const MobileAppSimulator = () => {
         </div>
       </div>
 
-      {/* Smartphone Frame Wrapper (375x812px aspect) */}
+      {/* Mobile Device Container (375x812px) */}
       <div style={{
         width: '100%',
         maxWidth: viewMode === 'device' ? '375px' : '900px',
@@ -135,7 +155,7 @@ const MobileAppSimulator = () => {
         flexDirection: 'column',
         transition: 'all 0.3s ease'
       }}>
-        {/* Phone Notch */}
+        {/* Top Notch */}
         {viewMode === 'device' && (
           <div style={{
             position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
@@ -147,7 +167,7 @@ const MobileAppSimulator = () => {
         <div style={{
           height: viewMode === 'device' ? '42px' : '36px',
           background: getHeaderBg(),
-          color: '#ffffff',
+          color: mobileScreen === 'login' || (!mobileAuth && mobileScreen !== 'splash') ? '#111827' : '#ffffff',
           display: 'flex',
           justify: 'space-between',
           alignItems: 'center',
@@ -165,77 +185,90 @@ const MobileAppSimulator = () => {
           </div>
         </div>
 
-        {/* ================= SECTION 2.1: NATIVE MOBILE LOGIN SCREEN ================= */}
-        {!mobileAuth ? (
-          <div style={{ flex: 1, background: '#ffffff', padding: '32px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {/* ================= SCREEN A: SPLASH SCREEN ================= */}
+        {mobileScreen === 'splash' && (
+          <div style={{ flex: 1, background: '#0c3619', color: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px' }}>
             <div style={{
-              width: '84px', height: '84px', borderRadius: '50%', background: '#f0fdf4', border: '3px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px'
+              width: '110px', height: '110px', borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', boxShadow: '0 8px 20px rgba(0,0,0,0.3)'
+            }}>
+              <span style={{ fontSize: '3rem' }}>🌱</span>
+            </div>
+            <h1 style={{ fontSize: '2.2rem', fontWeight: '800', tracking: '1px', marginBottom: '50px' }}>MARIKHA</h1>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '32px', height: '32px', border: '4px solid #86efac', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+              <span style={{ fontSize: '0.9rem', color: '#86efac', fontWeight: '700' }}>Loading...</span>
+            </div>
+            <button
+              onClick={() => setMobileScreen('login')}
+              style={{ marginTop: '60px', background: '#11592c', color: '#fff', padding: '12px 28px', borderRadius: '24px', fontSize: '0.85rem', fontWeight: '800', border: 'none', cursor: 'pointer' }}
+            >
+              Continue to Login →
+            </button>
+          </div>
+        )}
+
+        {/* ================= SCREEN B: MOBILE LOGIN SCREEN ================= */}
+        {(mobileScreen === 'login' || (!mobileAuth && mobileScreen !== 'splash')) && (
+          <div style={{ flex: 1, background: '#ffffff', padding: '30px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{
+              width: '84px', height: '84px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px'
             }}>
               <span style={{ fontSize: '2.2rem' }}>🌱</span>
             </div>
-
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1E4620', marginBottom: '2px' }}>MARIWSKA-Likasan</h2>
-            <p style={{ fontSize: '0.9rem', fontWeight: '800', color: '#15803d', marginBottom: '32px' }}>FARMER MOBILE APP</p>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c', marginBottom: '2px' }}>MARIKHA</h2>
+            <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#15803d', marginBottom: '32px' }}>Welcome Back!</p>
 
             <form onSubmit={handleMobileLogin} style={{ width: '100%' }}>
-              <div style={{ marginBottom: '18px' }}>
-                <label style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1E4620', display: 'block', marginBottom: '6px' }}>
-                  Mobile Number / Username
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="text"
-                    value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
-                    style={{
-                      width: '100%', padding: '14px 14px 14px 40px', borderRadius: '14px', border: '2px solid #86efac', fontSize: '0.95rem', fontWeight: '700', color: '#15803d', outline: 'none'
-                    }}
-                  />
-                  <Phone size={18} color="#15803d" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-                </div>
+              <div style={{ width: '100%', marginBottom: '18px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#15803d', display: 'block', marginBottom: '6px' }}>Username</label>
+                <input
+                  type="text"
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '2px solid #86efac', fontSize: '0.9rem', outline: 'none', color: '#15803d', fontWeight: '700' }}
+                />
               </div>
 
-              <div style={{ marginBottom: '28px' }}>
-                <label style={{ fontSize: '0.82rem', fontWeight: '800', color: '#1E4620', display: 'block', marginBottom: '6px' }}>
-                  PIN Code / Password
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="password"
-                    value={pinCode}
-                    onChange={(e) => setPinCode(e.target.value)}
-                    style={{
-                      width: '100%', padding: '14px 14px 14px 40px', borderRadius: '14px', border: '2px solid #86efac', fontSize: '0.95rem', fontWeight: '700', color: '#15803d', outline: 'none'
-                    }}
-                  />
-                  <Lock size={18} color="#15803d" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
-                </div>
+              <div style={{ width: '100%', marginBottom: '10px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#15803d', display: 'block', marginBottom: '6px' }}>Password</label>
+                <input
+                  type="password"
+                  value={pinCode}
+                  onChange={(e) => setPinCode(e.target.value)}
+                  style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '2px solid #86efac', fontSize: '0.9rem', outline: 'none', color: '#15803d' }}
+                />
               </div>
 
-              {/* Primary Action Button Screen 2.1 */}
+              <div style={{ width: '100%', textAlign: 'right', marginBottom: '30px' }}>
+                <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700', cursor: 'pointer' }}>Forgot Password?</span>
+              </div>
+
               <button
                 type="submit"
                 style={{
-                  width: '100%', padding: '16px', borderRadius: '16px', background: '#1E4620', color: '#ffffff', fontWeight: '800', fontSize: '1rem', border: 'none', boxShadow: '0 8px 20px rgba(30, 70, 32, 0.3)', cursor: 'pointer'
+                  width: '100%', padding: '14px', borderRadius: '14px', background: '#11592c', color: '#ffffff', fontWeight: '800', fontSize: '1rem', border: 'none', marginBottom: '20px', cursor: 'pointer'
                 }}
               >
-                LOGIN TO FARMER APP
+                Login
               </button>
             </form>
 
-            <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.78rem', color: '#6b7280' }}>
-              Antipolo City Organic Farming Cooperative
-            </div>
+            <span style={{ fontSize: '0.8rem', color: '#4b5563' }}>
+              Don't have an account? <strong style={{ color: '#15803d', cursor: 'pointer' }}>Sign Up</strong>
+            </span>
           </div>
-        ) : (
-          /* ================= SECTION 2.2: MOBILE DASHBOARD & SMART TASK QUEUE ================= */
+        )}
+
+        {/* ================= SCREEN C: FARMER DASHBOARD & TABS ================= */}
+        {mobileAuth && mobileScreen !== 'splash' && mobileScreen !== 'login' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#edf3ec', overflow: 'hidden' }}>
             <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '16px' }}>
 
               {/* ----- HOME TAB ----- */}
               {activeTab === 'home' && (
                 <div>
-                  <div style={{ background: '#0c3619', color: '#ffffff', padding: '18px 20px 22px 20px', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
+                  {/* Top Dark Green Header Card */}
+                  <div style={{ background: '#0c3619', color: '#ffffff', padding: '18px 20px 22px 20px', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px', position: 'relative' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <div>
                         <div style={{ fontSize: '0.7rem', color: '#86efac', textTransform: 'uppercase', tracking: '0.5px' }}>MAGANDANG ARAW,</div>
@@ -243,16 +276,51 @@ const MobileAppSimulator = () => {
                           Mang 👋
                         </h2>
                       </div>
-                      <button onClick={() => setMobileAuth(false)} style={{ color: '#86efac', background: 'rgba(255,255,255,0.1)', padding: '6px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <LogOut size={14} /> Exit
-                      </button>
+
+                      {/* Header Notification Bell & Exit Buttons */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                          onClick={() => { setSelectedAnnouncement(latestPushAnnouncement); setShowNotificationModal(true); }}
+                          style={{
+                            background: '#d97706', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                          }}
+                        >
+                          <Bell size={14} /> 1
+                        </button>
+                        <button onClick={() => { setMobileAuth(false); setMobileScreen('login'); }} style={{ color: '#86efac', background: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '8px', border: 'none' }}>
+                          <LogOut size={15} />
+                        </button>
+                      </div>
                     </div>
 
                     <div style={{ fontSize: '0.75rem', color: '#a7f3d0', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       📅 Friday, June 19 · 📍 Cupang, Antipolo · Rizal
                     </div>
 
-                    {/* Weather Cards */}
+                    {/* LIVE BROADCAST ANNOUNCEMENT PUSH BANNER */}
+                    {latestPushAnnouncement && (
+                      <div
+                        onClick={() => { setSelectedAnnouncement(latestPushAnnouncement); setShowNotificationModal(true); }}
+                        style={{
+                          background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '10px 12px', marginBottom: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'
+                        }}
+                      >
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#d97706', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Bell size={14} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#d97706', textTransform: 'uppercase' }}>
+                            📢 ANNOUNCEMENT PUSH
+                          </div>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {latestPushAnnouncement.title || latestPushAnnouncement.content}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.7rem', color: '#d97706', fontWeight: '700' }}>View →</span>
+                      </div>
+                    )}
+
+                    {/* Weather Cards Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div style={{ background: 'rgba(255,255,255,0.12)', padding: '10px 12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)' }}>
                         <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700' }}>TEMPERATURE</div>
@@ -267,72 +335,72 @@ const MobileAppSimulator = () => {
                     </div>
                   </div>
 
-                  {/* Dashboard Touch Blocks Screen 2.2 */}
+                  {/* Dashboard Options */}
                   <div style={{ padding: '18px' }}>
                     <h3 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', marginBottom: '14px' }}>
                       What would you like to do?
                     </h3>
 
-                    {/* 4 Massive Accessible Touch Blocks (Min 64px) */}
+                    {/* 4 Big Action Tiles Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                       <div
                         onClick={() => setActiveTab('log')}
                         style={{
-                          background: '#0c3619', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '125px', minHeight: '64px'
+                          background: '#0c3619', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <ClipboardList size={20} color="#86efac" />
+                        <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <ClipboardList size={18} color="#86efac" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.88rem', lineHeight: 1.2 }}>LOG DAILY ACTIVITY</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>LOG DAILY ACTIVITY</div>
                       </div>
 
                       <div
                         onClick={() => alert('Crops & Livestock Directory Opened')}
                         style={{
-                          background: '#452c1e', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '125px', minHeight: '64px'
+                          background: '#452c1e', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Sprout size={20} color="#fcd34d" />
+                        <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Sprout size={18} color="#fcd34d" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.88rem', lineHeight: 1.2 }}>MY CROPS & LIVESTOCK</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>MY CROPS & LIVESTOCK</div>
                       </div>
 
                       <div
                         onClick={() => setActiveTab('tasks')}
                         style={{
-                          background: '#d97706', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '125px', minHeight: '64px'
+                          background: '#d97706', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Calendar size={20} color="#ffffff" />
+                        <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Calendar size={18} color="#ffffff" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.88rem', lineHeight: 1.2 }}>FARMING CALENDAR</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>FARMING CALENDAR</div>
                       </div>
 
                       <div
                         onClick={() => setActiveTab('ai')}
                         style={{
-                          background: '#059669', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '125px', minHeight: '64px'
+                          background: '#059669', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Sparkles size={20} color="#ffffff" />
+                        <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Sparkles size={18} color="#ffffff" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.88rem', lineHeight: 1.2 }}>AI SMART RECOMMENDATION</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>AI SMART RECOMMENDATION</div>
                       </div>
                     </div>
 
-                    {/* PGS Organic Status Badge */}
+                    {/* Organic Certification Status Card */}
                     <div style={{ background: '#dcfce7', border: '1px solid #86efac', borderRadius: '14px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Sparkles size={18} />
+                      <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Sparkles size={16} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>PGS ORGANIC STATUS BADGE</div>
-                        <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#111827' }}>Certified · 94% complete</div>
-                        <div style={{ fontSize: '0.72rem', color: '#15803d' }}>1 item needs your attention</div>
+                        <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>PGS ORGANIC STATUS</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.88rem', color: '#111827' }}>Certified · 94% complete</div>
+                        <div style={{ fontSize: '0.7rem', color: '#15803d' }}>1 item needs your attention</div>
                       </div>
                     </div>
                   </div>
@@ -343,7 +411,7 @@ const MobileAppSimulator = () => {
               {activeTab === 'log' && (
                 <div>
                   <div style={{ background: '#0c3619', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff' }}><ArrowLeft size={18} /></button>
+                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
                     <div>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Log Activity</h3>
                       <span style={{ fontSize: '0.7rem', color: '#86efac' }}>Punan ang form sa ibaba</span>
@@ -355,7 +423,7 @@ const MobileAppSimulator = () => {
                       <button
                         onClick={() => setLogType('crops')}
                         style={{
-                          padding: '8px', borderRadius: '10px', fontWeight: '800', fontSize: '0.8rem',
+                          padding: '8px', borderRadius: '10px', fontWeight: '800', fontSize: '0.8rem', border: 'none',
                           background: logType === 'crops' ? '#0c3619' : 'transparent',
                           color: logType === 'crops' ? '#ffffff' : '#4b5563',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
@@ -366,7 +434,7 @@ const MobileAppSimulator = () => {
                       <button
                         onClick={() => setLogType('livestock')}
                         style={{
-                          padding: '8px', borderRadius: '10px', fontWeight: '800', fontSize: '0.8rem',
+                          padding: '8px', borderRadius: '10px', fontWeight: '800', fontSize: '0.8rem', border: 'none',
                           background: logType === 'livestock' ? '#0c3619' : 'transparent',
                           color: logType === 'livestock' ? '#ffffff' : '#4b5563',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
@@ -436,7 +504,7 @@ const MobileAppSimulator = () => {
                           <button
                             type="button"
                             onClick={() => setInputAmount(Math.max(1, inputAmount - 5))}
-                            style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#452c1e', color: '#fff', fontWeight: '800', fontSize: '1.1rem' }}
+                            style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#452c1e', color: '#fff', fontWeight: '800', fontSize: '1.1rem', border: 'none' }}
                           >
                             -
                           </button>
@@ -447,7 +515,7 @@ const MobileAppSimulator = () => {
                           <button
                             type="button"
                             onClick={() => setInputAmount(inputAmount + 5)}
-                            style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#0c3619', color: '#fff', fontWeight: '800', fontSize: '1.1rem' }}
+                            style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#0c3619', color: '#fff', fontWeight: '800', fontSize: '1.1rem', border: 'none' }}
                           >
                             +
                           </button>
@@ -490,18 +558,18 @@ const MobileAppSimulator = () => {
                           width: '100%', padding: '14px', borderRadius: '12px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.9rem', border: 'none', cursor: 'pointer'
                         }}
                       >
-                        {logSubmitted ? 'POSTING TO API...' : 'SUBMIT LOG TO CLOUD DATABASE'}
+                        {logSubmitted ? 'SUBMITTING...' : 'SUBMIT LOG FOR VALIDATION'}
                       </button>
                     </form>
                   </div>
                 </div>
               )}
 
-              {/* ----- AI TAB (ML Diagnostics View) ----- */}
+              {/* ----- AI TAB ----- */}
               {activeTab === 'ai' && (
                 <div>
                   <div style={{ background: '#0c3619', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff' }}><ArrowLeft size={18} /></button>
+                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
                     <div>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Sparkles size={15} color="#86efac" /> AI Recommendations
@@ -541,7 +609,6 @@ const MobileAppSimulator = () => {
                       </div>
                     </div>
 
-                    {/* ML Diagnostics Panels Screen 2.2 */}
                     <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '14px', marginBottom: '12px' }}>
                       <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
                         <span style={{ background: '#0c3619', color: '#fff', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>RF Classifier</span>
@@ -566,20 +633,6 @@ const MobileAppSimulator = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Okra · Smooth Green</span><strong>68%</strong></div>
                       </div>
                     </div>
-
-                    {/* Yield Prediction Panel */}
-                    <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '14px' }}>
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
-                        <span style={{ background: '#452c1e', color: '#fff', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>RF Regression</span>
-                        <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Yield prediction</span>
-                      </div>
-                      <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '700' }}>ESTIMATED OUTPUT</div>
-                      <div style={{ fontSize: '1.3rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>412 kg <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>≈ 8 sacks</span></div>
-                      <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: '8px', borderRadius: '8px', fontSize: '0.72rem' }}>
-                        <div style={{ color: '#92400e', fontWeight: '700' }}>📅 EXPECTED HARVEST WINDOW</div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#78350f' }}>Nov 18 – Dec 02, 2025</div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
@@ -588,7 +641,7 @@ const MobileAppSimulator = () => {
               {activeTab === 'tasks' && (
                 <div>
                   <div style={{ background: '#d97706', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff' }}><ArrowLeft size={18} /></button>
+                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
                     <div>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Today's Smart Tasks</h3>
                       <span style={{ fontSize: '0.7rem', color: '#fef3c7' }}>Inayos para sa inyo ng AI</span>
@@ -655,6 +708,46 @@ const MobileAppSimulator = () => {
                 <Calendar size={17} style={{ margin: '0 auto 2px' }} /> TASKS
               </div>
             </div>
+
+            {/* Announcement Push Notification Popup Modal */}
+            {showNotificationModal && selectedAnnouncement && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 500
+              }}>
+                <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Bell size={18} color="#d97706" />
+                      <span style={{ fontWeight: '800', fontSize: '0.85rem', color: '#111827' }}>Cooperative Push Alert</span>
+                    </div>
+                    <button onClick={() => setShowNotificationModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '10px', padding: '12px', marginBottom: '14px' }}>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#78350f', marginBottom: '6px' }}>
+                      {selectedAnnouncement.title || 'Cooperative Announcement'}
+                    </h4>
+                    <p style={{ fontSize: '0.78rem', color: '#92400e', lineHeight: 1.4, margin: 0 }}>
+                      {selectedAnnouncement.content}
+                    </p>
+                  </div>
+
+                  <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '16px' }}>
+                    Dispatched by {selectedAnnouncement.author || 'Liza Cruz (Admin)'} · {selectedAnnouncement.date}
+                  </div>
+
+                  <button
+                    onClick={() => setShowNotificationModal(false)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.82rem', border: 'none', cursor: 'pointer' }}
+                  >
+                    Acknowledge Notice
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
