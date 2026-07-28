@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { ShieldCheck, Lock, User, CheckCircle } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 const Login = () => {
   const { loginAsRole } = useAuth();
@@ -19,7 +19,6 @@ const Login = () => {
     setTimeout(() => {
       setLoading(false);
       if (!cleanUser) {
-        // Default Web Auth fallback -> Super Admin
         loginAsRole('super_admin');
         return;
       }
@@ -33,10 +32,9 @@ const Login = () => {
       } else if (cleanUser.includes('farmer') || cleanUser.includes('danilo') || cleanUser.includes('juan')) {
         loginAsRole('mobile_app');
       } else {
-        // Fallback valid Web Session
         loginAsRole('super_admin');
       }
-    }, 600);
+    }, 500);
   };
 
   return (
@@ -50,7 +48,7 @@ const Login = () => {
       padding: '24px',
       fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
     }}>
-      {/* Production Web Login Card matching Screen 1.1 */}
+      {/* Production Web Login Card for MARIKHA */}
       <div style={{
         background: '#ffffff',
         borderRadius: '16px',
@@ -79,8 +77,8 @@ const Login = () => {
           M
         </div>
 
-        <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#1E4620', letterSpacing: '-0.3px', marginBottom: '4px' }}>
-          MARIWSKA-Likasan
+        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1E4620', letterSpacing: '-0.3px', marginBottom: '4px' }}>
+          MARIKHA
         </h2>
         <p style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', marginBottom: '28px', lineHeight: 1.3 }}>
           Agricultural Management Information System

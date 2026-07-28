@@ -26,8 +26,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Super Admin Portal';
     navItems = [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
-      { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
+      { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout, secondaryId: 'livestock-monitoring' },
+      { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary, secondaryId: 'crop-monitoring' },
       { id: 'analytics', label: 'Analytics', icon: BarChart3, secondaryId: 'decision-support' },
       { id: 'decision-support', label: 'Decision Support', icon: BrainCircuit, secondaryId: 'analytics' },
       { id: 'reports', label: 'Reports', icon: FileText },
@@ -36,8 +36,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Administrator Console';
     navItems = [
       { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
-      { id: 'user-accounts', label: 'User Accounts', icon: Users },
-      { id: 'member-records', label: 'Member Records', icon: Users },
+      { id: 'user-accounts', label: 'User Accounts', icon: Users, secondaryId: 'member-records' },
+      { id: 'member-records', label: 'Member Records', icon: Users, secondaryId: 'user-accounts' },
       { id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
       { id: 'announcements', label: 'Announcements', icon: Megaphone },
       { id: 'reports', label: 'Reports', icon: FileText },
@@ -46,10 +46,10 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Farm Staff Validation';
     navItems = [
       { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
-      { id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
-      { id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
-      { id: 'crop-management', label: 'Crop Management', icon: Trees },
-      { id: 'livestock-management', label: 'Livestock Management', icon: Binary },
+      { id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare, secondaryId: 'ml-audit' },
+      { id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert, secondaryId: 'activity-validation' },
+      { id: 'crop-management', label: 'Crop Management', icon: Trees, secondaryId: 'livestock-management' },
+      { id: 'livestock-management', label: 'Livestock Management', icon: Binary, secondaryId: 'crop-management' },
       { id: 'reports', label: 'Reports', icon: FileText },
     ];
   }
@@ -57,7 +57,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   return (
     <aside className="sidebar-nav">
       <div>
-        {/* Brand Header matching Screenshot 2 & Images 2, 4, 5 */}
+        {/* Brand Header matching MARIKHA branding */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '28px', paddingLeft: '4px' }}>
           <div style={{
             width: '32px',
@@ -81,7 +81,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           </div>
         </div>
 
-        {/* Navigation Items */}
+        {/* Navigation Items with dual active highlight for matching pairs */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
