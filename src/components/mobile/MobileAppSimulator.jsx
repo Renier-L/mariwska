@@ -22,7 +22,12 @@ import {
   X,
   AlertTriangle,
   Radio,
-  ChevronRight
+  ChevronRight,
+  CheckCircle2,
+  CloudSun,
+  ShieldCheck,
+  CheckSquare,
+  Beef
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
@@ -35,17 +40,21 @@ const MobileAppSimulator = () => {
   const [viewMode, setViewMode] = useState('device'); // 'device' or 'full'
   const [activeTab, setActiveTab] = useState('home'); // 'home', 'log', 'ai', 'tasks'
   
-  // Notification Modal state
+  // Modals state
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showCropsModal, setShowCropsModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT (CLOSE HISTORY MODAL & FORCE POPUP)
+  // Completed tasks state
+  const [completedTasks, setCompletedTasks] = useState({});
+
+  // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT
   useEffect(() => {
     if (activePushNotice) {
       setSelectedAnnouncement(activePushNotice);
-      setShowHistoryModal(false); // Close history modal if open!
-      setShowNotificationModal(true); // Force live push popup!
+      setShowHistoryModal(false); 
+      setShowNotificationModal(true); // Always pop up live notice!
     }
   }, [activePushNotice]);
 
@@ -87,15 +96,23 @@ const MobileAppSimulator = () => {
 
     setTimeout(() => {
       setLogSubmitted(false);
-      alert('Activity Log submitted to Farm Staff for validation!');
+      alert('✅ Activity Log submitted directly to Farm Staff for cloud validation!');
       setActiveTab('home');
-    }, 800);
+    }, 600);
+  };
+
+  const toggleTaskCompleted = (taskId) => {
+    setCompletedTasks(prev => ({
+      ...prev,
+      [taskId]: !prev[taskId]
+    }));
   };
 
   const getHeaderBg = () => {
     if (mobileScreen === 'splash') return '#0c3619';
     if (!mobileAuth || mobileScreen === 'login') return '#ffffff';
     if (activeTab === 'tasks') return '#d97706';
+    if (activeTab === 'ai') return '#059669';
     return '#0c3619';
   };
 
@@ -113,7 +130,7 @@ const MobileAppSimulator = () => {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justify: 'space-between',
         width: '100%',
         maxWidth: viewMode === 'device' ? '410px' : '900px',
         marginBottom: '16px',
@@ -152,7 +169,7 @@ const MobileAppSimulator = () => {
         </div>
       </div>
 
-      {/* Mobile Device Container (375x812px) */}
+      {/* Mobile Device Container (375x812px Native Specs) */}
       <div style={{
         width: '100%',
         maxWidth: viewMode === 'device' ? '375px' : '900px',
@@ -181,7 +198,7 @@ const MobileAppSimulator = () => {
           background: getHeaderBg(),
           color: mobileScreen === 'login' || (!mobileAuth && mobileScreen !== 'splash') ? '#111827' : '#ffffff',
           display: 'flex',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           alignItems: 'center',
           padding: '0 20px',
           fontSize: '0.75rem',
@@ -289,7 +306,7 @@ const MobileAppSimulator = () => {
                         </h2>
                       </div>
 
-                      {/* Dynamic Header Notification Bell & Exit Buttons */}
+                      {/* Header Notification Bell & Exit Buttons */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
                           onClick={() => { setShowNotificationModal(false); setShowHistoryModal(true); }}
@@ -335,12 +352,16 @@ const MobileAppSimulator = () => {
                     {/* Weather Cards Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div style={{ background: 'rgba(255,255,255,0.12)', padding: '10px 12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)' }}>
-                        <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700' }}>TEMPERATURE</div>
+                        <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <CloudSun size={12} /> TEMPERATURE
+                        </div>
                         <div style={{ fontSize: '1.25rem', fontWeight: '800', margin: '2px 0' }}>28°C</div>
                         <div style={{ fontSize: '0.68rem', color: '#a7f3d0' }}>Maaraw - light breeze</div>
                       </div>
                       <div style={{ background: 'rgba(255,255,255,0.12)', padding: '10px 12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)' }}>
-                        <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700' }}>RAINFALL</div>
+                        <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Droplets size={12} /> RAINFALL
+                        </div>
                         <div style={{ fontSize: '1.25rem', fontWeight: '800', margin: '2px 0' }}>2.4mm</div>
                         <div style={{ fontSize: '0.68rem', color: '#a7f3d0' }}>Low chance of rain</div>
                       </div>
@@ -353,7 +374,7 @@ const MobileAppSimulator = () => {
                       What would you like to do?
                     </h3>
 
-                    {/* 4 Big Action Tiles Grid */}
+                    {/* 4 Big Touch Tiles Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                       <div
                         onClick={() => setActiveTab('log')}
@@ -368,7 +389,7 @@ const MobileAppSimulator = () => {
                       </div>
 
                       <div
-                        onClick={() => alert('Crops & Livestock Directory Opened')}
+                        onClick={() => setShowCropsModal(true)}
                         style={{
                           background: '#452c1e', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
@@ -407,7 +428,7 @@ const MobileAppSimulator = () => {
                     {/* Organic Certification Status Card */}
                     <div style={{ background: '#dcfce7', border: '1px solid #86efac', borderRadius: '14px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Sparkles size={16} />
+                        <ShieldCheck size={18} />
                       </div>
                       <div>
                         <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase' }}>PGS ORGANIC STATUS</div>
@@ -452,7 +473,7 @@ const MobileAppSimulator = () => {
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                         }}
                       >
-                        🐄 LIVESTOCK
+                        <Beef size={14} /> LIVESTOCK
                       </button>
                     </div>
 
@@ -580,13 +601,13 @@ const MobileAppSimulator = () => {
               {/* ----- AI TAB ----- */}
               {activeTab === 'ai' && (
                 <div>
-                  <div style={{ background: '#0c3619', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ background: '#059669', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
                     <div>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Sparkles size={15} color="#86efac" /> AI Recommendations
                       </h3>
-                      <span style={{ fontSize: '0.7rem', color: '#86efac' }}>Smart na payo para sa inyong sakahan</span>
+                      <span style={{ fontSize: '0.7rem', color: '#a7f3d0' }}>Smart na payo para sa inyong sakahan</span>
                     </div>
                   </div>
 
@@ -623,19 +644,19 @@ const MobileAppSimulator = () => {
 
                     <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '14px', marginBottom: '12px' }}>
                       <div style={{ display: 'flex', gap: '6px', marginBottom: '6px' }}>
-                        <span style={{ background: '#0c3619', color: '#fff', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>RF Classifier</span>
+                        <span style={{ background: '#059669', color: '#fff', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', fontWeight: '700' }}>RF Classifier</span>
                         <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Random Forest</span>
                       </div>
                       <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>RECOMMENDED CROP VARIETY</div>
-                      <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0c3619', marginBottom: '8px' }}>Tomato · Diamante</h2>
+                      <h2 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#059669', marginBottom: '8px' }}>Tomato · Diamante</h2>
 
                       <div style={{ marginBottom: '10px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: '700', marginBottom: '3px' }}>
                           <span>SUITABILITY CONFIDENCE</span>
-                          <span style={{ color: '#15803d' }}>87%</span>
+                          <span style={{ color: '#059669' }}>87%</span>
                         </div>
                         <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                          <div style={{ width: '87%', height: '100%', background: '#16a34a' }} />
+                          <div style={{ width: '87%', height: '100%', background: '#059669' }} />
                         </div>
                       </div>
 
@@ -656,46 +677,55 @@ const MobileAppSimulator = () => {
                     <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
                     <div>
                       <h3 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Today's Smart Tasks</h3>
-                      <span style={{ fontSize: '0.7rem', color: '#fef3c7' }}>Inayos para sa inyo ng AI</span>
+                      <span style={{ fontSize: '0.7rem', color: '#fef3c7' }}>Interactive farming checklist</span>
                     </div>
                   </div>
 
                   <div style={{ padding: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
-                      <div style={{ background: '#ffffff', borderRadius: '10px', borderLeft: '4px solid #dc2626', padding: '10px 12px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                          <span style={{ fontSize: '0.68rem', color: '#dc2626', fontWeight: '800' }}>● YESTERDAY</span>
-                          <span className="pill pill-critical">OVERDUE</span>
-                        </div>
-                        <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Apply compost · Plot P-021</h4>
-                        <p style={{ fontSize: '0.7rem', color: '#6b7280' }}>Missed scheduled cycle · re-do today</p>
-                      </div>
-
-                      <div style={{ background: '#ffffff', borderRadius: '10px', borderLeft: '4px solid #d97706', padding: '10px 12px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                          <span style={{ fontSize: '0.68rem', color: '#d97706', fontWeight: '800' }}>● 06:00 TODAY</span>
-                          <span className="pill pill-high">URGENT</span>
-                        </div>
-                        <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Water Plot P-007</h4>
-                        <p style={{ fontSize: '0.7rem', color: '#6b7280' }}>Heat advisory · double morning ration</p>
-                      </div>
-
-                      <div style={{ background: '#ffffff', borderRadius: '10px', borderLeft: '4px solid #16a34a', padding: '10px 12px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                          <span style={{ fontSize: '0.68rem', color: '#16a34a', fontWeight: '800' }}>● 10:00 TODAY</span>
-                          <span className="pill pill-low">NORMAL</span>
-                        </div>
-                        <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Harvest okra · Plot P-034</h4>
-                        <p style={{ fontSize: '0.7rem', color: '#6b7280' }}>Pods 7–9cm length ready</p>
-                      </div>
-                    </div>
-
-                    <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '12px' }}>
-                      <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#15803d', marginBottom: '4px' }}>PGS ORGANIC CERTIFICATION</div>
-                      <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#111827', marginBottom: '4px' }}>Certified · 94% complete</div>
-                      <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: '6px 8px', borderRadius: '6px', fontSize: '0.7rem', color: '#92400e' }}>
-                        ⚠️ Submit photo of compost batch #14 (overdue)
-                      </div>
+                      {[
+                        { id: 't1', title: 'Apply compost · Plot P-021', status: 'OVERDUE', time: '● YESTERDAY', desc: 'Missed scheduled cycle · re-do today', border: '#dc2626', pill: 'pill-critical' },
+                        { id: 't2', title: 'Water Plot P-007', status: 'URGENT', time: '● 06:00 TODAY', desc: 'Heat advisory · double morning ration', border: '#d97706', pill: 'pill-high' },
+                        { id: 't3', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: '● 10:00 TODAY', desc: 'Pods 7–9cm length ready', border: '#16a34a', pill: 'pill-low' }
+                      ].map(t => {
+                        const isDone = completedTasks[t.id];
+                        return (
+                          <div
+                            key={t.id}
+                            onClick={() => toggleTaskCompleted(t.id)}
+                            style={{
+                              background: isDone ? '#f0fdf4' : '#ffffff',
+                              borderRadius: '10px',
+                              borderLeft: `4px solid ${isDone ? '#16a34a' : t.border}`,
+                              border: isDone ? '1px solid #86efac' : '1px solid #e5e7eb',
+                              padding: '10px 12px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justify: 'space-between'
+                            }}
+                          >
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                <span style={{ fontSize: '0.68rem', color: isDone ? '#16a34a' : t.border, fontWeight: '800' }}>{t.time}</span>
+                                <span className={`pill ${isDone ? 'pill-compliant' : t.pill}`}>{isDone ? 'COMPLETED ✓' : t.status}</span>
+                              </div>
+                              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: isDone ? '#15803d' : '#111827', textDecoration: isDone ? 'line-through' : 'none' }}>
+                                {t.title}
+                              </h4>
+                              <p style={{ fontSize: '0.7rem', color: '#6b7280', margin: 0 }}>{t.desc}</p>
+                            </div>
+                            <div style={{
+                              width: '24px', height: '24px', borderRadius: '50%',
+                              background: isDone ? '#16a34a' : '#f1f5f9',
+                              color: isDone ? '#fff' : 'transparent',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                              <CheckCircle2 size={16} />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -703,7 +733,7 @@ const MobileAppSimulator = () => {
 
             </div>
 
-            {/* Bottom Nav Bar */}
+            {/* Bottom 4-Tab Nav Bar */}
             <div style={{
               height: '52px', background: '#ffffff', borderTop: '1px solid #e5e7eb', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', alignItems: 'center', textAlign: 'center', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0
             }}>
@@ -713,15 +743,15 @@ const MobileAppSimulator = () => {
               <div onClick={() => setActiveTab('log')} style={{ color: activeTab === 'log' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
                 <ClipboardList size={17} style={{ margin: '0 auto 2px' }} /> LOG
               </div>
-              <div onClick={() => setActiveTab('ai')} style={{ color: activeTab === 'ai' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
+              <div onClick={() => setActiveTab('ai')} style={{ color: activeTab === 'ai' ? '#059669' : '#9ca3af', cursor: 'pointer' }}>
                 <Sparkles size={17} style={{ margin: '0 auto 2px' }} /> AI
               </div>
-              <div onClick={() => setActiveTab('tasks')} style={{ color: activeTab === 'tasks' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
+              <div onClick={() => setActiveTab('tasks')} style={{ color: activeTab === 'tasks' ? '#d97706' : '#9ca3af', cursor: 'pointer' }}>
                 <Calendar size={17} style={{ margin: '0 auto 2px' }} /> TASKS
               </div>
             </div>
 
-            {/* Real-Time Single Announcement Push Notification Popup Modal (Z-INDEX 800 HIGHEST) */}
+            {/* Real-Time Announcement Push Modal (High Priority zIndex 800) */}
             {showNotificationModal && latestPushAnnouncement && (
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -779,25 +809,29 @@ const MobileAppSimulator = () => {
                   </div>
 
                   <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
-                    {announcements.map((ann, idx) => (
-                      <div
-                        key={ann.id || idx}
-                        onClick={() => { setSelectedAnnouncement(ann); setShowHistoryModal(false); setShowNotificationModal(true); }}
-                        style={{
-                          background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '10px 12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                        }}
-                      >
-                        <div>
-                          <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f' }}>
-                            "{ann.content}"
+                    {announcements.length === 0 ? (
+                      <div style={{ fontSize: '0.78rem', color: '#6b7280', textAlign: 'center', padding: '20px' }}>No broadcast notifications yet</div>
+                    ) : (
+                      announcements.map((ann, idx) => (
+                        <div
+                          key={ann.id || idx}
+                          onClick={() => { setSelectedAnnouncement(ann); setShowHistoryModal(false); setShowNotificationModal(true); }}
+                          style={{
+                            background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '10px 12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f' }}>
+                              "{ann.content}"
+                            </div>
+                            <div style={{ fontSize: '0.68rem', color: '#b45309', marginTop: '2px' }}>
+                              Posted {ann.date}
+                            </div>
                           </div>
-                          <div style={{ fontSize: '0.68rem', color: '#b45309', marginTop: '2px' }}>
-                            Posted {ann.date}
-                          </div>
+                          <ChevronRight size={16} color="#d97706" />
                         </div>
-                        <ChevronRight size={16} color="#d97706" />
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
 
                   <button
@@ -805,6 +839,51 @@ const MobileAppSimulator = () => {
                     style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
                   >
                     Close History
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* My Crops & Livestock Modal */}
+            {showCropsModal && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 700
+              }}>
+                <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '330px', maxHeight: '520px', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Sprout size={18} color="#0c3619" />
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>Crops & Livestock Directory</h3>
+                    </div>
+                    <button onClick={() => setShowCropsModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+                    {[
+                      { title: 'Tomato (Diamante)', plot: 'Plot P-007', stage: 'Flowering', yield: '412 kg' },
+                      { title: 'Eggplant (Mistisa)', plot: 'Plot P-021', stage: 'Vegetative', yield: '305 kg' },
+                      { title: 'Okra (Smooth Green)', plot: 'Plot P-034', stage: 'Harvest', yield: '240 kg' },
+                      { title: 'Squash (Suprema)', plot: 'Plot P-055', stage: 'Fruiting', yield: '158 kg' },
+                      { title: 'Goat Herd GT-014', plot: 'Plot P-055', stage: '34 Head', yield: '+1.2 kg/wk' }
+                    ].map(item => (
+                      <div key={item.title} style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '10px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{item.title}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#15803d' }}>{item.plot} · Stage: {item.stage}</div>
+                        </div>
+                        <span className="pill pill-seedling" style={{ fontSize: '0.7rem' }}>{item.yield}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setShowCropsModal(false)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
+                  >
+                    Close Directory
                   </button>
                 </div>
               </div>
