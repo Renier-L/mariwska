@@ -36,8 +36,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Administrator Console';
     navItems = [
       { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
-      { id: 'user-accounts', label: 'User Accounts', icon: Users },
-      { id: 'member-records', label: 'Member Records', icon: Users },
+      { id: 'user-accounts', label: 'User Accounts', icon: Users, secondaryId: 'member-records' },
+      { id: 'member-records', label: 'Member Records', icon: Users, secondaryId: 'user-accounts' },
       { id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
       { id: 'announcements', label: 'Announcements', icon: Megaphone },
       { id: 'reports', label: 'Reports', icon: FileText },
@@ -81,11 +81,11 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           </div>
         </div>
 
-        {/* Navigation Items with strictly single active item highlight */}
+        {/* Navigation Items */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id;
+            const isActive = activeTab === item.id || (item.secondaryId && activeTab === item.secondaryId);
             return (
               <button
                 key={item.id}
