@@ -4,6 +4,11 @@ import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
 
+// Browser-level BroadcastChannel for 0-latency instant cross-window sync!
+const broadcastChannel = typeof window !== 'undefined' && 'BroadcastChannel' in window
+  ? new BroadcastChannel('marikha_realtime_broadcast')
+  : null;
+
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(initialUsers[0]); // Default Rosa Mendoza (Super Admin)
   const [currentRole, setCurrentRole] = useState('login'); // Start at secure login screen
@@ -32,6 +37,39 @@ export const AuthProvider = ({ children }) => {
     'PGS Auditor': { readLogs: true, writeEntries: false, executeValidations: true, bypassAudits: false, accessML: false },
   });
 
+  // Cross-Window Instant Sync via BroadcastChannel & LocalStorage!
+  useEffect(() => {
+    const handleIncomingNotice = (newAnn) => {
+      setAnnouncements(prev => {
+        const exists = prev.some(a => a.id === newAnn.id || a.content === newAnn.content);
+        return exists ? prev : [newAnn, ...prev];
+      });
+      setActivePushNotice(newAnn);
+    };
+
+    if (broadcastChannel) {
+      broadcastChannel.onmessage = (event) => {
+        if (event.data && event.data.type === 'ANNOUNCEMENT_PUSH') {
+          handleIncomingNotice(event.data.payload);
+        }
+      };
+    }
+
+    const handleStorageEvent = (e) => {
+      if (e.key === 'marikha_live_push' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          handleIncomingNotice(parsed);
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorageEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
   // Fetch initial announcements & Subscribe to Supabase Realtime changes!
   useEffect(() => {
     async function fetchSupabaseData() {
@@ -55,8 +93,8 @@ export const AuthProvider = ({ children }) => {
     fetchSupabaseData();
 
     // Supabase Realtime Subscription for Broadcast Announcements
-    const subscription = supabase
-      .channel('realtime_announcements')
+    const channel = supabase
+      .channel('announcements_realtime_channel')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
         const newRecord = payload.new;
         const newAnn = {
@@ -74,7 +112,7 @@ export const AuthProvider = ({ children }) => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -100,7 +138,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // UNLIMITED REALTIME BROADCAST PUBLISH FOR ANY INPUT TYPE
+  // INSTANT MULTI-WINDOW REALTIME BROADCAST
   const publishAnnouncement = async (content, instantPush) => {
     const cleanText = String(content || '').trim();
     if (!cleanText) return;
@@ -118,6 +156,17 @@ export const AuthProvider = ({ children }) => {
     setAnnouncements(prev => [newAnn, ...prev]);
     setActivePushNotice({ ...newAnn, pushId: Math.random() });
 
+    // 1. Post to Browser BroadcastChannel for 0ms cross-window sync
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_PUSH', payload: newAnn });
+    }
+
+    // 2. Post to LocalStorage event listener
+    try {
+      localStorage.setItem('marikha_live_push', JSON.stringify(newAnn));
+    } catch (e) {}
+
+    // 3. Post to Supabase Cloud Database for remote clients
     try {
       await supabase.from('announcements').insert([{ 
         title: 'Cooperative Broadcast Notice', 
