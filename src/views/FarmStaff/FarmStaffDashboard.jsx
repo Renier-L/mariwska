@@ -42,14 +42,14 @@ const FarmStaffDashboard = ({ activeTab }) => {
     if (!selectedValidation) return;
     handleValidationAction(selectedValidation.id, 'approve', staffNote);
     setStaffNote('');
-    alert(`Task ${selectedValidation.plot} approved & committed to cloud!`);
+    alert(`✓ Task #${selectedValidation.id} approved & committed to cloud!`);
   };
 
   const handleReject = () => {
     if (!selectedValidation) return;
     handleValidationAction(selectedValidation.id, 'reject', staffNote);
     setStaffNote('');
-    alert(`Task ${selectedValidation.plot} rejected / correction requested!`);
+    alert(`⚠️ Task #${selectedValidation.id} rejected / correction requested!`);
   };
 
   const handleDownloadPDF = (title) => {
@@ -62,7 +62,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
   };
 
-  // 1. Operations & Verification Dashboard (New Image 2)
+  // 1. Operations & Verification Dashboard
   const renderOperations = () => (
     <div>
       <div style={{ marginBottom: '20px' }}>
@@ -77,7 +77,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Pending Validations</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>23</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>{validations.length}</div>
         </div>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Critical Alerts</div>
@@ -103,17 +103,10 @@ const FarmStaffDashboard = ({ activeTab }) => {
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {[
-              { time: '06:42', plot: 'P-007', name: 'M. Santos', task: 'Watering', urgency: 'Urgent', cls: 'pill-critical' },
-              { time: '07:15', plot: 'P-021', name: 'J. Dela Cruz', task: 'Fertilizer · vermicompost 12kg', urgency: 'Urgent', cls: 'pill-critical' },
-              { time: '08:03', plot: 'P-034', name: 'G. Bautista', task: 'Harvest · okra 18kg', urgency: 'Normal', cls: 'pill-medium' },
-              { time: '09:21', plot: 'P-055', name: 'P. Ocampo', task: 'Feeding · goat herd GT-014', urgency: 'Normal', cls: 'pill-medium' },
-              { time: '10:45', plot: 'P-082', name: 'F. Pascual', task: 'Watering', urgency: 'Routine', cls: 'pill-seedling' },
-              { time: '11:30', plot: 'P-094', name: 'T. Lopez', task: 'Fertilizer · compost tea 9L', urgency: 'Routine', cls: 'pill-seedling' },
-            ].map((t, idx) => (
-              <div key={idx} style={{
+            {validations.map((t, idx) => (
+              <div key={t.id || idx} style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifySpaceBetween: 'space-between',
                 alignItems: 'center',
                 padding: '10px 12px',
                 background: '#f9fafb',
@@ -121,16 +114,16 @@ const FarmStaffDashboard = ({ activeTab }) => {
                 border: '1px solid #e5e7eb'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>{t.time}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>{t.timestamp || 'Just now'}</span>
                   <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155' }}>
                     {t.plot}
                   </span>
                   <div>
-                    <span style={{ fontWeight: '700', fontSize: '0.82rem', color: '#111827', marginRight: '6px' }}>{t.name}</span>
-                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{t.task}</span>
+                    <span style={{ fontWeight: '700', fontSize: '0.82rem', color: '#111827', marginRight: '6px' }}>{t.farmer}</span>
+                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{t.taskType || t.activity}</span>
                   </div>
                 </div>
-                <span className={`pill ${t.cls}`}>{t.urgency}</span>
+                <span className={`pill ${t.urgencyCls || 'pill-medium'}`}>{t.urgency || 'Normal'}</span>
               </div>
             ))}
           </div>
@@ -170,7 +163,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 2. Farmer Activity Validation Panel
+  // 2. Farmer Activity Validation Panel with Large Visible Photo View
   const renderValidationPanel = () => (
     <div>
       <div style={{ marginBottom: '20px' }}>
@@ -196,7 +189,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
           </span>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px' }}>
           <div className="m-card">
             <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Incoming Digital Task Logs</h4>
             <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '12px' }}>
@@ -211,8 +204,8 @@ const FarmStaffDashboard = ({ activeTab }) => {
                     key={v.id}
                     onClick={() => setSelectedValId(v.id)}
                     style={{
-                      padding: '10px 12px',
-                      borderRadius: '8px',
+                      padding: '12px',
+                      borderRadius: '10px',
                       background: isSel ? '#f0fdf4' : '#f9fafb',
                       border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
                       cursor: 'pointer',
@@ -222,16 +215,16 @@ const FarmStaffDashboard = ({ activeTab }) => {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <Camera size={16} color={isSel ? '#11592c' : '#94a3b8'} />
+                      <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
                       <div>
                         <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
                           {v.plot} · {v.timestamp}
                         </div>
-                        <div style={{ fontWeight: '700', fontSize: '0.8rem', color: '#111827' }}>{v.farmer}</div>
-                        <div style={{ fontSize: '0.7rem', color: '#6b7280' }}>{v.taskType || v.activity}</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
                       </div>
                     </div>
-                    <ChevronRight size={14} color="#94a3b8" />
+                    <ChevronRight size={16} color="#94a3b8" />
                   </div>
                 );
               })}
@@ -240,53 +233,58 @@ const FarmStaffDashboard = ({ activeTab }) => {
 
           {selectedValidation && (
             <div className="m-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800' }}>Validation Control Card</h4>
-                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Submission #{selectedValidation.id}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Validation Control Card</h4>
+                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
               </div>
 
+              {/* LARGE VISIBLE PHOTO VIEW CONTAINER */}
               <div style={{
-                width: '100%', height: '190px', borderRadius: '10px', overflow: 'hidden', background: '#e2e8f0', marginBottom: '14px', position: 'relative'
+                width: '100%', height: '300px', borderRadius: '12px', overflow: 'hidden', background: '#1e293b', marginBottom: '16px', position: 'relative', border: '1px solid #cbd5e1', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
               }}>
                 <img
-                  src={selectedValidation.photoUrl || selectedValidation.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60'}
-                  alt="Field verification"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  src={selectedValidation.photoUrl || selectedValidation.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=1000&auto=format&fit=crop&q=80'}
+                  alt="Field verification photo"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=1000&auto=format&fit=crop&q=80';
+                  }}
                 />
                 <div style={{
-                  position: 'absolute', bottom: 8, left: 8, background: 'rgba(0,0,0,0.65)',
-                  color: '#ffffff', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px'
+                  position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
+                  color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
                 }}>
-                  <MapPin size={12} /> Field-verification photo · GPS tagged
+                  <MapPin size={14} color="#86efac" /> Field-verification photo · GPS tagged ({selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'})
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '12px', fontSize: '0.78rem' }}>
-                <div style={{ background: '#f9fafb', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
-                  <span style={{ color: '#6b7280', fontSize: '0.68rem', textTransform: 'uppercase', display: 'block' }}>FARMER</span>
-                  <strong>{selectedValidation.farmer}</strong>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>FARMER</span>
+                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
                 </div>
-                <div style={{ background: '#f9fafb', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
-                  <span style={{ color: '#6b7280', fontSize: '0.68rem', textTransform: 'uppercase', display: 'block' }}>PLOT</span>
-                  <strong style={{ fontFamily: 'monospace' }}>{selectedValidation.plot}</strong>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>PLOT</span>
+                  <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.plot}</strong>
                 </div>
-                <div style={{ background: '#f9fafb', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
-                  <span style={{ color: '#6b7280', fontSize: '0.68rem', textTransform: 'uppercase', display: 'block' }}>TASK TYPE</span>
-                  <strong>{selectedValidation.taskType || selectedValidation.activity}</strong>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
+                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
                 </div>
-                <div style={{ background: '#f9fafb', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
-                  <span style={{ color: '#6b7280', fontSize: '0.68rem', textTransform: 'uppercase', display: 'block' }}>LOCATION</span>
-                  <strong>{selectedValidation.location || selectedValidation.gps}</strong>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>LOCATION</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{selectedValidation.location || selectedValidation.gps}</strong>
                 </div>
               </div>
 
-              <div style={{ background: '#f0fdf4', border: '1px solid #86efac', padding: '8px 10px', borderRadius: '6px', fontSize: '0.75rem', marginBottom: '14px' }}>
-                <span style={{ fontWeight: '700', color: '#15803d' }}>FARMER NOTE: </span>
-                {selectedValidation.farmerNote || selectedValidation.notes}
+              <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '12px 14px', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '16px' }}>
+                <span style={{ fontWeight: '800', color: '#166534', display: 'block', marginBottom: '2px' }}>FARMER NOTE / COMMENT: </span>
+                <span style={{ color: '#111827', fontWeight: '700' }}>"{selectedValidation.farmerNote || selectedValidation.notes}"</span>
               </div>
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ fontSize: '0.75rem', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>
                   Staff Evaluation Notes
                 </label>
                 <textarea
@@ -294,16 +292,16 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   onChange={(e) => setStaffNote(e.target.value)}
                   placeholder="Document field check observations, corrections requested, or supporting evidence..."
                   rows={2}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.78rem' }}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <button onClick={handleApprove} className="btn-primary" style={{ justifyContent: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <button onClick={handleApprove} className="btn-primary" style={{ justifyContent: 'center', padding: '12px', fontSize: '0.88rem' }}>
                   ✓ Approve & Commit to Cloud
                 </button>
                 <button onClick={handleReject} style={{
-                  background: '#dc2626', color: '#ffffff', fontWeight: '700', padding: '9px', borderRadius: '8px', border: 'none', fontSize: '0.82rem'
+                  background: '#dc2626', color: '#ffffff', fontWeight: '800', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '0.88rem', cursor: 'pointer'
                 }}>
                   ✕ Reject / Request Correction
                 </button>
@@ -315,7 +313,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 3. Machine Learning Audit & Risk Dashboard (New Image 5)
+  // 3. Machine Learning Audit & Risk Dashboard
   const renderMLAudit = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -426,7 +424,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 4. Farm Staff Reports (Screenshots 1, 2, 3, 4, 5)
+  // 4. Farm Staff Reports
   const renderReports = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
