@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
   Home, 
@@ -28,7 +28,9 @@ import {
   ShieldCheck,
   CheckSquare,
   Beef,
-  TrendingUp
+  TrendingUp,
+  UploadCloud,
+  Image as ImageIcon
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
@@ -67,8 +69,11 @@ const MobileAppSimulator = () => {
   const [selectedPlot, setSelectedPlot] = useState('Plot P-007');
   const [inputAmount, setInputAmount] = useState(10);
   const [photoAttached, setPhotoAttached] = useState(false);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
   const [logNote, setLogNote] = useState('');
   const [logSubmitted, setLogSubmitted] = useState(false);
+
+  const fileInputRef = useRef(null);
 
   // AI Recommendation State
   const [season, setSeason] = useState('Tag-init (Dry)');
@@ -86,6 +91,35 @@ const MobileAppSimulator = () => {
   const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
   const notificationCount = announcements ? announcements.length : 0;
 
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreviewUrl(reader.result);
+        setPhotoAttached(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreviewUrl(reader.result);
+        setPhotoAttached(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleMobileLogin = (e) => {
     e.preventDefault();
     setMobileAuth(true);
@@ -100,12 +134,16 @@ const MobileAppSimulator = () => {
       activity,
       plot: selectedPlot,
       amount: inputAmount,
-      note: logNote
+      note: logNote,
+      photoUrl: photoPreviewUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60'
     });
 
     setTimeout(() => {
       setLogSubmitted(false);
-      alert('✅ Activity Log submitted directly to Farm Staff for cloud validation!');
+      setLogNote('');
+      setPhotoAttached(false);
+      setPhotoPreviewUrl('');
+      alert('✅ Activity Log submitted directly to Farm Staff for cloud validation & saved to Supabase!');
       setActiveTab('home');
     }, 600);
   };
@@ -588,20 +626,50 @@ const MobileAppSimulator = () => {
                         </div>
                       </div>
 
+                      {/* Step 4: Live Working Camera Upload & Drag and Drop File Image */}
                       <div style={{ marginBottom: '14px' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
-                          4. Take a Photo <span style={{ color: '#dc2626' }}>(Required)</span>
+                          4. Take a Photo / Upload Image <span style={{ color: '#dc2626' }}>(Required)</span>
                         </label>
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          style={{ display: 'none' }}
+                        />
+
                         <div
-                          onClick={() => setPhotoAttached(!photoAttached)}
+                          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                          onDragOver={handleDragOver}
+                          onDrop={handleDrop}
                           style={{
-                            border: '2px dashed #0c3619', borderRadius: '12px', padding: '16px', background: photoAttached ? '#f0fdf4' : '#ffffff', textAlign: 'center', cursor: 'pointer'
+                            border: '2px dashed #0c3619', borderRadius: '12px', padding: '14px', background: photoAttached ? '#f0fdf4' : '#ffffff', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease'
                           }}
                         >
-                          <Camera size={22} color="#0c3619" style={{ margin: '0 auto 4px' }} />
-                          <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#0c3619' }}>
-                            {photoAttached ? '✓ PHOTO ATTACHED' : 'TAKE PHOTO PROOF'}
-                          </div>
+                          {photoPreviewUrl ? (
+                            <div>
+                              <img
+                                src={photoPreviewUrl}
+                                alt="Uploaded proof"
+                                style={{ width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px' }}
+                              />
+                              <div style={{ fontWeight: '800', fontSize: '0.8rem', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                <CheckCircle2 size={16} /> PHOTO READY (Click to change)
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <UploadCloud size={28} color="#0c3619" style={{ margin: '0 auto 4px' }} />
+                              <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#0c3619' }}>
+                                CLICK TO TAKE PHOTO OR DRAG IMAGE FILE
+                              </div>
+                              <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '2px' }}>
+                                Camera upload · Drag & Drop image file supported
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
