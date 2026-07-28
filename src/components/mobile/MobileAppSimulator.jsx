@@ -34,18 +34,17 @@ const MobileAppSimulator = () => {
   const [viewMode, setViewMode] = useState('device'); // 'device' or 'full'
   const [activeTab, setActiveTab] = useState('home'); // 'home', 'log', 'ai', 'tasks'
   
-  // Notification Modal state
+  // Notification Modal state: DEFAULT TO FALSE so clean dashboard renders first!
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Direct dynamic subscription: Whenever announcements array changes, automatically update the mobile popup to the newest announcement!
+  // Trigger modal ONLY when a NEW active push notice is explicitly published!
   useEffect(() => {
-    if (announcements && announcements.length > 0) {
-      const newest = announcements[0];
-      setSelectedAnnouncement(newest);
+    if (activePushNotice) {
+      setSelectedAnnouncement(activePushNotice);
       setShowNotificationModal(true);
     }
-  }, [announcements]);
+  }, [activePushNotice]);
 
   // Form States
   const [mobileNumber, setMobileNumber] = useState('@danilo');
@@ -63,7 +62,7 @@ const MobileAppSimulator = () => {
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
 
-  const latestPushAnnouncement = announcements[0];
+  const latestPushAnnouncement = activePushNotice || (announcements && announcements[0]);
 
   const handleMobileLogin = (e) => {
     e.preventDefault();
