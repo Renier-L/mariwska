@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [validations, setValidations] = useState(initialValidations);
   const [mlClassifications, setMlClassifications] = useState(initialMLClassifications);
   
-  // Real-time Push Notification Popup state
+  // Unlimited Real-time Push Notification Popup state
   const [activePushNotice, setActivePushNotice] = useState(null);
 
   // Security Matrix State
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
           author: newRecord.author || 'Liza Cruz (Admin)',
           instantPush: true,
           date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
-          timestamp: Date.now()
+          pushId: Math.random()
         };
         setAnnouncements(prev => [newAnn, ...prev]);
         setActivePushNotice(newAnn);
@@ -100,24 +100,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // UNLIMITED REALTIME BROADCAST PUBLISH FOR ANY INPUT TYPE
   const publishAnnouncement = async (content, instantPush) => {
+    const cleanText = String(content || '').trim();
+    if (!cleanText) return;
+
     const newAnn = { 
-      id: `ANN-${Date.now()}`, 
+      id: `ANN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
       title: 'Cooperative Broadcast Notice', 
-      content: content.trim(), 
+      content: cleanText, 
       date: new Date().toISOString().split('T')[0], 
       author: 'Liza Cruz (Admin)', 
       instantPush: true,
-      timestamp: Date.now()
+      pushId: Math.random()
     };
     
     setAnnouncements(prev => [newAnn, ...prev]);
-    setActivePushNotice({ ...newAnn, timestamp: Date.now() });
+    setActivePushNotice({ ...newAnn, pushId: Math.random() });
 
     try {
       await supabase.from('announcements').insert([{ 
         title: 'Cooperative Broadcast Notice', 
-        content: content.trim(), 
+        content: cleanText, 
         author: 'Liza Cruz (Admin)', 
         instant_push: true 
       }]);
