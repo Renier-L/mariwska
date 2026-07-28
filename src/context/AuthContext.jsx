@@ -19,6 +19,9 @@ export const AuthProvider = ({ children }) => {
   const [announcements, setAnnouncements] = useState(initialAnnouncements);
   const [validations, setValidations] = useState(initialValidations);
   const [mlClassifications, setMlClassifications] = useState(initialMLClassifications);
+  
+  // Real-time Push Notification Popup state
+  const [activePushNotice, setActivePushNotice] = useState(null);
 
   // Security Matrix State
   const [permissionsMatrix, setPermissionsMatrix] = useState({
@@ -74,13 +77,29 @@ export const AuthProvider = ({ children }) => {
   };
 
   const publishAnnouncement = async (content, instantPush) => {
-    const newAnn = { id: String(Date.now()), title: 'Cooperative Broadcast', content, date: new Date().toISOString().split('T')[0], author: 'Liza Cruz (Admin)', instantPush };
+    const newAnn = { 
+      id: String(Date.now()), 
+      title: 'Cooperative Broadcast Notice', 
+      content, 
+      date: new Date().toISOString().split('T')[0], 
+      author: 'Liza Cruz (Admin)', 
+      instantPush: true 
+    };
+    
     setAnnouncements([newAnn, ...announcements]);
+    
+    // Trigger Instant Live Push Notification Popup Toast
+    setActivePushNotice(newAnn);
+
     try {
-      await supabase.from('announcements').insert([{ title: 'Cooperative Broadcast', content, author: 'Liza Cruz (Admin)', instant_push: instantPush }]);
+      await supabase.from('announcements').insert([{ title: 'Cooperative Broadcast Notice', content, author: 'Liza Cruz (Admin)', instant_push: true }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
+  };
+
+  const dismissPushNotice = () => {
+    setActivePushNotice(null);
   };
 
   const handleValidationAction = (id, action, notes) => {
@@ -131,10 +150,12 @@ export const AuthProvider = ({ children }) => {
       validations,
       mlClassifications,
       permissionsMatrix,
+      activePushNotice,
       loginAsRole,
       toggleUserStatus,
       addUser,
       publishAnnouncement,
+      dismissPushNotice,
       handleValidationAction,
       addFarmerSubmission,
       togglePermission,
