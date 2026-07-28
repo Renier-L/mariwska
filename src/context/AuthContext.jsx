@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
             title: a.title || 'Cooperative Broadcast Notice',
             content: a.content,
             author: a.author || 'Liza Cruz (Admin)',
-            instantPush: a.instant_push !== false,
+            instantPush: true,
             date: new Date(a.created_at || Date.now()).toISOString().split('T')[0]
           }));
           setAnnouncements(formatted);
@@ -65,7 +65,8 @@ export const AuthProvider = ({ children }) => {
           content: newRecord.content,
           author: newRecord.author || 'Liza Cruz (Admin)',
           instantPush: true,
-          date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0]
+          date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
+          timestamp: Date.now()
         };
         setAnnouncements(prev => [newAnn, ...prev]);
         setActivePushNotice(newAnn);
@@ -101,21 +102,22 @@ export const AuthProvider = ({ children }) => {
 
   const publishAnnouncement = async (content, instantPush) => {
     const newAnn = { 
-      id: String(Date.now()), 
+      id: `ANN-${Date.now()}`, 
       title: 'Cooperative Broadcast Notice', 
-      content, 
+      content: content.trim(), 
       date: new Date().toISOString().split('T')[0], 
       author: 'Liza Cruz (Admin)', 
-      instantPush: true 
+      instantPush: true,
+      timestamp: Date.now()
     };
     
     setAnnouncements(prev => [newAnn, ...prev]);
-    setActivePushNotice(newAnn);
+    setActivePushNotice({ ...newAnn, timestamp: Date.now() });
 
     try {
       await supabase.from('announcements').insert([{ 
         title: 'Cooperative Broadcast Notice', 
-        content, 
+        content: content.trim(), 
         author: 'Liza Cruz (Admin)', 
         instant_push: true 
       }]);
