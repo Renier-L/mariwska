@@ -15,7 +15,7 @@ import {
   ShieldAlert,
   Trees,
   RefreshCw,
-  Smartphone
+  Sparkles
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -31,8 +31,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
       { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
-      { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-      { id: 'decision-support', label: 'Decision Support', icon: BrainCircuit },
+      { id: 'analytics', label: 'Analytics', icon: BarChart3, secondaryId: 'decision-support' },
+      { id: 'decision-support', label: 'Decision Support', icon: BrainCircuit, secondaryId: 'analytics' },
       { id: 'reports', label: 'Reports', icon: FileText },
     ];
   } else if (currentRole === 'admin') {
@@ -88,7 +88,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id;
+            const isActive = activeTab === item.id || (item.secondaryId && (activeTab === item.id || activeTab === item.secondaryId));
             return (
               <button
                 key={item.id}
