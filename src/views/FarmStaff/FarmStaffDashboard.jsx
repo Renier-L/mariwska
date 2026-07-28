@@ -179,7 +179,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 2. Farmer Activity Validation Panel with Double-Layered Guarantee Image Rendering
+  // 2. Farmer Activity Validation Panel with ASPECT RATIO & SHAPE PRESERVATION
   const renderValidationPanel = () => {
     const photoToRender = selectedValidation ? getDisplayPhoto(selectedValidation) : DEFAULT_FARM_PHOTO;
 
@@ -257,31 +257,34 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
                 </div>
 
-                {/* DOUBLE-LAYERED GUARANTEE PHOTO VIEW CONTAINER */}
+                {/* AUTOMATIC ASPECT-RATIO & SHAPE PRESERVATION CONTAINER */}
                 <div style={{
                   width: '100%',
-                  height: '300px',
+                  height: '320px',
                   borderRadius: '12px',
                   overflow: 'hidden',
-                  background: `#1e293b url("${photoToRender}") center/cover no-repeat`,
+                  background: '#0f172a',
                   marginBottom: '16px',
                   position: 'relative',
-                  border: '1px solid #cbd5e1',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  border: '1px solid #334155',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justify: 'center'
                 }}>
                   <img
                     src={photoToRender}
                     alt="Field verification photo"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
                     onError={(e) => {
-                      e.target.style.display = 'none'; // Fallback to CSS background image!
+                      e.target.src = DEFAULT_FARM_PHOTO;
                     }}
                   />
                   <div style={{
                     position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
                     color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
                   }}>
-                    <MapPin size={14} color="#86efac" /> Field-verification photo · GPS tagged ({selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'})
+                    <MapPin size={14} color="#86efac" /> Field-verification photo · Shape & Aspect Ratio Preserved
                   </div>
                 </div>
 
