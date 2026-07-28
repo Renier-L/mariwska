@@ -47,10 +47,16 @@ export const AuthProvider = ({ children }) => {
       setActivePushNotice(newAnn);
     };
 
+    const handleIncomingValidation = (newVal) => {
+      setValidations(prev => [newVal, ...prev]);
+    };
+
     if (broadcastChannel) {
       broadcastChannel.onmessage = (event) => {
         if (event.data && event.data.type === 'ANNOUNCEMENT_PUSH') {
           handleIncomingNotice(event.data.payload);
+        } else if (event.data && event.data.type === 'FARMER_SUBMISSION_PUSH') {
+          handleIncomingValidation(event.data.payload);
         }
       };
     }
@@ -60,6 +66,11 @@ export const AuthProvider = ({ children }) => {
         try {
           const parsed = JSON.parse(e.newValue);
           handleIncomingNotice(parsed);
+        } catch (err) {}
+      } else if (e.key === 'marikha_live_validation' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          handleIncomingValidation(parsed);
         } catch (err) {}
       }
     };
@@ -86,6 +97,23 @@ export const AuthProvider = ({ children }) => {
           }));
           setAnnouncements(formatted);
         }
+
+        const { data: valData } = await supabase.from('task_validations').select('*').order('created_at', { ascending: false });
+        if (valData && valData.length > 0) {
+          const formattedVals = valData.map(v => ({
+            id: String(v.id),
+            farmer: v.farmer || 'Juan Dela Cruz',
+            plot: v.plot || 'Plot P-007',
+            activity: v.activity,
+            timestamp: 'Just now',
+            urgency: 'Normal',
+            urgencyCls: 'pill-low',
+            gps: v.gps || '14.586° N · 121.176° E',
+            notes: v.notes || 'Submitted via Farmers Mobile App',
+            photoAttached: true
+          }));
+          setValidations(formattedVals);
+        }
       } catch (err) {
         console.log('Supabase table fallback', err);
       }
@@ -93,7 +121,7 @@ export const AuthProvider = ({ children }) => {
     fetchSupabaseData();
 
     // Supabase Realtime Subscription for Broadcast Announcements
-    const channel = supabase
+    const announcementsChannel = supabase
       .channel('announcements_realtime_channel')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
         const newRecord = payload.new;
@@ -111,8 +139,30 @@ export const AuthProvider = ({ children }) => {
       })
       .subscribe();
 
+    // Supabase Realtime Subscription for Farmer Task Validations
+    const validationsChannel = supabase
+      .channel('validations_realtime_channel')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'task_validations' }, (payload) => {
+        const newRecord = payload.new;
+        const newEntry = {
+          id: String(newRecord.id),
+          farmer: newRecord.farmer || 'Juan Dela Cruz',
+          plot: newRecord.plot || 'Plot P-007',
+          activity: newRecord.activity,
+          timestamp: 'Just now',
+          urgency: 'Normal',
+          urgencyCls: 'pill-low',
+          gps: newRecord.gps || '14.586° N · 121.176° E',
+          notes: newRecord.notes || 'Submitted via Farmers Mobile App',
+          photoAttached: true
+        };
+        setValidations(prev => [newEntry, ...prev]);
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(announcementsChannel);
+      supabase.removeChannel(validationsChannel);
     };
   }, []);
 
@@ -201,7 +251,16 @@ export const AuthProvider = ({ children }) => {
       notes: newSub.note || 'Submitted via Farmers Mobile App',
       photoAttached: true
     };
-    setValidations([newEntry, ...validations]);
+    setValidations(prev => [newEntry, ...prev]);
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'FARMER_SUBMISSION_PUSH', payload: newEntry });
+    }
+
+    try {
+      localStorage.setItem('marikha_live_validation', JSON.stringify(newEntry));
+    } catch (e) {}
+
     try {
       await supabase.from('task_validations').insert([{ farmer: 'Juan Dela Cruz', plot: newEntry.plot, activity: newEntry.activity, notes: newEntry.notes, gps: newEntry.gps }]);
     } catch (e) {
