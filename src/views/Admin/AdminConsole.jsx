@@ -44,9 +44,7 @@ const AdminConsole = ({ activeTab }) => {
 
   const [roleFilter, setRoleFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [announcementText, setAnnouncementText] = useState(
-    'Reminder: PGS quarterly inspection begins Monday, Sept 22. Please ensure all fertilizer logs are submitted by Sunday evening.'
-  );
+  const [announcementText, setAnnouncementText] = useState(''); // Clean default empty textarea
   const [pushToggle, setPushToggle] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
@@ -63,9 +61,12 @@ const AdminConsole = ({ activeTab }) => {
   });
 
   const handlePublish = () => {
-    if (!announcementText.trim()) return;
+    if (!announcementText.trim()) {
+      alert('Mangyaring mag-type muna ng announcement text!');
+      return;
+    }
     publishAnnouncement(announcementText, pushToggle);
-    alert('Announcement published cooperative-wide to web and mobile clients!');
+    setAnnouncementText(''); // Clear input after successful publish
   };
 
   const handleCreateUser = (e) => {
@@ -171,6 +172,7 @@ const AdminConsole = ({ activeTab }) => {
         <textarea
           value={announcementText}
           onChange={(e) => setAnnouncementText(e.target.value)}
+          placeholder="I-type dito ang bagong abiso para sa mga magsasaka..."
           rows={3}
           style={{
             width: '100%',
