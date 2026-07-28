@@ -25,10 +25,7 @@ export const initialLivestock = [
   { id: 'l3', group: 'Cattle Group CG-002', plot: 'P-088', headCount: 18, healthStatus: 'Monitoring', vaccination: '92% (Watch)', dailyGain: '+2.8 kg/wk' }
 ];
 
-export const initialAnnouncements = [
-  { id: 'a1', content: 'Reminder: PGS quarterly inspection begins Monday, Sept 22. Please ensure all fertilizer logs are submitted by Sunday evening.', date: '2025-09-18', instantPush: true },
-  { id: 'a2', content: 'Soil recalibration team dispatched to Cluster B. All farmers present log your plot ID.', date: '2025-09-15', instantPush: false }
-];
+export const initialAnnouncements = [];
 
 export const initialValidations = [
   {
