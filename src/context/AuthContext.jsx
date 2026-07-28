@@ -40,18 +40,12 @@ export const AuthProvider = ({ children }) => {
   // Cross-Window Instant Sync via BroadcastChannel & LocalStorage!
   useEffect(() => {
     const handleIncomingNotice = (newAnn) => {
-      setAnnouncements(prev => {
-        const exists = prev.some(a => a.id === newAnn.id || a.content === newAnn.content);
-        return exists ? prev : [newAnn, ...prev];
-      });
+      setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
       setActivePushNotice(newAnn);
     };
 
     const handleIncomingValidation = (newVal) => {
-      setValidations(prev => {
-        const exists = prev.some(v => v.id === newVal.id);
-        return exists ? prev : [newVal, ...prev];
-      });
+      setValidations(prev => [newVal, ...prev.filter(v => v.id !== newVal.id)]);
     };
 
     if (broadcastChannel) {
@@ -141,7 +135,7 @@ export const AuthProvider = ({ children }) => {
           date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
           pushId: Math.random()
         };
-        setAnnouncements(prev => [newAnn, ...prev]);
+        setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
         setActivePushNotice(newAnn);
       })
       .subscribe();
@@ -167,7 +161,7 @@ export const AuthProvider = ({ children }) => {
           photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
           photoAttached: true
         };
-        setValidations(prev => [newEntry, ...prev]);
+        setValidations(prev => [newEntry, ...prev.filter(v => v.id !== newEntry.id)]);
       })
       .subscribe();
 
@@ -217,17 +211,14 @@ export const AuthProvider = ({ children }) => {
     setAnnouncements(prev => [newAnn, ...prev]);
     setActivePushNotice({ ...newAnn, pushId: Math.random() });
 
-    // 1. Post to Browser BroadcastChannel for 0ms cross-window sync
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_PUSH', payload: newAnn });
     }
 
-    // 2. Post to LocalStorage event listener
     try {
-      localStorage.setItem('marikha_live_push', JSON.stringify(newAnn));
+      localStorage.setItem('marikha_live_push', JSON.stringify({ ...newAnn, _t: Date.now() }));
     } catch (e) {}
 
-    // 3. Post to Supabase Cloud Database for remote clients
     try {
       await supabase.from('announcements').insert([{ 
         title: 'Cooperative Broadcast Notice', 
@@ -249,7 +240,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const addFarmerSubmission = async (newSub) => {
-    const newId = `VAL-${Date.now().toString().slice(-4)}`;
+    const newId = `VAL-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
     const actText = `${newSub.activity} (${newSub.amount || 10} Liters)`;
     const newEntry = {
       id: newId,
@@ -267,6 +258,7 @@ export const AuthProvider = ({ children }) => {
       photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
       photoAttached: true
     };
+    
     setValidations(prev => [newEntry, ...prev]);
 
     if (broadcastChannel) {
@@ -274,7 +266,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      localStorage.setItem('marikha_live_validation', JSON.stringify(newEntry));
+      localStorage.setItem('marikha_live_validation', JSON.stringify({ ...newEntry, _t: Date.now() }));
     } catch (e) {}
 
     try {
