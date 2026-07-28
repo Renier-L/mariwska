@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
   Home, 
@@ -25,10 +25,10 @@ import {
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
-  const { loginAsRole, addFarmerSubmission, announcements } = useAuth();
+  const { loginAsRole, addFarmerSubmission, announcements, activePushNotice } = useAuth();
   
   // Mobile app navigation state: 'splash', 'login', 'main'
-  const [mobileScreen, setMobileScreen] = useState('home'); // default to dashboard, can toggle to splash or login
+  const [mobileScreen, setMobileScreen] = useState('home'); 
   const [mobileAuth, setMobileAuth] = useState(true);
   
   const [viewMode, setViewMode] = useState('device'); // 'device' or 'full'
@@ -37,6 +37,14 @@ const MobileAppSimulator = () => {
   // Notification Modal state
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+  // Auto-popup newly published announcement in real time!
+  useEffect(() => {
+    if (activePushNotice) {
+      setSelectedAnnouncement(activePushNotice);
+      setShowNotificationModal(true);
+    }
+  }, [activePushNotice]);
 
   // Form States
   const [mobileNumber, setMobileNumber] = useState('@danilo');
@@ -54,7 +62,7 @@ const MobileAppSimulator = () => {
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
 
-  const latestPushAnnouncement = announcements.find(a => a.instantPush) || announcements[0];
+  const latestPushAnnouncement = activePushNotice || announcements[0];
 
   const handleMobileLogin = (e) => {
     e.preventDefault();
@@ -709,13 +717,13 @@ const MobileAppSimulator = () => {
               </div>
             </div>
 
-            {/* Announcement Push Notification Popup Modal */}
+            {/* Real-Time Announcement Push Notification Modal */}
             {showNotificationModal && selectedAnnouncement && (
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 500
+                background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 500
               }}>
-                <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', animation: 'slideIn 0.2s ease-out' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Bell size={18} color="#d97706" />
@@ -730,7 +738,7 @@ const MobileAppSimulator = () => {
                     <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#78350f', marginBottom: '6px' }}>
                       {selectedAnnouncement.title || 'Cooperative Announcement'}
                     </h4>
-                    <p style={{ fontSize: '0.78rem', color: '#92400e', lineHeight: 1.4, margin: 0 }}>
+                    <p style={{ fontSize: '0.82rem', color: '#92400e', lineHeight: 1.4, margin: 0, fontWeight: '600' }}>
                       {selectedAnnouncement.content}
                     </p>
                   </div>
