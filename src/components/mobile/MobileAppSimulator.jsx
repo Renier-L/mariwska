@@ -21,7 +21,8 @@ import {
   Bell,
   X,
   AlertTriangle,
-  Radio
+  Radio,
+  ChevronRight
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
@@ -34,11 +35,12 @@ const MobileAppSimulator = () => {
   const [viewMode, setViewMode] = useState('device'); // 'device' or 'full'
   const [activeTab, setActiveTab] = useState('home'); // 'home', 'log', 'ai', 'tasks'
   
-  // Notification Modal state: DEFAULT TO FALSE so clean dashboard renders first!
+  // Notification Modal state
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Trigger modal ONLY when a NEW active push notice is explicitly published!
+  // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT (1st, 2nd, 3rd, etc.)
   useEffect(() => {
     if (activePushNotice) {
       setSelectedAnnouncement(activePushNotice);
@@ -62,7 +64,8 @@ const MobileAppSimulator = () => {
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
 
-  const latestPushAnnouncement = activePushNotice || (announcements && announcements[0]);
+  const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
+  const notificationCount = announcements ? announcements.length : 1;
 
   const handleMobileLogin = (e) => {
     e.preventDefault();
@@ -285,15 +288,15 @@ const MobileAppSimulator = () => {
                         </h2>
                       </div>
 
-                      {/* Header Notification Bell & Exit Buttons */}
+                      {/* Dynamic Header Notification Bell & Exit Buttons */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button
-                          onClick={() => { setSelectedAnnouncement(latestPushAnnouncement); setShowNotificationModal(true); }}
+                          onClick={() => setShowHistoryModal(true)}
                           style={{
-                            background: '#d97706', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
+                            background: '#d97706', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0 3px 8px rgba(0,0,0,0.3)'
                           }}
                         >
-                          <Bell size={14} /> 1
+                          <Bell size={14} /> {notificationCount}
                         </button>
                         <button onClick={() => { setMobileAuth(false); setMobileScreen('login'); }} style={{ color: '#86efac', background: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '8px', border: 'none' }}>
                           <LogOut size={15} />
@@ -318,10 +321,10 @@ const MobileAppSimulator = () => {
                         </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#d97706', textTransform: 'uppercase' }}>
-                            📢 ANNOUNCEMENT PUSH
+                            📢 LATEST ANNOUNCEMENT
                           </div>
                           <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {latestPushAnnouncement.title || latestPushAnnouncement.content}
+                            {latestPushAnnouncement.content || latestPushAnnouncement.title}
                           </div>
                         </div>
                         <span style={{ fontSize: '0.7rem', color: '#d97706', fontWeight: '700' }}>View →</span>
@@ -717,8 +720,8 @@ const MobileAppSimulator = () => {
               </div>
             </div>
 
-            {/* Real-Time Announcement Push Notification Modal */}
-            {showNotificationModal && selectedAnnouncement && (
+            {/* Real-Time Single Announcement Push Notification Popup Modal */}
+            {showNotificationModal && latestPushAnnouncement && (
               <div style={{
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                 background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 500
@@ -736,15 +739,15 @@ const MobileAppSimulator = () => {
 
                   <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '10px', padding: '12px', marginBottom: '14px' }}>
                     <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#78350f', marginBottom: '6px' }}>
-                      {selectedAnnouncement.title || 'Cooperative Announcement'}
+                      {latestPushAnnouncement.title || 'Cooperative Broadcast Notice'}
                     </h4>
-                    <p style={{ fontSize: '0.82rem', color: '#92400e', lineHeight: 1.4, margin: 0, fontWeight: '600' }}>
-                      {selectedAnnouncement.content}
+                    <p style={{ fontSize: '0.88rem', color: '#92400e', lineHeight: 1.4, margin: 0, fontWeight: '700' }}>
+                      "{latestPushAnnouncement.content}"
                     </p>
                   </div>
 
                   <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '16px' }}>
-                    Dispatched by {selectedAnnouncement.author || 'Liza Cruz (Admin)'} · {selectedAnnouncement.date}
+                    Dispatched by {latestPushAnnouncement.author || 'Liza Cruz (Admin)'} · {latestPushAnnouncement.date}
                   </div>
 
                   <button
@@ -752,6 +755,55 @@ const MobileAppSimulator = () => {
                     style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.82rem', border: 'none', cursor: 'pointer' }}
                   >
                     Acknowledge Notice
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Notification History List Sheet Modal */}
+            {showHistoryModal && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 600
+              }}>
+                <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '330px', maxHeight: '500px', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Bell size={18} color="#d97706" />
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>Notification History ({announcements.length})</h3>
+                    </div>
+                    <button onClick={() => setShowHistoryModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+                    {announcements.map((ann, idx) => (
+                      <div
+                        key={ann.id || idx}
+                        onClick={() => { setSelectedAnnouncement(ann); setShowHistoryModal(false); setShowNotificationModal(true); }}
+                        style={{
+                          background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '10px 12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f' }}>
+                            "{ann.content}"
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: '#b45309', marginTop: '2px' }}>
+                            Posted {ann.date}
+                          </div>
+                        </div>
+                        <ChevronRight size={16} color="#d97706" />
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setShowHistoryModal(false)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.8rem', border: 'none', cursor: 'pointer' }}
+                  >
+                    Close History
                   </button>
                 </div>
               </div>
