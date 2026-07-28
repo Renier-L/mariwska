@@ -10,8 +10,17 @@ const broadcastChannel = typeof window !== 'undefined' && 'BroadcastChannel' in 
   : null;
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(initialUsers[0]); // Default Rosa Mendoza (Super Admin)
-  const [currentRole, setCurrentRole] = useState('login'); // Start at secure login screen
+  // Restore currentRole from localStorage upon reload!
+  const [currentRole, setCurrentRoleState] = useState(() => {
+    try {
+      const savedRole = localStorage.getItem('marikha_current_role');
+      return savedRole || 'login';
+    } catch (e) {
+      return 'login';
+    }
+  });
+
+  const [currentUser, setCurrentUser] = useState(initialUsers[0]);
   const [tenantInfo] = useState({
     name: 'Antipolo Organic Farming Cooperative',
     id: 'ANT-ORG-001',
@@ -36,6 +45,21 @@ export const AuthProvider = ({ children }) => {
     Farmer: { readLogs: false, writeEntries: true, executeValidations: false, bypassAudits: false, accessML: false },
     'PGS Auditor': { readLogs: true, writeEntries: false, executeValidations: true, bypassAudits: false, accessML: false },
   });
+
+  const setCurrentRole = (roleKey) => {
+    setCurrentRoleState(roleKey);
+    try {
+      localStorage.setItem('marikha_current_role', roleKey);
+    } catch (e) {}
+  };
+
+  const loginAsRole = (roleKey) => {
+    setCurrentRole(roleKey);
+    if (roleKey === 'super_admin') setCurrentUser(initialUsers[0]);
+    else if (roleKey === 'admin') setCurrentUser(initialUsers[1]);
+    else if (roleKey === 'farm_staff') setCurrentUser(initialUsers[2]);
+    else if (roleKey === 'mobile_app') setCurrentUser(initialUsers[3]);
+  };
 
   // Cross-Window Instant Sync via BroadcastChannel & LocalStorage!
   useEffect(() => {
@@ -110,7 +134,7 @@ export const AuthProvider = ({ children }) => {
             gps: v.gps || '14.586° N · 121.176° E',
             farmerNote: v.notes || 'Submitted via Farmers Mobile App',
             notes: v.notes || 'Submitted via Farmers Mobile App',
-            photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
+            photoUrl: v.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
             photoAttached: true
           }));
           setValidations(formattedVals);
@@ -158,7 +182,7 @@ export const AuthProvider = ({ children }) => {
           gps: newRecord.gps || '14.586° N · 121.176° E',
           farmerNote: newRecord.notes || 'Submitted via Farmers Mobile App',
           notes: newRecord.notes || 'Submitted via Farmers Mobile App',
-          photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
+          photoUrl: newRecord.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
           photoAttached: true
         };
         setValidations(prev => [newEntry, ...prev.filter(v => v.id !== newEntry.id)]);
@@ -170,14 +194,6 @@ export const AuthProvider = ({ children }) => {
       supabase.removeChannel(validationsChannel);
     };
   }, []);
-
-  const loginAsRole = (roleKey) => {
-    setCurrentRole(roleKey);
-    if (roleKey === 'super_admin') setCurrentUser(initialUsers[0]);
-    else if (roleKey === 'admin') setCurrentUser(initialUsers[1]);
-    else if (roleKey === 'farm_staff') setCurrentUser(initialUsers[2]);
-    else if (roleKey === 'mobile_app') setCurrentUser(initialUsers[3]);
-  };
 
   const toggleUserStatus = (id) => {
     setUsers(users.map(u => u.id === id ? { ...u, status: !u.status } : u));
@@ -255,7 +271,7 @@ export const AuthProvider = ({ children }) => {
       gps: '14.586° N · 121.176° E',
       farmerNote: newSub.note || 'Submitted via Farmers Mobile App',
       notes: newSub.note || 'Submitted via Farmers Mobile App',
-      photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
+      photoUrl: newSub.photoUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
       photoAttached: true
     };
     
@@ -275,7 +291,8 @@ export const AuthProvider = ({ children }) => {
         plot: newEntry.plot, 
         activity: newEntry.activity, 
         notes: newEntry.notes, 
-        gps: newEntry.gps 
+        gps: newEntry.gps,
+        photo_url: newEntry.photoUrl
       }]);
     } catch (e) {
       console.log('Supabase sync error:', e);

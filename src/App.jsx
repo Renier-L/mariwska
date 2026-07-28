@@ -7,19 +7,43 @@ import FarmStaffDashboard from './views/FarmStaff/FarmStaffDashboard';
 import MobileAppSimulator from './components/mobile/MobileAppSimulator';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
-import { Bell, X, Megaphone } from 'lucide-react';
+import { Bell, X, Megaphone, Loader2 } from 'lucide-react';
 import './styles/theme.css';
 
 const MainContent = () => {
   const { currentRole, activePushNotice, dismissPushNotice } = useAuth();
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [showPushModal, setShowPushModal] = useState(false);
+  
+  // Persist activeTab per role in localStorage so page refresh maintains exact position & view!
+  const [activeTab, setActiveTabState] = useState(() => {
+    try {
+      const savedTab = localStorage.getItem(`marikha_active_tab_${currentRole}`);
+      if (savedTab) return savedTab;
+    } catch (e) {}
+    if (currentRole === 'super_admin') return 'dashboard';
+    if (currentRole === 'admin') return 'operations-dashboard';
+    if (currentRole === 'farm_staff') return 'operations-dashboard';
+    return 'dashboard';
+  });
 
-  // Reset tab defaults when switching roles
+  const setActiveTab = (tabId) => {
+    setActiveTabState(tabId);
+    try {
+      localStorage.setItem(`marikha_active_tab_${currentRole}`, tabId);
+    } catch (e) {}
+  };
+
+  // Restore tab on role change if available in localStorage
   useEffect(() => {
-    if (currentRole === 'super_admin') setActiveTab('dashboard');
-    else if (currentRole === 'admin') setActiveTab('operations-dashboard');
-    else if (currentRole === 'farm_staff') setActiveTab('operations-dashboard');
+    try {
+      const savedTab = localStorage.getItem(`marikha_active_tab_${currentRole}`);
+      if (savedTab) {
+        setActiveTabState(savedTab);
+      } else {
+        if (currentRole === 'super_admin') setActiveTabState('dashboard');
+        else if (currentRole === 'admin') setActiveTabState('operations-dashboard');
+        else if (currentRole === 'farm_staff') setActiveTabState('operations-dashboard');
+      }
+    } catch (e) {}
   }, [currentRole]);
 
   if (currentRole === 'login') {
@@ -83,51 +107,11 @@ const MainContent = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '10px', fontSize: '0.7rem', color: '#6b7280' }}>
             <span>By {activePushNotice.author}</span>
             <button
-              onClick={() => { setShowPushModal(true); }}
+              onClick={() => {}}
               style={{ background: '#11592c', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
             >
               Open Notice Chat →
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Push Detail Chat Modal */}
-      {showPushModal && activePushNotice && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
-        }}>
-          <div className="m-card" style={{ width: '450px', padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Bell size={20} color="#d97706" />
-                <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#111827' }}>Cooperative Broadcast Chat</h3>
-              </div>
-              <button onClick={() => setShowPushModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '10px', padding: '14px', marginBottom: '16px' }}>
-              <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#78350f', marginBottom: '6px' }}>
-                {activePushNotice.title}
-              </h4>
-              <p style={{ fontSize: '0.82rem', color: '#92400e', margin: 0, lineHeight: 1.5 }}>
-                {activePushNotice.content}
-              </p>
-            </div>
-
-            <div style={{ fontSize: '0.72rem', color: '#6b7280', marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
-              <span>Author: <strong>{activePushNotice.author}</strong></span>
-              <span>Status: <strong style={{ color: '#16a34a' }}>✓ Broadcasted Live</strong></span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button onClick={() => { setShowPushModal(false); dismissPushNotice(); }} className="btn-primary">
-                Acknowledge & Close
-              </button>
-            </div>
           </div>
         </div>
       )}
