@@ -544,11 +544,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const addFarmerSubmission = async (newSub) => {
+    const farmerName = currentUser?.name || newSub.farmer || 'rei lopez';
     const newId = `VAL-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
     const actText = `${newSub.activity} (${newSub.amount || 10} Liters)`;
     const newEntry = {
       id: newId,
-      farmer: 'Mang Juan Dela Cruz',
+      farmer: farmerName,
       plot: newSub.plot || 'Plot P-007',
       taskType: actText,
       activity: actText,
@@ -575,15 +576,45 @@ export const AuthProvider = ({ children }) => {
 
     try {
       await supabase.from('task_validations').insert([{ 
-        farmer: 'Mang Juan Dela Cruz', 
+        farmer: farmerName, 
         plot: newEntry.plot, 
         activity: newEntry.activity, 
         notes: newEntry.notes, 
         gps: newEntry.gps,
-        photo_url: newEntry.photoUrl
+        photo_url: newEntry.photoUrl,
+        status: 'Pending'
       }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
+    }
+  };
+
+  const updateProfile = async (updatedFields) => {
+    if (!currentUser) return;
+    const newInitials = updatedFields.name
+      ? updatedFields.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+      : currentUser.initials;
+
+    const updatedUser = {
+      ...currentUser,
+      ...updatedFields,
+      initials: newInitials
+    };
+
+    setCurrentUser(updatedUser);
+    setUsers(prev => prev.map(u => (u.id === currentUser.id || u.email === currentUser.email) ? updatedUser : u));
+
+    try {
+      const payload = {
+        name: updatedUser.name,
+        role: updatedUser.role,
+        email: updatedUser.email,
+        phone: updatedUser.phone || '+63 917 555 0100',
+        password: updatedUser.password || 'password123'
+      };
+      await supabase.from('users').upsert(payload, { onConflict: 'email' });
+    } catch (e) {
+      console.log('Supabase profile update error:', e);
     }
   };
 

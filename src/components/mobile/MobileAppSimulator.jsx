@@ -34,7 +34,7 @@ import {
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
-  const { loginAsRole, addFarmerSubmission, announcements, activePushNotice } = useAuth();
+  const { loginAsRole, addFarmerSubmission, announcements, activePushNotice, currentUser } = useAuth();
   
   // Mobile app navigation state: 'splash', 'login', 'main'
   const [mobileScreen, setMobileScreen] = useState('home'); 
@@ -397,7 +397,7 @@ const MobileAppSimulator = () => {
                       <div>
                         <div style={{ fontSize: '0.7rem', color: '#86efac', textTransform: 'uppercase', tracking: '0.5px' }}>MAGANDANG ARAW,</div>
                         <h2 style={{ fontSize: '1.35rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          Mang 👋
+                          {currentUser?.name || 'rei lopez'} 👋
                         </h2>
                       </div>
 

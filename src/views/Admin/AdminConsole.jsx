@@ -633,37 +633,17 @@ const AdminConsole = ({ activeTab }) => {
               </div>
 
               <form onSubmit={handleCreateUser} style={{ padding: '28px' }}>
-                {/* Interactive Role Card Selector */}
+                {/* Restricted Role Selector: Farmer Only */}
                 <div style={{ marginBottom: '20px' }}>
                   <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '8px' }}>
-                    Select System Role
+                    System Access Role
                   </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setNewUserRole('Farmer')}
-                      style={{
-                        padding: '12px 14px', borderRadius: '12px', border: newUserRole === 'Farmer' ? '2px solid #15803d' : '1.5px solid #cbd5e1',
-                        background: newUserRole === 'Farmer' ? '#f0fdf4' : '#ffffff',
-                        textAlign: 'left', cursor: 'pointer', transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', color: newUserRole === 'Farmer' ? '#15803d' : '#334155' }}>🌾 Farmer</div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Mobile App User</div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setNewUserRole('Farm Staff')}
-                      style={{
-                        padding: '12px 14px', borderRadius: '12px', border: newUserRole === 'Farm Staff' ? '2px solid #15803d' : '1.5px solid #cbd5e1',
-                        background: newUserRole === 'Farm Staff' ? '#f0fdf4' : '#ffffff',
-                        textAlign: 'left', cursor: 'pointer', transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', color: newUserRole === 'Farm Staff' ? '#15803d' : '#334155' }}>🚜 Farm Staff</div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Field Inspector</div>
-                    </button>
+                  <div style={{ padding: '14px 18px', background: '#f0fdf4', borderRadius: '12px', border: '2px solid #15803d', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#15803d' }}>🌾 Farmer Account</div>
+                      <div style={{ fontSize: '0.73rem', color: '#166534' }}>Mobile App User & Cooperative Field Member</div>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', background: '#15803d', color: '#ffffff', padding: '4px 10px', borderRadius: '12px', fontWeight: '700' }}>Selected</span>
                   </div>
                 </div>
 
