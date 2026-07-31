@@ -494,89 +494,42 @@ const AdminConsole = ({ activeTab }) => {
 
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
-                        {/* EDIT BUTTON ALWAYS AVAILABLE FOR ALL ROLES */}
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditModal(u)}
-                          title="Edit User Profile & Credentials"
-                          style={{
-                            background: '#eff6ff',
-                            border: '1px solid #93c5fd',
-                            color: '#1d4ed8',
-                            borderRadius: '7px',
-                            padding: '6px 11px',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            transition: 'all 0.15s ease'
-                          }}
-                        >
-                          <Pencil size={13} color="#1d4ed8" /> Edit
-                        </button>
+                        {/* EDIT BUTTON AVAILABLE FOR ALL EXCEPT FARM STAFF */}
+                        {u.role !== 'Farm Staff' && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal(u)}
+                            title="Edit User Profile & Credentials"
+                            style={{
+                              background: '#eff6ff',
+                              border: '1px solid #93c5fd',
+                              color: '#1d4ed8',
+                              borderRadius: '7px',
+                              padding: '6px 11px',
+                              fontSize: '0.75rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <Pencil size={13} color="#1d4ed8" /> Edit
+                          </button>
+                        )}
 
-                        {!isProtectedAdmin && (
-                          <>
-                            {u.status !== false ? (
-                              <button
-                                type="button"
-                                onClick={() => toggleUserStatus(u.id)}
-                                title="Disable user account access"
-                                style={{
-                                  background: '#f8fafc',
-                                  border: '1px solid #cbd5e1',
-                                  color: '#475569',
-                                  borderRadius: '7px',
-                                  padding: '6px 11px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '700',
-                                  cursor: 'pointer',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '5px',
-                                  transition: 'all 0.15s ease'
-                                }}
-                              >
-                                <UserX size={13} color="#64748b" /> Disable
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => toggleUserStatus(u.id)}
-                                title="Enable user account access"
-                                style={{
-                                  background: '#f0fdf4',
-                                  border: '1px solid #86efac',
-                                  color: '#15803d',
-                                  borderRadius: '7px',
-                                  padding: '6px 11px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '700',
-                                  cursor: 'pointer',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '5px',
-                                  transition: 'all 0.15s ease'
-                                }}
-                              >
-                                <UserCheck size={13} color="#16a34a" /> Enable
-                              </button>
-                            )}
-
+                        {/* DISABLE BUTTON REMOVED FOR PROTECTED ADMINS & FARM STAFF */}
+                        {!isProtectedAdmin && u.role !== 'Farm Staff' && (
+                          u.status !== false ? (
                             <button
                               type="button"
-                              onClick={() => {
-                                if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
-                                  deleteUser(u.id);
-                                }
-                              }}
-                              title="Delete User Account"
+                              onClick={() => toggleUserStatus(u.id)}
+                              title="Disable user account access"
                               style={{
-                                background: '#fff1f2',
-                                border: '1px solid #fecdd3',
-                                color: '#e11d48',
+                                background: '#f8fafc',
+                                border: '1px solid #cbd5e1',
+                                color: '#475569',
                                 borderRadius: '7px',
                                 padding: '6px 11px',
                                 fontSize: '0.75rem',
@@ -588,9 +541,60 @@ const AdminConsole = ({ activeTab }) => {
                                 transition: 'all 0.15s ease'
                               }}
                             >
-                              <Trash2 size={13} color="#e11d48" /> Delete
+                              <UserX size={13} color="#64748b" /> Disable
                             </button>
-                          </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => toggleUserStatus(u.id)}
+                              title="Enable user account access"
+                              style={{
+                                background: '#f0fdf4',
+                                border: '1px solid #86efac',
+                                color: '#15803d',
+                                borderRadius: '7px',
+                                padding: '6px 11px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <UserCheck size={13} color="#16a34a" /> Enable
+                            </button>
+                          )
+                        )}
+
+                        {/* DELETE BUTTON FOR NON-PROTECTED ADMINS (FARM STAFF & FARMER) */}
+                        {!isProtectedAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
+                                deleteUser(u.id);
+                              }
+                            }}
+                            title="Delete User Account"
+                            style={{
+                              background: '#fff1f2',
+                              border: '1px solid #fecdd3',
+                              color: '#e11d48',
+                              borderRadius: '7px',
+                              padding: '6px 11px',
+                              fontSize: '0.75rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <Trash2 size={13} color="#e11d48" /> Delete
+                          </button>
                         )}
                       </div>
                     </td>
