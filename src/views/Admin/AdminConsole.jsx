@@ -44,19 +44,20 @@ const AdminConsole = ({ activeTab }) => {
 
   const [roleFilter, setRoleFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [announcementText, setAnnouncementText] = useState(''); // Clean default empty textarea
+  const [announcementText, setAnnouncementText] = useState('');
   const [pushToggle, setPushToggle] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
+  // Modal Fields: Full Name, Role, Phone Number, Password
   const [newUserName, setNewUserName] = useState('');
   const [newUserRole, setNewUserRole] = useState('Farmer');
-  const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPhone, setNewUserPhone] = useState('');
+  const [newUserPass, setNewUserPass] = useState('password123');
 
   const filteredUsers = users.filter(u => {
     const matchesRole = roleFilter === 'All' || u.role === roleFilter;
-    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || (u.phone && u.phone.includes(searchQuery)) || (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesRole && matchesSearch;
   });
 
@@ -66,21 +67,29 @@ const AdminConsole = ({ activeTab }) => {
       return;
     }
     publishAnnouncement(announcementText, pushToggle);
-    setAnnouncementText(''); // Clear input after successful publish
+    setAnnouncementText('');
   };
 
   const handleCreateUser = (e) => {
     e.preventDefault();
-    if (!newUserName) return;
+    if (!newUserName || !newUserPhone) return;
+
+    const cleanEmail = `${newUserName.toLowerCase().replace(/\s+/g, '.')}@mariwska.coop`;
+
     addUser({
       name: newUserName,
       role: newUserRole,
-      email: newUserEmail || `${newUserName.toLowerCase().replace(/\s+/g, '.')}@farmer.ph`,
-      phone: newUserPhone || '+63 917 555 9999',
+      phone: newUserPhone,
+      password: newUserPass || 'password123',
+      email: cleanEmail,
       status: true
     });
+
+    alert(`✅ Account created for ${newUserName} (${newUserRole})! Active & ready to log in.`);
     setShowAddModal(false);
     setNewUserName('');
+    setNewUserPhone('');
+    setNewUserPass('password123');
   };
 
   const handleDownloadPDF = (title) => {
@@ -212,7 +221,7 @@ const AdminConsole = ({ activeTab }) => {
                 transition: 'all 0.15s ease',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justify: 'space-between'
               }}
             >
               <div>
@@ -240,61 +249,6 @@ const AdminConsole = ({ activeTab }) => {
           ))}
         </div>
       </div>
-
-      {/* Announcement Detail & Audit Modal */}
-      {selectedAnnouncement && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div className="m-card" style={{ width: '480px', padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-              <div>
-                <span className="pill pill-seedling" style={{ fontSize: '0.7rem', marginBottom: '4px', display: 'inline-block' }}>
-                  BROADCAST AUDIT RECORD
-                </span>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
-                  {selectedAnnouncement.title || 'Cooperative Announcement'}
-                </h3>
-              </div>
-              <button onClick={() => setSelectedAnnouncement(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', marginBottom: '14px', fontSize: '0.82rem', color: '#374151' }}>
-              {selectedAnnouncement.content}
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.75rem', marginBottom: '16px' }}>
-              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
-                <span style={{ color: '#6b7280', display: 'block' }}>PUBLISHED BY</span>
-                <strong>{selectedAnnouncement.author || 'Liza Cruz (Admin)'}</strong>
-              </div>
-              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
-                <span style={{ color: '#6b7280', display: 'block' }}>DATE</span>
-                <strong>{selectedAnnouncement.date}</strong>
-              </div>
-              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
-                <span style={{ color: '#6b7280', display: 'block' }}>PUSH NOTIFICATION</span>
-                <strong style={{ color: selectedAnnouncement.instantPush ? '#16a34a' : '#6b7280' }}>
-                  {selectedAnnouncement.instantPush ? '✓ Dispatched to 147 clients' : 'Disabled'}
-                </strong>
-              </div>
-              <div style={{ background: '#f1f5f9', padding: '8px', borderRadius: '6px' }}>
-                <span style={{ color: '#6b7280', display: 'block' }}>TARGET AUDIENCE</span>
-                <strong>Cooperative-wide</strong>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setSelectedAnnouncement(null)} className="btn-primary">
-                Close Inspection
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 
@@ -354,7 +308,7 @@ const AdminConsole = ({ activeTab }) => {
               <Search size={15} style={{ position: 'absolute', left: '12px', top: '9px', color: '#94a3b8' }} />
               <input
                 type="text"
-                placeholder="Search name or email..."
+                placeholder="Search name or phone..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -374,7 +328,7 @@ const AdminConsole = ({ activeTab }) => {
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700' }}>CONTACT</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>PHONE NUMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>STATUS</th>
               </tr>
             </thead>
@@ -388,7 +342,10 @@ const AdminConsole = ({ activeTab }) => {
                     }}>
                       {u.initials}
                     </div>
-                    <span style={{ fontWeight: '700', color: '#111827' }}>{u.name}</span>
+                    <div>
+                      <span style={{ fontWeight: '700', color: '#111827', display: 'block' }}>{u.name}</span>
+                      <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Password: {u.password || 'password123'}</span>
+                    </div>
                   </td>
 
                   <td style={{ padding: '12px 14px' }}>
@@ -401,9 +358,8 @@ const AdminConsole = ({ activeTab }) => {
                     </span>
                   </td>
 
-                  <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#4b5563' }}>
-                    <div>{u.email}</div>
-                    <div style={{ color: '#94a3b8' }}>{u.phone}</div>
+                  <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: '#111827', fontWeight: '700' }}>
+                    {u.phone || '+63 917 555 0100'}
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
@@ -418,12 +374,13 @@ const AdminConsole = ({ activeTab }) => {
           </table>
         </div>
 
+        {/* CREATE USER ACCOUNT MODAL: Full Name, Role, Phone Number, Password */}
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
             background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
-            <div className="m-card" style={{ width: '420px', padding: '24px' }}>
+            <div className="m-card" style={{ width: '400px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: 0 }}>Create User Account</h3>
                 <button onClick={() => setShowAddModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
@@ -459,23 +416,25 @@ const AdminConsole = ({ activeTab }) => {
                 </div>
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Email Address</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Phone Number</label>
                   <input
-                    type="email"
-                    placeholder="e.g. danilo@farmer.ph"
-                    value={newUserEmail}
-                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    type="text"
+                    required
+                    placeholder="e.g. +63 917 555 0110"
+                    value={newUserPhone}
+                    onChange={(e) => setNewUserPhone(e.target.value)}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '18px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Phone Number</label>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Password</label>
                   <input
                     type="text"
-                    placeholder="e.g. +63 917 555 0110"
-                    value={newUserPhone}
-                    onChange={(e) => setNewUserPhone(e.target.value)}
+                    required
+                    placeholder="e.g. password123"
+                    value={newUserPass}
+                    onChange={(e) => setNewUserPass(e.target.value)}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
                   />
                 </div>
@@ -498,150 +457,40 @@ const AdminConsole = ({ activeTab }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-            Security, Role & Permissions Matrix
+            Roles & Permissions Matrix
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-            Tenant-isolated access configuration - changes apply cooperative-wide
+            Role-based capability configuration matrix
           </p>
-        </div>
-
-        <button onClick={() => alert('Matrix changes committed live!')} className="btn-primary">
-          <Lock size={15} /> Commit Matrix Changes
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '16px' }}>
-        <div style={{ background: '#0c3619', color: '#ffffff', borderRadius: '14px', padding: '22px' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
-            <ShieldCheck size={22} color="#ffffff" />
-          </div>
-          <h3 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '6px' }}>Tenant Isolation Active</h3>
-          <p style={{ fontSize: '0.75rem', color: '#a7f3d0', marginBottom: '20px', lineHeight: 1.5 }}>
-            All matrix mutations are scoped to <strong>ANT-ORG-001</strong>. Cross-tenant reads are blocked at API gateway and audited.
-          </p>
-          <div style={{ fontSize: '0.72rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div>Last audit: <strong>Aug 14, 2025</strong></div>
-            <div>Schema version: <strong>v2.4.1</strong></div>
-            <div>Active roles: <strong>5</strong></div>
-          </div>
-        </div>
-
-        <div className="m-card">
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', marginBottom: '2px' }}>Granular Access Flags</h4>
-          <span style={{ fontSize: '0.75rem', color: '#6b7280', display: 'block', marginBottom: '16px' }}>
-            Toggle a cell to grant or revoke capability
-          </span>
-
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-            <thead>
-              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.75rem', textAlign: 'center' }}>
-                <th style={{ textAlign: 'left', padding: '10px 12px' }}>ROLE / CAPABILITY</th>
-                <th style={{ padding: '10px 12px' }}>Read Logs</th>
-                <th style={{ padding: '10px 12px' }}>Write Entries</th>
-                <th style={{ padding: '10px 12px' }}>Execute Validations</th>
-                <th style={{ padding: '10px 12px' }}>Bypass Audits</th>
-                <th style={{ padding: '10px 12px' }}>Access ML Models</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(permissionsMatrix).map(role => (
-                <tr key={role} style={{ borderBottom: '1px solid #f3f4f6', textAlign: 'center' }}>
-                  <td style={{ textAlign: 'left', padding: '14px 12px', fontWeight: '700' }}>
-                    <span className="pill pill-seedling">{role}</span>
-                  </td>
-
-                  {['readLogs', 'writeEntries', 'executeValidations', 'bypassAudits', 'accessML'].map(cap => {
-                    const isChecked = permissionsMatrix[role][cap];
-                    return (
-                      <td key={cap} style={{ padding: '14px 12px' }}>
-                        <button
-                          onClick={() => togglePermission(role, cap)}
-                          style={{
-                            width: '26px',
-                            height: '26px',
-                            borderRadius: '50%',
-                            background: isChecked ? '#dcfce7' : '#f1f5f9',
-                            border: isChecked ? '1px solid #86efac' : '1px solid #cbd5e1',
-                            color: isChecked ? '#15803d' : 'transparent',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {isChecked && <Check size={14} />}
-                        </button>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-
-  // 4. Administrative Reports
-  const renderReports = () => (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-            Administrative Reports
-          </h1>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-            Administrative and organizational reports consolidated from user records, member profiles and operational information
-          </p>
-        </div>
-
-        <button onClick={() => window.print()} className="btn-primary">
-          <Printer size={15} /> Print Summary
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Total User Accounts</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>147</div>
-        </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Members</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c' }}>126</div>
-        </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Member Cooperatives</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>8</div>
-        </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Operational Events (30d)</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706' }}>412</div>
         </div>
       </div>
 
       <div className="m-card">
-        <h4 style={{ fontSize: '0.88rem', fontWeight: '800', marginBottom: '12px' }}>Downloadable Documents</h4>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
           <thead>
             <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-              <th style={{ padding: '10px 12px' }}>Document</th>
-              <th style={{ padding: '10px 12px' }}>Source</th>
-              <th style={{ padding: '10px 12px' }}>Generated</th>
-              <th style={{ padding: '10px 12px', textAlign: 'right' }}>Download</th>
+              <th style={{ padding: '12px 14px' }}>ROLE</th>
+              <th style={{ padding: '12px 14px', textAlign: 'center' }}>READ LOGS</th>
+              <th style={{ padding: '12px 14px', textAlign: 'center' }}>WRITE ENTRIES</th>
+              <th style={{ padding: '12px 14px', textAlign: 'center' }}>EXECUTE VALIDATIONS</th>
+              <th style={{ padding: '12px 14px', textAlign: 'center' }}>BYPASS AUDITS</th>
+              <th style={{ padding: '12px 14px', textAlign: 'center' }}>ACCESS ML</th>
             </tr>
           </thead>
           <tbody>
-            {adminPdfs.map(d => (
-              <tr key={d.title} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '12px', fontWeight: '700' }}>{d.title}</td>
-                <td style={{ padding: '12px' }}><span className="pill pill-seedling">{d.source}</span></td>
-                <td style={{ padding: '12px', color: '#6b7280' }}>{d.date}</td>
-                <td style={{ padding: '12px', textAlign: 'right' }}>
-                  <button onClick={() => handleDownloadPDF(d.title)} style={{ color: '#11592c', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <Download size={13} /> {d.size}
-                  </button>
-                </td>
+            {Object.keys(permissionsMatrix).map(role => (
+              <tr key={role} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ padding: '12px 14px', fontWeight: '700', color: '#111827' }}>{role}</td>
+                {['readLogs', 'writeEntries', 'executeValidations', 'bypassAudits', 'accessML'].map(cap => (
+                  <td key={cap} style={{ padding: '12px 14px', textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      checked={permissionsMatrix[role][cap]}
+                      onChange={() => togglePermission(role, cap)}
+                      style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
+                    />
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -650,8 +499,51 @@ const AdminConsole = ({ activeTab }) => {
     </div>
   );
 
+  // 4. Admin Reports
+  const renderReports = () => (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+            Administrative Reports
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            Cooperative-wide compliance records and system audit logs
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => window.print()} className="btn-outline">
+            <Printer size={15} /> Print
+          </button>
+          <button onClick={() => handleDownloadPDF('Administrative Master Report')} className="btn-primary">
+            <Download size={15} /> Export Bundle
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+        {adminPdfs.map(d => (
+          <div key={d.title} className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '12px' }}>
+              <FileText size={22} color="#0c3619" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>{d.title}</h4>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>{d.date} · {d.size}</span>
+              </div>
+            </div>
+            <button onClick={() => handleDownloadPDF(d.title)} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+              <Download size={13} /> Download
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   if (activeTab === 'user-accounts' || activeTab === 'member-records') return renderUserAccounts();
   if (activeTab === 'roles-permissions') return renderPermissions();
+  if (activeTab === 'announcements') return renderAnnouncements();
   if (activeTab === 'reports') return renderReports();
   return renderOperations();
 };
