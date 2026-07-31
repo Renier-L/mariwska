@@ -46,13 +46,15 @@ const AdminConsole = ({ activeTab }) => {
     updateUser, 
     deleteUser, 
     announcements, 
-    publishAnnouncement, 
+    publishAnnouncement,
+    deleteAnnouncement, 
     permissionsMatrix, 
     togglePermission 
   } = useAuth();
 
   const [roleFilter, setRoleFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementText, setAnnouncementText] = useState('');
   const [pushToggle, setPushToggle] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -83,7 +85,8 @@ const AdminConsole = ({ activeTab }) => {
       alert('Mangyaring mag-type muna ng announcement text!');
       return;
     }
-    publishAnnouncement(announcementText, pushToggle);
+    publishAnnouncement(announcementTitle.trim() || 'Cooperative Broadcast Notice', announcementText, pushToggle);
+    setAnnouncementTitle('');
     setAnnouncementText('');
   };
 
@@ -217,6 +220,24 @@ const AdminConsole = ({ activeTab }) => {
           </div>
         </div>
 
+        <input
+          type="text"
+          value={announcementTitle}
+          onChange={(e) => setAnnouncementTitle(e.target.value)}
+          placeholder="Notice Title (e.g. Fertilizer Distribution Schedule)"
+          style={{
+            width: '100%',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            border: '1.5px solid #cbd5e1',
+            fontSize: '0.85rem',
+            marginBottom: '10px',
+            fontWeight: '700',
+            outline: 'none',
+            background: '#ffffff'
+          }}
+        />
+
         <textarea
           value={announcementText}
           onChange={(e) => setAnnouncementText(e.target.value)}
@@ -281,9 +302,36 @@ const AdminConsole = ({ activeTab }) => {
                   Posted by {ann.author || 'Liza Cruz (Admin)'} · {ann.date}
                 </div>
               </div>
-              <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
-                Inspect Audit →
-              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm(`Are you sure you want to delete announcement "${ann.title}"?`)) {
+                      deleteAnnouncement(ann.id);
+                    }
+                  }}
+                  style={{
+                    background: '#fff1f2',
+                    border: '1px solid #fecdd3',
+                    color: '#e11d48',
+                    borderRadius: '7px',
+                    padding: '6px 11px',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <Trash2 size={13} color="#e11d48" /> Delete Notice
+                </button>
+                <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
+                  Inspect Audit →
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -807,6 +855,24 @@ const AdminConsole = ({ activeTab }) => {
           </div>
         </div>
 
+        <input
+          type="text"
+          value={announcementTitle}
+          onChange={(e) => setAnnouncementTitle(e.target.value)}
+          placeholder="Notice Title (e.g. Fertilizer Distribution Schedule)"
+          style={{
+            width: '100%',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            border: '1.5px solid #cbd5e1',
+            fontSize: '0.85rem',
+            marginBottom: '10px',
+            fontWeight: '700',
+            outline: 'none',
+            background: '#ffffff'
+          }}
+        />
+
         <textarea
           value={announcementText}
           onChange={(e) => setAnnouncementText(e.target.value)}
@@ -876,9 +942,36 @@ const AdminConsole = ({ activeTab }) => {
                     Posted by {ann.author || 'Liza Cruz (Admin)'} · {ann.date}
                   </div>
                 </div>
-                <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
-                  Inspect Audit →
-                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm(`Are you sure you want to delete announcement "${ann.title}"?`)) {
+                        deleteAnnouncement(ann.id);
+                      }
+                    }}
+                    style={{
+                      background: '#fff1f2',
+                      border: '1px solid #fecdd3',
+                      color: '#e11d48',
+                      borderRadius: '7px',
+                      padding: '6px 11px',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}
+                  >
+                    <Trash2 size={13} color="#e11d48" /> Delete Notice
+                  </button>
+                  <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
+                    Inspect Audit →
+                  </button>
+                </div>
               </div>
             ))
           )}

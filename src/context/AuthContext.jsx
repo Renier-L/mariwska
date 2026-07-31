@@ -41,7 +41,16 @@ export const AuthProvider = ({ children }) => {
 
   const [crops, setCrops] = useState(initialCrops);
   const [livestock, setLivestock] = useState(initialLivestock);
-  const [announcements, setAnnouncements] = useState(initialAnnouncements);
+  const [announcements, setAnnouncements] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_announcements_list');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return initialAnnouncements;
+  });
   const [validations, setValidations] = useState(initialValidations);
   const [mlClassifications, setMlClassifications] = useState(initialMLClassifications);
   
@@ -362,21 +371,26 @@ export const AuthProvider = ({ children }) => {
   };
 
   // INSTANT MULTI-WINDOW REALTIME BROADCAST
-  const publishAnnouncement = async (content, instantPush) => {
+  const publishAnnouncement = async (title, content, instantPush) => {
     const cleanText = String(content || '').trim();
     if (!cleanText) return;
 
     const newAnn = { 
       id: `ANN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
-      title: 'Cooperative Broadcast Notice', 
+      title: title || 'Cooperative Broadcast Notice', 
       content: cleanText, 
       date: new Date().toISOString().split('T')[0], 
-      author: 'Liza Cruz (Admin)', 
+      author: currentUser?.name || 'Liza Cruz (Admin)', 
       instantPush: true,
       pushId: Math.random()
     };
     
-    setAnnouncements(prev => [newAnn, ...prev]);
+    setAnnouncements(prev => {
+      const next = [newAnn, ...prev];
+      try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
     setActivePushNotice({ ...newAnn, pushId: Math.random() });
 
     if (broadcastChannel) {
@@ -389,13 +403,31 @@ export const AuthProvider = ({ children }) => {
 
     try {
       await supabase.from('announcements').insert([{ 
-        title: 'Cooperative Broadcast Notice', 
+        title: title || 'Cooperative Broadcast Notice', 
         content: cleanText, 
-        author: 'Liza Cruz (Admin)', 
+        author: currentUser?.name || 'Liza Cruz (Admin)', 
         instant_push: true 
       }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
+    }
+  };
+
+  const deleteAnnouncement = async (annId) => {
+    setAnnouncements(prev => {
+      const next = prev.filter(a => a.id !== annId);
+      try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_DELETED_PUSH', payload: annId });
+    }
+
+    try {
+      await supabase.from('announcements').delete().eq('id', annId);
+    } catch (e) {
+      console.log('Supabase delete error:', e);
     }
   };
 
@@ -487,6 +519,7 @@ export const AuthProvider = ({ children }) => {
       updateUser,
       deleteUser,
       publishAnnouncement,
+      deleteAnnouncement,
       dismissPushNotice,
       handleValidationAction,
       addFarmerSubmission,
