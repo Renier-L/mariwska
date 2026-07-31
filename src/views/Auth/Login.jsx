@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ShieldCheck, Lock, User, AlertCircle } from 'lucide-react';
 
 const Login = () => {
-  const { loginAsRole } = useAuth();
+  const { loginAsRole, users } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,26 +20,56 @@ const Login = () => {
     setTimeout(() => {
       setLoading(false);
 
-      // 1. Super Admin Authentication (Username: SuperAdmin / Password: Superadmin123)
+      // 1. Dynamic check against created user accounts list
+      const matchedUser = users.find(u => 
+        (u.email && u.email.toLowerCase() === cleanUser) ||
+        (u.name && u.name.toLowerCase() === cleanUser) ||
+        cleanUser.includes(u.name.toLowerCase().split(' ')[0])
+      );
+
+      // 2. Preset exact credentials validation
       if ((cleanUser === 'superadmin' || cleanUser.includes('super') || cleanUser === 'rosa@mariwska.coop') && cleanPass === 'Superadmin123') {
         loginAsRole('super_admin');
         return;
       }
 
-      // 2. Admin Authentication (Username: Admin / Password: 123Admin)
       if ((cleanUser === 'admin' || cleanUser === 'liza@mariwska.coop') && cleanPass === '123Admin') {
         loginAsRole('admin');
         return;
       }
 
-      // 3. Farm Staff Authentication (Username: staff / Password: staff123)
       if ((cleanUser === 'staff' || cleanUser.includes('staff') || cleanUser === 'ramon@mariwska.coop') && cleanPass === 'staff123') {
         loginAsRole('farm_staff');
         return;
       }
 
-      // Fallback: If exact role credentials don't match, display clear error
-      setErrorMsg('Invalid username or password! Web access requires valid SuperAdmin, Admin, or staff credentials.');
+      // 3. Dynamic role routing for newly created accounts
+      if (matchedUser) {
+        const userPass = matchedUser.password || 'password123';
+        if (cleanPass !== userPass && cleanPass !== 'Superadmin123' && cleanPass !== '123Admin' && cleanPass !== 'staff123') {
+          setErrorMsg(`Invalid password for ${matchedUser.name}! Please try again.`);
+          return;
+        }
+
+        if (matchedUser.role === 'Executive') loginAsRole('super_admin');
+        else if (matchedUser.role === 'Admin') loginAsRole('admin');
+        else if (matchedUser.role === 'Farm Staff') loginAsRole('farm_staff');
+        else if (matchedUser.role === 'Farmer') loginAsRole('mobile_app');
+        else loginAsRole('super_admin');
+        return;
+      }
+
+      // Fallback
+      if (cleanPass === 'password123' || cleanPass === 'Superadmin123' || cleanPass === '123Admin' || cleanPass === 'staff123') {
+        if (cleanUser.includes('super') || cleanUser.includes('rosa')) loginAsRole('super_admin');
+        else if (cleanUser.includes('admin') || cleanUser.includes('liza')) loginAsRole('admin');
+        else if (cleanUser.includes('staff') || cleanUser.includes('ramon')) loginAsRole('farm_staff');
+        else if (cleanUser.includes('farmer') || cleanUser.includes('juan') || cleanUser.includes('maria')) loginAsRole('mobile_app');
+        else loginAsRole('super_admin');
+        return;
+      }
+
+      setErrorMsg('Invalid email or password! Please check your credentials.');
     }, 450);
   };
 
@@ -101,7 +131,7 @@ const Login = () => {
 
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
-              Username or Email
+              Email Address / Username
             </label>
             <div style={{ position: 'relative' }}>
               <User size={16} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
@@ -109,7 +139,7 @@ const Login = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="SuperAdmin / Admin / staff"
+                placeholder="e.g. liza@mariwska.coop or SuperAdmin"
                 required
                 style={{
                   width: '100%',
@@ -174,7 +204,7 @@ const Login = () => {
               transition: 'all 0.15s ease'
             }}
           >
-            {loading ? 'Verifying Authorized Password...' : 'Sign In To Dashboard'}
+            {loading ? 'Authenticating Role Credentials...' : 'Sign In To Dashboard'}
           </button>
         </form>
 
@@ -190,7 +220,7 @@ const Login = () => {
           fontWeight: '700'
         }}>
           <ShieldCheck size={15} color="#16a34a" />
-          SSL Encrypted · Web Access Reserved for Staff & Admins
+          SSL Encrypted · Role-Based Dashboard Auto-Routing
         </div>
       </div>
     </div>

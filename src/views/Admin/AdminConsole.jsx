@@ -49,15 +49,15 @@ const AdminConsole = ({ activeTab }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Modal Fields: Full Name, Role, Phone Number, Password
+  // Modal Fields: Full Name, Role, Email Address, Password
   const [newUserName, setNewUserName] = useState('');
   const [newUserRole, setNewUserRole] = useState('Farmer');
-  const [newUserPhone, setNewUserPhone] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPass, setNewUserPass] = useState('password123');
 
   const filteredUsers = users.filter(u => {
     const matchesRole = roleFilter === 'All' || u.role === roleFilter;
-    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || (u.phone && u.phone.includes(searchQuery)) || (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesRole && matchesSearch;
   });
 
@@ -72,23 +72,21 @@ const AdminConsole = ({ activeTab }) => {
 
   const handleCreateUser = (e) => {
     e.preventDefault();
-    if (!newUserName || !newUserPhone) return;
-
-    const cleanEmail = `${newUserName.toLowerCase().replace(/\s+/g, '.')}@mariwska.coop`;
+    if (!newUserName || !newUserEmail) return;
 
     addUser({
       name: newUserName,
       role: newUserRole,
-      phone: newUserPhone,
+      email: newUserEmail,
       password: newUserPass || 'password123',
-      email: cleanEmail,
+      phone: '+63 917 555 0100',
       status: true
     });
 
-    alert(`✅ Account created for ${newUserName} (${newUserRole})! Active & ready to log in.`);
+    alert(`✅ Account created for ${newUserName} (${newUserRole})! Email: ${newUserEmail}. Active & ready to log in.`);
     setShowAddModal(false);
     setNewUserName('');
-    setNewUserPhone('');
+    setNewUserEmail('');
     setNewUserPass('password123');
   };
 
@@ -308,7 +306,7 @@ const AdminConsole = ({ activeTab }) => {
               <Search size={15} style={{ position: 'absolute', left: '12px', top: '9px', color: '#94a3b8' }} />
               <input
                 type="text"
-                placeholder="Search name or phone..."
+                placeholder="Search name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -328,7 +326,7 @@ const AdminConsole = ({ activeTab }) => {
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700' }}>PHONE NUMBER</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>EMAIL ADDRESS</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>STATUS</th>
               </tr>
             </thead>
@@ -359,7 +357,7 @@ const AdminConsole = ({ activeTab }) => {
                   </td>
 
                   <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: '#111827', fontWeight: '700' }}>
-                    {u.phone || '+63 917 555 0100'}
+                    {u.email}
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
@@ -374,7 +372,7 @@ const AdminConsole = ({ activeTab }) => {
           </table>
         </div>
 
-        {/* CREATE USER ACCOUNT MODAL: Full Name, Role, Phone Number, Password */}
+        {/* CREATE USER ACCOUNT MODAL: Full Name, Role, Email Address, Password */}
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -416,13 +414,13 @@ const AdminConsole = ({ activeTab }) => {
                 </div>
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Phone Number</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Email Address</label>
                   <input
-                    type="text"
+                    type="email"
                     required
-                    placeholder="e.g. +63 917 555 0110"
-                    value={newUserPhone}
-                    onChange={(e) => setNewUserPhone(e.target.value)}
+                    placeholder="e.g. danilo@mariwska.coop"
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
                   />
                 </div>
