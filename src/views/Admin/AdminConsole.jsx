@@ -21,7 +21,8 @@ import {
   UserX,
   UserCheck,
   Edit,
-  Pencil
+  Pencil,
+  RefreshCw
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
@@ -49,7 +50,8 @@ const AdminConsole = ({ activeTab }) => {
     publishAnnouncement,
     deleteAnnouncement, 
     permissionsMatrix, 
-    togglePermission 
+    togglePermission,
+    syncSeedToSupabase 
   } = useAuth();
 
   const [roleFilter, setRoleFilter] = useState('All');
@@ -148,13 +150,24 @@ const AdminConsole = ({ activeTab }) => {
   // 1. System Operations Dashboard
   const renderOperations = () => (
     <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-          System Operations Dashboard
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Real-time data pipelines, active sessions, and interactive cooperative-wide broadcasts
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+            System Operations Dashboard
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            Real-time data pipelines, active sessions, and interactive cooperative-wide broadcasts
+          </p>
+        </div>
+
+        <button
+          onClick={syncSeedToSupabase}
+          className="btn-primary"
+          style={{ background: '#0c3619', padding: '10px 18px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+          title="Push all initial user accounts, announcements, and task validations into Supabase cloud database tables"
+        >
+          <RefreshCw size={16} /> Sync All Data to Supabase Cloud
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
