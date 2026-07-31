@@ -99,23 +99,6 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const fillQuickCredentials = (userRole) => {
-    if (userRole === 'super_admin') {
-      setUsername('superadmin');
-      setPassword('Superadmin123');
-    } else if (userRole === 'admin') {
-      setUsername('admin');
-      setPassword('123Admin');
-    } else if (userRole === 'farm_staff') {
-      setUsername('staff');
-      setPassword('staff123');
-    } else if (userRole === 'farmer') {
-      const farmerUser = users.find(u => u.role === 'Farmer') || { email: 'lopezrenier97@gmail.com', password: 'password123' };
-      setUsername(farmerUser.email);
-      setPassword(farmerUser.password || 'password123');
-    }
-  };
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -170,7 +153,7 @@ const Login = () => {
         }} />
 
         {/* Brand Emblem */}
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
             width: '68px',
             height: '68px',
@@ -192,49 +175,8 @@ const Login = () => {
             MARIKHA
           </h1>
           <p style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '600', margin: 0, lineHeight: 1.4 }}>
-            Organic Farming Cooperative Portal
+            Cooperative Web Portal
           </p>
-        </div>
-
-        {/* 1-Click Role Access Shortcuts for Quick Evaluator Testing */}
-        <div style={{ marginBottom: '24px', background: '#f8fafc', padding: '12px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase', marginBottom: '8px', textAlign: 'center', letterSpacing: '0.5px' }}>
-            ⚡ 1-Click Role Credentials Test
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
-            <button
-              type="button"
-              onClick={() => fillQuickCredentials('super_admin')}
-              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
-              title="Autofill Super Admin credentials"
-            >
-              👑 Exec
-            </button>
-            <button
-              type="button"
-              onClick={() => fillQuickCredentials('admin')}
-              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
-              title="Autofill Admin credentials"
-            >
-              👩‍💼 Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => fillQuickCredentials('farm_staff')}
-              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
-              title="Autofill Staff credentials"
-            >
-              🚜 Staff
-            </button>
-            <button
-              type="button"
-              onClick={() => fillQuickCredentials('farmer')}
-              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
-              title="Autofill Farmer Mobile credentials"
-            >
-              🌾 Farmer
-            </button>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
