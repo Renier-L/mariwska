@@ -342,6 +342,7 @@ export const AuthProvider = ({ children }) => {
     const userObj = { 
       ...newUser, 
       id: String(Date.now()), 
+      password: newUser.password ? String(newUser.password).trim() : 'password123',
       initials: newUser.name ? newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
     };
     
@@ -365,7 +366,7 @@ export const AuthProvider = ({ children }) => {
         role: newUser.role, 
         email: newUser.email, 
         phone: newUser.phone || '+63 917 555 0100',
-        password: newUser.password || 'password123',
+        password: newUser.password ? String(newUser.password).trim() : 'password123',
         status: newUser.status !== false
       };
 
@@ -388,7 +389,12 @@ export const AuthProvider = ({ children }) => {
   const updateUser = async (userId, updatedData) => {
     const targetUser = users.find(u => u.id === userId);
     setUsers(prev => {
-      const next = prev.map(u => u.id === userId ? { ...u, ...updatedData, initials: updatedData.name ? updatedData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : u.initials } : u);
+      const next = prev.map(u => u.id === userId ? { 
+        ...u, 
+        ...updatedData, 
+        password: updatedData.password ? String(updatedData.password).trim() : u.password,
+        initials: updatedData.name ? updatedData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : u.initials 
+      } : u);
       try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
       return next;
     });
@@ -399,7 +405,7 @@ export const AuthProvider = ({ children }) => {
         role: updatedData.role,
         email: updatedData.email,
         phone: updatedData.phone || '+63 917 555 0100',
-        password: updatedData.password
+        password: updatedData.password ? String(updatedData.password).trim() : 'password123'
       };
 
       const { data, error } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
