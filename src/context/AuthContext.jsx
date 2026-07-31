@@ -326,8 +326,8 @@ export const AuthProvider = ({ children }) => {
 
   const deleteUser = async (userId) => {
     const target = users.find(u => u.id === userId);
-    if (target && (target.role === 'Executive' || target.role === 'Admin' || target.role === 'Farm Staff')) {
-      alert('⚠️ Security Protection: Official Cooperative Personnel (Executive, Admin, Farm Staff) cannot be deleted. You may edit their details instead.');
+    if (target && (target.role === 'Executive' || target.role === 'Admin')) {
+      alert('⚠️ Security Protection: System Core Administrator accounts (Super Admin & Admin) cannot be deleted.');
       return;
     }
 

@@ -374,7 +374,7 @@ const AdminConsole = ({ activeTab }) => {
             </thead>
             <tbody>
               {filteredUsers.map(u => {
-                const isOfficialStaff = u.role === 'Executive' || u.role === 'Admin' || u.role === 'Farm Staff';
+                const isProtectedAdmin = u.role === 'Executive' || u.role === 'Admin';
 
                 return (
                   <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
@@ -421,7 +421,7 @@ const AdminConsole = ({ activeTab }) => {
                         }}
                       >
                         {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
-                        {u.status !== false ? (isOfficialStaff ? `Active (${u.role})` : 'Active') : 'Disabled'}
+                        {u.status !== false ? (isProtectedAdmin ? `Active (${u.role})` : 'Active') : 'Disabled'}
                       </span>
                     </td>
 
@@ -450,7 +450,7 @@ const AdminConsole = ({ activeTab }) => {
                           <Pencil size={13} color="#1d4ed8" /> Edit
                         </button>
 
-                        {!isOfficialStaff && (
+                        {!isProtectedAdmin && (
                           <>
                             {u.status !== false ? (
                               <button
