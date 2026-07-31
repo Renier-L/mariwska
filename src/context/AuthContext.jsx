@@ -82,12 +82,35 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {}
   };
 
-  const loginAsRole = (roleKey) => {
+  const loginAsRole = (roleKey, targetUser = null) => {
     setCurrentRole(roleKey);
-    if (roleKey === 'super_admin') setCurrentUser(users[0] || initialUsers[0]);
-    else if (roleKey === 'admin') setCurrentUser(users[1] || initialUsers[1]);
-    else if (roleKey === 'farm_staff') setCurrentUser(users[2] || initialUsers[2]);
-    else if (roleKey === 'mobile_app') setCurrentUser(users[3] || initialUsers[3]);
+    if (targetUser) {
+      setCurrentUser(targetUser);
+      return;
+    }
+
+    if (roleKey === 'super_admin') {
+      const superAdmin = users.find(u => u.role === 'Executive' || u.role === 'Super Admin') || users[0] || initialUsers[0];
+      setCurrentUser(superAdmin);
+    } else if (roleKey === 'admin') {
+      const adminUser = users.find(u => u.role === 'Admin') || users[1] || initialUsers[1];
+      setCurrentUser(adminUser);
+    } else if (roleKey === 'farm_staff') {
+      const staffUser = users.find(u => u.role === 'Farm Staff') || users[2] || initialUsers[2];
+      setCurrentUser(staffUser);
+    } else if (roleKey === 'mobile_app') {
+      const farmerUser = users.find(u => u.role === 'Farmer') || users[3] || {
+        id: 'farmer-default',
+        name: 'rei lopez',
+        role: 'Farmer',
+        email: 'lopezrenier97@gmail.com',
+        phone: '+63 917 555 0100',
+        password: 'password123',
+        status: true,
+        initials: 'RL'
+      };
+      setCurrentUser(farmerUser);
+    }
   };
 
   // Cross-Window Instant Sync via BroadcastChannel & LocalStorage!

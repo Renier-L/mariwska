@@ -66,13 +66,13 @@ const Login = () => {
           return;
         }
 
-        // Successfully authenticated! Route to exact assigned role
+        // Successfully authenticated! Route to exact assigned role & pass matchedUser
         const role = matchedUser.role;
-        if (role === 'Executive' || role === 'Super Admin') loginAsRole('super_admin');
-        else if (role === 'Admin') loginAsRole('admin');
-        else if (role === 'Farm Staff') loginAsRole('farm_staff');
-        else if (role === 'Farmer') loginAsRole('mobile_app');
-        else loginAsRole('farm_staff');
+        if (role === 'Executive' || role === 'Super Admin') loginAsRole('super_admin', matchedUser);
+        else if (role === 'Admin') loginAsRole('admin', matchedUser);
+        else if (role === 'Farm Staff') loginAsRole('farm_staff', matchedUser);
+        else if (role === 'Farmer') loginAsRole('mobile_app', matchedUser);
+        else loginAsRole('farm_staff', matchedUser);
         return;
       }
 
