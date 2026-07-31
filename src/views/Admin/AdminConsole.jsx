@@ -14,7 +14,8 @@ import {
   Lock,
   X,
   Radio,
-  FileText
+  FileText,
+  Trash2
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
@@ -35,7 +36,8 @@ const AdminConsole = ({ activeTab }) => {
   const { 
     users, 
     toggleUserStatus, 
-    addUser, 
+    addUser,
+    deleteUser, 
     announcements, 
     publishAnnouncement, 
     permissionsMatrix, 
@@ -327,7 +329,8 @@ const AdminConsole = ({ activeTab }) => {
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>EMAIL ADDRESS</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>STATUS</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'center' }}>STATUS</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
@@ -360,11 +363,38 @@ const AdminConsole = ({ activeTab }) => {
                     {u.email}
                   </td>
 
-                  <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                  <td style={{ padding: '12px 14px', textAlign: 'center' }}>
                     <label className="toggle-switch">
                       <input type="checkbox" checked={u.status} onChange={() => toggleUserStatus(u.id)} />
                       <span className="slider" />
                     </label>
+                  </td>
+
+                  <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
+                          deleteUser(u.id);
+                        }
+                      }}
+                      title="Delete User Account"
+                      style={{
+                        background: '#fef2f2',
+                        border: '1px solid #fca5a5',
+                        color: '#dc2626',
+                        borderRadius: '8px',
+                        padding: '6px 10px',
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Trash2 size={13} /> Delete Account
+                    </button>
                   </td>
                 </tr>
               ))}

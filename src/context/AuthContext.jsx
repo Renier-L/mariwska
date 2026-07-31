@@ -76,6 +76,10 @@ export const AuthProvider = ({ children }) => {
       setUsers(prev => [newUser, ...prev.filter(u => u.id !== newUser.id)]);
     };
 
+    const handleDeletedUser = (deletedId) => {
+      setUsers(prev => prev.filter(u => u.id !== deletedId));
+    };
+
     if (broadcastChannel) {
       broadcastChannel.onmessage = (event) => {
         if (event.data && event.data.type === 'ANNOUNCEMENT_PUSH') {
@@ -84,6 +88,8 @@ export const AuthProvider = ({ children }) => {
           handleIncomingValidation(event.data.payload);
         } else if (event.data && event.data.type === 'USER_CREATED_PUSH') {
           handleIncomingUser(event.data.payload);
+        } else if (event.data && event.data.type === 'USER_DELETED_PUSH') {
+          handleDeletedUser(event.data.payload);
         }
       };
     }
@@ -103,6 +109,11 @@ export const AuthProvider = ({ children }) => {
         try {
           const parsed = JSON.parse(e.newValue);
           handleIncomingUser(parsed);
+        } catch (err) {}
+      } else if (e.key === 'marikha_deleted_user' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          handleDeletedUser(parsed.id);
         } catch (err) {}
       }
     };
@@ -238,6 +249,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteUser = async (userId) => {
+    setUsers(prev => prev.filter(u => u.id !== userId));
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'USER_DELETED_PUSH', payload: userId });
+    }
+
+    try {
+      localStorage.setItem('marikha_deleted_user', JSON.stringify({ id: userId, _t: Date.now() }));
+    } catch (e) {}
+
+    try {
+      await supabase.from('users').delete().eq('id', userId);
+    } catch (e) {
+      console.log('Supabase delete error:', e);
+    }
+  };
+
   // INSTANT MULTI-WINDOW REALTIME BROADCAST
   const publishAnnouncement = async (content, instantPush) => {
     const cleanText = String(content || '').trim();
@@ -354,6 +383,7 @@ export const AuthProvider = ({ children }) => {
       loginAsRole,
       toggleUserStatus,
       addUser,
+      deleteUser,
       publishAnnouncement,
       dismissPushNotice,
       handleValidationAction,
