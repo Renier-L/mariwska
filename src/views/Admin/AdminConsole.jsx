@@ -585,9 +585,7 @@ const AdminConsole = ({ activeTab }) => {
                     onChange={(e) => setNewUserRole(e.target.value)}
                     style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '800', outline: 'none', background: '#f8fafc', color: '#0c3619' }}
                   >
-                    <option value="Executive">Executive (Super Admin)</option>
-                    <option value="Admin">Admin (Administrator)</option>
-                    <option value="Farm Staff">Farm Staff (Validator)</option>
+                    <option value="Farm Staff">Farm Staff (Field Validator)</option>
                     <option value="Farmer">Farmer (Mobile App User)</option>
                   </select>
                 </div>
@@ -673,11 +671,12 @@ const AdminConsole = ({ activeTab }) => {
                   <select
                     value={editRole}
                     onChange={(e) => setEditRole(e.target.value)}
+                    disabled={editRole === 'Executive' || editRole === 'Admin'}
                     style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '800', outline: 'none', background: '#f8fafc', color: '#0c3619' }}
                   >
-                    <option value="Executive">Executive (Super Admin)</option>
-                    <option value="Admin">Admin (Administrator)</option>
-                    <option value="Farm Staff">Farm Staff (Validator)</option>
+                    {editRole === 'Executive' && <option value="Executive">Executive (Super Admin)</option>}
+                    {editRole === 'Admin' && <option value="Admin">Admin (Administrator)</option>}
+                    <option value="Farm Staff">Farm Staff (Field Validator)</option>
                     <option value="Farmer">Farmer (Mobile App User)</option>
                   </select>
                 </div>
