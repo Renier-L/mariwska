@@ -477,8 +477,14 @@ export const AuthProvider = ({ children }) => {
     setActivePushNotice(null);
   };
 
-  const handleValidationAction = (id, action, notes) => {
-    setValidations(validations.filter(v => v.id !== id));
+  const handleValidationAction = async (id, action, notes) => {
+    setValidations(prev => prev.filter(v => v.id !== id));
+
+    try {
+      await supabase.from('task_validations').update({ status: action }).eq('id', id);
+    } catch (e) {
+      console.log('Supabase validation update error:', e);
+    }
   };
 
   const addFarmerSubmission = async (newSub) => {
