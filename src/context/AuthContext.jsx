@@ -262,6 +262,8 @@ export const AuthProvider = ({ children }) => {
 
   const toggleUserStatus = (id) => {
     setUsers(prev => {
+      const target = prev.find(u => u.id === id);
+      if (target && (target.role === 'Executive' || target.role === 'Admin')) return prev;
       const next = prev.map(u => u.id === id ? { ...u, status: !u.status } : u);
       try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
       return next;
@@ -303,6 +305,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const deleteUser = async (userId) => {
+    const target = users.find(u => u.id === userId);
+    if (target && (target.role === 'Executive' || target.role === 'Admin')) {
+      alert('⚠️ Security Protection: System Core Administrator accounts (Super Admin & Admin) cannot be deleted.');
+      return;
+    }
+
     setUsers(prev => {
       const next = prev.filter(u => u.id !== userId);
       try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}

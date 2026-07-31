@@ -383,83 +383,105 @@ const AdminConsole = ({ activeTab }) => {
                       }}
                     >
                       {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
-                      {u.status !== false ? 'Active' : 'Disabled'}
+                      {u.status !== false ? (u.role === 'Executive' || u.role === 'Admin' ? 'Active (Core Admin)' : 'Active') : 'Disabled'}
                     </span>
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                      {u.status !== false ? (
-                        <button
-                          type="button"
-                          onClick={() => toggleUserStatus(u.id)}
-                          title="Disable user account access"
+                      {u.role === 'Executive' || u.role === 'Admin' ? (
+                        <span
                           style={{
-                            background: '#f8fafc',
+                            background: '#f1f5f9',
                             border: '1px solid #cbd5e1',
-                            color: '#475569',
+                            color: '#64748b',
                             borderRadius: '7px',
-                            padding: '6px 11px',
+                            padding: '6px 12px',
                             fontSize: '0.75rem',
                             fontWeight: '700',
-                            cursor: 'pointer',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '5px',
-                            transition: 'all 0.15s ease'
+                            gap: '5px'
                           }}
+                          title="System Core Administrator account is protected from disable or delete actions"
                         >
-                          <UserX size={13} color="#64748b" /> Disable
-                        </button>
+                          <Lock size={13} color="#64748b" /> Protected Core Admin
+                        </span>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => toggleUserStatus(u.id)}
-                          title="Enable user account access"
-                          style={{
-                            background: '#f0fdf4',
-                            border: '1px solid #86efac',
-                            color: '#15803d',
-                            borderRadius: '7px',
-                            padding: '6px 11px',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            transition: 'all 0.15s ease'
-                          }}
-                        >
-                          <UserCheck size={13} color="#16a34a" /> Enable
-                        </button>
-                      )}
+                        <>
+                          {u.status !== false ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleUserStatus(u.id)}
+                              title="Disable user account access"
+                              style={{
+                                background: '#f8fafc',
+                                border: '1px solid #cbd5e1',
+                                color: '#475569',
+                                borderRadius: '7px',
+                                padding: '6px 11px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <UserX size={13} color="#64748b" /> Disable
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => toggleUserStatus(u.id)}
+                              title="Enable user account access"
+                              style={{
+                                background: '#f0fdf4',
+                                border: '1px solid #86efac',
+                                color: '#15803d',
+                                borderRadius: '7px',
+                                padding: '6px 11px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <UserCheck size={13} color="#16a34a" /> Enable
+                            </button>
+                          )}
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
-                            deleteUser(u.id);
-                          }
-                        }}
-                        title="Delete User Account"
-                        style={{
-                          background: '#fff1f2',
-                          border: '1px solid #fecdd3',
-                          color: '#e11d48',
-                          borderRadius: '7px',
-                          padding: '6px 11px',
-                          fontSize: '0.75rem',
-                          fontWeight: '700',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <Trash2 size={13} color="#e11d48" /> Delete
-                      </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
+                                deleteUser(u.id);
+                              }
+                            }}
+                            title="Delete User Account"
+                            style={{
+                              background: '#fff1f2',
+                              border: '1px solid #fecdd3',
+                              color: '#e11d48',
+                              borderRadius: '7px',
+                              padding: '6px 11px',
+                              fontSize: '0.75rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <Trash2 size={13} color="#e11d48" /> Delete
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
