@@ -304,10 +304,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async (userId, updatedData) => {
+    setUsers(prev => {
+      const next = prev.map(u => u.id === userId ? { ...u, ...updatedData, initials: updatedData.name ? updatedData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : u.initials } : u);
+      try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    try {
+      await supabase.from('users').update({
+        name: updatedData.name,
+        role: updatedData.role,
+        email: updatedData.email,
+        phone: updatedData.phone,
+        password: updatedData.password
+      }).eq('id', userId);
+    } catch (e) {
+      console.log('Supabase update error:', e);
+    }
+  };
+
   const deleteUser = async (userId) => {
     const target = users.find(u => u.id === userId);
-    if (target && (target.role === 'Executive' || target.role === 'Admin')) {
-      alert('⚠️ Security Protection: System Core Administrator accounts (Super Admin & Admin) cannot be deleted.');
+    if (target && (target.role === 'Executive' || target.role === 'Admin' || target.role === 'Farm Staff')) {
+      alert('⚠️ Security Protection: Official Cooperative Personnel (Executive, Admin, Farm Staff) cannot be deleted. You may edit their details instead.');
       return;
     }
 
@@ -448,6 +468,7 @@ export const AuthProvider = ({ children }) => {
       loginAsRole,
       toggleUserStatus,
       addUser,
+      updateUser,
       deleteUser,
       publishAnnouncement,
       dismissPushNotice,

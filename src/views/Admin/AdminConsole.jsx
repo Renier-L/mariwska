@@ -19,7 +19,9 @@ import {
   CheckCircle2,
   Ban,
   UserX,
-  UserCheck
+  UserCheck,
+  Edit,
+  Pencil
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
@@ -41,6 +43,7 @@ const AdminConsole = ({ activeTab }) => {
     users, 
     toggleUserStatus, 
     addUser,
+    updateUser, 
     deleteUser, 
     announcements, 
     publishAnnouncement, 
@@ -55,11 +58,19 @@ const AdminConsole = ({ activeTab }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Modal Fields: Full Name, Role, Email Address, Password
+  // Add Modal State
   const [newUserName, setNewUserName] = useState('');
   const [newUserRole, setNewUserRole] = useState('Farmer');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPass, setNewUserPass] = useState('password123');
+
+  // Edit Modal State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editUserId, setEditUserId] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editRole, setEditRole] = useState('Farmer');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPass, setEditPass] = useState('password123');
 
   const filteredUsers = users.filter(u => {
     const matchesRole = roleFilter === 'All' || u.role === roleFilter;
@@ -94,6 +105,30 @@ const AdminConsole = ({ activeTab }) => {
     setNewUserName('');
     setNewUserEmail('');
     setNewUserPass('password123');
+  };
+
+  const handleOpenEditModal = (u) => {
+    setEditUserId(u.id);
+    setEditName(u.name);
+    setEditRole(u.role);
+    setEditEmail(u.email);
+    setEditPass(u.password || 'password123');
+    setShowEditModal(true);
+  };
+
+  const handleUpdateUser = (e) => {
+    e.preventDefault();
+    if (!editUserId || !editName) return;
+
+    updateUser(editUserId, {
+      name: editName,
+      role: editRole,
+      email: editEmail,
+      password: editPass
+    });
+
+    alert(`✅ Account updated for ${editName} (${editRole})! Changes synced live.`);
+    setShowEditModal(false);
   };
 
   const handleDownloadPDF = (title) => {
@@ -205,7 +240,7 @@ const AdminConsole = ({ activeTab }) => {
         </div>
       </div>
 
-      {/* Interactive Announcements List */}
+      {/* Interactive Announcements List Feed */}
       <div className="m-card">
         <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Radio size={16} color="#16a34a" /> Live Cooperative Broadcast Feed (Click to inspect detail)
@@ -338,159 +373,168 @@ const AdminConsole = ({ activeTab }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map(u => (
-                <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{
-                      width: '32px', height: '32px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
-                      fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem'
-                    }}>
-                      {u.initials}
-                    </div>
-                    <div>
-                      <span style={{ fontWeight: '700', color: '#111827', display: 'block' }}>{u.name}</span>
-                      <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Password: {u.password || 'password123'}</span>
-                    </div>
-                  </td>
+              {filteredUsers.map(u => {
+                const isOfficialStaff = u.role === 'Executive' || u.role === 'Admin' || u.role === 'Farm Staff';
 
-                  <td style={{ padding: '12px 14px' }}>
-                    <span className={`pill ${
-                      u.role === 'Executive' ? 'pill-flowering' :
-                      u.role === 'Admin' ? 'pill-compliant' :
-                      u.role === 'Farm Staff' ? 'pill-high' : 'pill-harvest'
-                    }`}>
-                      {u.role}
-                    </span>
-                  </td>
+                return (
+                  <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                    <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
+                        fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem'
+                      }}>
+                        {u.initials}
+                      </div>
+                      <div>
+                        <span style={{ fontWeight: '700', color: '#111827', display: 'block' }}>{u.name}</span>
+                        <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Password: {u.password || 'password123'}</span>
+                      </div>
+                    </td>
 
-                  <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: '#111827', fontWeight: '700' }}>
-                    {u.email}
-                  </td>
+                    <td style={{ padding: '12px 14px' }}>
+                      <span className={`pill ${
+                        u.role === 'Executive' ? 'pill-flowering' :
+                        u.role === 'Admin' ? 'pill-compliant' :
+                        u.role === 'Farm Staff' ? 'pill-high' : 'pill-harvest'
+                      }`}>
+                        {u.role}
+                      </span>
+                    </td>
 
-                  <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                    <span
-                      className={`pill ${u.status !== false ? 'pill-compliant' : ''}`}
-                      style={{
-                        padding: '5px 12px',
-                        fontSize: '0.75rem',
-                        fontWeight: '700',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        background: u.status !== false ? '#dcfce7' : '#f1f5f9',
-                        color: u.status !== false ? '#15803d' : '#64748b',
-                        border: u.status !== false ? '1px solid #86efac' : '1px solid #cbd5e1'
-                      }}
-                    >
-                      {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
-                      {u.status !== false ? (u.role === 'Executive' || u.role === 'Admin' ? 'Active (Core Admin)' : 'Active') : 'Disabled'}
-                    </span>
-                  </td>
+                    <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: '#111827', fontWeight: '700' }}>
+                      {u.email}
+                    </td>
 
-                  <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                      {u.role === 'Executive' || u.role === 'Admin' ? (
-                        <span
+                    <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                      <span
+                        className={`pill ${u.status !== false ? 'pill-compliant' : ''}`}
+                        style={{
+                          padding: '5px 12px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          background: u.status !== false ? '#dcfce7' : '#f1f5f9',
+                          color: u.status !== false ? '#15803d' : '#64748b',
+                          border: u.status !== false ? '1px solid #86efac' : '1px solid #cbd5e1'
+                        }}
+                      >
+                        {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
+                        {u.status !== false ? (isOfficialStaff ? `Active (${u.role})` : 'Active') : 'Disabled'}
+                      </span>
+                    </td>
+
+                    <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
+                        {/* EDIT BUTTON ALWAYS AVAILABLE FOR ALL ROLES */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditModal(u)}
+                          title="Edit User Profile & Credentials"
                           style={{
-                            background: '#f1f5f9',
-                            border: '1px solid #cbd5e1',
-                            color: '#64748b',
+                            background: '#eff6ff',
+                            border: '1px solid #93c5fd',
+                            color: '#1d4ed8',
                             borderRadius: '7px',
-                            padding: '6px 12px',
+                            padding: '6px 11px',
                             fontSize: '0.75rem',
                             fontWeight: '700',
+                            cursor: 'pointer',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '5px'
+                            gap: '5px',
+                            transition: 'all 0.15s ease'
                           }}
-                          title="System Core Administrator account is protected from disable or delete actions"
                         >
-                          <Lock size={13} color="#64748b" /> Protected Core Admin
-                        </span>
-                      ) : (
-                        <>
-                          {u.status !== false ? (
-                            <button
-                              type="button"
-                              onClick={() => toggleUserStatus(u.id)}
-                              title="Disable user account access"
-                              style={{
-                                background: '#f8fafc',
-                                border: '1px solid #cbd5e1',
-                                color: '#475569',
-                                borderRadius: '7px',
-                                padding: '6px 11px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                transition: 'all 0.15s ease'
-                              }}
-                            >
-                              <UserX size={13} color="#64748b" /> Disable
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => toggleUserStatus(u.id)}
-                              title="Enable user account access"
-                              style={{
-                                background: '#f0fdf4',
-                                border: '1px solid #86efac',
-                                color: '#15803d',
-                                borderRadius: '7px',
-                                padding: '6px 11px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                transition: 'all 0.15s ease'
-                              }}
-                            >
-                              <UserCheck size={13} color="#16a34a" /> Enable
-                            </button>
-                          )}
+                          <Pencil size={13} color="#1d4ed8" /> Edit
+                        </button>
 
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
-                                deleteUser(u.id);
-                              }
-                            }}
-                            title="Delete User Account"
-                            style={{
-                              background: '#fff1f2',
-                              border: '1px solid #fecdd3',
-                              color: '#e11d48',
-                              borderRadius: '7px',
-                              padding: '6px 11px',
-                              fontSize: '0.75rem',
-                              fontWeight: '700',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                              transition: 'all 0.15s ease'
-                            }}
-                          >
-                            <Trash2 size={13} color="#e11d48" /> Delete
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {!isOfficialStaff && (
+                          <>
+                            {u.status !== false ? (
+                              <button
+                                type="button"
+                                onClick={() => toggleUserStatus(u.id)}
+                                title="Disable user account access"
+                                style={{
+                                  background: '#f8fafc',
+                                  border: '1px solid #cbd5e1',
+                                  color: '#475569',
+                                  borderRadius: '7px',
+                                  padding: '6px 11px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  transition: 'all 0.15s ease'
+                                }}
+                              >
+                                <UserX size={13} color="#64748b" /> Disable
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => toggleUserStatus(u.id)}
+                                title="Enable user account access"
+                                style={{
+                                  background: '#f0fdf4',
+                                  border: '1px solid #86efac',
+                                  color: '#15803d',
+                                  borderRadius: '7px',
+                                  padding: '6px 11px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: '700',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  transition: 'all 0.15s ease'
+                                }}
+                              >
+                                <UserCheck size={13} color="#16a34a" /> Enable
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
+                                  deleteUser(u.id);
+                                }
+                              }}
+                              title="Delete User Account"
+                              style={{
+                                background: '#fff1f2',
+                                border: '1px solid #fecdd3',
+                                color: '#e11d48',
+                                borderRadius: '7px',
+                                padding: '6px 11px',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              <Trash2 size={13} color="#e11d48" /> Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
-        {/* CREATE USER ACCOUNT MODAL: Full Name, Role, Email Address, Password */}
+        {/* CREATE USER ACCOUNT MODAL */}
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -558,6 +602,77 @@ const AdminConsole = ({ activeTab }) => {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                   <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline">Cancel</button>
                   <button type="submit" className="btn-primary">✓ Save Account & Sync Live</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* EDIT USER ACCOUNT MODAL */}
+        {showEditModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+          }}>
+            <div className="m-card" style={{ width: '400px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: 0 }}>Edit User Account</h3>
+                <button onClick={() => setShowEditModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateUser}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Role</label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem', fontWeight: '700' }}
+                  >
+                    <option value="Executive">Executive</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Farm Staff">Farm Staff</option>
+                    <option value="Farmer">Farmer</option>
+                  </select>
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Password</label>
+                  <input
+                    type="text"
+                    required
+                    value={editPass}
+                    onChange={(e) => setEditPass(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline">Cancel</button>
+                  <button type="submit" className="btn-primary">✓ Update Account & Sync Live</button>
                 </div>
               </form>
             </div>
