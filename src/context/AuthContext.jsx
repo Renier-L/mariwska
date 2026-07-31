@@ -360,18 +360,23 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {}
 
     try {
-      const { data, error } = await supabase.from('users').upsert({ 
+      const payload = { 
         name: newUser.name, 
         role: newUser.role, 
         email: newUser.email, 
         phone: newUser.phone || '+63 917 555 0100',
         password: newUser.password || 'password123',
         status: newUser.status !== false
-      }, { onConflict: 'email' }).select();
+      };
 
-      if (error) {
+      const { data, error } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
+
+      if (error && error.message.includes('password')) {
+        // Fallback retry without password column if missing in Supabase schema
+        delete payload.password;
+        await supabase.from('users').upsert(payload, { onConflict: 'email' });
+      } else if (error) {
         console.error('Supabase User Insert Error:', error);
-        alert(`⚠️ Supabase Cloud Notice: ${error.message}`);
       } else if (data && data[0]) {
         console.log('Supabase User Inserted/Updated:', data[0]);
       }
@@ -389,17 +394,27 @@ export const AuthProvider = ({ children }) => {
     });
 
     try {
-      const { data, error } = await supabase.from('users').upsert({
+      const payload = {
         name: updatedData.name,
         role: updatedData.role,
         email: updatedData.email,
         phone: updatedData.phone || '+63 917 555 0100',
         password: updatedData.password
-      }, { onConflict: 'email' }).select();
+      };
 
-      if (error) {
+      const { data, error } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
+
+      if (error && error.message.includes('password')) {
+        // Fallback retry without password column if missing in Supabase schema
+        delete payload.password;
+        const { data: retryData, error: retryError } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
+        if (!retryError) {
+          console.log('Supabase User Updated Live (schema fallback):', retryData);
+        } else {
+          console.error('Supabase User Update Retry Error:', retryError);
+        }
+      } else if (error) {
         console.error('Supabase User Update Error:', error);
-        alert(`⚠️ Supabase User Update Notice: ${error.message}`);
       } else {
         console.log('Supabase User Updated Live:', data);
       }
