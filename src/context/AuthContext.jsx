@@ -161,10 +161,11 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  // Fetch initial announcements & users from Supabase Realtime!
+  // Fetch initial announcements, users, and validations from Supabase Realtime!
   useEffect(() => {
     async function fetchSupabaseData() {
       try {
+        // 1. USERS SYNC
         const { data: userData } = await supabase.from('users').select('*');
         if (userData && userData.length > 0) {
           const formattedUsers = userData.map(u => ({
@@ -187,8 +188,21 @@ export const AuthProvider = ({ children }) => {
             try { localStorage.setItem('marikha_registered_users', JSON.stringify(merged)); } catch (e) {}
             return merged;
           });
+        } else {
+          // Auto-direct seed core users into empty Supabase users table!
+          for (const u of initialUsers) {
+            await supabase.from('users').insert([{
+              name: u.name,
+              role: u.role,
+              email: u.email,
+              phone: u.phone || '+63 917 555 0100',
+              password: u.password || 'password123',
+              status: true
+            }]);
+          }
         }
 
+        // 2. ANNOUNCEMENTS SYNC
         const { data: annData } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
         if (annData && annData.length > 0) {
           const formatted = annData.map(a => ({
@@ -202,6 +216,7 @@ export const AuthProvider = ({ children }) => {
           setAnnouncements(formatted);
         }
 
+        // 3. TASK VALIDATIONS SYNC
         const { data: valData } = await supabase.from('task_validations').select('*').order('created_at', { ascending: false });
         if (valData && valData.length > 0) {
           const formattedVals = valData.map(v => ({
@@ -221,6 +236,19 @@ export const AuthProvider = ({ children }) => {
             photoAttached: true
           }));
           setValidations(formattedVals);
+        } else {
+          // Auto-direct seed initial validations into empty Supabase task_validations table!
+          for (const v of initialValidations) {
+            await supabase.from('task_validations').insert([{
+              farmer: v.farmer,
+              plot: v.plot,
+              activity: v.taskType,
+              notes: v.farmerNote,
+              gps: v.location,
+              photo_url: v.photoUrl,
+              status: 'Pending'
+            }]);
+          }
         }
       } catch (err) {
         console.log('Supabase table fallback', err);
@@ -272,9 +300,31 @@ export const AuthProvider = ({ children }) => {
       })
       .subscribe();
 
+    // Supabase Realtime Subscription for Registered Users
+    const usersChannel = supabase
+      .channel('users_realtime_channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
+        if (payload.new) {
+          const u = payload.new;
+          const userObj = {
+            id: String(u.id),
+            name: u.name,
+            role: u.role,
+            email: u.email,
+            phone: u.phone || '+63 917 555 0100',
+            password: u.password || 'password123',
+            status: u.status !== false,
+            initials: u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
+          };
+          setUsers(prev => [userObj, ...prev.filter(existing => existing.id !== userObj.id && existing.email !== userObj.email)]);
+        }
+      })
+      .subscribe();
+
     return () => {
       supabase.removeChannel(announcementsChannel);
       supabase.removeChannel(validationsChannel);
+      supabase.removeChannel(usersChannel);
     };
   }, []);
 
