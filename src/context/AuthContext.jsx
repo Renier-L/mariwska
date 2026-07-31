@@ -27,7 +27,18 @@ export const AuthProvider = ({ children }) => {
     status: 'Cloud sync · Live (Supabase Realtime)'
   });
 
-  const [users, setUsers] = useState(initialUsers);
+  // Persist Users in LocalStorage & Supabase so created accounts NEVER vanish on refresh or login!
+  const [users, setUsers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_registered_users');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return initialUsers;
+  });
+
   const [crops, setCrops] = useState(initialCrops);
   const [livestock, setLivestock] = useState(initialLivestock);
   const [announcements, setAnnouncements] = useState(initialAnnouncements);
@@ -55,10 +66,10 @@ export const AuthProvider = ({ children }) => {
 
   const loginAsRole = (roleKey) => {
     setCurrentRole(roleKey);
-    if (roleKey === 'super_admin') setCurrentUser(initialUsers[0]);
-    else if (roleKey === 'admin') setCurrentUser(initialUsers[1]);
-    else if (roleKey === 'farm_staff') setCurrentUser(initialUsers[2]);
-    else if (roleKey === 'mobile_app') setCurrentUser(initialUsers[3]);
+    if (roleKey === 'super_admin') setCurrentUser(users[0] || initialUsers[0]);
+    else if (roleKey === 'admin') setCurrentUser(users[1] || initialUsers[1]);
+    else if (roleKey === 'farm_staff') setCurrentUser(users[2] || initialUsers[2]);
+    else if (roleKey === 'mobile_app') setCurrentUser(users[3] || initialUsers[3]);
   };
 
   // Cross-Window Instant Sync via BroadcastChannel & LocalStorage!
@@ -73,11 +84,19 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleIncomingUser = (newUser) => {
-      setUsers(prev => [newUser, ...prev.filter(u => u.id !== newUser.id)]);
+      setUsers(prev => {
+        const next = [newUser, ...prev.filter(u => u.id !== newUser.id)];
+        try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+        return next;
+      });
     };
 
     const handleDeletedUser = (deletedId) => {
-      setUsers(prev => prev.filter(u => u.id !== deletedId));
+      setUsers(prev => {
+        const next = prev.filter(u => u.id !== deletedId);
+        try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+        return next;
+      });
     };
 
     if (broadcastChannel) {
@@ -124,10 +143,34 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  // Fetch initial announcements & Subscribe to Supabase Realtime changes!
+  // Fetch initial announcements & users from Supabase Realtime!
   useEffect(() => {
     async function fetchSupabaseData() {
       try {
+        const { data: userData } = await supabase.from('users').select('*');
+        if (userData && userData.length > 0) {
+          const formattedUsers = userData.map(u => ({
+            id: String(u.id),
+            name: u.name,
+            role: u.role,
+            email: u.email,
+            phone: u.phone || '+63 917 555 0100',
+            password: u.password || 'password123',
+            status: u.status !== false,
+            initials: u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+          }));
+          setUsers(prev => {
+            const merged = [...formattedUsers];
+            prev.forEach(p => {
+              if (!merged.some(m => m.email === p.email || m.id === p.id)) {
+                merged.push(p);
+              }
+            });
+            try { localStorage.setItem('marikha_registered_users', JSON.stringify(merged)); } catch (e) {}
+            return merged;
+          });
+        }
+
         const { data: annData } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
         if (annData && annData.length > 0) {
           const formatted = annData.map(a => ({
@@ -218,7 +261,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const toggleUserStatus = (id) => {
-    setUsers(users.map(u => u.id === id ? { ...u, status: !u.status } : u));
+    setUsers(prev => {
+      const next = prev.map(u => u.id === id ? { ...u, status: !u.status } : u);
+      try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
   };
 
   const addUser = async (newUser) => {
@@ -227,7 +274,12 @@ export const AuthProvider = ({ children }) => {
       id: String(Date.now()), 
       initials: newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() 
     };
-    setUsers(prev => [userObj, ...prev]);
+    
+    setUsers(prev => {
+      const next = [userObj, ...prev];
+      try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
 
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'USER_CREATED_PUSH', payload: userObj });
@@ -242,7 +294,8 @@ export const AuthProvider = ({ children }) => {
         name: newUser.name, 
         role: newUser.role, 
         email: newUser.email, 
-        phone: newUser.phone 
+        phone: newUser.phone,
+        password: newUser.password || 'password123'
       }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
@@ -250,7 +303,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const deleteUser = async (userId) => {
-    setUsers(prev => prev.filter(u => u.id !== userId));
+    setUsers(prev => {
+      const next = prev.filter(u => u.id !== userId);
+      try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
 
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'USER_DELETED_PUSH', payload: userId });
