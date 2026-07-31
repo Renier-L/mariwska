@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { ShieldCheck, Lock } from 'lucide-react';
+import { ShieldCheck, Lock, User, AlertCircle } from 'lucide-react';
 
 const Login = () => {
   const { loginAsRole } = useAuth();
@@ -20,28 +20,33 @@ const Login = () => {
     setTimeout(() => {
       setLoading(false);
 
-      if (!cleanUser) {
+      // 1. Super Admin Authentication (Username: SuperAdmin / Password: Superadmin123)
+      if ((cleanUser === 'superadmin' || cleanUser.includes('super') || cleanUser === 'rosa@mariwska.coop') && cleanPass === 'Superadmin123') {
         loginAsRole('super_admin');
         return;
       }
 
-      // Role authentication
-      if (cleanUser.includes('super') || cleanUser.includes('rosa') || cleanUser.includes('mendoza') || cleanUser.includes('executive')) {
-        loginAsRole('super_admin');
-      } else if (cleanUser.includes('admin') || cleanUser.includes('liza') || cleanUser.includes('cruz') || cleanUser.includes('system')) {
+      // 2. Admin Authentication (Username: Admin / Password: 123Admin)
+      if ((cleanUser === 'admin' || cleanUser === 'liza@mariwska.coop') && cleanPass === '123Admin') {
         loginAsRole('admin');
-      } else if (cleanUser.includes('staff') || cleanUser.includes('ramon') || cleanUser.includes('velasco') || cleanUser.includes('validator')) {
-        loginAsRole('farm_staff');
-      } else {
-        loginAsRole('super_admin');
+        return;
       }
-    }, 400);
+
+      // 3. Farm Staff Authentication (Username: staff / Password: staff123)
+      if ((cleanUser === 'staff' || cleanUser.includes('staff') || cleanUser === 'ramon@mariwska.coop') && cleanPass === 'staff123') {
+        loginAsRole('farm_staff');
+        return;
+      }
+
+      // Fallback: If exact role credentials don't match, display clear error
+      setErrorMsg('Invalid username or password! Web access requires valid SuperAdmin, Admin, or staff credentials.');
+    }, 450);
   };
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#1E4620',
+      background: 'linear-gradient(135deg, #092011 0%, #154d26 50%, #0c3619 100%)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -49,94 +54,102 @@ const Login = () => {
       padding: '24px',
       fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
     }}>
-      {/* Clean Premium Web Login Card for MARIKHA */}
+      {/* High-Quality Glassmorphism Login Card Frame */}
       <div style={{
         background: '#ffffff',
-        borderRadius: '16px',
+        borderRadius: '20px',
         width: '100%',
-        maxWidth: '390px',
-        padding: '40px 36px',
+        maxWidth: '410px',
+        padding: '42px 38px',
         textAlign: 'center',
-        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.35)',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
+        boxShadow: '0 30px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.15)',
+        border: '1.5px solid #86efac'
       }}>
-        {/* Circle Emblem Logo */}
+        {/* Premium Emblem Header */}
         <div style={{
-          width: '56px',
-          height: '56px',
+          width: '64px',
+          height: '64px',
           borderRadius: '50%',
-          background: '#1E4620',
+          background: 'linear-gradient(135deg, #0c3619, #15803d)',
           color: '#ffffff',
           display: 'flex',
           alignItems: 'center',
           justify: 'center',
-          margin: '0 auto 16px',
+          margin: '0 auto 18px',
           fontWeight: '800',
-          fontSize: '1.5rem',
-          boxShadow: '0 4px 12px rgba(30, 70, 32, 0.25)'
+          fontSize: '1.75rem',
+          boxShadow: '0 8px 20px rgba(12, 54, 25, 0.35)',
+          border: '2px solid #86efac'
         }}>
-          M
+          🌱
         </div>
 
-        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1E4620', letterSpacing: '-0.3px', marginBottom: '2px' }}>
+        <h2 style={{ fontSize: '1.55rem', fontWeight: '800', color: '#0c3619', letterSpacing: '-0.4px', marginBottom: '2px' }}>
           MARIKHA
         </h2>
-        <p style={{ fontSize: '0.78rem', color: '#4b5563', fontWeight: '600', marginBottom: '28px', lineHeight: 1.3 }}>
-          Agricultural Management Information System
+        <p style={{ fontSize: '0.8rem', color: '#4b5563', fontWeight: '600', marginBottom: '30px', lineHeight: 1.3 }}>
+          Agricultural Management Web Portal
         </p>
 
         <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
           {errorMsg && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '10px 12px', borderRadius: '8px', fontSize: '0.75rem', marginBottom: '16px', fontWeight: '600' }}>
-              {errorMsg}
+            <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '12px 14px', borderRadius: '10px', fontSize: '0.78rem', marginBottom: '18px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={16} color="#dc2626" style={{ flexShrink: 0 }} />
+              <div>{errorMsg}</div>
             </div>
           )}
 
-          <div style={{ marginBottom: '18px' }}>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#374151', marginBottom: '6px' }}>
-              Username / Email
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
+              Username or Email
             </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter web user or email"
-              required
-              style={{
-                width: '100%',
-                padding: '11px 14px',
-                borderRadius: '10px',
-                border: '1px solid #d1d5db',
-                background: '#f9fafb',
-                fontSize: '0.85rem',
-                outline: 'none',
-                color: '#111827',
-                fontWeight: '500'
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <User size={16} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="SuperAdmin / Admin / staff"
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 14px 12px 38px',
+                  borderRadius: '12px',
+                  border: '1.5px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontSize: '0.88rem',
+                  outline: 'none',
+                  color: '#0f172a',
+                  fontWeight: '600'
+                }}
+              />
+            </div>
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: '#374151', marginBottom: '6px' }}>
+          <div style={{ marginBottom: '26px' }}>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              required
-              style={{
-                width: '100%',
-                padding: '11px 14px',
-                borderRadius: '10px',
-                border: '1px solid #d1d5db',
-                background: '#f9fafb',
-                fontSize: '0.85rem',
-                outline: 'none',
-                color: '#111827'
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <Lock size={16} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter account password"
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 14px 12px 38px',
+                  borderRadius: '12px',
+                  border: '1.5px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontSize: '0.88rem',
+                  outline: 'none',
+                  color: '#0f172a'
+                }}
+              />
+            </div>
           </div>
 
           <button
@@ -144,39 +157,40 @@ const Login = () => {
             disabled={loading}
             style={{
               width: '100%',
-              padding: '13px',
-              borderRadius: '10px',
-              background: '#1E4620',
+              padding: '14px',
+              borderRadius: '12px',
+              background: '#0c3619',
               color: '#ffffff',
               fontWeight: '800',
-              fontSize: '0.92rem',
+              fontSize: '0.95rem',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
-              marginBottom: '20px',
-              transition: 'background 0.15s ease',
+              marginBottom: '22px',
+              boxShadow: '0 6px 16px rgba(12, 54, 25, 0.3)',
               display: 'flex',
               alignItems: 'center',
               justify: 'center',
-              gap: '8px'
+              gap: '8px',
+              transition: 'all 0.15s ease'
             }}
           >
-            {loading ? 'Authenticating API...' : 'Sign In To Dashboard'}
+            {loading ? 'Verifying Authorized Password...' : 'Sign In To Dashboard'}
           </button>
         </form>
 
         <div style={{
-          borderTop: '1px solid #f3f4f6',
+          borderTop: '1px solid #f1f5f9',
           paddingTop: '16px',
           display: 'flex',
           alignItems: 'center',
           justify: 'center',
           gap: '6px',
           fontSize: '0.72rem',
-          color: '#6b7280',
-          fontWeight: '600'
+          color: '#64748b',
+          fontWeight: '700'
         }}>
-          <ShieldCheck size={14} color="#16a34a" />
-          SSL Encrypted | Antipolo City Organic Farming Cooperative
+          <ShieldCheck size={15} color="#16a34a" />
+          SSL Encrypted · Web Access Reserved for Staff & Admins
         </div>
       </div>
     </div>
