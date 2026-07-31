@@ -402,12 +402,19 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {}
 
     try {
-      await supabase.from('announcements').insert([{ 
+      const { data, error } = await supabase.from('announcements').insert([{ 
         title: title || 'Cooperative Broadcast Notice', 
         content: cleanText, 
         author: currentUser?.name || 'Liza Cruz (Admin)', 
         instant_push: true 
-      }]);
+      }]).select();
+
+      if (error) {
+        console.error('Supabase Announcement Insert Error:', error);
+        alert(`⚠️ Supabase Cloud Notice: ${error.message}. Make sure RLS is disabled in Supabase SQL Editor.`);
+      } else {
+        console.log('Supabase Announcement Inserted:', data);
+      }
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
@@ -425,7 +432,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      await supabase.from('announcements').delete().eq('id', annId);
+      const { error } = await supabase.from('announcements').delete().eq('id', annId);
+      if (error) console.error('Supabase Delete Error:', error);
     } catch (e) {
       console.log('Supabase delete error:', e);
     }
