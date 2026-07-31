@@ -364,37 +364,59 @@ const AdminConsole = ({ activeTab }) => {
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                    <label className="toggle-switch">
-                      <input type="checkbox" checked={u.status} onChange={() => toggleUserStatus(u.id)} />
-                      <span className="slider" />
-                    </label>
+                    <span className={`pill ${u.status !== false ? 'pill-compliant' : 'pill-high'}`} style={{ padding: '4px 10px', fontSize: '0.75rem', fontWeight: '800' }}>
+                      {u.status !== false ? '🟢 Active' : '⏸️ Paused'}
+                    </span>
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
-                          deleteUser(u.id);
-                        }
-                      }}
-                      title="Delete User Account"
-                      style={{
-                        background: '#fef2f2',
-                        border: '1px solid #fca5a5',
-                        color: '#dc2626',
-                        borderRadius: '8px',
-                        padding: '6px 10px',
-                        fontSize: '0.72rem',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
-                    >
-                      <Trash2 size={13} /> Delete Account
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => toggleUserStatus(u.id)}
+                        title={u.status !== false ? 'Pause/Disable Account' : 'Activate/Enable Account'}
+                        style={{
+                          background: u.status !== false ? '#fffbebfb' : '#f0fdf4',
+                          border: u.status !== false ? '1px solid #fcd34d' : '1px solid #86efac',
+                          color: u.status !== false ? '#d97706' : '#166534',
+                          borderRadius: '8px',
+                          padding: '6px 10px',
+                          fontSize: '0.72rem',
+                          fontWeight: '800',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        {u.status !== false ? '⏸️ Pause Account' : '▶️ Activate Account'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
+                            deleteUser(u.id);
+                          }
+                        }}
+                        title="Delete User Account"
+                        style={{
+                          background: '#fef2f2',
+                          border: '1px solid #fca5a5',
+                          color: '#dc2626',
+                          borderRadius: '8px',
+                          padding: '6px 10px',
+                          fontSize: '0.72rem',
+                          fontWeight: '800',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

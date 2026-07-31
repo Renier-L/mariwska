@@ -54,6 +54,11 @@ const Login = () => {
       });
 
       if (matchedUser) {
+        if (matchedUser.status === false) {
+          setErrorMsg(`⛔ Account Paused: Ang account ni ${matchedUser.name} ay kasalukuyang paused / disabled ng Admin.`);
+          return;
+        }
+
         const expectedPass = matchedUser.password || 'password123';
         // Verify password
         if (cleanPass !== expectedPass && cleanPass !== 'password123' && cleanPass !== 'Superadmin123' && cleanPass !== '123Admin' && cleanPass !== 'staff123') {
