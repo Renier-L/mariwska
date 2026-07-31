@@ -181,11 +181,45 @@ export default function App() {
     }, 500);
   };
 
-  const toggleTask = (id) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
-  };
+  // Splash / Flash Screen state
+  const [showSplash, setShowSplash] = useState(true);
 
-  // ================= 1. LOGIN SCREEN =================
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ================= 0. FLASH / SPLASH SCREEN =================
+  if (showSplash) {
+    return (
+      <SafeAreaView style={styles.splashContainer}>
+        <StatusBar barStyle="light-content" backgroundColor="#0c3619" />
+        <View style={styles.splashContent}>
+          <View style={styles.splashEmblem}>
+            <Text style={{ fontSize: 52 }}>🌱</Text>
+          </View>
+          <Text style={styles.splashTitle}>MARIKHA</Text>
+          <Text style={styles.splashSub}>Organic Farming Cooperative Portal</Text>
+
+          <ActivityIndicator size="large" color="#86efac" style={{ marginTop: 40 }} />
+          <Text style={{ color: '#a7f3d0', fontSize: 12, fontWeight: '700', marginTop: 12 }}>
+            Initializing Mobile System...
+          </Text>
+
+          <TouchableOpacity 
+            style={styles.splashSkipBtn}
+            onPress={() => setShowSplash(false)}
+          >
+            <Text style={styles.splashSkipBtnText}>Continue to Sign In →</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ================= 1. LOGIN / SIGN IN SCREEN =================
   if (!isAuthenticated) {
     return (
       <SafeAreaView style={styles.loginContainer}>
@@ -469,6 +503,14 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  splashContainer: { flex: 1, backgroundColor: '#0c3619', justifyContent: 'center', alignItems: 'center' },
+  splashContent: { alignItems: 'center', padding: 24 },
+  splashEmblem: { width: 96, height: 96, borderRadius: 48, backgroundColor: 'rgba(255,255,255,0.15)', borderWidth: 2, borderColor: '#86efac', justifyContent: 'center', alignItems: 'center', marginBottom: 18 },
+  splashTitle: { fontSize: 32, fontWeight: '800', color: '#ffffff', letterSpacing: 1 },
+  splashSub: { fontSize: 13, color: '#86efac', fontWeight: '600', marginTop: 4 },
+  splashSkipBtn: { marginTop: 40, backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 22, paddingVertical: 12, borderRadius: 24, borderWidth: 1, borderColor: '#86efac' },
+  splashSkipBtnText: { color: '#ffffff', fontWeight: '800', fontSize: 13 },
+
   loginContainer: { flex: 1, backgroundColor: '#0c3619', justifyContent: 'center', alignItems: 'center', padding: 20 },
   loginCard: { backgroundColor: '#ffffff', width: '100%', borderRadius: 20, padding: 28, alignItems: 'center' },
   loginEmblem: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#f0fdf4', justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
