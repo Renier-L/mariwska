@@ -48,13 +48,22 @@ export const AuthProvider = ({ children }) => {
   // Unlimited Real-time Push Notification Popup state
   const [activePushNotice, setActivePushNotice] = useState(null);
 
-  // Security Matrix State
-  const [permissionsMatrix, setPermissionsMatrix] = useState({
-    Executive: { readLogs: true, writeEntries: false, executeValidations: false, bypassAudits: false, accessML: true },
-    Administrator: { readLogs: true, writeEntries: true, executeValidations: false, bypassAudits: true, accessML: true },
-    'Farm Staff': { readLogs: true, writeEntries: true, executeValidations: true, bypassAudits: false, accessML: true },
-    Farmer: { readLogs: false, writeEntries: true, executeValidations: false, bypassAudits: false, accessML: false },
-    'PGS Auditor': { readLogs: true, writeEntries: false, executeValidations: true, bypassAudits: false, accessML: false },
+  // Security Matrix State (Persisted & Synced Live)
+  const [permissionsMatrix, setPermissionsMatrix] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_permissions_matrix');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        delete parsed['PGS Auditor'];
+        return parsed;
+      }
+    } catch (e) {}
+    return {
+      Executive: { readLogs: true, writeEntries: false, executeValidations: false, bypassAudits: false, accessML: true },
+      Administrator: { readLogs: true, writeEntries: true, executeValidations: false, bypassAudits: true, accessML: true },
+      'Farm Staff': { readLogs: true, writeEntries: true, executeValidations: true, bypassAudits: false, accessML: true },
+      Farmer: { readLogs: false, writeEntries: true, executeValidations: false, bypassAudits: false, accessML: false }
+    };
   });
 
   const setCurrentRole = (roleKey) => {
@@ -443,12 +452,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const togglePermission = (role, capability) => {
-    setPermissionsMatrix({
-      ...permissionsMatrix,
-      [role]: {
-        ...permissionsMatrix[role],
-        [capability]: !permissionsMatrix[role][capability]
+    setPermissionsMatrix(prev => {
+      const next = {
+        ...prev,
+        [role]: {
+          ...prev[role],
+          [capability]: !prev[role]?.[capability]
+        }
+      };
+      try { localStorage.setItem('marikha_permissions_matrix', JSON.stringify(next)); } catch (e) {}
+      if (broadcastChannel) {
+        broadcastChannel.postMessage({ type: 'PERMISSIONS_UPDATED_PUSH', payload: next });
       }
+      return next;
     });
   };
 

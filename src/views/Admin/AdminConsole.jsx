@@ -727,27 +727,10 @@ const AdminConsole = ({ activeTab }) => {
         </p>
       </div>
 
-      {/* PGS EXPLANATION BANNER */}
-      <div className="m-card" style={{ background: '#f0fdf4', border: '1px solid #86efac', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#11592c', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: '800', fontSize: '1.1rem' }}>
-            🌾
-          </div>
-          <div>
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#11592c', margin: '0 0 4px 0' }}>
-              What is PGS (Participatory Guarantee System) in MARIKHA?
-            </h4>
-            <p style={{ fontSize: '0.82rem', color: '#166534', margin: 0, lineHeight: 1.45 }}>
-              <strong>PGS (Participatory Guarantee System)</strong> is the official organic certification framework under <strong>Philippine RA 11511</strong>. In MARIKHA, PGS Inspectors & Farm Staff validate farmer photo proof, fertilizer inputs, and GPS locations to guarantee 100% organic compliance before yields are sent to market.
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="m-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-            Live System Capability Access Matrix
+            Live System Capability Access Matrix (4 Core System Roles)
           </h4>
           <span className="pill pill-compliant" style={{ fontSize: '0.72rem', padding: '4px 10px' }}>
             ✓ Enforced Live across All Portals
@@ -766,17 +749,16 @@ const AdminConsole = ({ activeTab }) => {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(permissionsMatrix).map(role => (
+            {Object.keys(permissionsMatrix).filter(r => r !== 'PGS Auditor').map(role => (
               <tr key={role} style={{ borderBottom: '1px solid #f3f4f6' }}>
                 <td style={{ padding: '14px', fontWeight: '800', color: '#111827' }}>
                   {role}
-                  {role === 'PGS Auditor' && <span style={{ fontSize: '0.68rem', color: '#15803d', display: 'block', fontWeight: '600' }}>Organic Inspector</span>}
                 </td>
                 {['readLogs', 'writeEntries', 'executeValidations', 'bypassAudits', 'accessML'].map(cap => (
                   <td key={cap} style={{ padding: '14px', textAlign: 'center' }}>
                     <input
                       type="checkbox"
-                      checked={permissionsMatrix[role][cap]}
+                      checked={!!permissionsMatrix[role]?.[cap]}
                       onChange={() => togglePermission(role, cap)}
                       style={{ accentColor: '#0c3619', width: '18px', height: '18px', cursor: 'pointer' }}
                     />
