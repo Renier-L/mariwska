@@ -763,7 +763,122 @@ const AdminConsole = ({ activeTab }) => {
     </div>
   );
 
-  // 4. Admin Reports
+  // 4. Announcements & Push Broadcasts Tab
+  const renderAnnouncements = () => (
+    <div>
+      <div style={{ marginBottom: '20px' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+          Cooperative Announcements & Push Alerts
+        </h1>
+        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+          Broadcast notices to all Farmers, Farm Staff, and Cooperative Members in real time
+        </p>
+      </div>
+
+      {/* Global Announcement Publisher */}
+      <div className="m-card" style={{ border: '1px solid #fbd38d', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Megaphone size={18} color="#d97706" />
+              Publish Cooperative-Wide Global Announcement
+            </h4>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>
+              Reaches all Farmers, Farm Staff, and Executives across web and mobile clients.
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', fontWeight: '600' }}>
+            <Bell size={15} color="#4b5563" />
+            Instant push notification
+            <label className="toggle-switch">
+              <input type="checkbox" checked={pushToggle} onChange={() => setPushToggle(!pushToggle)} />
+              <span className="slider" />
+            </label>
+          </div>
+        </div>
+
+        <textarea
+          value={announcementText}
+          onChange={(e) => setAnnouncementText(e.target.value)}
+          placeholder="I-type dito ang bagong abiso para sa mga magsasaka..."
+          rows={3}
+          style={{
+            width: '100%',
+            padding: '12px 14px',
+            borderRadius: '8px',
+            border: '1px solid #d1d5db',
+            fontSize: '0.85rem',
+            marginBottom: '16px',
+            outline: 'none'
+          }}
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button onClick={handlePublish} className="btn-orange">
+            <Megaphone size={16} /> Publish Announcement
+          </button>
+        </div>
+      </div>
+
+      {/* Interactive Announcements List Feed */}
+      <div className="m-card">
+        <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Radio size={16} color="#16a34a" /> Live Cooperative Broadcast Feed ({announcements.length} Published Notices)
+        </h4>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {announcements.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '24px', color: '#6b7280', fontSize: '0.85rem' }}>
+              No announcements published yet. Write an announcement above to broadcast live!
+            </div>
+          ) : (
+            announcements.map((ann) => (
+              <div
+                key={ann.id}
+                onClick={() => setSelectedAnnouncement(ann)}
+                style={{
+                  background: '#f9fafb',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '10px',
+                  padding: '14px 16px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justify: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#111827' }}>
+                      {ann.title || 'Cooperative Announcement'}
+                    </span>
+                    {ann.instantPush && (
+                      <span className="pill pill-high" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
+                        Push Active
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: '#4b5563', margin: 0 }}>
+                    {ann.content}
+                  </p>
+                  <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '6px' }}>
+                    Posted by {ann.author || 'Liza Cruz (Admin)'} · {ann.date}
+                  </div>
+                </div>
+                <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
+                  Inspect Audit →
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // 5. Admin Reports
   const renderReports = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
