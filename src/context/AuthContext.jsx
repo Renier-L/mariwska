@@ -201,16 +201,8 @@ export const AuthProvider = ({ children }) => {
             status: u.status !== false,
             initials: u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
           }));
-          setUsers(prev => {
-            const merged = [...formattedUsers];
-            prev.forEach(p => {
-              if (!merged.some(m => m.email === p.email || m.id === p.id)) {
-                merged.push(p);
-              }
-            });
-            try { localStorage.setItem('marikha_registered_users', JSON.stringify(merged)); } catch (e) {}
-            return merged;
-          });
+          setUsers(formattedUsers);
+          try { localStorage.setItem('marikha_registered_users', JSON.stringify(formattedUsers)); } catch (e) {}
         } else {
           // Auto-direct seed core users into empty Supabase users table!
           for (const u of initialUsers) {
