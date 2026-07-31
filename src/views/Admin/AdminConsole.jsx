@@ -299,153 +299,198 @@ const AdminConsole = ({ activeTab }) => {
   );
 
   // 2. User Accounts & Member Records
-  const renderUserAccounts = () => (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-            User Accounts & Member Records
-          </h1>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-            Comprehensive cooperative directory with role-based access controls
-          </p>
-        </div>
+  const renderUserAccounts = () => {
+    const allCount = users.length;
+    const execCount = users.filter(u => u.role === 'Executive').length;
+    const adminCount = users.filter(u => u.role === 'Admin').length;
+    const staffCount = users.filter(u => u.role === 'Farm Staff').length;
+    const farmerCount = users.filter(u => u.role === 'Farmer').length;
 
-        <button onClick={() => setShowAddModal(true)} className="btn-primary">
-          <Plus size={16} /> Create New User Account
-        </button>
-      </div>
-
-      <div className="m-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {['All', 'Executive', 'Admin', 'Farm Staff', 'Farmer'].map(r => (
-              <button
-                key={r}
-                onClick={() => setRoleFilter(r)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  fontSize: '0.78rem',
-                  fontWeight: '700',
-                  background: roleFilter === r ? '#0c3619' : '#f1f5f9',
-                  color: roleFilter === r ? '#ffffff' : '#4b5563'
-                }}
-              >
-                {r} {r === 'All' ? '9' : r === 'Executive' ? '1' : r === 'Admin' ? '1' : r === 'Farm Staff' ? '2' : '5'}
-              </button>
-            ))}
+    return (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+              User Accounts & Member Records
+            </h1>
+            <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+              Comprehensive cooperative directory with role-based access controls
+            </p>
           </div>
 
-          <div style={{ position: 'relative', width: '250px' }}>
-            <Search size={15} style={{ position: 'absolute', left: '12px', top: '9px', color: '#94a3b8' }} />
-            <input
-              type="text"
-              placeholder="Search name or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px 8px 34px',
-                borderRadius: '8px',
-                border: '1px solid #d1d5db',
-                fontSize: '0.8rem',
-                outline: 'none'
-              }}
-            />
-          </div>
+          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+            <Plus size={16} /> Create New User Account
+          </button>
         </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-          <thead>
-            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-              <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
-              <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
-              <th style={{ padding: '12px 14px', fontWeight: '700' }}>CONTACT</th>
-              <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map(u => (
-              <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '32px', height: '32px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
-                    fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem'
-                  }}>
-                    {u.initials}
-                  </div>
-                  <span style={{ fontWeight: '700', color: '#111827' }}>{u.name}</span>
-                </td>
-
-                <td style={{ padding: '12px 14px' }}>
-                  <span className={`pill ${
-                    u.role === 'Executive' ? 'pill-flowering' :
-                    u.role === 'Admin' ? 'pill-compliant' :
-                    u.role === 'Farm Staff' ? 'pill-high' : 'pill-harvest'
-                  }`}>
-                    {u.role}
-                  </span>
-                </td>
-
-                <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#4b5563' }}>
-                  <div>{u.email}</div>
-                  <div style={{ color: '#94a3b8' }}>{u.phone}</div>
-                </td>
-
-                <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                  <label className="toggle-switch">
-                    <input type="checkbox" checked={u.status} onChange={() => toggleUserStatus(u.id)} />
-                    <span className="slider" />
-                  </label>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {showAddModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div className="m-card" style={{ width: '380px' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '800', marginBottom: '14px' }}>Create User Account</h3>
-            <form onSubmit={handleCreateUser}>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Full Name</label>
-                <input
-                  type="text"
-                  required
-                  value={newUserName}
-                  onChange={(e) => setNewUserName(e.target.value)}
-                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.8rem' }}
-                />
-              </div>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Role</label>
-                <select
-                  value={newUserRole}
-                  onChange={(e) => setNewUserRole(e.target.value)}
-                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.8rem' }}
+        <div className="m-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[
+                { name: 'All', count: allCount },
+                { name: 'Executive', count: execCount },
+                { name: 'Admin', count: adminCount },
+                { name: 'Farm Staff', count: staffCount },
+                { name: 'Farmer', count: farmerCount }
+              ].map(r => (
+                <button
+                  key={r.name}
+                  onClick={() => setRoleFilter(r.name)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    background: roleFilter === r.name ? '#0c3619' : '#f1f5f9',
+                    color: roleFilter === r.name ? '#ffffff' : '#4b5563'
+                  }}
                 >
-                  <option value="Executive">Executive</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Farm Staff">Farm Staff</option>
-                  <option value="Farmer">Farmer</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '18px' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline">Cancel</button>
-                <button type="submit" className="btn-primary">Save Account</button>
-              </div>
-            </form>
+                  {r.name} {r.count}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ position: 'relative', width: '250px' }}>
+              <Search size={15} style={{ position: 'absolute', left: '12px', top: '9px', color: '#94a3b8' }} />
+              <input
+                type="text"
+                placeholder="Search name or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px 8px 34px',
+                  borderRadius: '8px',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.8rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
           </div>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>CONTACT</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(u => (
+                <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                  <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '32px', height: '32px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
+                      fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem'
+                    }}>
+                      {u.initials}
+                    </div>
+                    <span style={{ fontWeight: '700', color: '#111827' }}>{u.name}</span>
+                  </td>
+
+                  <td style={{ padding: '12px 14px' }}>
+                    <span className={`pill ${
+                      u.role === 'Executive' ? 'pill-flowering' :
+                      u.role === 'Admin' ? 'pill-compliant' :
+                      u.role === 'Farm Staff' ? 'pill-high' : 'pill-harvest'
+                    }`}>
+                      {u.role}
+                    </span>
+                  </td>
+
+                  <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#4b5563' }}>
+                    <div>{u.email}</div>
+                    <div style={{ color: '#94a3b8' }}>{u.phone}</div>
+                  </td>
+
+                  <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                    <label className="toggle-switch">
+                      <input type="checkbox" checked={u.status} onChange={() => toggleUserStatus(u.id)} />
+                      <span className="slider" />
+                    </label>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
-    </div>
-  );
+
+        {showAddModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+          }}>
+            <div className="m-card" style={{ width: '420px', padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: 0 }}>Create User Account</h3>
+                <button onClick={() => setShowAddModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateUser}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Danilo Rivera"
+                    value={newUserName}
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Role</label>
+                  <select
+                    value={newUserRole}
+                    onChange={(e) => setNewUserRole(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem', fontWeight: '700' }}
+                  >
+                    <option value="Executive">Executive</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Farm Staff">Farm Staff</option>
+                    <option value="Farmer">Farmer</option>
+                  </select>
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Email Address</label>
+                  <input
+                    type="email"
+                    placeholder="e.g. danilo@farmer.ph"
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '18px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Phone Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. +63 917 555 0110"
+                    value={newUserPhone}
+                    onChange={(e) => setNewUserPhone(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline">Cancel</button>
+                  <button type="submit" className="btn-primary">✓ Save Account & Sync Live</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // 3. Security Roles & Permissions Matrix
   const renderPermissions = () => (

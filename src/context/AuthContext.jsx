@@ -72,12 +72,18 @@ export const AuthProvider = ({ children }) => {
       setValidations(prev => [newVal, ...prev.filter(v => v.id !== newVal.id)]);
     };
 
+    const handleIncomingUser = (newUser) => {
+      setUsers(prev => [newUser, ...prev.filter(u => u.id !== newUser.id)]);
+    };
+
     if (broadcastChannel) {
       broadcastChannel.onmessage = (event) => {
         if (event.data && event.data.type === 'ANNOUNCEMENT_PUSH') {
           handleIncomingNotice(event.data.payload);
         } else if (event.data && event.data.type === 'FARMER_SUBMISSION_PUSH') {
           handleIncomingValidation(event.data.payload);
+        } else if (event.data && event.data.type === 'USER_CREATED_PUSH') {
+          handleIncomingUser(event.data.payload);
         }
       };
     }
@@ -92,6 +98,11 @@ export const AuthProvider = ({ children }) => {
         try {
           const parsed = JSON.parse(e.newValue);
           handleIncomingValidation(parsed);
+        } catch (err) {}
+      } else if (e.key === 'marikha_live_user' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          handleIncomingUser(parsed);
         } catch (err) {}
       }
     };
@@ -200,10 +211,28 @@ export const AuthProvider = ({ children }) => {
   };
 
   const addUser = async (newUser) => {
-    const userObj = { ...newUser, id: String(Date.now()), initials: newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() };
-    setUsers([...users, userObj]);
+    const userObj = { 
+      ...newUser, 
+      id: String(Date.now()), 
+      initials: newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() 
+    };
+    setUsers(prev => [userObj, ...prev]);
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'USER_CREATED_PUSH', payload: userObj });
+    }
+
     try {
-      await supabase.from('users').insert([{ name: newUser.name, role: newUser.role, email: newUser.email, phone: newUser.phone }]);
+      localStorage.setItem('marikha_live_user', JSON.stringify({ ...userObj, _t: Date.now() }));
+    } catch (e) {}
+
+    try {
+      await supabase.from('users').insert([{ 
+        name: newUser.name, 
+        role: newUser.role, 
+        email: newUser.email, 
+        phone: newUser.phone 
+      }]);
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
