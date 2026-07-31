@@ -342,7 +342,7 @@ export const AuthProvider = ({ children }) => {
     const userObj = { 
       ...newUser, 
       id: String(Date.now()), 
-      initials: newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() 
+      initials: newUser.name ? newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
     };
     
     setUsers(prev => {
@@ -360,19 +360,28 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {}
 
     try {
-      await supabase.from('users').insert([{ 
+      const { data, error } = await supabase.from('users').upsert({ 
         name: newUser.name, 
         role: newUser.role, 
         email: newUser.email, 
-        phone: newUser.phone,
-        password: newUser.password || 'password123'
-      }]);
+        phone: newUser.phone || '+63 917 555 0100',
+        password: newUser.password || 'password123',
+        status: newUser.status !== false
+      }, { onConflict: 'email' }).select();
+
+      if (error) {
+        console.error('Supabase User Insert Error:', error);
+        alert(`⚠️ Supabase Cloud Notice: ${error.message}`);
+      } else if (data && data[0]) {
+        console.log('Supabase User Inserted/Updated:', data[0]);
+      }
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
   };
 
   const updateUser = async (userId, updatedData) => {
+    const targetUser = users.find(u => u.id === userId);
     setUsers(prev => {
       const next = prev.map(u => u.id === userId ? { ...u, ...updatedData, initials: updatedData.name ? updatedData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : u.initials } : u);
       try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
@@ -380,13 +389,20 @@ export const AuthProvider = ({ children }) => {
     });
 
     try {
-      await supabase.from('users').update({
+      const { data, error } = await supabase.from('users').upsert({
         name: updatedData.name,
         role: updatedData.role,
         email: updatedData.email,
-        phone: updatedData.phone,
+        phone: updatedData.phone || '+63 917 555 0100',
         password: updatedData.password
-      }).eq('id', userId);
+      }, { onConflict: 'email' }).select();
+
+      if (error) {
+        console.error('Supabase User Update Error:', error);
+        alert(`⚠️ Supabase User Update Notice: ${error.message}`);
+      } else {
+        console.log('Supabase User Updated Live:', data);
+      }
     } catch (e) {
       console.log('Supabase update error:', e);
     }
@@ -413,10 +429,13 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('marikha_deleted_user', JSON.stringify({ id: userId, _t: Date.now() }));
     } catch (e) {}
 
-    try {
-      await supabase.from('users').delete().eq('id', userId);
-    } catch (e) {
-      console.log('Supabase delete error:', e);
+    if (target) {
+      try {
+        const { error } = await supabase.from('users').delete().eq('email', target.email);
+        if (error) console.error('Supabase Delete User Error:', error);
+      } catch (e) {
+        console.log('Supabase delete error:', e);
+      }
     }
   };
 
