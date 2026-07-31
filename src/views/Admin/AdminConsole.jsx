@@ -538,141 +538,175 @@ const AdminConsole = ({ activeTab }) => {
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+            background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
-            <div className="m-card" style={{ width: '400px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: 0 }}>Create User Account</h3>
-                <button onClick={() => setShowAddModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
-                  <X size={18} />
+            <div className="m-card" style={{
+              width: '100%', maxWidth: '440px', padding: '0', borderRadius: '16px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              {/* Premium Modal Header */}
+              <div style={{
+                background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+                padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Plus size={20} color="#86efac" />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Create User Account</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac' }}>Add new cooperative member or staff</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowAddModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={16} />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateUser}>
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Full Name</label>
+              <form onSubmit={handleCreateUser} style={{ padding: '24px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Full Name</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Danilo Rivera"
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc', fontWeight: '600' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Role</label>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>System Access Role</label>
                   <select
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem', fontWeight: '700' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '800', outline: 'none', background: '#f8fafc', color: '#0c3619' }}
                   >
-                    <option value="Executive">Executive</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Farm Staff">Farm Staff</option>
-                    <option value="Farmer">Farmer</option>
+                    <option value="Executive">Executive (Super Admin)</option>
+                    <option value="Admin">Admin (Administrator)</option>
+                    <option value="Farm Staff">Farm Staff (Validator)</option>
+                    <option value="Farmer">Farmer (Mobile App User)</option>
                   </select>
                 </div>
 
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Email Address</label>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Email Address</label>
                   <input
                     type="email"
                     required
                     placeholder="e.g. danilo@mariwska.coop"
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Password</label>
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Password</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. password123"
                     value={newUserPass}
                     onChange={(e) => setNewUserPass(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
                   />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline">Cancel</button>
-                  <button type="submit" className="btn-primary">✓ Save Account & Sync Live</button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline" style={{ borderRadius: '10px', padding: '10px 18px', fontWeight: '700' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ borderRadius: '10px', padding: '10px 20px', fontWeight: '800', background: '#0c3619' }}>✓ Save Account & Sync Live</button>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        {/* EDIT USER ACCOUNT MODAL */}
+        {/* EDIT USER ACCOUNT MODAL (ULTRA PREMIUM ENTERPRISE UI) */}
         {showEditModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+            background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
-            <div className="m-card" style={{ width: '400px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: 0 }}>Edit User Account</h3>
-                <button onClick={() => setShowEditModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
-                  <X size={18} />
+            <div className="m-card" style={{
+              width: '100%', maxWidth: '440px', padding: '0', borderRadius: '16px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              {/* Premium Modal Header */}
+              <div style={{
+                background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+                padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Pencil size={20} color="#86efac" />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Edit User Account</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac' }}>Update profile credentials & role access</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowEditModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={16} />
                 </button>
               </div>
 
-              <form onSubmit={handleUpdateUser}>
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Full Name</label>
+              <form onSubmit={handleUpdateUser} style={{ padding: '24px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Full Name</label>
                   <input
                     type="text"
                     required
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc', fontWeight: '600' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Role</label>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>System Access Role</label>
                   <select
                     value={editRole}
                     onChange={(e) => setEditRole(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem', fontWeight: '700' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '800', outline: 'none', background: '#f8fafc', color: '#0c3619' }}
                   >
-                    <option value="Executive">Executive</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Farm Staff">Farm Staff</option>
-                    <option value="Farmer">Farmer</option>
+                    <option value="Executive">Executive (Super Admin)</option>
+                    <option value="Admin">Admin (Administrator)</option>
+                    <option value="Farm Staff">Farm Staff (Validator)</option>
+                    <option value="Farmer">Farmer (Mobile App User)</option>
                   </select>
                 </div>
 
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Email Address</label>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Email Address</label>
                   <input
                     type="email"
                     required
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
                   />
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Password</label>
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Password</label>
                   <input
                     type="text"
                     required
                     value={editPass}
                     onChange={(e) => setEditPass(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
                   />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline">Cancel</button>
-                  <button type="submit" className="btn-primary">✓ Update Account & Sync Live</button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline" style={{ borderRadius: '10px', padding: '10px 18px', fontWeight: '700' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ borderRadius: '10px', padding: '10px 20px', fontWeight: '800', background: '#0c3619' }}>✓ Save Changes & Sync Live</button>
                 </div>
               </form>
             </div>
