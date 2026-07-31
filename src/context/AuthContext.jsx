@@ -270,6 +270,9 @@ export const AuthProvider = ({ children }) => {
       }
     }
     fetchSupabaseData();
+    const interval = setInterval(() => {
+      fetchSupabaseData();
+    }, 4000);
 
     // Supabase Realtime Subscription for Broadcast Announcements
     const announcementsChannel = supabase
@@ -337,6 +340,7 @@ export const AuthProvider = ({ children }) => {
       .subscribe();
 
     return () => {
+      clearInterval(interval);
       supabase.removeChannel(announcementsChannel);
       supabase.removeChannel(validationsChannel);
       supabase.removeChannel(usersChannel);
