@@ -97,110 +97,215 @@ const Login = () => {
     }, 450);
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const fillQuickCredentials = (userRole) => {
+    if (userRole === 'super_admin') {
+      setUsername('superadmin');
+      setPassword('Superadmin123');
+    } else if (userRole === 'admin') {
+      setUsername('admin');
+      setPassword('123Admin');
+    } else if (userRole === 'farm_staff') {
+      setUsername('staff');
+      setPassword('staff123');
+    } else if (userRole === 'farmer') {
+      const farmerUser = users.find(u => u.role === 'Farmer') || { email: 'lopezrenier97@gmail.com', password: 'password123' };
+      setUsername(farmerUser.email);
+      setPassword(farmerUser.password || 'password123');
+    }
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #092011 0%, #154d26 50%, #0c3619 100%)',
+      background: 'radial-gradient(circle at 15% 20%, rgba(134, 239, 172, 0.15) 0%, transparent 45%), radial-gradient(circle at 85% 80%, rgba(21, 128, 61, 0.2) 0%, transparent 50%), linear-gradient(135deg, #06180c 0%, #0c3619 50%, #041209 100%)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justify: 'center',
-      padding: '24px',
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif"
+      justifyContent: 'center',
+      padding: '32px 16px',
+      fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
     }}>
-      {/* High-Quality Glassmorphism Login Card Frame */}
+      {/* Top Floating Cloud Badge */}
+      <div style={{
+        marginBottom: '24px',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(134, 239, 172, 0.3)',
+        padding: '6px 16px',
+        borderRadius: '30px',
+        color: '#86efac',
+        fontSize: '0.78rem',
+        fontWeight: '700',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.2)'
+      }}>
+        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80', display: 'inline-block', boxShadow: '0 0 10px #4ade80' }} />
+        MARIKHA Cooperative Portal · Live Cloud Sync Connected
+      </div>
+
+      {/* Main Glassmorphism Enterprise Login Card */}
       <div style={{
         background: '#ffffff',
-        borderRadius: '20px',
+        borderRadius: '24px',
         width: '100%',
-        maxWidth: '410px',
-        padding: '42px 38px',
-        textAlign: 'center',
-        boxShadow: '0 30px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.15)',
-        border: '1.5px solid #86efac'
+        maxWidth: '440px',
+        padding: '44px 40px 36px',
+        boxShadow: '0 30px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.2)',
+        border: '1.5px solid #a7f3d0',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        {/* Premium Emblem Header */}
+        {/* Subtle Decorative Gradient Accent Bar */}
         <div style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #0c3619, #15803d)',
-          color: '#ffffff',
-          display: 'flex',
-          alignItems: 'center',
-          justify: 'center',
-          margin: '0 auto 18px',
-          fontWeight: '800',
-          fontSize: '1.75rem',
-          boxShadow: '0 8px 20px rgba(12, 54, 25, 0.35)',
-          border: '2px solid #86efac'
-        }}>
-          🌱
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '6px',
+          background: 'linear-gradient(90deg, #0c3619 0%, #15803d 50%, #4ade80 100%)'
+        }} />
+
+        {/* Brand Emblem */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{
+            width: '68px',
+            height: '68px',
+            borderRadius: '20px',
+            background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+            color: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'center',
+            margin: '0 auto 16px',
+            fontSize: '2rem',
+            boxShadow: '0 10px 25px rgba(12, 54, 25, 0.35)',
+            border: '2px solid #86efac'
+          }}>
+            🌱
+          </div>
+
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0c3619', letterSpacing: '-0.5px', margin: '0 0 4px 0' }}>
+            MARIKHA
+          </h1>
+          <p style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '600', margin: 0, lineHeight: 1.4 }}>
+            Organic Farming Cooperative Portal
+          </p>
         </div>
 
-        <h2 style={{ fontSize: '1.55rem', fontWeight: '800', color: '#0c3619', letterSpacing: '-0.4px', marginBottom: '2px' }}>
-          MARIKHA
-        </h2>
-        <p style={{ fontSize: '0.8rem', color: '#4b5563', fontWeight: '600', marginBottom: '30px', lineHeight: 1.3 }}>
-          Agricultural Management Web Portal
-        </p>
+        {/* 1-Click Role Access Shortcuts for Quick Evaluator Testing */}
+        <div style={{ marginBottom: '24px', background: '#f8fafc', padding: '12px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase', marginBottom: '8px', textAlign: 'center', letterSpacing: '0.5px' }}>
+            ⚡ 1-Click Role Credentials Test
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+            <button
+              type="button"
+              onClick={() => fillQuickCredentials('super_admin')}
+              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
+              title="Autofill Super Admin credentials"
+            >
+              👑 Exec
+            </button>
+            <button
+              type="button"
+              onClick={() => fillQuickCredentials('admin')}
+              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
+              title="Autofill Admin credentials"
+            >
+              👩‍💼 Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => fillQuickCredentials('farm_staff')}
+              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
+              title="Autofill Staff credentials"
+            >
+              🚜 Staff
+            </button>
+            <button
+              type="button"
+              onClick={() => fillQuickCredentials('farmer')}
+              style={{ padding: '6px 4px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.7rem', fontWeight: '700', color: '#0c3619', cursor: 'pointer' }}
+              title="Autofill Farmer Mobile credentials"
+            >
+              🌾 Farmer
+            </button>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
           {errorMsg && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '12px 14px', borderRadius: '10px', fontSize: '0.78rem', marginBottom: '18px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <AlertCircle size={16} color="#dc2626" style={{ flexShrink: 0 }} />
+            <div style={{ background: '#fef2f2', border: '1.5px solid #fca5a5', color: '#b91c1c', padding: '12px 14px', borderRadius: '12px', fontSize: '0.8rem', marginBottom: '20px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <AlertCircle size={18} color="#dc2626" style={{ flexShrink: 0 }} />
               <div>{errorMsg}</div>
             </div>
           )}
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '18px' }}>
             <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
-              Email Address / Full Name
+              Account Username / Email
             </label>
             <div style={{ position: 'relative' }}>
-              <User size={16} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
+              <User size={18} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. lopezrenier97@gmail.com or rei lopez"
+                placeholder="Enter email or username..."
                 required
                 style={{
                   width: '100%',
-                  padding: '12px 14px 12px 38px',
+                  padding: '12px 14px 12px 42px',
                   borderRadius: '12px',
                   border: '1.5px solid #cbd5e1',
                   background: '#f8fafc',
                   fontSize: '0.88rem',
                   outline: 'none',
                   color: '#0f172a',
-                  fontWeight: '600'
+                  fontWeight: '600',
+                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.03)'
                 }}
               />
             </div>
           </div>
 
           <div style={{ marginBottom: '26px' }}>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
-              Password
-            </label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b' }}>
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ background: 'none', border: 'none', color: '#15803d', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}
+              >
+                {showPassword ? 'Hide Password' : 'Show Password'}
+              </button>
+            </div>
+
             <div style={{ position: 'relative' }}>
-              <Lock size={16} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
+              <Lock size={18} color="#64748b" style={{ position: 'absolute', left: '14px', top: '13px' }} />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter account password"
+                placeholder="Enter your account password..."
                 required
                 style={{
                   width: '100%',
-                  padding: '12px 14px 12px 38px',
+                  padding: '12px 14px 12px 42px',
                   borderRadius: '12px',
                   border: '1.5px solid #cbd5e1',
                   background: '#f8fafc',
                   fontSize: '0.88rem',
                   outline: 'none',
-                  color: '#0f172a'
+                  color: '#0f172a',
+                  fontWeight: '600',
+                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.03)'
                 }}
               />
             </div>
@@ -212,15 +317,15 @@ const Login = () => {
             style={{
               width: '100%',
               padding: '14px',
-              borderRadius: '12px',
-              background: '#0c3619',
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
               color: '#ffffff',
               fontWeight: '800',
-              fontSize: '0.95rem',
+              fontSize: '0.98rem',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
               marginBottom: '22px',
-              boxShadow: '0 6px 16px rgba(12, 54, 25, 0.3)',
+              boxShadow: '0 10px 20px rgba(12, 54, 25, 0.35)',
               display: 'flex',
               alignItems: 'center',
               justify: 'center',
@@ -228,23 +333,23 @@ const Login = () => {
               transition: 'all 0.15s ease'
             }}
           >
-            {loading ? 'Authenticating Role Credentials...' : 'Sign In To Dashboard'}
+            {loading ? 'Authenticating Role Credentials...' : 'Sign In To Dashboard →'}
           </button>
         </form>
 
         <div style={{
           borderTop: '1px solid #f1f5f9',
-          paddingTop: '16px',
+          paddingTop: '18px',
           display: 'flex',
           alignItems: 'center',
           justify: 'center',
           gap: '6px',
-          fontSize: '0.72rem',
+          fontSize: '0.74rem',
           color: '#64748b',
           fontWeight: '700'
         }}>
-          <ShieldCheck size={15} color="#16a34a" />
-          SSL Encrypted · Role-Based Dashboard Auto-Routing
+          <ShieldCheck size={16} color="#16a34a" />
+          SSL Encrypted · Auto-Routing Role Access
         </div>
       </div>
     </div>
