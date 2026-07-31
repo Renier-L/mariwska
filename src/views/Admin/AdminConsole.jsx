@@ -15,7 +15,11 @@ import {
   X,
   Radio,
   FileText,
-  Trash2
+  Trash2,
+  CheckCircle2,
+  Ban,
+  UserX,
+  UserCheck
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
@@ -364,33 +368,72 @@ const AdminConsole = ({ activeTab }) => {
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                    <span className={`pill ${u.status !== false ? 'pill-compliant' : 'pill-high'}`} style={{ padding: '4px 10px', fontSize: '0.75rem', fontWeight: '800' }}>
-                      {u.status !== false ? '🟢 Active' : '⏸️ Paused'}
+                    <span
+                      className={`pill ${u.status !== false ? 'pill-compliant' : ''}`}
+                      style={{
+                        padding: '5px 12px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        background: u.status !== false ? '#dcfce7' : '#f1f5f9',
+                        color: u.status !== false ? '#15803d' : '#64748b',
+                        border: u.status !== false ? '1px solid #86efac' : '1px solid #cbd5e1'
+                      }}
+                    >
+                      {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
+                      {u.status !== false ? 'Active' : 'Disabled'}
                     </span>
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                      <button
-                        type="button"
-                        onClick={() => toggleUserStatus(u.id)}
-                        title={u.status !== false ? 'Pause/Disable Account' : 'Activate/Enable Account'}
-                        style={{
-                          background: u.status !== false ? '#fffbebfb' : '#f0fdf4',
-                          border: u.status !== false ? '1px solid #fcd34d' : '1px solid #86efac',
-                          color: u.status !== false ? '#d97706' : '#166534',
-                          borderRadius: '8px',
-                          padding: '6px 10px',
-                          fontSize: '0.72rem',
-                          fontWeight: '800',
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px'
-                        }}
-                      >
-                        {u.status !== false ? '⏸️ Pause Account' : '▶️ Activate Account'}
-                      </button>
+                      {u.status !== false ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleUserStatus(u.id)}
+                          title="Disable user account access"
+                          style={{
+                            background: '#f8fafc',
+                            border: '1px solid #cbd5e1',
+                            color: '#475569',
+                            borderRadius: '7px',
+                            padding: '6px 11px',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <UserX size={13} color="#64748b" /> Disable
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => toggleUserStatus(u.id)}
+                          title="Enable user account access"
+                          style={{
+                            background: '#f0fdf4',
+                            border: '1px solid #86efac',
+                            color: '#15803d',
+                            borderRadius: '7px',
+                            padding: '6px 11px',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <UserCheck size={13} color="#16a34a" /> Enable
+                        </button>
+                      )}
 
                       <button
                         type="button"
@@ -401,20 +444,21 @@ const AdminConsole = ({ activeTab }) => {
                         }}
                         title="Delete User Account"
                         style={{
-                          background: '#fef2f2',
-                          border: '1px solid #fca5a5',
-                          color: '#dc2626',
-                          borderRadius: '8px',
-                          padding: '6px 10px',
-                          fontSize: '0.72rem',
-                          fontWeight: '800',
+                          background: '#fff1f2',
+                          border: '1px solid #fecdd3',
+                          color: '#e11d48',
+                          borderRadius: '7px',
+                          padding: '6px 11px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
                           cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '4px'
+                          gap: '5px',
+                          transition: 'all 0.15s ease'
                         }}
                       >
-                        <Trash2 size={13} /> Delete
+                        <Trash2 size={13} color="#e11d48" /> Delete
                       </button>
                     </div>
                   </td>
