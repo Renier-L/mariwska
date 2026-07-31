@@ -37,8 +37,20 @@ const FarmStaffDashboard = ({ activeTab }) => {
   const [selectedValId, setSelectedValId] = useState(validations[0]?.id || 'val-1');
   const [staffNote, setStaffNote] = useState('');
   const [reportsTab, setReportsTab] = useState('productivity');
+  const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
 
-  const selectedValidation = validations.find(v => v.id === selectedValId) || validations[0];
+  const filteredValidations = validations.filter(v => {
+    const query = farmerSearchQuery.toLowerCase().trim();
+    if (!query) return true;
+    return (
+      (v.farmer && v.farmer.toLowerCase().includes(query)) ||
+      (v.plot && v.plot.toLowerCase().includes(query)) ||
+      (v.taskType && v.taskType.toLowerCase().includes(query)) ||
+      (v.activity && v.activity.toLowerCase().includes(query))
+    );
+  });
+
+  const selectedValidation = filteredValidations.find(v => v.id === selectedValId) || filteredValidations[0] || validations[0];
 
   const handleApprove = () => {
     if (!selectedValidation) return;
@@ -211,42 +223,68 @@ const FarmStaffDashboard = ({ activeTab }) => {
           <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px' }}>
             <div className="m-card">
               <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Incoming Digital Task Logs</h4>
-              <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '12px' }}>
+              <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '10px' }}>
                 Raw inputs submitted by mobile farmers
               </span>
 
+              {/* LIVE FARMER SEARCH INPUT BOX */}
+              <div style={{ marginBottom: '12px' }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Search farmer name or plot..."
+                  value={farmerSearchQuery}
+                  onChange={(e) => setFarmerSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #11592c',
+                    fontSize: '0.78rem',
+                    outline: 'none',
+                    fontWeight: '600',
+                    background: '#ffffff'
+                  }}
+                />
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {validations.map(v => {
-                  const isSel = v.id === selectedValId;
-                  return (
-                    <div
-                      key={v.id}
-                      onClick={() => setSelectedValId(v.id)}
-                      style={{
-                        padding: '12px',
-                        borderRadius: '10px',
-                        background: isSel ? '#f0fdf4' : '#f9fafb',
-                        border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justify: 'space-between'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
-                        <div>
-                          <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
-                            {v.plot} · {v.timestamp}
+                {filteredValidations.length === 0 ? (
+                  <div style={{ fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', padding: '16px 8px' }}>
+                    No farmer logs matching "{farmerSearchQuery}"
+                  </div>
+                ) : (
+                  filteredValidations.map(v => {
+                    const isSel = v.id === selectedValId;
+                    return (
+                      <div
+                        key={v.id}
+                        onClick={() => setSelectedValId(v.id)}
+                        style={{
+                          padding: '12px',
+                          borderRadius: '10px',
+                          background: isSel ? '#f0fdf4' : '#f9fafb',
+                          border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justify: 'space-between'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
+                          <div>
+                            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
+                              {v.plot} · {v.timestamp}
+                            </div>
+                            <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
+                            <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
                           </div>
-                          <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
                         </div>
+                        <ChevronRight size={16} color="#94a3b8" />
                       </div>
-                      <ChevronRight size={16} color="#94a3b8" />
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </div>
 
