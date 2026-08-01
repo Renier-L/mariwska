@@ -349,7 +349,13 @@ const FarmStaffDashboard = ({ activeTab }) => {
 
                 <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '12px 14px', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '16px' }}>
                   <span style={{ fontWeight: '800', color: '#166534', display: 'block', marginBottom: '2px' }}>FARMER NOTE / COMMENT: </span>
-                  <span style={{ color: '#111827', fontWeight: '700' }}>"{selectedValidation.farmerNote || selectedValidation.notes}"</span>
+                  <span style={{ color: '#111827', fontWeight: '700' }}>
+                    "{(() => {
+                      const raw = selectedValidation.farmerNote || selectedValidation.notes || '';
+                      const cleaned = raw.replace(/\[Photo Proof:[^\]]+\]/gi, '').trim();
+                      return cleaned || 'No notes provided';
+                    })()}"
+                  </span>
                 </div>
 
                 <div style={{ marginBottom: '16px' }}>
