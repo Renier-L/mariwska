@@ -13,7 +13,8 @@ import {
   CheckCircle2, 
   Sparkles,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  BarChart3
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
