@@ -608,6 +608,38 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const addCrop = (newCrop) => {
+    const cropObj = {
+      id: Date.now(),
+      variety: newCrop.variety,
+      plot: newCrop.plot || `P-${Math.floor(100 + Math.random() * 900)}`,
+      growthStage: newCrop.growthStage || 'Vegetative',
+      fertilizer: newCrop.fertilizer || 'Organic Compost',
+      irrigation: newCrop.irrigation || 'Drip System',
+      yield: newCrop.yield || '350 kg'
+    };
+    setCrops(prev => [cropObj, ...prev]);
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'CROP_ADDED', payload: cropObj });
+    }
+  };
+
+  const addLivestock = (newItem) => {
+    const itemObj = {
+      id: Date.now(),
+      group: newItem.group,
+      plot: newItem.plot || `P-${Math.floor(100 + Math.random() * 900)}`,
+      headCount: Number(newItem.headCount) || 25,
+      vaccination: newItem.vaccination || '100% (Up to date)',
+      healthStatus: newItem.healthStatus || 'Healthy',
+      dailyGain: newItem.dailyGain || '+1.2 kg/wk'
+    };
+    setLivestock(prev => [itemObj, ...prev]);
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'LIVESTOCK_ADDED', payload: itemObj });
+    }
+  };
+
   const updateProfile = async (updatedFields) => {
     if (!currentUser) return;
     const newInitials = updatedFields.name
@@ -721,6 +753,8 @@ export const AuthProvider = ({ children }) => {
       dismissPushNotice,
       handleValidationAction,
       addFarmerSubmission,
+      addCrop,
+      addLivestock,
       togglePermission,
       setCurrentRole,
       syncSeedToSupabase

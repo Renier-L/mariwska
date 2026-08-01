@@ -75,10 +75,32 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
-  const { crops, livestock, validations, handleValidationAction } = useAuth();
+  const { crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement } = useAuth();
   const [directoryTab, setDirectoryTab] = useState('crop');
   const [reportsSubTab, setReportsSubTab] = useState('pdf'); // Default to PDF Documents view to show matching screenshot
   const [committedAlert, setCommittedAlert] = useState(false);
+  const [showAddCropModal, setShowAddCropModal] = useState(false);
+  const [showAddLivestockModal, setShowAddLivestockModal] = useState(false);
+
+  const [newCropForm, setNewCropForm] = useState({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '400 kg' });
+  const [newLivestockForm, setNewLivestockForm] = useState({ group: '', plot: '', headCount: 30, vaccination: '100% (Up to date)', healthStatus: 'Healthy', dailyGain: '+1.2 kg/wk' });
+
+  const handleAddCropSubmit = (e) => {
+    e.preventDefault();
+    if (!newCropForm.variety.trim()) return;
+    if (addCrop) addCrop(newCropForm);
+    setNewCropForm({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '400 kg' });
+    setShowAddCropModal(false);
+  };
+
+  const handleAddLivestockSubmit = (e) => {
+    e.preventDefault();
+    if (!newLivestockForm.group.trim()) return;
+    if (addLivestock) addLivestock(newLivestockForm);
+    setNewLivestockForm({ group: '', plot: '', headCount: 30, vaccination: '100% (Up to date)', healthStatus: 'Healthy', dailyGain: '+1.2 kg/wk' });
+    setShowAddLivestockModal(false);
+  };
+
   const [checklist, setChecklist] = useState([
     { id: 1, text: 'Dispatch agronomist team to plots P-021 and P-034 for fertilizer recalibration within 5 days.', checked: false },
     { id: 2, text: 'Reassign irrigation slot 14:00–16:00 to cluster B based on rainfall deficit pattern (RF importance 0.34).', checked: true },
@@ -88,7 +110,18 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
   const handleCommitPlan = () => {
     setCommittedAlert(true);
-    setTimeout(() => setCommittedAlert(false), 4000);
+    if (publishAnnouncement) {
+      publishAnnouncement({
+        title: '🌾 Super Admin Strategic Plan Committed',
+        content: 'Executive Random Forest yield forecast & farm intervention plan committed to live cooperative operations.',
+        author: 'Executive Super Admin',
+        roleTag: 'Executive Strategy',
+        priority: 'HIGH',
+        targetRole: 'All Members',
+        date: new Date().toISOString().split('T')[0]
+      });
+    }
+    setTimeout(() => setCommittedAlert(false), 5000);
   };
 
   const handlePrint = () => {
@@ -282,8 +315,14 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       </div>
 
       <div className="m-card" style={{ padding: '0', overflow: 'hidden', marginBottom: '24px' }}>
-        <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c' }}>
-          🌾 Active Field Plots Registry
+        <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>🌾 Active Field Plots Registry</span>
+          <button 
+            onClick={() => setShowAddCropModal(true)}
+            style={{ background: '#11592c', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer' }}
+          >
+            + Register Crop Plot
+          </button>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
           <thead>
@@ -435,6 +474,15 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       </div>
 
       <div className="m-card" style={{ padding: '0', overflow: 'hidden' }}>
+        <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>🐄 Livestock Herd & Flock Registry</span>
+          <button 
+            onClick={() => setShowAddLivestockModal(true)}
+            style={{ background: '#11592c', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer' }}
+          >
+            + Register Livestock Group
+          </button>
+        </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
           <thead>
             <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
@@ -937,12 +985,134 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     </div>
   );
 
-  if (activeTab === 'crop-monitoring') return renderCropMonitoring();
-  if (activeTab === 'livestock-monitoring') return renderLivestockMonitoring();
-  if (activeTab === 'analytics') return renderAnalytics();
-  if (activeTab === 'decision-support') return renderDecisionSupport();
-  if (activeTab === 'reports') return renderReports();
-  return renderOverviewDashboard();
+  const renderModals = () => (
+    <>
+      {showAddCropModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="m-card" style={{ width: '420px', background: '#fff', padding: '24px', borderRadius: '12px' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '16px', color: '#11592c' }}>🌾 Register New Crop Plot</h3>
+            <form onSubmit={handleAddCropSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Crop Variety Name</label>
+                <input 
+                  type="text" required placeholder="e.g. Tomato · Diamante Max" 
+                  value={newCropForm.variety} 
+                  onChange={e => setNewCropForm({ ...newCropForm, variety: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Plot Location Code</label>
+                <input 
+                  type="text" placeholder="e.g. P-099" 
+                  value={newCropForm.plot} 
+                  onChange={e => setNewCropForm({ ...newCropForm, plot: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Growth Stage</label>
+                  <select 
+                    value={newCropForm.growthStage} 
+                    onChange={e => setNewCropForm({ ...newCropForm, growthStage: e.target.value })}
+                    style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginTop: '4px' }}
+                  >
+                    <option value="Vegetative">Vegetative</option>
+                    <option value="Flowering">Flowering</option>
+                    <option value="Fruiting">Fruiting</option>
+                    <option value="Harvest Ready">Harvest Ready</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Expected Yield</label>
+                  <input 
+                    type="text" placeholder="e.g. 450 kg" 
+                    value={newCropForm.yield} 
+                    onChange={e => setNewCropForm({ ...newCropForm, yield: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                  />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '16px', justifyContent: 'flex-end' }}>
+                <button type="button" onClick={() => setShowAddCropModal(false)} className="btn-outline">Cancel</button>
+                <button type="submit" className="btn-primary">✓ Add Crop Plot</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showAddLivestockModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="m-card" style={{ width: '420px', background: '#fff', padding: '24px', borderRadius: '12px' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '16px', color: '#11592c' }}>🐄 Register Livestock Herd Group</h3>
+            <form onSubmit={handleAddLivestockSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Group / Flock Name</label>
+                <input 
+                  type="text" required placeholder="e.g. Goat Herd GT-099" 
+                  value={newLivestockForm.group} 
+                  onChange={e => setNewLivestockForm({ ...newLivestockForm, group: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Plot Location Code</label>
+                <input 
+                  type="text" placeholder="e.g. P-044" 
+                  value={newLivestockForm.plot} 
+                  onChange={e => setNewLivestockForm({ ...newLivestockForm, plot: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Head Count</label>
+                  <input 
+                    type="number" placeholder="25" 
+                    value={newLivestockForm.headCount} 
+                    onChange={e => setNewLivestockForm({ ...newLivestockForm, headCount: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Health Status</label>
+                  <select 
+                    value={newLivestockForm.healthStatus} 
+                    onChange={e => setNewLivestockForm({ ...newLivestockForm, healthStatus: e.target.value })}
+                    style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginTop: '4px' }}
+                  >
+                    <option value="Healthy">Healthy</option>
+                    <option value="Monitoring">Monitoring</option>
+                    <option value="Treatment">Treatment</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '16px', justifyContent: 'flex-end' }}>
+                <button type="button" onClick={() => setShowAddLivestockModal(false)} className="btn-outline">Cancel</button>
+                <button type="submit" className="btn-primary">✓ Register Group</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  let currentView = renderOverviewDashboard();
+  if (activeTab === 'crop-monitoring') currentView = renderCropMonitoring();
+  if (activeTab === 'livestock-monitoring') currentView = renderLivestockMonitoring();
+  if (activeTab === 'analytics') currentView = renderAnalytics();
+  if (activeTab === 'decision-support') currentView = renderDecisionSupport();
+  if (activeTab === 'reports') currentView = renderReports();
+
+  return (
+    <>
+      {currentView}
+      {renderModals()}
+    </>
+  );
 };
 
 export default SuperAdminDashboard;
