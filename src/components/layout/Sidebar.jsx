@@ -28,18 +28,18 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
       { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
-      { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-      { id: 'decision-support', label: 'Decision Support', icon: BrainCircuit },
-      { id: 'reports', label: 'Reports', icon: FileText },
+      { id: 'analytics', label: 'Analytics & Intelligence', icon: BarChart3 },
+      { id: 'decision-support', label: 'Decision Support Engine', icon: BrainCircuit },
+      { id: 'reports', label: 'Reports & Compliance', icon: FileText },
     ];
   } else if (currentRole === 'admin') {
     portalTitle = 'Administrator Console';
     navItems = [
       { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
-      { id: 'user-accounts', label: 'User Accounts', icon: Users, secondaryId: 'member-records' },
-      { id: 'member-records', label: 'Member Records', icon: Users, secondaryId: 'user-accounts' },
+      { id: 'user-accounts', label: 'User Accounts', icon: Users },
+      { id: 'member-records', label: 'Member Directory', icon: Users },
       { id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
-      { id: 'announcements', label: 'Announcements', icon: Megaphone },
+      { id: 'announcements', label: 'Announcements Push', icon: Megaphone },
       { id: 'reports', label: 'Reports', icon: FileText },
     ];
   } else if (currentRole === 'farm_staff') {
@@ -66,7 +66,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             background: 'rgba(255, 255, 255, 0.12)',
             display: 'flex',
             alignItems: 'center',
-            justify: 'center',
+            justifyContent: 'center',
             fontSize: '1rem'
           }}>
             🌱
@@ -85,7 +85,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id || (item.secondaryId && activeTab === item.secondaryId);
+            const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}

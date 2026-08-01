@@ -228,117 +228,205 @@ const SuperAdminDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 2. Crop & Livestock Unified Monitoring Hub (Crop Monitoring Tab)
-  const renderMonitoringHub = () => (
+  // 2. Crop Production & Live Farmer Submissions Monitoring
+  const renderCropMonitoring = () => (
     <div>
       <div style={{ marginBottom: '20px' }}>
         <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-          Crop & Livestock Unified Monitoring Hub
+          Crop Production & Live Mobile Submissions
         </h1>
         <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Operational registry for member farms — synchronized with cloud database
+          Real-time field registry synchronized live with Farmer Mobile App & Supabase
         </p>
       </div>
 
-      <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
-        <button
-          onClick={() => setDirectoryTab('crop')}
-          className={`tab-capsule-btn ${directoryTab === 'crop' ? 'active' : ''}`}
-        >
-          🌾 Crop Production Directory
-        </button>
-        <button
-          onClick={() => setDirectoryTab('livestock')}
-          className={`tab-capsule-btn ${directoryTab === 'livestock' ? 'active' : ''}`}
-        >
-          🐄 Livestock Operational Registry
-        </button>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>TOTAL ACTIVE CROPS</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c', marginTop: '4px' }}>{crops.length} Plots</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>FARMER SUBMISSIONS</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>{validations ? validations.length : 0} Logs</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>HARVEST READY</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>412 kg</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>AVG YIELD PER HECTARE</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7', marginTop: '4px' }}>4.8 Tons</div>
+        </div>
       </div>
 
+      <div className="m-card" style={{ padding: '0', overflow: 'hidden', marginBottom: '24px' }}>
+        <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c' }}>
+          🌾 Active Field Plots Registry
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <thead>
+            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Crop Variety</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Growth Stage</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Fertilizer Application</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Irrigation</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Historical Yield</th>
+            </tr>
+          </thead>
+          <tbody>
+            {crops.map((c) => (
+              <tr key={c.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{c.variety}</td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{
+                    background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155'
+                  }}>
+                    {c.plot}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span className={`pill pill-${c.growthStage.toLowerCase()}`}>
+                    {c.growthStage}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px', color: '#374151' }}>{c.fertilizer}</td>
+                <td style={{ padding: '14px 16px', color: '#374151' }}>{c.irrigation}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: '700', color: '#11592c' }}>{c.yield}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Live Farmer Mobile Submissions Feed */}
       <div className="m-card" style={{ padding: '0', overflow: 'hidden' }}>
-        {directoryTab === 'crop' ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-            <thead>
-              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Crop Variety</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Growth Stage</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Fertilizer Application</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Irrigation</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Historical Yield</th>
+        <div style={{ padding: '16px', background: '#f0fdf4', borderBottom: '1px solid #bbf7d0', fontWeight: '800', fontSize: '0.95rem', color: '#15803d', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>📱 Live Farmer Mobile Logs & Photo Proofs</span>
+          <span style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#166534', padding: '4px 10px', borderRadius: '12px' }}>
+            Supabase Sync Active
+          </span>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <thead>
+            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Farmer Name</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Activity</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Photo Proof</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Notes</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {validations && validations.map((v) => (
+              <tr key={v.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{v.farmer}</td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem' }}>
+                    {v.plot}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px', color: '#15803d', fontWeight: '600' }}>{v.activity}</td>
+                <td style={{ padding: '14px 16px' }}>
+                  {v.photo_url ? (
+                    <img src={v.photo_url} alt="Proof" style={{ width: '48px', height: '36px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #cbd5e1' }} />
+                  ) : (
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>No Photo</span>
+                  )}
+                </td>
+                <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '0.8rem' }}>{v.notes}</td>
+                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                  <span className={`pill ${v.status === 'Validated' ? 'pill-compliant' : v.status === 'Rejected' ? 'pill-critical' : 'pill-high'}`}>
+                    {v.status}
+                  </span>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {crops.map((c) => (
-                <tr key={c.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{c.variety}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <span style={{
-                      background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155'
-                    }}>
-                      {c.plot}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <span className={`pill pill-${c.growthStage.toLowerCase()}`}>
-                      {c.growthStage}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 16px', color: '#374151' }}>{c.fertilizer}</td>
-                  <td style={{ padding: '14px 16px', color: '#374151' }}>{c.irrigation}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: '700', color: '#11592c' }}>{c.yield}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-            <thead>
-              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Group / Flock</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Head Count</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Vaccination Coverage</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700' }}>Health Status</th>
-                <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Avg Daily Gain</th>
-              </tr>
-            </thead>
-            <tbody>
-              {livestock.map((l) => (
-                <tr key={l.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{l.group}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <span style={{
-                      background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155'
-                    }}>
-                      {l.plot}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 16px', fontWeight: '700' }}>{l.headCount} heads</td>
-                  <td style={{ padding: '14px 16px' }}>{l.vaccination}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <span className="pill pill-compliant">{l.healthStatus}</span>
-                  </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: '700', color: '#11592c' }}>{l.dailyGain}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 
-  // 3. Analytics & Decision Support Console
+  // 3. Livestock Operational Registry
+  const renderLivestockMonitoring = () => (
+    <div>
+      <div style={{ marginBottom: '20px' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+          Livestock Operational Registry & Health Management
+        </h1>
+        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+          Cooperative herd monitoring, vaccination coverage & weight gain metrics
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>TOTAL HEAD COUNT</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c', marginTop: '4px' }}>380 Heads</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>ACTIVE HERD GROUPS</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>{livestock.length} Groups</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>VACCINATION RATE</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>96.4%</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>AVG WEIGHT GAIN</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7', marginTop: '4px' }}>+1.2 kg/wk</div>
+        </div>
+      </div>
+
+      <div className="m-card" style={{ padding: '0', overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <thead>
+            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Group / Flock</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot Location</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Head Count</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Vaccination Coverage</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700' }}>Health Status</th>
+              <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Avg Daily Gain</th>
+            </tr>
+          </thead>
+          <tbody>
+            {livestock.map((l) => (
+              <tr key={l.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{l.group}</td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{
+                    background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155'
+                  }}>
+                    {l.plot}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px', fontWeight: '700' }}>{l.headCount} heads</td>
+                <td style={{ padding: '14px 16px' }}>{l.vaccination}</td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span className="pill pill-compliant">{l.healthStatus}</span>
+                </td>
+                <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: '700', color: '#11592c' }}>{l.dailyGain}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  // 4. Analytics & Intelligence Hub
   const renderAnalytics = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-            Analytics & Decision Support Console
+            Analytics & Intelligence Hub
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-            Random Forest forecasting · strategic intervention · cooperative-wide planning
+            Cooperative productivity metrics, historical harvest performance & compliance stats
           </p>
         </div>
 
@@ -353,8 +441,8 @@ const SuperAdminDashboard = ({ activeTab }) => {
           fontSize: '0.78rem',
           fontWeight: '700'
         }}>
-          <Sparkles size={15} color="#86efac" />
-          Random Forest Engine · Online
+          <BarChart3 size={15} color="#86efac" />
+          Analytics Engine · Active
         </div>
       </div>
 
@@ -412,6 +500,37 @@ const SuperAdminDashboard = ({ activeTab }) => {
               </LineChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // 5. Decision Support Engine (Dedicated Screen)
+  const renderDecisionSupport = () => (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+            Decision Support Engine & AI Strategy
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            Random Forest algorithmic yield forecasting & farm intervention recommendations
+          </p>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: '#0c3619',
+          color: '#ffffff',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          fontSize: '0.78rem',
+          fontWeight: '700'
+        }}>
+          <Sparkles size={15} color="#86efac" />
+          Random Forest Engine · Online
         </div>
       </div>
 
@@ -508,13 +627,13 @@ const SuperAdminDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 4. Super Admin Reports (Matching exact screenshot for PDF Documents tab)
+  // 6. Super Admin Reports
   const renderReports = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-            Super Admin Reports
+            Super Admin Reports & Compliance
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
             Operational reports consolidated from crop, livestock, farmer activity, harvest, compliance and productivity records
@@ -656,7 +775,7 @@ const SuperAdminDashboard = ({ activeTab }) => {
         </div>
       )}
 
-      {/* PDF Documents Grid matching exact screenshot */}
+      {/* PDF Documents Grid */}
       {reportsSubTab === 'pdf' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
           {superAdminPdfs.map((doc) => (
@@ -671,7 +790,6 @@ const SuperAdminDashboard = ({ activeTab }) => {
                 </div>
               </div>
 
-              {/* Action Buttons matching Screenshot */}
               <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                 <button
                   onClick={() => handleDownloadPDF(doc.title)}
@@ -716,8 +834,10 @@ const SuperAdminDashboard = ({ activeTab }) => {
     </div>
   );
 
-  if (activeTab === 'crop-monitoring' || activeTab === 'livestock-monitoring') return renderMonitoringHub();
-  if (activeTab === 'analytics' || activeTab === 'decision-support') return renderAnalytics();
+  if (activeTab === 'crop-monitoring') return renderCropMonitoring();
+  if (activeTab === 'livestock-monitoring') return renderLivestockMonitoring();
+  if (activeTab === 'analytics') return renderAnalytics();
+  if (activeTab === 'decision-support') return renderDecisionSupport();
   if (activeTab === 'reports') return renderReports();
   return renderOverviewDashboard();
 };
