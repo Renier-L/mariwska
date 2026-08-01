@@ -267,7 +267,15 @@ export const AuthProvider = ({ children }) => {
             photoUrl: v.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
             photoAttached: true
           }));
-          setValidations(formattedVals);
+          setValidations(prev => {
+            const merged = [...formattedVals];
+            prev.forEach(p => {
+              if (!merged.some(m => String(m.id) === String(p.id))) {
+                merged.unshift(p);
+              }
+            });
+            return merged;
+          });
         } else {
           // Auto-direct seed initial validations into empty Supabase task_validations table!
           for (const v of initialValidations) {
