@@ -21,32 +21,7 @@ export const initialLivestock = [
 
 export const initialAnnouncements = [];
 
-export const initialValidations = [
-  {
-    id: 'val-1',
-    plot: 'P-021',
-    timestamp: '07:15 - Sep 18',
-    farmer: 'Mang Juan Dela Cruz',
-    taskType: 'Fertilizer - vermicompost 12kg',
-    amount: '12 kg',
-    location: '14.586° N · 121.176° E',
-    farmerNote: 'Applied row 1–6, even distribution',
-    status: 'Pending',
-    photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60'
-  },
-  {
-    id: 'val-2',
-    plot: 'P-007',
-    timestamp: '06:42 - Sep 18',
-    farmer: 'Maria Santos',
-    taskType: 'Harvest - tomato',
-    amount: '45 kg',
-    location: '14.588° N · 121.172° E',
-    farmerNote: 'First batch ripe harvest, excellent quality grade A',
-    status: 'Pending',
-    photoUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=60'
-  }
-];
+export const initialValidations = [];
 
 export const initialMLClassifications = [
   { crop: 'Tomato (Diamante)', plot: 'P-007', confidence: 0.94, yieldForecast: '412 kg', recommendedFertilizer: 'Vermicompost - 12kg', recommendedAction: 'Maintain daily 06:00 drip irrigation' },
