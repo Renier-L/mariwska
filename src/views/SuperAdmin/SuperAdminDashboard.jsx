@@ -73,7 +73,7 @@ const forecastData = [
   { week: 'W8', actual: null, predicted: 90 },
 ];
 
-const SuperAdminDashboard = ({ activeTab }) => {
+const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   const { crops, livestock, validations } = useAuth();
   const [directoryTab, setDirectoryTab] = useState('crop');
   const [reportsSubTab, setReportsSubTab] = useState('pdf'); // Default to PDF Documents view to show matching screenshot
@@ -240,6 +240,21 @@ const SuperAdminDashboard = ({ activeTab }) => {
         </p>
       </div>
 
+      <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
+        <button
+          onClick={() => setActiveTab && setActiveTab('crop-monitoring')}
+          className={`tab-capsule-btn ${activeTab === 'crop-monitoring' ? 'active' : ''}`}
+        >
+          🌾 Crop Production Directory
+        </button>
+        <button
+          onClick={() => setActiveTab && setActiveTab('livestock-monitoring')}
+          className={`tab-capsule-btn ${activeTab === 'livestock-monitoring' ? 'active' : ''}`}
+        >
+          🐄 Livestock Operational Registry
+        </button>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>TOTAL ACTIVE CROPS</div>
@@ -361,6 +376,21 @@ const SuperAdminDashboard = ({ activeTab }) => {
         </p>
       </div>
 
+      <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
+        <button
+          onClick={() => setActiveTab && setActiveTab('crop-monitoring')}
+          className={`tab-capsule-btn ${activeTab === 'crop-monitoring' ? 'active' : ''}`}
+        >
+          🌾 Crop Production Directory
+        </button>
+        <button
+          onClick={() => setActiveTab && setActiveTab('livestock-monitoring')}
+          className={`tab-capsule-btn ${activeTab === 'livestock-monitoring' ? 'active' : ''}`}
+        >
+          🐄 Livestock Operational Registry
+        </button>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>TOTAL HEAD COUNT</div>
@@ -444,6 +474,21 @@ const SuperAdminDashboard = ({ activeTab }) => {
           <BarChart3 size={15} color="#86efac" />
           Analytics Engine · Active
         </div>
+      </div>
+
+      <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
+        <button
+          onClick={() => setActiveTab && setActiveTab('analytics')}
+          className={`tab-capsule-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+        >
+          📊 Analytics & Intelligence
+        </button>
+        <button
+          onClick={() => setActiveTab && setActiveTab('decision-support')}
+          className={`tab-capsule-btn ${activeTab === 'decision-support' ? 'active' : ''}`}
+        >
+          🧠 AI Decision Support Engine
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
@@ -532,6 +577,21 @@ const SuperAdminDashboard = ({ activeTab }) => {
           <Sparkles size={15} color="#86efac" />
           Random Forest Engine · Online
         </div>
+      </div>
+
+      <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
+        <button
+          onClick={() => setActiveTab && setActiveTab('analytics')}
+          className={`tab-capsule-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+        >
+          📊 Analytics & Intelligence
+        </button>
+        <button
+          onClick={() => setActiveTab && setActiveTab('decision-support')}
+          className={`tab-capsule-btn ${activeTab === 'decision-support' ? 'active' : ''}`}
+        >
+          🧠 AI Decision Support Engine
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.2fr', gap: '16px' }}>

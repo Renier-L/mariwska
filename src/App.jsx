@@ -60,7 +60,7 @@ const MainContent = () => {
       <div className="main-viewport">
         <Header />
         <main className="content-inner">
-          {currentRole === 'super_admin' && <SuperAdminDashboard activeTab={activeTab} />}
+          {currentRole === 'super_admin' && <SuperAdminDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
           {currentRole === 'admin' && <AdminConsole activeTab={activeTab} />}
           {currentRole === 'farm_staff' && <FarmStaffDashboard activeTab={activeTab} />}
         </main>
