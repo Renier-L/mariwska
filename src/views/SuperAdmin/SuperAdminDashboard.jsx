@@ -75,7 +75,7 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
-  const { crops, livestock, validations } = useAuth();
+  const { crops, livestock, validations, handleValidationAction } = useAuth();
   const [directoryTab, setDirectoryTab] = useState('crop');
   const [reportsSubTab, setReportsSubTab] = useState('pdf'); // Default to PDF Documents view to show matching screenshot
   const [checklist, setChecklist] = useState([
@@ -353,9 +353,26 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                 </td>
                 <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '0.8rem' }}>{v.notes}</td>
                 <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                  <span className={`pill ${v.status === 'Validated' ? 'pill-compliant' : v.status === 'Rejected' ? 'pill-critical' : 'pill-high'}`}>
-                    {v.status}
-                  </span>
+                  {v.status === 'Pending' ? (
+                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                      <button 
+                        onClick={() => handleValidationAction(v.id, 'Validated')}
+                        style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '5px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer' }}
+                      >
+                        ✓ Validate
+                      </button>
+                      <button 
+                        onClick={() => handleValidationAction(v.id, 'Rejected')}
+                        style={{ background: '#dc2626', color: '#fff', border: 'none', padding: '5px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer' }}
+                      >
+                        ✕ Reject
+                      </button>
+                    </div>
+                  ) : (
+                    <span className={`pill ${v.status === 'Validated' ? 'pill-compliant' : 'pill-critical'}`}>
+                      {v.status}
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}
