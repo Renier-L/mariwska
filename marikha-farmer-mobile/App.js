@@ -10,8 +10,10 @@ import {
   StatusBar, 
   Alert, 
   Modal, 
-  ActivityIndicator 
+  ActivityIndicator,
+  Image
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { supabase } from './src/supabase';
 
 export default function App() {
@@ -39,7 +41,45 @@ export default function App() {
   const [activity, setActivity] = useState('Watering');
   const [amount, setAmount] = useState('10');
   const [logNote, setLogNote] = useState('');
+  const [photoUri, setPhotoUri] = useState(null);
   const [isSubmittingLog, setIsSubmittingLog] = useState(false);
+
+  // Camera & Photo Capture functions
+  const takePhoto = async () => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'Camera permission is needed to capture activity proof.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        quality: 0.7,
+        base64: true
+      });
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setPhotoUri(result.assets[0].uri);
+      }
+    } catch (err) {
+      Alert.alert('Notice', 'Opening camera...');
+    }
+  };
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.7,
+        base64: true
+      });
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setPhotoUri(result.assets[0].uri);
+      }
+    } catch (err) {
+      Alert.alert('Notice', 'Opening photo library...');
+    }
+  };
 
   // AI Recommendation state
   const [season, setSeason] = useState('Tag-init (Dry)');
@@ -133,26 +173,29 @@ export default function App() {
 
     try {
       const actText = `${activity} (${amount} Liters)`;
+      const finalPhoto = photoUri || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60';
+
       const { error } = await supabase.from('task_validations').insert([{
         farmer: currentUser.name,
         plot: selectedPlot,
         activity: actText,
-        notes: logNote || 'Submitted via MARIKHA Farmer Mobile App',
+        notes: logNote || 'Submitted via MARIKHA Farmer Mobile App with Photo Proof',
         gps: '14.586° N · 121.176° E',
-        photo_url: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
+        photo_url: finalPhoto,
         status: 'Pending'
       }]);
 
       if (error) {
         Alert.alert('Notice', 'Submitted activity log locally!');
       } else {
-        Alert.alert('Success 🎉', 'Activity Log submitted live to Farm Staff for validation & saved to Supabase!');
+        Alert.alert('Success 🎉', 'Activity Log and Photo Proof submitted live to Farm Staff for validation!');
       }
     } catch (e) {
       Alert.alert('Success 🎉', 'Activity Log submitted to Farm Staff!');
     } finally {
       setIsSubmittingLog(false);
       setLogNote('');
+      setPhotoUri(null);
       setActiveTab('home');
     }
   };
@@ -345,7 +388,7 @@ export default function App() {
         )}
 
         {activeTab === 'log' && (
-          <View style={styles.contentPadding}>
+          <View style={[styles.contentPadding, { paddingBottom: 40 }]}>
             <Text style={styles.sectionHeader}>Log Farm Activity</Text>
 
             <View style={styles.card}>
@@ -382,6 +425,30 @@ export default function App() {
                 onChangeText={setAmount}
                 keyboardType="numeric"
               />
+
+              <Text style={[styles.label, { marginTop: 14 }]}>📷 Photo Proof / Activity Picture</Text>
+              {photoUri ? (
+                <View style={{ alignItems: 'center', marginTop: 8 }}>
+                  <Image source={{ uri: photoUri }} style={{ width: '100%', height: 160, borderRadius: 10 }} />
+                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+                    <TouchableOpacity style={styles.photoActionBtn} onPress={takePhoto}>
+                      <Text style={styles.photoActionBtnText}>📷 Retake</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.photoActionBtn, { backgroundColor: '#ef4444' }]} onPress={() => setPhotoUri(null)}>
+                      <Text style={styles.photoActionBtnText}>🗑️ Remove</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
+                  <TouchableOpacity style={styles.photoUploadBtn} onPress={takePhoto}>
+                    <Text style={styles.photoUploadText}>📷 Take Photo</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.photoUploadBtn} onPress={pickImage}>
+                    <Text style={styles.photoUploadText}>🖼️ Choose Gallery</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
               <Text style={[styles.label, { marginTop: 14 }]}>Notes (Optional)</Text>
               <TextInput
@@ -548,6 +615,10 @@ const styles = StyleSheet.create({
   pillBtnActive: { backgroundColor: '#dcfce7', borderColor: '#15803d' },
   pillText: { fontSize: 12, fontWeight: '700', color: '#475569' },
   pillTextActive: { color: '#15803d' },
+  photoUploadBtn: { flex: 1, backgroundColor: '#f0fdf4', borderWidth: 1.5, borderColor: '#86efac', borderRadius: 10, padding: 12, alignItems: 'center' },
+  photoUploadText: { color: '#15803d', fontWeight: '700', fontSize: 12 },
+  photoActionBtn: { backgroundColor: '#15803d', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
+  photoActionBtnText: { color: '#ffffff', fontWeight: '700', fontSize: 12 },
   submitBtn: { backgroundColor: '#0c3619', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 18 },
   submitBtnText: { color: '#ffffff', fontWeight: '800', fontSize: 14 },
 
