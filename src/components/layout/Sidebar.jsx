@@ -85,7 +85,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id;
+            const isActive = activeTab === item.id || 
+              (item.id === 'user-accounts' && activeTab === 'member-records') || 
+              (item.id === 'member-records' && activeTab === 'user-accounts');
             return (
               <button
                 key={item.id}

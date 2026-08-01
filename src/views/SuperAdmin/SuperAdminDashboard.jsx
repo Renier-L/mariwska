@@ -78,12 +78,18 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   const { crops, livestock, validations, handleValidationAction } = useAuth();
   const [directoryTab, setDirectoryTab] = useState('crop');
   const [reportsSubTab, setReportsSubTab] = useState('pdf'); // Default to PDF Documents view to show matching screenshot
+  const [committedAlert, setCommittedAlert] = useState(false);
   const [checklist, setChecklist] = useState([
     { id: 1, text: 'Dispatch agronomist team to plots P-021 and P-034 for fertilizer recalibration within 5 days.', checked: false },
     { id: 2, text: 'Reassign irrigation slot 14:00–16:00 to cluster B based on rainfall deficit pattern (RF importance 0.34).', checked: true },
     { id: 3, text: 'Increase tomato planting allocation by 18% next season — predicted ROI uplift +12.4%.', checked: false },
     { id: 4, text: 'Schedule PGS re-inspection for farmer T. Lopez before next harvest window (Sep 28).', checked: true },
   ]);
+
+  const handleCommitPlan = () => {
+    setCommittedAlert(true);
+    setTimeout(() => setCommittedAlert(false), 4000);
+  };
 
   const handlePrint = () => {
     window.print();
@@ -571,6 +577,25 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   // 5. Decision Support Engine (Dedicated Screen)
   const renderDecisionSupport = () => (
     <div>
+      {committedAlert && (
+        <div style={{
+          background: '#dcfce7',
+          border: '1px solid #86efac',
+          color: '#15803d',
+          padding: '12px 16px',
+          borderRadius: '10px',
+          marginBottom: '16px',
+          fontWeight: '700',
+          fontSize: '0.88rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <CheckCircle2 size={18} color="#16a34a" />
+          Strategic Plan committed to Supabase Realtime & broadcasted to Farmer Mobile App!
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
@@ -697,7 +722,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
 
-          <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}>
+          <button onClick={handleCommitPlan} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}>
             Commit to Strategic Plan
           </button>
         </div>
