@@ -87,7 +87,11 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id || 
               (item.id === 'user-accounts' && activeTab === 'member-records') || 
-              (item.id === 'member-records' && activeTab === 'user-accounts');
+              (item.id === 'member-records' && activeTab === 'user-accounts') ||
+              (item.id === 'crop-monitoring' && activeTab === 'livestock-monitoring') ||
+              (item.id === 'livestock-monitoring' && activeTab === 'crop-monitoring') ||
+              (item.id === 'analytics' && activeTab === 'decision-support') ||
+              (item.id === 'decision-support' && activeTab === 'analytics');
             return (
               <button
                 key={item.id}

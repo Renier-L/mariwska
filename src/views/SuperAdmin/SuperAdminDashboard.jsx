@@ -317,12 +317,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       <div className="m-card" style={{ padding: '0', overflow: 'hidden', marginBottom: '24px' }}>
         <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>🌾 Active Field Plots Registry</span>
-          <button 
-            onClick={() => setShowAddCropModal(true)}
-            style={{ background: '#11592c', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer' }}
-          >
-            + Register Crop Plot
-          </button>
+          <span style={{ fontSize: '0.75rem', background: '#e4f0e6', color: '#11592c', padding: '4px 10px', borderRadius: '12px', fontWeight: '700' }}>
+            📱 Synchronized Live from Mobile App
+          </span>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
           <thead>
@@ -476,12 +473,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       <div className="m-card" style={{ padding: '0', overflow: 'hidden' }}>
         <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>🐄 Livestock Herd & Flock Registry</span>
-          <button 
-            onClick={() => setShowAddLivestockModal(true)}
-            style={{ background: '#11592c', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer' }}
-          >
-            + Register Livestock Group
-          </button>
+          <span style={{ fontSize: '0.75rem', background: '#e4f0e6', color: '#11592c', padding: '4px 10px', borderRadius: '12px', fontWeight: '700' }}>
+            📱 Synchronized Live from Mobile App
+          </span>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
           <thead>
