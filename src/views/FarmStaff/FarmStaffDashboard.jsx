@@ -80,12 +80,14 @@ const FarmStaffDashboard = ({ activeTab }) => {
   const getDisplayPhoto = (valObj) => {
     if (!valObj) return DEFAULT_FARM_PHOTO;
     const url = valObj.photoUrl || valObj.photo_url;
-    if (!url || typeof url !== 'string') return DEFAULT_FARM_PHOTO;
-    if (url.startsWith('data:image')) {
-      return url.length > 300 ? url : DEFAULT_FARM_PHOTO;
+    if (url && typeof url === 'string') {
+      if (url.startsWith('data:image')) return url;
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
     }
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
+    const notes = valObj.farmerNote || valObj.notes || '';
+    if (notes.includes('data:image')) {
+      const match = notes.match(/data:image\/[^\s\]"']+/);
+      if (match) return match[0];
     }
     return DEFAULT_FARM_PHOTO;
   };
