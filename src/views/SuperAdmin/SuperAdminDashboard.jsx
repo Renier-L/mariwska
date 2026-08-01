@@ -74,7 +74,7 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab }) => {
-  const { crops, livestock } = useAuth();
+  const { crops, livestock, validations } = useAuth();
   const [directoryTab, setDirectoryTab] = useState('crop');
   const [reportsSubTab, setReportsSubTab] = useState('pdf'); // Default to PDF Documents view to show matching screenshot
   const [checklist, setChecklist] = useState([
