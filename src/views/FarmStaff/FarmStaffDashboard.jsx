@@ -30,7 +30,7 @@ const safetyIndexData = [
   { day: 'D14', val: 92 },
 ];
 
-const DEFAULT_FARM_PHOTO = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=1000&auto=format&fit=crop&q=80';
+const DEFAULT_FARM_PHOTO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%230f172a"/><g transform="translate(250, 130)"><circle cx="50" cy="50" r="42" fill="%2315803d"/><path d="M50 22 L66 56 L34 56 Z" fill="%2386efac"/><path d="M50 38 L62 68 L38 68 Z" fill="%234ade80"/></g><text x="300" y="255" font-family="sans-serif" font-size="18" font-weight="800" fill="%2386efac" text-anchor="middle">Field Photo Verification</text><text x="300" y="285" font-family="sans-serif" font-size="13" fill="%2394a3b8" text-anchor="middle">Live Mobile Activity Log Verification</text></svg>';
 
 const FarmStaffDashboard = ({ activeTab }) => {
   const { validations, handleValidationAction, mlClassifications } = useAuth();
