@@ -121,7 +121,24 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleIncomingValidation = (newVal) => {
-      setValidations(prev => [newVal, ...prev.filter(v => v.id !== newVal.id)]);
+      const formatted = {
+        id: String(newVal.id || Date.now()),
+        farmer: newVal.farmer || 'Mang Juan Dela Cruz',
+        plot: newVal.plot || 'Plot P-007',
+        taskType: newVal.activity || newVal.taskType || 'Watering',
+        activity: newVal.activity || newVal.taskType || 'Watering',
+        timestamp: 'Just now',
+        urgency: 'Normal',
+        urgencyCls: 'pill-low',
+        location: newVal.gps || newVal.location || '14.586° N · 121.176° E',
+        gps: newVal.gps || newVal.location || '14.586° N · 121.176° E',
+        farmerNote: newVal.notes || newVal.farmerNote || 'Submitted via Farmers Mobile App',
+        notes: newVal.notes || newVal.farmerNote || 'Submitted via Farmers Mobile App',
+        photoUrl: newVal.photo_url || newVal.photoUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
+        photoAttached: true,
+        status: newVal.status || 'Pending'
+      };
+      setValidations(prev => [formatted, ...prev.filter(v => String(v.id) !== String(formatted.id))]);
     };
 
     const handleIncomingUser = (newUser) => {
