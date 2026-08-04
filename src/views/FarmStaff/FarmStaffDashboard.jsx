@@ -38,6 +38,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
   const [staffNote, setStaffNote] = useState('');
   const [reportsTab, setReportsTab] = useState('productivity');
   const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
+  const [previewModalUrl, setPreviewModalUrl] = useState(null);
 
   const filteredValidations = validations.filter(v => {
     const query = farmerSearchQuery.toLowerCase().trim();
@@ -306,8 +307,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Validation Control Card</h4>
                   <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
                 </div>
-
-                {/* DIRECT UPLOADED MOBILE IMAGE VIEWER */}
+                {/* AUTO-CENTERED HIGH-RES AMBIENT PHOTO VIEWER */}
                 <div style={{
                   width: '100%',
                   minHeight: '280px',
@@ -318,25 +318,61 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   marginBottom: '16px',
                   position: 'relative',
                   border: '1px solid #334155',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
                   display: 'flex',
                   alignItems: 'center',
-                  justify: 'center'
+                  justifyContent: 'center'
                 }}>
                   {photoToRender ? (
-                    <>
+                    <div 
+                      onClick={() => setPreviewModalUrl(photoToRender)}
+                      title="Click to enlarge image"
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '350px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'zoom-in',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {/* Ambient Blurred Background Filler */}
+                      <img
+                        src={photoToRender}
+                        alt=""
+                        style={{
+                          position: 'absolute',
+                          top: 0, left: 0, width: '100%', height: '100%',
+                          objectFit: 'cover',
+                          filter: 'blur(22px) brightness(0.35)',
+                          transform: 'scale(1.15)'
+                        }}
+                      />
+                      {/* Perfectly Centered Main Photo */}
                       <img
                         src={photoToRender}
                         alt="Field verification photo"
-                        style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', display: 'block' }}
+                        style={{
+                          position: 'relative',
+                          maxWidth: '96%',
+                          maxHeight: '330px',
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                          margin: '0 auto',
+                          borderRadius: '8px',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+                          display: 'block'
+                        }}
                       />
                       <div style={{
-                        position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
-                        color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
+                        position: 'absolute', bottom: 10, left: 10, background: 'rgba(15, 23, 42, 0.88)',
+                        color: '#ffffff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)'
                       }}>
-                        <MapPin size={14} color="#86efac" /> Mobile Uploaded Field Verification Photo
+                        <MapPin size={14} color="#86efac" /> Mobile Uploaded Field Verification Photo · Click to Enlarge 🔍
                       </div>
-                    </>
+                    </div>
                   ) : (
                     <div style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
                       <Camera size={40} color="#64748b" style={{ marginBottom: '10px' }} />
@@ -692,10 +728,45 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  if (activeTab === 'activity-validation') return renderValidationPanel();
-  if (activeTab === 'ml-audit') return renderMLAudit();
-  if (activeTab === 'reports') return renderReports();
-  return renderOperations();
+  const renderContainerWithModal = (content) => (
+    <>
+      {content}
+      {/* FULLSCREEN LIGHTBOX IMAGE MODAL */}
+      {previewModalUrl && (
+        <div 
+          onClick={() => setPreviewModalUrl(null)}
+          style={{
+            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+            background: 'rgba(0, 0, 0, 0.92)', zIndex: 99999, display: 'flex',
+            alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(8px)'
+          }}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
+            <button 
+              onClick={() => setPreviewModalUrl(null)}
+              style={{
+                position: 'absolute', top: '-42px', right: '0', background: '#ef4444',
+                color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '6px',
+                fontWeight: '800', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+              }}
+            >
+              ✕ Close Preview
+            </button>
+            <img 
+              src={previewModalUrl} 
+              alt="Enlarged verification proof" 
+              style={{ maxWidth: '100%', maxHeight: '85vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }} 
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  if (activeTab === 'activity-validation') return renderContainerWithModal(renderValidationPanel());
+  if (activeTab === 'ml-audit') return renderContainerWithModal(renderMLAudit());
+  if (activeTab === 'reports') return renderContainerWithModal(renderReports());
+  return renderContainerWithModal(renderOperations());
 };
 
 export default FarmStaffDashboard;
