@@ -264,31 +264,14 @@ export const AuthProvider = ({ children }) => {
             gps: v.gps || '14.586° N · 121.176° E',
             farmerNote: v.notes || 'Submitted via Farmers Mobile App',
             notes: v.notes || 'Submitted via Farmers Mobile App',
-            photoUrl: v.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
-            photoAttached: true
+            photoUrl: v.photo_url || null,
+            photo_url: v.photo_url || null,
+            photoAttached: true,
+            status: v.status || 'Pending'
           }));
-          setValidations(prev => {
-            const merged = [...formattedVals];
-            prev.forEach(p => {
-              if (!merged.some(m => String(m.id) === String(p.id))) {
-                merged.unshift(p);
-              }
-            });
-            return merged;
-          });
+          setValidations(formattedVals);
         } else {
-          // Auto-direct seed initial validations into empty Supabase task_validations table!
-          for (const v of initialValidations) {
-            await supabase.from('task_validations').insert([{
-              farmer: v.farmer,
-              plot: v.plot,
-              activity: v.taskType,
-              notes: v.farmerNote,
-              gps: v.location,
-              photo_url: v.photoUrl,
-              status: 'Pending'
-            }]);
-          }
+          setValidations([]);
         }
       } catch (err) {
         console.log('Supabase table fallback', err);
@@ -578,12 +561,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const handleValidationAction = async (id, action, notes) => {
-    setValidations(prev => prev.filter(v => v.id !== id));
+    setValidations(prev => prev.filter(v => String(v.id) !== String(id)));
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'VALIDATION_DELETED_PUSH', payload: id });
+    }
 
     try {
-      await supabase.from('task_validations').update({ status: action }).eq('id', id);
+      await supabase.from('task_validations').delete().eq('id', id);
     } catch (e) {
-      console.log('Supabase validation update error:', e);
+      console.log('Supabase validation delete error:', e);
     }
   };
 
