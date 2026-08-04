@@ -79,15 +79,25 @@ const FarmStaffDashboard = ({ activeTab }) => {
   // Helper to resolve valid photo URL or high-res farm fallback
   const getDisplayPhoto = (valObj) => {
     if (!valObj) return DEFAULT_FARM_PHOTO;
-    const url = valObj.photoUrl || valObj.photo_url;
+    let url = valObj.photoUrl || valObj.photo_url || valObj.photo;
+    const notes = valObj.farmerNote || valObj.notes || '';
+
+    if (!url || typeof url !== 'string' || (!url.startsWith('data:image') && !url.startsWith('http://') && !url.startsWith('https://'))) {
+      if (notes.includes('[PHOTO_URL:')) {
+        const match = notes.match(/\[PHOTO_URL:([^\]]+)\]/);
+        if (match && match[1]) url = match[1];
+      } else if (notes.includes('data:image')) {
+        const match = notes.match(/data:image\/[^\s\]"']+/);
+        if (match) url = match[0];
+      } else if (notes.includes('http://') || notes.includes('https://')) {
+        const match = notes.match(/https?:\/\/[^\s\]"']+/);
+        if (match) url = match[0];
+      }
+    }
+
     if (url && typeof url === 'string') {
       if (url.startsWith('data:image')) return url;
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    }
-    const notes = valObj.farmerNote || valObj.notes || '';
-    if (notes.includes('data:image')) {
-      const match = notes.match(/data:image\/[^\s\]"']+/);
-      if (match) return match[0];
     }
     return DEFAULT_FARM_PHOTO;
   };
@@ -352,7 +362,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   <span style={{ color: '#111827', fontWeight: '700' }}>
                     "{(() => {
                       const raw = selectedValidation.farmerNote || selectedValidation.notes || '';
-                      const cleaned = raw.replace(/\[Photo Proof:[^\]]+\]/gi, '').trim();
+                      const cleaned = raw.replace(/\[PHOTO_URL:[^\]]+\]/gi, '').replace(/\[Photo Proof:[^\]]+\]/gi, '').trim();
                       return cleaned || 'No notes provided';
                     })()}"
                   </span>
