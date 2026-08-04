@@ -5,7 +5,6 @@ This repository contains the standalone React Native & Expo mobile application f
 ## Features
 - **Live Supabase Synchronization**: Real-time push alerts & activity log syncing.
 - **Native Android Camera & Image Picker**: Take photo proof directly on field plots.
-- **GPS Tagging**: Automatically logs farmer plot coordinates.
 - **AI Recommendation Engine**: Random Forest classifier suitability & yield prediction.
 - **Offline & Low-Bandwidth Mode**: Retains entries locally and syncs to cloud.
 
