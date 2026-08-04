@@ -20,17 +20,38 @@ import {
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
 
-const safetyIndexData = [
-  { day: 'D1', val: 78 },
-  { day: 'D3', val: 84 },
-  { day: 'D5', val: 88 },
-  { day: 'D7', val: 86 },
-  { day: 'D9', val: 80 },
-  { day: 'D11', val: 81 },
-  { day: 'D14', val: 92 },
-];
+// Dynamic Relative Time Formatter (Just now, 5m ago, 2h ago, Yesterday, Aug 4)
+const formatRelativeTime = (timestamp) => {
+  if (!timestamp) return 'Just now';
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return String(timestamp);
 
-const DEFAULT_FARM_PHOTO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%230f172a"/><g transform="translate(250, 130)"><circle cx="50" cy="50" r="42" fill="%2315803d"/><path d="M50 22 L66 56 L34 56 Z" fill="%2386efac"/><path d="M50 38 L62 68 L38 68 Z" fill="%234ade80"/></g><text x="300" y="255" font-family="sans-serif" font-size="18" font-weight="800" fill="%2386efac" text-anchor="middle">Field Photo Verification</text><text x="300" y="285" font-family="sans-serif" font-size="13" fill="%2394a3b8" text-anchor="middle">Live Mobile Activity Log Verification</text></svg>';
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (diffInSeconds < 30) return 'Just now';
+  if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays === 1) return 'Yesterday';
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+// Full Timestamp Formatter (e.g. Aug 4, 2026 · 2:52 PM)
+const formatFullTimestamp = (timestamp) => {
+  if (!timestamp) return new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return String(timestamp);
+  return date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+};
 
 const FarmStaffDashboard = ({ activeTab }) => {
   const { validations, handleValidationAction, mlClassifications } = useAuth();
@@ -287,7 +308,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
                           <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
                           <div>
                             <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
-                              {v.plot} · {v.timestamp}
+                              {v.plot} · {formatRelativeTime(v.createdAt || v.created_at || v.timestamp)}
                             </div>
                             <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
                             <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
@@ -400,8 +421,16 @@ const FarmStaffDashboard = ({ activeTab }) => {
                     <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
                   </div>
                   <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>LOCATION</span>
-                    <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{selectedValidation.location || selectedValidation.gps}</strong>
+                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>REALTIME LOCATION</span>
+                    <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'}
+                    </strong>
+                  </div>
+                  <div style={{ gridColumn: 'span 2', background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>SUBMITTED DATE & TIME</span>
+                    <strong style={{ fontSize: '0.85rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Clock size={14} color="#0284c7" /> {formatFullTimestamp(selectedValidation.createdAt || selectedValidation.created_at)} ({formatRelativeTime(selectedValidation.createdAt || selectedValidation.created_at)})
+                    </strong>
                   </div>
                 </div>
 
