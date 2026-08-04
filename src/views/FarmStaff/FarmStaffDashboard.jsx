@@ -76,9 +76,9 @@ const FarmStaffDashboard = ({ activeTab }) => {
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
   };
 
-  // Helper to resolve valid photo URL or high-res farm fallback
+  // Helper to resolve valid photo URL or null fallback
   const getDisplayPhoto = (valObj) => {
-    if (!valObj) return DEFAULT_FARM_PHOTO;
+    if (!valObj) return null;
     let url = valObj.photoUrl || valObj.photo_url || valObj.photo;
     const notes = valObj.farmerNote || valObj.notes || '';
 
@@ -99,7 +99,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
       if (url.startsWith('data:image')) return url;
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
     }
-    return DEFAULT_FARM_PHOTO;
+    return null;
   };
 
   // 1. Operations & Verification Dashboard
@@ -307,10 +307,11 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
                 </div>
 
-                {/* AUTOMATIC ASPECT-RATIO & SHAPE PRESERVATION CONTAINER */}
+                {/* DIRECT UPLOADED MOBILE IMAGE VIEWER */}
                 <div style={{
                   width: '100%',
-                  height: '320px',
+                  minHeight: '280px',
+                  maxHeight: '420px',
                   borderRadius: '12px',
                   overflow: 'hidden',
                   background: '#0f172a',
@@ -322,20 +323,31 @@ const FarmStaffDashboard = ({ activeTab }) => {
                   alignItems: 'center',
                   justify: 'center'
                 }}>
-                  <img
-                    src={photoToRender}
-                    alt="Field verification photo"
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-                    onError={(e) => {
-                      e.target.src = DEFAULT_FARM_PHOTO;
-                    }}
-                  />
-                  <div style={{
-                    position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
-                    color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
-                  }}>
-                    <MapPin size={14} color="#86efac" /> Field-verification photo · Shape & Aspect Ratio Preserved
-                  </div>
+                  {photoToRender ? (
+                    <>
+                      <img
+                        src={photoToRender}
+                        alt="Field verification photo"
+                        style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', display: 'block' }}
+                      />
+                      <div style={{
+                        position: 'absolute', bottom: 10, left: 10, background: 'rgba(0,0,0,0.75)',
+                        color: '#ffffff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(4px)'
+                      }}>
+                        <MapPin size={14} color="#86efac" /> Mobile Uploaded Field Verification Photo
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
+                      <Camera size={40} color="#64748b" style={{ marginBottom: '10px' }} />
+                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#cbd5e1' }}>
+                        No Image Uploaded
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px' }}>
+                        Mobile user submitted log without camera picture
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
