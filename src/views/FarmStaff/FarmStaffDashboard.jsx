@@ -227,20 +227,20 @@ const FarmStaffDashboard = ({ activeTab }) => {
 
   // 2. Farmer Activity Validation Panel with ASPECT RATIO & SHAPE PRESERVATION
   const renderValidationPanel = () => {
-    const photoToRender = selectedValidation ? getDisplayPhoto(selectedValidation) : DEFAULT_FARM_PHOTO;
+    const selectedValidation = filteredValidations.find(v => v.id === selectedValId) || filteredValidations[0] || validations[0];
+    const photoToRender = selectedValidation ? getDisplayPhoto(selectedValidation) : null;
 
-    return (
-      <div>
-        <div style={{ marginBottom: '20px' }}>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-            Farmer Activity Validation Panel
-          </h1>
-          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-            {validations.length} submissions awaiting field-verification review
-          </p>
-        </div>
-
-        {validations.length === 0 ? (
+    if (validations.length === 0) {
+      return (
+        <div>
+          <div style={{ marginBottom: '20px' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+              Farmer Activity Validation Panel
+            </h1>
+            <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+              0 submissions awaiting field-verification review
+            </p>
+          </div>
           <div className="m-card" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', border: '1.5px dashed #cbd5e1' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎉</div>
             <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
@@ -253,225 +253,248 @@ const FarmStaffDashboard = ({ activeTab }) => {
               ✓ Validation Queue 100% Up to Date
             </span>
           </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px' }}>
-            <div className="m-card">
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Incoming Digital Task Logs</h4>
-              <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '10px' }}>
-                Raw inputs submitted by mobile farmers
-              </span>
+        </div>
+      );
+    }
 
-              {/* LIVE FARMER SEARCH INPUT BOX */}
-              <div style={{ marginBottom: '12px' }}>
-                <input
-                  type="text"
-                  placeholder="🔍 Search farmer name or plot..."
-                  value={farmerSearchQuery}
-                  onChange={(e) => setFarmerSearchQuery(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    border: '1.5px solid #11592c',
-                    fontSize: '0.78rem',
-                    outline: 'none',
-                    fontWeight: '600',
-                    background: '#ffffff'
-                  }}
+    return (
+      <div>
+        <div style={{ marginBottom: '20px' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+            Farmer Activity Validation Panel
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            {validations.length} submissions awaiting field-verification review
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px' }}>
+          {/* Left Column: Incoming Task Queue */}
+          <div className="m-card">
+            <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#111827' }}>Incoming Digital Task Logs</h4>
+            <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '10px' }}>
+              Raw inputs submitted by mobile farmers
+            </span>
+
+            <div style={{ marginBottom: '12px' }}>
+              <input
+                type="text"
+                placeholder="🔍 Search farmer name or plot..."
+                value={farmerSearchQuery}
+                onChange={(e) => setFarmerSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #11592c',
+                  fontSize: '0.78rem',
+                  outline: 'none',
+                  fontWeight: '600',
+                  background: '#ffffff'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {filteredValidations.length === 0 ? (
+                <div style={{ fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', padding: '16px 8px' }}>
+                  No farmer logs matching "{farmerSearchQuery}"
+                </div>
+              ) : (
+                filteredValidations.map(v => {
+                  const isSel = v.id === selectedValId;
+                  return (
+                    <div
+                      key={v.id}
+                      onClick={() => setSelectedValId(v.id)}
+                      style={{
+                        padding: '12px',
+                        borderRadius: '10px',
+                        background: isSel ? '#f0fdf4' : '#f9fafb',
+                        border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justify: 'space-between'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
+                        <div>
+                          <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
+                            {v.plot} · {formatRelativeTime(v.createdAt || v.created_at || v.timestamp)}
+                          </div>
+                          <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} color="#94a3b8" />
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Selected Validation Control Card */}
+          {selectedValidation ? (
+            <div className="m-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Validation Control Card</h4>
+                <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
+              </div>
+
+              {/* AUTO-CENTERED HIGH-RES AMBIENT PHOTO VIEWER */}
+              <div style={{
+                width: '100%',
+                minHeight: '280px',
+                maxHeight: '420px',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                background: '#0f172a',
+                marginBottom: '16px',
+                position: 'relative',
+                border: '1px solid #334155',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {photoToRender ? (
+                  <div 
+                    onClick={() => setPreviewModalUrl(photoToRender)}
+                    title="Click to enlarge image"
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '350px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'zoom-in',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <img
+                      src={photoToRender}
+                      alt=""
+                      style={{
+                        position: 'absolute',
+                        top: 0, left: 0, width: '100%', height: '100%',
+                        objectFit: 'cover',
+                        filter: 'blur(22px) brightness(0.35)',
+                        transform: 'scale(1.15)'
+                      }}
+                    />
+                    <img
+                      src={photoToRender}
+                      alt="Field verification photo"
+                      style={{
+                        position: 'relative',
+                        maxWidth: '96%',
+                        maxHeight: '330px',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        margin: '0 auto',
+                        borderRadius: '8px',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+                        display: 'block'
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute', bottom: 10, left: 10, background: 'rgba(15, 23, 42, 0.88)',
+                      color: '#ffffff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)'
+                    }}>
+                      <MapPin size={14} color="#86efac" /> Mobile Uploaded Field Verification Photo · Click to Enlarge 🔍
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
+                    <Camera size={40} color="#64748b" style={{ marginBottom: '10px' }} />
+                    <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#cbd5e1' }}>
+                      No Image Uploaded
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px' }}>
+                      Mobile user submitted log without camera picture
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>FARMER</span>
+                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>PLOT</span>
+                  <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.plot}</strong>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
+                  <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>REALTIME LOCATION</span>
+                  <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'}
+                  </strong>
+                </div>
+                <div style={{ gridColumn: 'span 2', background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>SUBMITTED DATE & TIME</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Clock size={14} color="#0284c7" /> {formatFullTimestamp(selectedValidation.createdAt || selectedValidation.created_at)} ({formatRelativeTime(selectedValidation.createdAt || selectedValidation.created_at)})
+                  </strong>
+                </div>
+              </div>
+
+              <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '12px 14px', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '16px' }}>
+                <span style={{ fontWeight: '800', color: '#166534', display: 'block', marginBottom: '2px' }}>FARMER NOTE / COMMENT: </span>
+                <span style={{ color: '#111827', fontWeight: '700' }}>
+                  "{(() => {
+                    const raw = selectedValidation.farmerNote || selectedValidation.notes || '';
+                    const cleaned = raw.replace(/\[PHOTO_URL:[^\]]+\]/gi, '').replace(/\[Photo Proof:[^\]]+\]/gi, '').trim();
+                    return cleaned || 'No notes provided';
+                  })()}"
+                </span>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>
+                  Staff Evaluation Notes
+                </label>
+                <textarea
+                  value={staffNote}
+                  onChange={(e) => setStaffNote(e.target.value)}
+                  placeholder="Document field check observations, corrections requested, or supporting evidence..."
+                  rows={2}
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {filteredValidations.length === 0 ? (
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', padding: '16px 8px' }}>
-                    No farmer logs matching "{farmerSearchQuery}"
-                  </div>
-                ) : (
-                  filteredValidations.map(v => {
-                    const isSel = v.id === selectedValId;
-                    return (
-                      <div
-                        key={v.id}
-                        onClick={() => setSelectedValId(v.id)}
-                        style={{
-                          padding: '12px',
-                          borderRadius: '10px',
-                          background: isSel ? '#f0fdf4' : '#f9fafb',
-                          border: isSel ? '2px solid #11592c' : '1px solid #e5e7eb',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justify: 'space-between'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <Camera size={18} color={isSel ? '#11592c' : '#94a3b8'} />
-                          <div>
-                            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>
-                              {v.plot} · {formatRelativeTime(v.createdAt || v.created_at || v.timestamp)}
-                            </div>
-                            <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827' }}>{v.farmer}</div>
-                            <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '600' }}>{v.taskType || v.activity}</div>
-                          </div>
-                        </div>
-                        <ChevronRight size={16} color="#94a3b8" />
-                      </div>
-                    );
-                  })
-                )}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <button onClick={handleApprove} className="btn-primary" style={{ justifyContent: 'center', padding: '12px', fontSize: '0.88rem' }}>
+                  ✓ Approve & Commit to Cloud
+                </button>
+                <button onClick={handleReject} style={{
+                  background: '#dc2626', color: '#ffffff', fontWeight: '800', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '0.88rem', cursor: 'pointer'
+                }}>
+                  ✕ Reject / Request Correction
+                </button>
               </div>
             </div>
-
-            {selectedValidation && (
-              <div className="m-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Validation Control Card</h4>
-                  <span style={{ fontSize: '0.78rem', color: '#6b7280', fontWeight: '700' }}>Submission #{selectedValidation.id}</span>
-                </div>
-                {/* AUTO-CENTERED HIGH-RES AMBIENT PHOTO VIEWER */}
-                <div style={{
-                  width: '100%',
-                  minHeight: '280px',
-                  maxHeight: '420px',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  background: '#0f172a',
-                  marginBottom: '16px',
-                  position: 'relative',
-                  border: '1px solid #334155',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {photoToRender ? (
-                    <div 
-                      onClick={() => setPreviewModalUrl(photoToRender)}
-                      title="Click to enlarge image"
-                      style={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '350px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'zoom-in',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      {/* Ambient Blurred Background Filler */}
-                      <img
-                        src={photoToRender}
-                        alt=""
-                        style={{
-                          position: 'absolute',
-                          top: 0, left: 0, width: '100%', height: '100%',
-                          objectFit: 'cover',
-                          filter: 'blur(22px) brightness(0.35)',
-                          transform: 'scale(1.15)'
-                        }}
-                      />
-                      {/* Perfectly Centered Main Photo */}
-                      <img
-                        src={photoToRender}
-                        alt="Field verification photo"
-                        style={{
-                          position: 'relative',
-                          maxWidth: '96%',
-                          maxHeight: '330px',
-                          objectFit: 'contain',
-                          objectPosition: 'center',
-                          margin: '0 auto',
-                          borderRadius: '8px',
-                          boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
-                          display: 'block'
-                        }}
-                      />
-                      <div style={{
-                        position: 'absolute', bottom: 10, left: 10, background: 'rgba(15, 23, 42, 0.88)',
-                        color: '#ffffff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)'
-                      }}>
-                        <MapPin size={14} color="#86efac" /> Mobile Uploaded Field Verification Photo · Click to Enlarge 🔍
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ textAlign: 'center', padding: '24px', color: '#94a3b8' }}>
-                      <Camera size={40} color="#64748b" style={{ marginBottom: '10px' }} />
-                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#cbd5e1' }}>
-                        No Image Uploaded
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px' }}>
-                        Mobile user submitted log without camera picture
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
-                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>FARMER</span>
-                    <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
-                  </div>
-                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>PLOT</span>
-                    <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.plot}</strong>
-                  </div>
-                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
-                    <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
-                  </div>
-                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>REALTIME LOCATION</span>
-                    <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || '14.586° N · 121.176° E'}
-                    </strong>
-                  </div>
-                  <div style={{ gridColumn: 'span 2', background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>SUBMITTED DATE & TIME</span>
-                    <strong style={{ fontSize: '0.85rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={14} color="#0284c7" /> {formatFullTimestamp(selectedValidation.createdAt || selectedValidation.created_at)} ({formatRelativeTime(selectedValidation.createdAt || selectedValidation.created_at)})
-                    </strong>
-                  </div>
-                </div>
-
-                <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '12px 14px', borderRadius: '10px', fontSize: '0.82rem', marginBottom: '16px' }}>
-                  <span style={{ fontWeight: '800', color: '#166534', display: 'block', marginBottom: '2px' }}>FARMER NOTE / COMMENT: </span>
-                  <span style={{ color: '#111827', fontWeight: '700' }}>
-                    "{(() => {
-                      const raw = selectedValidation.farmerNote || selectedValidation.notes || '';
-                      const cleaned = raw.replace(/\[PHOTO_URL:[^\]]+\]/gi, '').replace(/\[Photo Proof:[^\]]+\]/gi, '').trim();
-                      return cleaned || 'No notes provided';
-                    })()}"
-                  </span>
-                </div>
-
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>
-                    Staff Evaluation Notes
-                  </label>
-                  <textarea
-                    value={staffNote}
-                    onChange={(e) => setStaffNote(e.target.value)}
-                    placeholder="Document field check observations, corrections requested, or supporting evidence..."
-                    rows={2}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem' }}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <button onClick={handleApprove} className="btn-primary" style={{ justifyContent: 'center', padding: '12px', fontSize: '0.88rem' }}>
-                    ✓ Approve & Commit to Cloud
-                  </button>
-                  <button onClick={handleReject} style={{
-                    background: '#dc2626', color: '#ffffff', fontWeight: '800', padding: '12px', borderRadius: '8px', border: 'none', fontSize: '0.88rem', cursor: 'pointer'
-                  }}>
-                    ✕ Reject / Request Correction
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          ) : (
+            <div className="m-card" style={{ textAlign: 'center', padding: '50px 20px', background: '#ffffff', borderRadius: '12px' }}>
+              <CheckCircle2 size={48} color="#16a34a" style={{ marginBottom: '12px', margin: '0 auto', display: 'block' }} />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', marginBottom: '6px' }}>
+                No Awaiting Activity Validations
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: '#6b7280', maxWidth: '360px', margin: '0 auto' }}>
+                All mobile farmer logs have been processed! New submissions will automatically appear live in real time.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     );
   };
