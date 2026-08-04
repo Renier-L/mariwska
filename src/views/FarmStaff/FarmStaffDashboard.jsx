@@ -437,7 +437,7 @@ const FarmStaffDashboard = ({ activeTab }) => {
                 <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                   <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>REALTIME LOCATION</span>
                   <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || 'Sumulong Highway, Antipolo City (OSM Verified)'}
+                    <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || 'Live Mobile GPS'}
                   </strong>
                 </div>
                 <div style={{ gridColumn: 'span 2', background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
