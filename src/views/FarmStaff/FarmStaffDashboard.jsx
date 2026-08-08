@@ -1004,7 +1004,6 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
   const renderContainerWithModal = (content) => (
     <>
-      {renderTopNav()}
       {content}
       {/* FULLSCREEN LIGHTBOX IMAGE MODAL */}
       {previewModalUrl && (
