@@ -880,6 +880,20 @@ const MobileAppSimulator = () => {
                         </div>
                       </div>
 
+                      {/* ORGANIC FERTILIZER & DOSAGE PREDICTION BOX (Teacher's Requirement) */}
+                      <div style={{ background: '#ecfdf5', border: '1.5px solid #059669', borderRadius: '12px', padding: '12px', marginBottom: '12px' }}>
+                        <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#047857', textTransform: 'uppercase', marginBottom: '4px' }}>🧪 PREDICTED ORGANIC FERTILIZER & DOSAGE</div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#064e3b', marginBottom: '2px' }}>
+                          {aiResult.fertilizerRec || 'Vermicompost + Neem Cake Organic Blend'}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#047857', marginBottom: '4px' }}>
+                          Optimal Dosage: {aiResult.fertilizerDosage || '2.5 kg per bed (Apply every 14 days)'}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#065f46', fontWeight: '600' }}>
+                          💡 {aiResult.fertilizerBoost || '+15% yield boost at Stage 3 Flowering'}
+                        </div>
+                      </div>
+
                       <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '10px', padding: '10px 12px' }}>
                         <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#92400e', textTransform: 'uppercase', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <Calendar size={13} /> EXPECTED HARVEST WINDOW
