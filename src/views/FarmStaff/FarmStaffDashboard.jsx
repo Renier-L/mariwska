@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { farmStaffPdfs } from '../../data/mockData';
 import { 
+  LayoutDashboard,
   CheckSquare, 
   ShieldAlert, 
   Trees, 
@@ -53,7 +54,7 @@ const formatFullTimestamp = (timestamp) => {
   return date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
 };
 
-const FarmStaffDashboard = ({ activeTab }) => {
+const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const { validations, handleValidationAction, mlClassifications } = useAuth();
   const [selectedValId, setSelectedValId] = useState(validations[0]?.id || 'val-1');
   const [staffNote, setStaffNote] = useState('');
@@ -917,8 +918,60 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
+  const renderTopNav = () => (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      background: '#ffffff',
+      padding: '8px 12px',
+      borderRadius: '12px',
+      border: '1px solid #e2e8f0',
+      marginBottom: '20px',
+      overflowX: 'auto',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+    }}>
+      {[
+        { id: 'operations-dashboard', label: 'Operations Overview', icon: LayoutDashboard },
+        { id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
+        { id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
+        { id: 'crop-management', label: 'Crop Management', icon: Trees },
+        { id: 'livestock-management', label: 'Livestock Management', icon: Binary },
+        { id: 'reports', label: 'Reports & Export', icon: FileText },
+      ].map(tab => {
+        const Icon = tab.icon;
+        const isActive = activeTab === tab.id || (!['activity-validation', 'ml-audit', 'crop-management', 'livestock-management', 'reports'].includes(activeTab) && tab.id === 'operations-dashboard');
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab && setActiveTab(tab.id)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              fontSize: '0.8rem',
+              fontWeight: isActive ? '800' : '600',
+              color: isActive ? '#ffffff' : '#475569',
+              background: isActive ? '#11592c' : 'transparent',
+              border: isActive ? '1px solid #0c3619' : '1px solid transparent',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <Icon size={15} color={isActive ? '#86efac' : '#64748b'} />
+            {tab.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+
   const renderContainerWithModal = (content) => (
     <>
+      {renderTopNav()}
       {content}
       {/* FULLSCREEN LIGHTBOX IMAGE MODAL */}
       {previewModalUrl && (
