@@ -540,49 +540,57 @@ const MobileAppSimulator = () => {
                 </div>
               )}
 
-              {/* ----- LOG TAB ----- */}
+              {/* ----- LOG TAB (MATCHING IMAGES 2 & 3) ----- */}
               {activeTab === 'log' && (
                 <div>
-                  <div style={{ background: '#0c3619', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
+                  {/* Top Sub Header Banner */}
+                  <div style={{ background: '#0c3619', color: '#ffffff', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                      onClick={() => setActiveTab('home')}
+                      style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', color: '#fff', border: 'none', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <ArrowLeft size={16} />
+                    </button>
                     <div>
-                      <h3 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Log Activity</h3>
-                      <span style={{ fontSize: '0.7rem', color: '#86efac' }}>Punan ang form sa ibaba</span>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0 }}>Log Activity</h3>
+                      <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: '600' }}>Punan ang form sa ibaba</span>
                     </div>
                   </div>
 
                   <div style={{ padding: '16px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', background: '#e2eae0', padding: '3px', borderRadius: '12px', marginBottom: '16px' }}>
+                    {/* Top Category Toggle Pill (Crops vs Livestock) */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', background: '#e2eae0', padding: '3px', borderRadius: '14px', marginBottom: '16px' }}>
                       <button
                         onClick={() => setLogType('crops')}
                         style={{
-                          padding: '8px', borderRadius: '10px', fontWeight: '800', fontSize: '0.8rem', border: 'none',
+                          padding: '10px', borderRadius: '11px', fontWeight: '800', fontSize: '0.82rem', border: 'none', cursor: 'pointer',
                           background: logType === 'crops' ? '#0c3619' : 'transparent',
                           color: logType === 'crops' ? '#ffffff' : '#4b5563',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                         }}
                       >
-                        <Sprout size={14} /> CROPS
+                        <Sprout size={15} /> CROPS
                       </button>
                       <button
                         onClick={() => setLogType('livestock')}
                         style={{
-                          padding: '8px', borderRadius: '10px', fontWeight: '800', fontSize: '0.8rem', border: 'none',
+                          padding: '10px', borderRadius: '11px', fontWeight: '800', fontSize: '0.82rem', border: 'none', cursor: 'pointer',
                           background: logType === 'livestock' ? '#0c3619' : 'transparent',
                           color: logType === 'livestock' ? '#ffffff' : '#4b5563',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                         }}
                       >
-                        <Beef size={14} /> LIVESTOCK
+                        <Beef size={15} /> LIVESTOCK
                       </button>
                     </div>
 
                     <form onSubmit={handleLogSubmit}>
-                      <div style={{ marginBottom: '14px' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
+                      {/* 1. Select Crop Activity Grid */}
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', display: 'block', marginBottom: '8px' }}>
                           1. Select Crop Activity
                         </label>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                           {[
                             { name: 'Watering', icon: Droplets },
                             { name: 'Fertilizer', icon: Sprout },
@@ -597,15 +605,16 @@ const MobileAppSimulator = () => {
                                 type="button"
                                 onClick={() => setActivity(act.name)}
                                 style={{
-                                  padding: '12px 8px', borderRadius: '10px',
+                                  padding: '14px 10px', borderRadius: '14px',
                                   background: isSel ? '#0c3619' : '#ffffff',
-                                  color: isSel ? '#ffffff' : '#374151',
-                                  border: isSel ? '2px solid #0c3619' : '1px solid #e5e7eb',
-                                  fontWeight: '800', fontSize: '0.8rem',
-                                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
+                                  color: isSel ? '#ffffff' : '#1e293b',
+                                  border: isSel ? '2px solid #0c3619' : '1px solid #cbd5e1',
+                                  fontWeight: '800', fontSize: '0.85rem', cursor: 'pointer',
+                                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                                  boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
                                 }}
                               >
-                                <Icon size={18} color={isSel ? '#86efac' : '#0c3619'} />
+                                <Icon size={22} color={isSel ? '#ffffff' : '#0c3619'} />
                                 {act.name}
                               </button>
                             );
@@ -613,14 +622,15 @@ const MobileAppSimulator = () => {
                         </div>
                       </div>
 
-                      <div style={{ marginBottom: '14px' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
+                      {/* 2. Select Plot Number */}
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', display: 'block', marginBottom: '8px' }}>
                           2. Select Plot Number
                         </label>
                         <select
                           value={selectedPlot}
                           onChange={(e) => setSelectedPlot(e.target.value)}
-                          style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid #d1d5db', background: '#ffffff', fontSize: '0.82rem', fontWeight: '700' }}
+                          style={{ width: '100%', padding: '12px 14px', borderRadius: '14px', border: '1px solid #cbd5e1', background: '#dcfce7', color: '#15803d', fontSize: '0.9rem', fontWeight: '800', outline: 'none' }}
                         >
                           <option value="Plot P-007">Plot P-007 (Tomato Diamante)</option>
                           <option value="Plot P-021">Plot P-021 (Eggplant Mistisa)</option>
@@ -629,36 +639,51 @@ const MobileAppSimulator = () => {
                         </select>
                       </div>
 
-                      <div style={{ marginBottom: '14px' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
+                      {/* 3. Input Amount (Liters) */}
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', display: 'block', marginBottom: '8px' }}>
                           3. Input Amount (Liters)
                         </label>
-                        <div style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid #d1d5db', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                        <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #cbd5e1', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <button
                             type="button"
-                            onClick={() => setInputAmount(Math.max(1, inputAmount - 5))}
-                            style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#452c1e', color: '#fff', fontWeight: '800', fontSize: '1.1rem', border: 'none' }}
+                            onClick={() => setInputAmount(Math.max(1, inputAmount - 1))}
+                            style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#3b2d22', color: '#fff', fontWeight: '800', fontSize: '1.4rem', border: 'none', cursor: 'pointer' }}
                           >
                             -
                           </button>
                           <div style={{ textAlign: 'center' }}>
-                            <span style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>{inputAmount}</span>
-                            <span style={{ fontSize: '0.7rem', color: '#6b7280', display: 'block' }}>Liters</span>
+                            <span style={{ fontSize: '1.8rem', fontWeight: '900', color: '#0f172a' }}>{inputAmount}</span>
+                            <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', display: 'block' }}>💧 Liters</span>
                           </div>
                           <button
                             type="button"
-                            onClick={() => setInputAmount(inputAmount + 5)}
-                            style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#0c3619', color: '#fff', fontWeight: '800', fontSize: '1.1rem', border: 'none' }}
+                            onClick={() => setInputAmount(inputAmount + 1)}
+                            style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#0c3619', color: '#fff', fontWeight: '800', fontSize: '1.4rem', border: 'none', cursor: 'pointer' }}
                           >
                             +
                           </button>
                         </div>
+
+                        {/* 4 Quick addition pills */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                          {[5, 10, 25, 50].map(addVal => (
+                            <button
+                              key={addVal}
+                              type="button"
+                              onClick={() => setInputAmount(inputAmount + addVal)}
+                              style={{ padding: '8px', borderRadius: '12px', background: '#ffffff', border: '1px solid #cbd5e1', color: '#1e293b', fontWeight: '800', fontSize: '0.82rem', cursor: 'pointer' }}
+                            >
+                              +{addVal}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
-                      {/* Step 4: Compressed Live Camera Upload & Drag-and-Drop Image */}
-                      <div style={{ marginBottom: '14px' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
-                          4. Take a Photo / Upload Image <span style={{ color: '#dc2626' }}>(Required)</span>
+                      {/* 4. Take a Photo (Required) */}
+                      <div style={{ marginBottom: '16px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', display: 'block', marginBottom: '8px' }}>
+                          4. Take a Photo <span style={{ color: '#dc2626' }}>(Required)</span>
                         </label>
 
                         <input
@@ -674,7 +699,7 @@ const MobileAppSimulator = () => {
                           onDragOver={handleDragOver}
                           onDrop={handleDrop}
                           style={{
-                            border: '2px dashed #0c3619', borderRadius: '12px', padding: '14px', background: photoAttached ? '#f0fdf4' : '#ffffff', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease'
+                            border: '2px dashed #16a34a', borderRadius: '16px', padding: '20px 16px', background: photoAttached ? '#f0fdf4' : '#ffffff', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s ease'
                           }}
                         >
                           {photoPreviewUrl ? (
@@ -682,46 +707,49 @@ const MobileAppSimulator = () => {
                               <img
                                 src={photoPreviewUrl}
                                 alt="Uploaded proof"
-                                style={{ width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px' }}
+                                style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '12px', marginBottom: '10px' }}
                               />
-                              <div style={{ fontWeight: '800', fontSize: '0.8rem', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                              <div style={{ fontWeight: '800', fontSize: '0.85rem', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                                 <CheckCircle2 size={16} /> PHOTO READY (Click to change)
                               </div>
                             </div>
                           ) : (
                             <div>
-                              <UploadCloud size={28} color="#0c3619" style={{ margin: '0 auto 4px' }} />
-                              <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#0c3619' }}>
-                                CLICK TO TAKE PHOTO OR DRAG IMAGE FILE
+                              <div style={{ width: '50px', height: '50px', borderRadius: '14px', background: '#0c3619', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
+                                <Camera size={26} />
                               </div>
-                              <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '2px' }}>
-                                Camera upload · Drag & Drop image file supported
+                              <div style={{ fontWeight: '800', fontSize: '0.9rem', color: '#0c3619', marginBottom: '4px' }}>
+                                TAKE PHOTO PROOF
+                              </div>
+                              <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                                Para mapatunayan ang inyong aktibidad sa Farm Staff
                               </div>
                             </div>
                           )}
                         </div>
                       </div>
 
-                      <div style={{ marginBottom: '16px' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827', display: 'block', marginBottom: '6px' }}>
+                      {/* 5. Note (Optional) */}
+                      <div style={{ marginBottom: '20px' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', display: 'block', marginBottom: '8px' }}>
                           5. Note (Optional)
                         </label>
                         <textarea
                           value={logNote}
                           onChange={(e) => setLogNote(e.target.value)}
-                          placeholder="Halimbawa: ginawa kaninang umaga..."
-                          rows={2}
-                          style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.78rem' }}
+                          placeholder="Halimbawa: ginawa kaninang umaga, malakas ang ulan kagabi.."
+                          rows={3}
+                          style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', color: '#0f172a' }}
                         />
                       </div>
 
                       <button
                         type="submit"
                         style={{
-                          width: '100%', padding: '14px', borderRadius: '12px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.9rem', border: 'none', cursor: 'pointer'
+                          width: '100%', padding: '16px', borderRadius: '16px', background: '#15803d', color: '#ffffff', fontWeight: '900', fontSize: '0.95rem', border: 'none', marginBottom: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 14px rgba(0,0,0,0.2)'
                         }}
                       >
-                        {logSubmitted ? 'SUBMITTING...' : 'SUBMIT LOG FOR VALIDATION'}
+                        <UploadCloud size={18} /> SUBMIT LOG FOR VALIDATION
                       </button>
                     </form>
                   </div>
