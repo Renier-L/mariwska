@@ -139,8 +139,8 @@ export const AuthProvider = ({ children }) => {
         timestamp: 'Just now',
         urgency: 'Normal',
         urgencyCls: 'pill-low',
-        location: newVal.gps || newVal.location || '14.586° N · 121.176° E',
-        gps: newVal.gps || newVal.location || '14.586° N · 121.176° E',
+        location: newVal.gps || newVal.location || 'Antipolo Field Plot',
+        gps: newVal.gps || newVal.location || 'Antipolo Field Plot',
         farmerNote: newVal.notes || newVal.farmerNote || 'Submitted via Farmers Mobile App',
         notes: newVal.notes || newVal.farmerNote || 'Submitted via Farmers Mobile App',
         photoUrl: newVal.photo_url || newVal.photoUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
@@ -605,8 +605,8 @@ export const AuthProvider = ({ children }) => {
       timestamp: 'Just now',
       urgency: 'Normal',
       urgencyCls: 'pill-low',
-      location: '14.586° N · 121.176° E',
-      gps: '14.586° N · 121.176° E',
+      location: 'Antipolo Field Plot',
+      gps: 'Antipolo Field Plot',
       farmerNote: newSub.note || 'Submitted via Farmers Mobile App',
       notes: newSub.note || 'Submitted via Farmers Mobile App',
       photoUrl: newSub.photoUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
@@ -748,7 +748,7 @@ export const AuthProvider = ({ children }) => {
           plot: v.plot,
           activity: v.taskType || 'Farm Task',
           notes: v.farmerNote || 'Submitted via App',
-          gps: v.location || '14.586° N · 121.176° E',
+          gps: v.location || 'Antipolo Field Plot',
           photo_url: v.photoUrl || ''
         });
       }
