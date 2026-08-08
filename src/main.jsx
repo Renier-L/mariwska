@@ -36,9 +36,26 @@ class ErrorBoundary extends Component {
           <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#86efac', marginBottom: '8px' }}>
             MARIKHA Cooperative Portal
           </h2>
-          <p style={{ fontSize: '0.9rem', color: '#cbd5e1', maxWidth: '420px', marginBottom: '20px' }}>
+          <p style={{ fontSize: '0.9rem', color: '#cbd5e1', maxWidth: '420px', marginBottom: '16px' }}>
             An unexpected render issue occurred. Click below to reload and restore session.
           </p>
+          {this.state.error && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid #f87171',
+              color: '#fca5a5',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              fontSize: '0.78rem',
+              maxWidth: '600px',
+              marginBottom: '20px',
+              textAlign: 'left',
+              fontFamily: 'monospace',
+              overflowX: 'auto'
+            }}>
+              <strong>Error Trace:</strong> {this.state.error.toString()}
+            </div>
+          )}
           <button
             onClick={() => {
               localStorage.clear();

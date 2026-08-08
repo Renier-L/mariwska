@@ -54,6 +54,23 @@ const formatFullTimestamp = (timestamp) => {
   return date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
 };
 
+const safetyIndexData = [
+  { day: 'D1', val: 82 },
+  { day: 'D2', val: 84 },
+  { day: 'D3', val: 83 },
+  { day: 'D4', val: 87 },
+  { day: 'D5', val: 86 },
+  { day: 'D6', val: 89 },
+  { day: 'D7', val: 91 },
+  { day: 'D8', val: 90 },
+  { day: 'D9', val: 93 },
+  { day: 'D10', val: 95 },
+  { day: 'D11', val: 94 },
+  { day: 'D12', val: 96 },
+  { day: 'D13', val: 95 },
+  { day: 'D14', val: 98 }
+];
+
 const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const { validations, handleValidationAction, mlClassifications } = useAuth();
 
