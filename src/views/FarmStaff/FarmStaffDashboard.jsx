@@ -56,24 +56,29 @@ const formatFullTimestamp = (timestamp) => {
 
 const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const { validations, handleValidationAction, mlClassifications } = useAuth();
-  const [selectedValId, setSelectedValId] = useState(validations[0]?.id || 'val-1');
+
+  const safeValidations = Array.isArray(validations) ? validations : [];
+  const safeMLClassifications = Array.isArray(mlClassifications) ? mlClassifications : [];
+
+  const [selectedValId, setSelectedValId] = useState(safeValidations[0]?.id || 'val-1');
   const [staffNote, setStaffNote] = useState('');
   const [reportsTab, setReportsTab] = useState('productivity');
   const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
   const [previewModalUrl, setPreviewModalUrl] = useState(null);
 
-  const filteredValidations = validations.filter(v => {
-    const query = farmerSearchQuery.toLowerCase().trim();
+  const filteredValidations = safeValidations.filter(v => {
+    if (!v) return false;
+    const query = (farmerSearchQuery || '').toLowerCase().trim();
     if (!query) return true;
     return (
-      (v.farmer && v.farmer.toLowerCase().includes(query)) ||
-      (v.plot && v.plot.toLowerCase().includes(query)) ||
-      (v.taskType && v.taskType.toLowerCase().includes(query)) ||
-      (v.activity && v.activity.toLowerCase().includes(query))
+      (v.farmer && String(v.farmer).toLowerCase().includes(query)) ||
+      (v.plot && String(v.plot).toLowerCase().includes(query)) ||
+      (v.taskType && String(v.taskType).toLowerCase().includes(query)) ||
+      (v.activity && String(v.activity).toLowerCase().includes(query))
     );
   });
 
-  const selectedValidation = filteredValidations.find(v => v.id === selectedValId) || filteredValidations[0] || validations[0];
+  const selectedValidation = filteredValidations.find(v => v && v.id === selectedValId) || filteredValidations[0] || safeValidations[0] || null;
 
   const handleApprove = () => {
     if (!selectedValidation) return;
@@ -106,13 +111,13 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
     const notes = valObj.farmerNote || valObj.notes || '';
 
     if (!url || typeof url !== 'string' || (!url.startsWith('data:image') && !url.startsWith('http://') && !url.startsWith('https://'))) {
-      if (notes.includes('[PHOTO_URL:')) {
+      if (notes && notes.includes('[PHOTO_URL:')) {
         const match = notes.match(/\[PHOTO_URL:([^\]]+)\]/);
         if (match && match[1]) url = match[1];
-      } else if (notes.includes('data:image')) {
+      } else if (notes && notes.includes('data:image')) {
         const match = notes.match(/data:image\/[^\s\]"']+/);
         if (match) url = match[0];
-      } else if (notes.includes('http://') || notes.includes('https://')) {
+      } else if (notes && (notes.includes('http://') || notes.includes('https://'))) {
         const match = notes.match(/https?:\/\/[^\s\]"']+/);
         if (match) url = match[0];
       }
@@ -140,7 +145,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Pending Validations</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>{validations.length}</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>{safeValidations.length}</div>
         </div>
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Critical Alerts</div>
@@ -166,29 +171,35 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {validations.map((t, idx) => (
-              <div key={t.id || idx} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px 12px',
-                background: '#f9fafb',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>{t.timestamp || 'Just now'}</span>
-                  <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155' }}>
-                    {t.plot}
-                  </span>
-                  <div>
-                    <span style={{ fontWeight: '700', fontSize: '0.82rem', color: '#111827', marginRight: '6px' }}>{t.farmer}</span>
-                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{t.taskType || t.activity}</span>
-                  </div>
-                </div>
-                <span className={`pill ${t.urgencyCls || 'pill-medium'}`}>{t.urgency || 'Normal'}</span>
+            {safeValidations.length === 0 ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#6b7280', fontSize: '0.82rem' }}>
+                No pending farmer task validations. Field queue is 100% complete!
               </div>
-            ))}
+            ) : (
+              safeValidations.map((t, idx) => (
+                <div key={t?.id || idx} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 12px',
+                  background: '#f9fafb',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#6b7280', fontFamily: 'monospace' }}>{t?.timestamp || 'Just now'}</span>
+                    <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155' }}>
+                      {t?.plot}
+                    </span>
+                    <div>
+                      <span style={{ fontWeight: '700', fontSize: '0.82rem', color: '#111827', marginRight: '6px' }}>{t?.farmer}</span>
+                      <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{t?.taskType || t?.activity}</span>
+                    </div>
+                  </div>
+                  <span className={`pill ${t?.urgencyCls || 'pill-medium'}`}>{t?.urgency || 'Normal'}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -228,10 +239,10 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
   // 2. Farmer Activity Validation Panel with ASPECT RATIO & SHAPE PRESERVATION
   const renderValidationPanel = () => {
-    const selectedValidation = filteredValidations.find(v => v.id === selectedValId) || filteredValidations[0] || validations[0];
+    const selectedValidation = filteredValidations.find(v => v && v.id === selectedValId) || filteredValidations[0] || safeValidations[0] || null;
     const photoToRender = selectedValidation ? getDisplayPhoto(selectedValidation) : null;
 
-    if (validations.length === 0) {
+    if (safeValidations.length === 0) {
       return (
         <div>
           <div style={{ marginBottom: '20px' }}>
@@ -265,7 +276,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
             Farmer Activity Validation Panel
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-            {validations.length} submissions awaiting field-verification review
+            {safeValidations.length} submissions awaiting field-verification review
           </p>
         </div>
 
@@ -528,7 +539,12 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {mlClassifications.map(item => (
+            {safeMLClassifications.length === 0 ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#6b7280', fontSize: '0.82rem' }}>
+                No active ML audit alerts. All plots compliant!
+              </div>
+            ) : (
+              safeMLClassifications.map(item => (
               <div key={item.id} style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#f9fafb' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                   <div style={{ fontWeight: '700', fontSize: '0.82rem' }}>
@@ -547,7 +563,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
                   <strong>RECOMMENDED ACTION: </strong>{item.recommendation}
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
 
