@@ -284,76 +284,83 @@ export const AuthProvider = ({ children }) => {
       fetchSupabaseData();
     }, 4000);
 
-    // Supabase Realtime Subscription for Broadcast Announcements
-    const announcementsChannel = supabase
-      .channel('announcements_realtime_channel')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
-        const newRecord = payload.new;
-        const newAnn = {
-          id: String(newRecord.id),
-          title: newRecord.title || 'Cooperative Broadcast Notice',
-          content: newRecord.content,
-          author: newRecord.author || 'Liza Cruz (Admin)',
-          instantPush: true,
-          date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
-          pushId: Math.random()
-        };
-        setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
-        setActivePushNotice(newAnn);
-      })
-      .subscribe();
-
-    // Supabase Realtime Subscription for Farmer Task Validations
-    const validationsChannel = supabase
-      .channel('validations_realtime_channel')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'task_validations' }, (payload) => {
-        const newRecord = payload.new;
-        const newEntry = {
-          id: String(newRecord.id),
-          farmer: newRecord.farmer || 'Mang Juan Dela Cruz',
-          plot: newRecord.plot || 'Plot P-007',
-          taskType: newRecord.activity || 'Watering',
-          activity: newRecord.activity || 'Watering',
-          timestamp: 'Just now',
-          urgency: 'Normal',
-          urgencyCls: 'pill-low',
-          location: newRecord.gps || '14.586° N · 121.176° E',
-          gps: newRecord.gps || '14.586° N · 121.176° E',
-          farmerNote: newRecord.notes || 'Submitted via Farmers Mobile App',
-          notes: newRecord.notes || 'Submitted via Farmers Mobile App',
-          photoUrl: newRecord.photo_url || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
-          photoAttached: true
-        };
-        setValidations(prev => [newEntry, ...prev.filter(v => v.id !== newEntry.id)]);
-      })
-      .subscribe();
-
-    // Supabase Realtime Subscription for Registered Users
-    const usersChannel = supabase
-      .channel('users_realtime_channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
-        if (payload.new) {
-          const u = payload.new;
-          const userObj = {
-            id: String(u.id),
-            name: u.name,
-            role: u.role,
-            email: u.email,
-            phone: u.phone || '+63 917 555 0100',
-            password: u.password || 'password123',
-            status: u.status !== false,
-            initials: u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
+    let announcementsChannel, validationsChannel, usersChannel;
+    try {
+      // Supabase Realtime Subscription for Broadcast Announcements
+      announcementsChannel = supabase
+        .channel('announcements_realtime_channel')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
+          const newRecord = payload.new;
+          const newAnn = {
+            id: String(newRecord.id),
+            title: newRecord.title || 'Cooperative Broadcast Notice',
+            content: newRecord.content,
+            author: newRecord.author || 'Liza Cruz (Admin)',
+            instantPush: true,
+            date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
+            pushId: Math.random()
           };
-          setUsers(prev => [userObj, ...prev.filter(existing => existing.id !== userObj.id && existing.email !== userObj.email)]);
-        }
-      })
-      .subscribe();
+          setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
+          setActivePushNotice(newAnn);
+        })
+        .subscribe();
+
+      // Supabase Realtime Subscription for Farmer Task Validations
+      validationsChannel = supabase
+        .channel('validations_realtime_channel')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'task_validations' }, (payload) => {
+          const newRecord = payload.new;
+          const newEntry = {
+            id: String(newRecord.id),
+            farmer: newRecord.farmer || 'Mang Juan Dela Cruz',
+            plot: newRecord.plot || 'Plot P-007',
+            taskType: newRecord.activity || 'Watering',
+            activity: newRecord.activity || 'Watering',
+            timestamp: 'Just now',
+            urgency: 'Normal',
+            urgencyCls: 'pill-low',
+            location: newRecord.gps || 'Live Mobile GPS',
+            gps: newRecord.gps || 'Live Mobile GPS',
+            farmerNote: newRecord.notes || 'Submitted via Farmers Mobile App',
+            notes: newRecord.notes || 'Submitted via Farmers Mobile App',
+            photoUrl: newRecord.photo_url || null,
+            photoAttached: true
+          };
+          setValidations(prev => [newEntry, ...prev.filter(v => v.id !== newEntry.id)]);
+        })
+        .subscribe();
+
+      // Supabase Realtime Subscription for Registered Users
+      usersChannel = supabase
+        .channel('users_realtime_channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
+          if (payload.new) {
+            const u = payload.new;
+            const userObj = {
+              id: String(u.id),
+              name: u.name,
+              role: u.role,
+              email: u.email,
+              phone: u.phone || '+63 917 555 0100',
+              password: u.password || 'password123',
+              status: u.status !== false,
+              initials: u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
+            };
+            setUsers(prev => [userObj, ...prev.filter(existing => existing.id !== userObj.id && existing.email !== userObj.email)]);
+          }
+        })
+        .subscribe();
+    } catch (e) {
+      console.warn('Realtime channel subscription fallback', e);
+    }
 
     return () => {
       clearInterval(interval);
-      supabase.removeChannel(announcementsChannel);
-      supabase.removeChannel(validationsChannel);
-      supabase.removeChannel(usersChannel);
+      try {
+        if (announcementsChannel) supabase.removeChannel(announcementsChannel);
+        if (validationsChannel) supabase.removeChannel(validationsChannel);
+        if (usersChannel) supabase.removeChannel(usersChannel);
+      } catch (e) {}
     };
   }, []);
 
