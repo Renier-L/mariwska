@@ -96,7 +96,16 @@ export const AuthProvider = ({ children }) => {
       const adminUser = users.find(u => u.role === 'Admin') || users[1] || initialUsers[1];
       setCurrentUser(adminUser);
     } else if (roleKey === 'farm_staff') {
-      const staffUser = users.find(u => u.role === 'Farm Staff') || users[2] || initialUsers[2];
+      const staffUser = (users && users.find(u => u.role === 'Farm Staff')) || initialUsers[2] || {
+        id: 'staff-default',
+        name: 'Ramon Bautista',
+        role: 'Farm Staff',
+        email: 'ramon@mariwska.coop',
+        phone: '+63 917 555 0100',
+        password: 'staff123',
+        status: true,
+        initials: 'RB'
+      };
       setCurrentUser(staffUser);
     } else if (roleKey === 'mobile_app') {
       const farmerUser = users.find(u => u.role === 'Farmer') || users[3] || {

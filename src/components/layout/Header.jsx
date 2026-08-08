@@ -88,10 +88,10 @@ const Header = () => {
         >
           <div style={{ textAlign: 'right', lineHeight: 1.1 }}>
             <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {currentUser.name} <Pencil size={11} color="#15803d" />
+              {currentUser?.name || 'Ramon Bautista'} <Pencil size={11} color="#15803d" />
             </div>
             <div style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
-              {currentUser.role}
+              {currentUser?.role || 'Farm Staff'}
             </div>
           </div>
           <div style={{
@@ -106,7 +106,7 @@ const Header = () => {
             fontWeight: '800',
             fontSize: '0.8rem'
           }}>
-            {currentUser.initials}
+            {currentUser?.initials || (currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'FS')}
           </div>
         </button>
       </div>
