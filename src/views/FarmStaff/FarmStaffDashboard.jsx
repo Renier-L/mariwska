@@ -610,7 +610,144 @@ const FarmStaffDashboard = ({ activeTab }) => {
     </div>
   );
 
-  // 4. Farm Staff Reports
+  // 4. Crop Management & Field Trackers
+  const renderCropManagement = () => (
+    <div>
+      <div style={{ marginBottom: '20px' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+          Crop Management & Field Trackers
+        </h1>
+        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+          Real-time organic crop growth tracking, soil moisture monitors, and bio-fertilizer application schedules
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Crop Plots</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c' }}>14 Plots</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Avg. Soil Moisture</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7' }}>78% Optimal</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Next Bio-Spray</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706' }}>Tomorrow 06:00 AM</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Target Harvest Yield</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>4,850 kg</div>
+        </div>
+      </div>
+
+      <div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Registered Crop Plot Field Records</h4>
+          <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>✓ Live Soil & Input Sync Active</span>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <thead>
+            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+              <th style={{ padding: '12px 14px' }}>Plot ID</th>
+              <th style={{ padding: '12px 14px' }}>Crop Variety</th>
+              <th style={{ padding: '12px 14px' }}>Growth Stage</th>
+              <th style={{ padding: '12px 14px' }}>Moisture</th>
+              <th style={{ padding: '12px 14px' }}>Last Organic Input</th>
+              <th style={{ padding: '12px 14px', textAlign: 'right' }}>Compliance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { plot: 'P-007', crop: 'Tomato (Diamante Max)', stage: 'Fruiting & Harvest', moisture: '82%', input: 'Fermented Fruit Juice (2d ago)', status: 'Compliant', cls: 'pill-compliant' },
+              { plot: 'P-021', crop: 'Eggplant (Long Purple)', stage: 'Flowering Stage', moisture: '74%', input: 'Compost Tea (4d ago)', status: 'Under Review', cls: 'pill-review' },
+              { plot: 'P-034', crop: 'Okra (Smooth Green)', stage: 'Vegetative Growth', moisture: '80%', input: 'Vermicompost (1d ago)', status: 'Compliant', cls: 'pill-compliant' },
+              { plot: 'P-082', crop: 'Squash (Suprema F1)', stage: 'Fruiting Stage', moisture: '76%', input: 'Oriental Herbal Nutrient (3d ago)', status: 'Compliant', cls: 'pill-compliant' },
+            ].map(r => (
+              <tr key={r.plot} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c' }}>{r.plot}</td>
+                <td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.crop}</td>
+                <td style={{ padding: '12px 14px', color: '#475569' }}>{r.stage}</td>
+                <td style={{ padding: '12px 14px', color: '#0284c7', fontWeight: '700' }}>{r.moisture}</td>
+                <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{r.input}</td>
+                <td style={{ padding: '12px 14px', textAlign: 'right' }}><span className={`pill ${r.cls}`}>{r.status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  // 5. Livestock Management & Veterinary Registry
+  const renderLivestockManagement = () => (
+    <div>
+      <div style={{ marginBottom: '20px' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+          Livestock Management & Veterinary Registry
+        </h1>
+        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+          Animal health records, vaccination schedules, organic forage tracking, and weight gain monitoring
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Livestock Groups</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>27 Groups</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Vaccination Rate</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c' }}>96.4% Coverage</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Daily Organic Forage</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7' }}>145 kg / day</div>
+        </div>
+        <div className="m-card">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Health Alerts</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a' }}>0 Critical</div>
+        </div>
+      </div>
+
+      <div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Registered Livestock Group Health Log</h4>
+          <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>✓ Veterinary Registry Verified</span>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <thead>
+            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+              <th style={{ padding: '12px 14px' }}>Group Code</th>
+              <th style={{ padding: '12px 14px' }}>Animal Type & Count</th>
+              <th style={{ padding: '12px 14px' }}>Health Status</th>
+              <th style={{ padding: '12px 14px' }}>Last Vaccination</th>
+              <th style={{ padding: '12px 14px' }}>Organic Forage Source</th>
+              <th style={{ padding: '12px 14px', textAlign: 'right' }}>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { code: 'GT-014', animal: 'Native Goats (12 Animals)', health: 'Excellent', vax: 'Deworming + Vit B (Aug 1, 2026)', forage: 'Organic Napier Grass', status: 'Compliant', cls: 'pill-compliant' },
+              { code: 'FC-008', animal: 'Free-Range Chickens (45 Birds)', health: 'Normal', vax: 'Newcastle Oral (Jul 28, 2026)', forage: 'Organic Corn + Azolla', status: 'Compliant', cls: 'pill-compliant' },
+              { code: 'NP-003', animal: 'Native Black Pigs (6 Animals)', health: 'Good', vax: 'Hog Cholera Booster (Jul 15, 2026)', forage: 'Fermented Banana Stalk', status: 'Compliant', cls: 'pill-compliant' },
+            ].map(r => (
+              <tr key={r.code} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c' }}>{r.code}</td>
+                <td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.animal}</td>
+                <td style={{ padding: '12px 14px', color: '#16a34a', fontWeight: '700' }}>{r.health}</td>
+                <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{r.vax}</td>
+                <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{r.forage}</td>
+                <td style={{ padding: '12px 14px', textAlign: 'right' }}><span className={`pill ${r.cls}`}>{r.status}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  // 6. Farm Staff Reports
   const renderReports = () => (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -817,6 +954,8 @@ const FarmStaffDashboard = ({ activeTab }) => {
 
   if (activeTab === 'activity-validation') return renderContainerWithModal(renderValidationPanel());
   if (activeTab === 'ml-audit') return renderContainerWithModal(renderMLAudit());
+  if (activeTab === 'crop-management') return renderContainerWithModal(renderCropManagement());
+  if (activeTab === 'livestock-management') return renderContainerWithModal(renderLivestockManagement());
   if (activeTab === 'reports') return renderContainerWithModal(renderReports());
   return renderContainerWithModal(renderOperations());
 };
