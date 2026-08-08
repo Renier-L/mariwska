@@ -310,77 +310,90 @@ const MobileAppSimulator = () => {
           </div>
         </div>
 
-        {/* ================= SCREEN A: SPLASH SCREEN ================= */}
+        {/* ================= SCREEN A: SPLASH SCREEN (MATCHING IMAGE 1) ================= */}
         {mobileScreen === 'splash' && (
-          <div style={{ flex: 1, background: '#0c3619', color: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px' }}>
-            <div style={{
-              width: '110px', height: '110px', borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', boxShadow: '0 8px 20px rgba(0,0,0,0.3)'
-            }}>
-              <span style={{ fontSize: '3rem' }}>🌱</span>
+          <div style={{ flex: 1, background: '#00843D', color: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '50px' }}>
+              <div style={{
+                width: '52px', height: '52px', borderRadius: '50%', border: '3px solid #ffffff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', width: '38px', height: '18px', borderRadius: '9px', border: '2.5px solid #ffffff', top: '4px' }} />
+                <div style={{ position: 'absolute', width: '42px', height: '22px', borderRadius: '11px', border: '2.5px solid #ffffff', top: '14px' }} />
+                <div style={{ position: 'absolute', width: '46px', height: '26px', borderRadius: '13px', border: '2.5px solid #ffffff', top: '24px' }} />
+              </div>
+              <h1 style={{ fontSize: '2.2rem', fontWeight: '900', letterSpacing: '2px', color: '#ffffff', margin: 0 }}>MARIKHA</h1>
             </div>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: '800', tracking: '1px', marginBottom: '50px' }}>MARIKHA</h1>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '32px', height: '32px', border: '4px solid #86efac', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-              <span style={{ fontSize: '0.9rem', color: '#86efac', fontWeight: '700' }}>Loading...</span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', marginTop: '30px' }}>
+              <div style={{ width: '36px', height: '36px', border: '4px solid #ffffff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+              <span style={{ fontSize: '1.1rem', color: '#ffffff', fontWeight: '800', letterSpacing: '0.5px' }}>Loading...</span>
             </div>
+
             <button
               onClick={() => setMobileScreen('login')}
-              style={{ marginTop: '60px', background: '#11592c', color: '#fff', padding: '12px 28px', borderRadius: '24px', fontSize: '0.85rem', fontWeight: '800', border: 'none', cursor: 'pointer' }}
+              style={{ marginTop: '50px', background: '#ffffff', color: '#00843D', padding: '12px 28px', borderRadius: '24px', fontSize: '0.88rem', fontWeight: '800', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}
             >
               Continue to Login →
             </button>
           </div>
         )}
 
-        {/* ================= SCREEN B: MOBILE LOGIN SCREEN ================= */}
+        {/* ================= SCREEN B: MOBILE LOGIN SCREEN (MATCHING IMAGE 2) ================= */}
         {(mobileScreen === 'login' || (!mobileAuth && mobileScreen !== 'splash')) && (
-          <div style={{ flex: 1, background: '#ffffff', padding: '30px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{
-              width: '84px', height: '84px', borderRadius: '50%', background: '#f0fdf4', border: '2px solid #86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px'
-            }}>
-              <span style={{ fontSize: '2.2rem' }}>🌱</span>
+          <div style={{ flex: 1, background: '#00843D', padding: '40px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            {/* MARIKHA Top Horizontal Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
+              <div style={{
+                width: '48px', height: '48px', borderRadius: '50%', border: '3px solid #ffffff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', width: '36px', height: '18px', borderRadius: '9px', border: '2.5px solid #ffffff', top: '4px' }} />
+                <div style={{ position: 'absolute', width: '40px', height: '22px', borderRadius: '11px', border: '2.5px solid #ffffff', top: '14px' }} />
+                <div style={{ position: 'absolute', width: '44px', height: '26px', borderRadius: '13px', border: '2.5px solid #ffffff', top: '24px' }} />
+              </div>
+              <h1 style={{ fontSize: '2.1rem', fontWeight: '900', letterSpacing: '2px', color: '#ffffff', margin: 0 }}>MARIKHA</h1>
             </div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c', marginBottom: '2px' }}>MARIKHA</h2>
-            <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#15803d', marginBottom: '32px' }}>Welcome Back!</p>
 
-            <form onSubmit={handleMobileLogin} style={{ width: '100%' }}>
-              <div style={{ width: '100%', marginBottom: '18px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#15803d', display: 'block', marginBottom: '6px' }}>Username</label>
+            <p style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ffffff', marginBottom: '36px', textAlign: 'center' }}>Welcome Back!</p>
+
+            <form onSubmit={handleMobileLogin} style={{ width: '100%', maxWidth: '320px' }}>
+              <div style={{ width: '100%', marginBottom: '20px' }}>
+                <label style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ffffff', display: 'block', marginBottom: '8px' }}>Username</label>
                 <input
                   type="text"
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
-                  style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '2px solid #86efac', fontSize: '0.9rem', outline: 'none', color: '#15803d', fontWeight: '700' }}
+                  placeholder="@Kuya Bert"
+                  style={{ width: '100%', padding: '14px 18px', borderRadius: '16px', border: 'none', background: '#ffffff', fontSize: '0.95rem', outline: 'none', color: '#1e293b', fontWeight: '700', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
               </div>
 
-              <div style={{ width: '100%', marginBottom: '10px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#15803d', display: 'block', marginBottom: '6px' }}>Password</label>
+              <div style={{ width: '100%', marginBottom: '24px' }}>
+                <label style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ffffff', display: 'block', marginBottom: '8px' }}>Password</label>
                 <input
                   type="password"
                   value={pinCode}
                   onChange={(e) => setPinCode(e.target.value)}
-                  style={{ width: '100%', padding: '12px', borderRadius: '14px', border: '2px solid #86efac', fontSize: '0.9rem', outline: 'none', color: '#15803d' }}
+                  placeholder="*******"
+                  style={{ width: '100%', padding: '14px 18px', borderRadius: '16px', border: 'none', background: '#ffffff', fontSize: '0.95rem', outline: 'none', color: '#1e293b', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
-              </div>
-
-              <div style={{ width: '100%', textAlign: 'right', marginBottom: '30px' }}>
-                <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700', cursor: 'pointer' }}>Forgot Password?</span>
               </div>
 
               <button
                 type="submit"
                 style={{
-                  width: '100%', padding: '14px', borderRadius: '14px', background: '#11592c', color: '#ffffff', fontWeight: '800', fontSize: '1rem', border: 'none', marginBottom: '20px', cursor: 'pointer'
+                  width: '100%', padding: '14px', borderRadius: '16px', background: '#ffffff', color: '#00843D', fontWeight: '800', fontSize: '1rem', border: 'none', marginBottom: '28px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.2)'
                 }}
               >
-                Login
+                Sign In
               </button>
             </form>
 
-            <span style={{ fontSize: '0.8rem', color: '#4b5563' }}>
-              Don't have an account? <strong style={{ color: '#15803d', cursor: 'pointer' }}>Sign Up</strong>
-            </span>
+            <div style={{ textAlign: 'center', marginTop: '10px' }}>
+              <p style={{ fontSize: '0.95rem', color: '#ffffff', fontWeight: '800', margin: '0 0 4px 0', cursor: 'pointer' }}>Forgot Password?</p>
+              <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', fontWeight: '600', margin: 0 }}>Contact Admin</p>
+            </div>
           </div>
         )}
 
