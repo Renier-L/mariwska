@@ -30,7 +30,8 @@ import {
   Beef,
   TrendingUp,
   UploadCloud,
-  Image as ImageIcon
+  Image as ImageIcon,
+  User
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
@@ -484,27 +485,27 @@ const MobileAppSimulator = () => {
                       </div>
 
                       <div
-                        onClick={() => setShowCropsModal(true)}
+                        onClick={() => setActiveTab('tasks')}
                         style={{
-                          background: '#452c1e', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
+                          background: '#3b2d22', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
                         <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Sprout size={18} color="#fcd34d" />
+                          <Calendar size={18} color="#fcd34d" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>MY CROPS & LIVESTOCK</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>AI SMART TASKS</div>
                       </div>
 
                       <div
-                        onClick={() => setActiveTab('tasks')}
+                        onClick={() => setShowCropsModal(true)}
                         style={{
                           background: '#d97706', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
                         <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Calendar size={18} color="#ffffff" />
+                          <ShieldCheck size={18} color="#ffffff" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>FARMING CALENDAR</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>PGS STATUS</div>
                       </div>
 
                       <div
@@ -906,23 +907,83 @@ const MobileAppSimulator = () => {
                 </div>
               )}
 
+              {/* ----- PROFILE TAB ----- */}
+              {activeTab === 'profile' && (
+                <div>
+                  <div style={{ background: '#0c3619', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
+                    <div>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Aking Profile</h3>
+                      <span style={{ fontSize: '0.7rem', color: '#86efac' }}>Farmer Account Details</span>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '16px' }}>
+                    {/* User Card */}
+                    <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '18px', textAlign: 'center', marginBottom: '14px' }}>
+                      <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#0c3619', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', fontWeight: '800', margin: '0 auto 10px' }}>
+                        MB
+                      </div>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: '0 0 2px 0' }}>
+                        Mang Bert Dela Cruz
+                      </h3>
+                      <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700' }}>
+                        Farmer · Plot P-007 (Tomato Diamante)
+                      </span>
+                    </div>
+
+                    {/* Account Info Cards */}
+                    <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '14px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                        <span style={{ color: '#6b7280', fontWeight: '700' }}>Contact Number:</span>
+                        <strong style={{ color: '#111827' }}>+63 917 555 0100</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                        <span style={{ color: '#6b7280', fontWeight: '700' }}>Assigned Plot:</span>
+                        <strong style={{ color: '#111827' }}>Plot P-007</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                        <span style={{ color: '#6b7280', fontWeight: '700' }}>PGS Organic Status:</span>
+                        <span className="pill pill-compliant" style={{ fontSize: '0.7rem' }}>Certified 94%</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
+                        <span style={{ color: '#6b7280', fontWeight: '700' }}>Cloud Realtime:</span>
+                        <strong style={{ color: '#16a34a' }}>✓ Connected</strong>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => { setMobileAuth(false); setMobileScreen('login'); }}
+                      style={{
+                        width: '100%', padding: '12px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontWeight: '800', fontSize: '0.88rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                      }}
+                    >
+                      <LogOut size={16} /> Logout Account
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
 
-            {/* Bottom 4-Tab Nav Bar */}
+            {/* Bottom 5-Tab Nav Bar (Matching Wireframe Image) */}
             <div style={{
-              height: '52px', background: '#ffffff', borderTop: '1px solid #e5e7eb', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', alignItems: 'center', textAlign: 'center', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0
+              height: '54px', background: '#ffffff', borderTop: '1px solid #e5e7eb', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', alignItems: 'center', textAlign: 'center', fontSize: '0.65rem', fontWeight: '800', flexShrink: 0
             }}>
               <div onClick={() => setActiveTab('home')} style={{ color: activeTab === 'home' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
-                <Home size={17} style={{ margin: '0 auto 2px' }} /> HOME
+                <Home size={16} style={{ margin: '0 auto 2px' }} /> HOME
               </div>
               <div onClick={() => setActiveTab('log')} style={{ color: activeTab === 'log' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
-                <ClipboardList size={17} style={{ margin: '0 auto 2px' }} /> LOG
+                <ClipboardList size={16} style={{ margin: '0 auto 2px' }} /> LOG
+              </div>
+              <div onClick={() => setActiveTab('tasks')} style={{ color: activeTab === 'tasks' ? '#3b2d22' : '#9ca3af', cursor: 'pointer' }}>
+                <Calendar size={16} style={{ margin: '0 auto 2px' }} /> TASKS
               </div>
               <div onClick={() => setActiveTab('ai')} style={{ color: activeTab === 'ai' ? '#059669' : '#9ca3af', cursor: 'pointer' }}>
-                <Sparkles size={17} style={{ margin: '0 auto 2px' }} /> AI
+                <Sparkles size={16} style={{ margin: '0 auto 2px' }} /> AI
               </div>
-              <div onClick={() => setActiveTab('tasks')} style={{ color: activeTab === 'tasks' ? '#d97706' : '#9ca3af', cursor: 'pointer' }}>
-                <Calendar size={17} style={{ margin: '0 auto 2px' }} /> TASKS
+              <div onClick={() => setActiveTab('profile')} style={{ color: activeTab === 'profile' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
+                <User size={16} style={{ margin: '0 auto 2px' }} /> PROFILE
               </div>
             </div>
 
