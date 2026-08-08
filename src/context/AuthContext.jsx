@@ -298,7 +298,7 @@ export const AuthProvider = ({ children }) => {
     fetchSupabaseData();
     const interval = setInterval(() => {
       fetchSupabaseData();
-    }, 4000);
+    }, 2000);
 
     let announcementsChannel, validationsChannel, usersChannel;
     try {
