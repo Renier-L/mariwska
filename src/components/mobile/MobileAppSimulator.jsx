@@ -407,11 +407,25 @@ const MobileAppSimulator = () => {
                 <div>
                   {/* Top Dark Green Header Card */}
                   <div style={{ background: '#0c3619', color: '#ffffff', padding: '18px 20px 22px 20px', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px', position: 'relative' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    
+                    {/* Top MARIKHA Logo Header */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #ffffff',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden'
+                      }}>
+                        <div style={{ position: 'absolute', width: '22px', height: '11px', borderRadius: '5px', border: '1.5px solid #ffffff', top: '2px' }} />
+                        <div style={{ position: 'absolute', width: '25px', height: '13px', borderRadius: '6px', border: '1.5px solid #ffffff', top: '8px' }} />
+                        <div style={{ position: 'absolute', width: '28px', height: '15px', borderRadius: '7px', border: '1.5px solid #ffffff', top: '14px' }} />
+                      </div>
+                      <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1.5px', color: '#ffffff' }}>MARIKHA</span>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
                       <div>
-                        <div style={{ fontSize: '0.7rem', color: '#86efac', textTransform: 'uppercase', tracking: '0.5px' }}>MAGANDANG ARAW,</div>
-                        <h2 style={{ fontSize: '1.35rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          {currentUser?.name || 'rei lopez'} 👋
+                        <div style={{ fontSize: '0.7rem', color: '#86efac', textTransform: 'uppercase', tracking: '0.5px', fontWeight: '800' }}>MAGANDANG ARAW,</div>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', margin: '2px 0 0 0' }}>
+                          Kuya Bert 👋
                         </h2>
                       </div>
 
@@ -432,31 +446,8 @@ const MobileAppSimulator = () => {
                     </div>
 
                     <div style={{ fontSize: '0.75rem', color: '#a7f3d0', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      📅 Friday, June 19 · 📍 Cupang, Antipolo · Rizal
+                      📅 Tuesday, July 21  ·  📍 Antipolo - Rizal
                     </div>
-
-                    {/* LIVE BROADCAST ANNOUNCEMENT PUSH BANNER */}
-                    {latestPushAnnouncement && (
-                      <div
-                        onClick={() => { setSelectedAnnouncement(latestPushAnnouncement); setShowHistoryModal(false); setShowNotificationModal(true); }}
-                        style={{
-                          background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '10px 12px', marginBottom: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px'
-                        }}
-                      >
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#d97706', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Bell size={14} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#d97706', textTransform: 'uppercase' }}>
-                            📢 LATEST ANNOUNCEMENT PUSH
-                          </div>
-                          <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#78350f', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            "{latestPushAnnouncement.content || latestPushAnnouncement.title}"
-                          </div>
-                        </div>
-                        <span style={{ fontSize: '0.7rem', color: '#d97706', fontWeight: '700' }}>View →</span>
-                      </div>
-                    )}
 
                     {/* Weather Cards Grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -464,15 +455,15 @@ const MobileAppSimulator = () => {
                         <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <CloudSun size={12} /> TEMPERATURE
                         </div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', margin: '2px 0' }}>28°C</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a7f3d0' }}>Maaraw - light breeze</div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', margin: '2px 0' }}>28 °C</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a7f3d0' }}>Maaraw · Light Breeze</div>
                       </div>
                       <div style={{ background: 'rgba(255,255,255,0.12)', padding: '10px 12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)' }}>
                         <div style={{ fontSize: '0.65rem', color: '#86efac', textTransform: 'uppercase', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <Droplets size={12} /> RAINFALL
                         </div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: '800', margin: '2px 0' }}>2.4mm</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a7f3d0' }}>Low chance of rain</div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: '800', margin: '2px 0' }}>2.3 mm</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a7f3d0' }}>Low Chance of Rain</div>
                       </div>
                     </div>
                   </div>
@@ -483,7 +474,7 @@ const MobileAppSimulator = () => {
                       What would you like to do?
                     </h3>
 
-                    {/* 4 Big Touch Tiles Grid */}
+                    {/* 4 Big Touch Tiles Grid (Matching Wireframe Image 100%) */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                       <div
                         onClick={() => setActiveTab('log')}
@@ -504,21 +495,21 @@ const MobileAppSimulator = () => {
                         }}
                       >
                         <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Calendar size={18} color="#fcd34d" />
+                          <Sprout size={18} color="#fcd34d" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>AI SMART TASKS</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>MY CROPS & LIVESTOCK</div>
                       </div>
 
                       <div
-                        onClick={() => setShowCropsModal(true)}
+                        onClick={() => setActiveTab('tasks')}
                         style={{
                           background: '#d97706', color: '#ffffff', borderRadius: '16px', padding: '16px 14px', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px'
                         }}
                       >
                         <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <ShieldCheck size={18} color="#ffffff" />
+                          <Calendar size={18} color="#ffffff" />
                         </div>
-                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>PGS STATUS</div>
+                        <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>FARMING CALENDAR</div>
                       </div>
 
                       <div
