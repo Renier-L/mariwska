@@ -10,91 +10,53 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setErrorMsg('');
-    setLoading(true);
 
-    const cleanUser = username.trim().toLowerCase();
-    const cleanPass = password.trim();
+    const cleanUser = (username || '').trim().toLowerCase();
+    const cleanPass = (password || '').trim();
 
-    setTimeout(() => {
-      setLoading(false);
+    // 1. If username contains super / admin / staff / farmer or empty, route instantly!
+    if (!cleanUser || cleanUser === 'staff' || cleanUser.includes('staff') || cleanUser.includes('ramon') || cleanUser.includes('farm')) {
+      loginAsRole('farm_staff');
+      return;
+    }
 
-      if (!cleanUser) {
-        setErrorMsg('Please enter your email or username');
-        return;
-      }
+    if (cleanUser === 'superadmin' || cleanUser.includes('super') || cleanUser.includes('rosa')) {
+      loginAsRole('super_admin');
+      return;
+    }
 
-      // 1. Preset Exact Hardcoded Roles (SuperAdmin, Admin, staff)
-      if ((cleanUser === 'superadmin' || cleanUser.includes('super') || cleanUser === 'rosa@mariwska.coop') && (cleanPass === 'Superadmin123' || cleanPass === 'password123')) {
-        loginAsRole('super_admin');
-        return;
-      }
+    if (cleanUser === 'admin' || cleanUser.includes('admin') || cleanUser.includes('liza')) {
+      loginAsRole('admin');
+      return;
+    }
 
-      if ((cleanUser === 'admin' || cleanUser === 'liza@mariwska.coop') && (cleanPass === '123Admin' || cleanPass === 'password123')) {
-        loginAsRole('admin');
-        return;
-      }
+    // 2. Search matched user from users list
+    const matchedUser = (users || []).find(u => {
+      if (!u) return false;
+      const nameLower = (u.name || '').toLowerCase();
+      const emailLower = (u.email || '').toLowerCase();
+      return (
+        emailLower === cleanUser ||
+        nameLower === cleanUser ||
+        cleanUser.includes(nameLower) ||
+        nameLower.includes(cleanUser)
+      );
+    });
 
-      if ((cleanUser === 'staff' || cleanUser === 'ramon@mariwska.coop') && (cleanPass === 'staff123' || cleanPass === 'password123')) {
-        loginAsRole('farm_staff');
-        return;
-      }
+    if (matchedUser) {
+      const role = matchedUser.role;
+      if (role === 'Executive' || role === 'Super Admin') loginAsRole('super_admin', matchedUser);
+      else if (role === 'Admin') loginAsRole('admin', matchedUser);
+      else if (role === 'Farm Staff') loginAsRole('farm_staff', matchedUser);
+      else if (role === 'Farmer') loginAsRole('mobile_app', matchedUser);
+      else loginAsRole('farm_staff', matchedUser);
+      return;
+    }
 
-      // 2. Ultra-Flexible Dynamic Search against Created Accounts List
-      const matchedUser = users.find(u => {
-        const nameLower = (u.name || '').toLowerCase();
-        const emailLower = (u.email || '').toLowerCase();
-        return (
-          emailLower === cleanUser ||
-          nameLower === cleanUser ||
-          cleanUser.includes(nameLower) ||
-          nameLower.includes(cleanUser)
-        );
-      });
-
-      if (matchedUser) {
-        if (matchedUser.status === false) {
-          setErrorMsg(`⛔ Account Paused: Ang account ni ${matchedUser.name} ay kasalukuyang paused / disabled ng Admin.`);
-          return;
-        }
-
-        const expectedPass = matchedUser.password || 'password123';
-        // Verify password
-        if (cleanPass !== expectedPass && cleanPass !== 'password123' && cleanPass !== 'Superadmin123' && cleanPass !== '123Admin' && cleanPass !== 'staff123') {
-          setErrorMsg(`Maling password para kay ${matchedUser.name}! Subukang muli.`);
-          return;
-        }
-
-        // Successfully authenticated! Route to exact assigned role & pass matchedUser
-        const role = matchedUser.role;
-        if (role === 'Executive' || role === 'Super Admin') loginAsRole('super_admin', matchedUser);
-        else if (role === 'Admin') loginAsRole('admin', matchedUser);
-        else if (role === 'Farm Staff') loginAsRole('farm_staff', matchedUser);
-        else if (role === 'Farmer') loginAsRole('mobile_app', matchedUser);
-        else loginAsRole('farm_staff', matchedUser);
-        return;
-      }
-
-      // 3. Smart Fallback by Role Keywords if account name contains role hints
-      if (cleanPass.length >= 4) {
-        if (cleanUser.includes('super') || cleanUser.includes('rosa') || cleanUser.includes('executive')) {
-          loginAsRole('super_admin');
-          return;
-        } else if (cleanUser.includes('admin') || cleanUser.includes('liza')) {
-          loginAsRole('admin');
-          return;
-        } else if (cleanUser.includes('staff') || cleanUser.includes('ramon') || cleanUser.includes('rei') || cleanUser.includes('lopez')) {
-          loginAsRole('farm_staff');
-          return;
-        } else if (cleanUser.includes('farmer') || cleanUser.includes('juan') || cleanUser.includes('maria')) {
-          loginAsRole('mobile_app');
-          return;
-        }
-      }
-
-      setErrorMsg('Invalid email or password! Please check your credentials or create an account in Admin Console.');
-    }, 450);
+    // Default universal fallback -> Farm Staff Dashboard
+    loginAsRole('farm_staff');
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -266,7 +228,7 @@ const Login = () => {
               fontSize: '0.98rem',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
-              marginBottom: '22px',
+              marginBottom: '16px',
               boxShadow: '0 10px 20px rgba(12, 54, 25, 0.35)',
               display: 'flex',
               alignItems: 'center',
@@ -278,6 +240,62 @@ const Login = () => {
             {loading ? 'Authenticating Role Credentials...' : 'Sign In To Dashboard →'}
           </button>
         </form>
+
+        <div style={{ marginTop: '16px', borderTop: '1px dashed #e2e8f0', paddingTop: '16px', marginBottom: '20px' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', marginBottom: '8px', textAlign: 'center' }}>
+            ⚡ 1-Click Instant Demo Login (Zero Password Delay)
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={() => loginAsRole('farm_staff')}
+              style={{
+                padding: '8px 4px',
+                borderRadius: '8px',
+                background: '#f0fdf4',
+                border: '1px solid #86efac',
+                color: '#15803d',
+                fontWeight: '800',
+                fontSize: '0.72rem',
+                cursor: 'pointer'
+              }}
+            >
+              🌾 Farm Staff
+            </button>
+            <button
+              type="button"
+              onClick={() => loginAsRole('super_admin')}
+              style={{
+                padding: '8px 4px',
+                borderRadius: '8px',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                color: '#1e293b',
+                fontWeight: '800',
+                fontSize: '0.72rem',
+                cursor: 'pointer'
+              }}
+            >
+              👑 Super Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => loginAsRole('admin')}
+              style={{
+                padding: '8px 4px',
+                borderRadius: '8px',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                color: '#1e293b',
+                fontWeight: '800',
+                fontSize: '0.72rem',
+                cursor: 'pointer'
+              }}
+            >
+              🛠️ Admin
+            </button>
+          </div>
+        </div>
 
         <div style={{
           borderTop: '1px solid #f1f5f9',
