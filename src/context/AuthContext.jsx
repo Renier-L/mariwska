@@ -268,7 +268,14 @@ export const AuthProvider = ({ children }) => {
             activity: v.activity || 'Watering',
             createdAt: v.created_at || new Date().toISOString(),
             created_at: v.created_at || new Date().toISOString(),
-            timestamp: v.created_at || 'Just now',
+            timestamp: (() => {
+              if (!v.created_at) return 'Just now';
+              const diffMs = Date.now() - new Date(v.created_at).getTime();
+              if (diffMs < 3600000) return 'Just now';
+              if (diffMs < 86400000) return 'Today';
+              const daysAgo = Math.floor(diffMs / 86400000);
+              return `${daysAgo}d ago`;
+            })(),
             urgency: 'Normal',
             urgencyCls: 'pill-low',
             location: v.gps || 'Live Mobile GPS',
