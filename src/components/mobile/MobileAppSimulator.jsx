@@ -820,6 +820,21 @@ const MobileAppSimulator = () => {
                       <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '800', textTransform: 'uppercase' }}>RECOMMENDED CROP VARIETY</div>
                       <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0c3619', margin: '4px 0 10px 0' }}>{aiResult.crop}</h2>
 
+                      {/* Plant / Livestock Growth Stage & Prediction Box (Teacher's requirement) */}
+                      <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '12px', padding: '12px', margin: '10px 0 14px 0' }}>
+                        <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#166534', textTransform: 'uppercase', marginBottom: '2px' }}>🌱 CURRENT PLANT GROWTH STAGE</div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0c3619', marginBottom: '6px' }}>
+                          {aiResult.currentStage || 'Flowering & Fruit Setting (Stage 3 of 5)'}
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#d97706' }}>🔮 PREDICTED NEXT STAGE:</span>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#1e293b' }}>
+                            {aiResult.nextStagePrediction || 'Fruit Maturation & Ripening'} ({aiResult.daysToNextStage || '12 days'})
+                          </span>
+                        </div>
+                      </div>
+
                       <div style={{ marginBottom: '14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: '800', marginBottom: '4px' }}>
                           <span>SUITABILITY CONFIDENCE</span>
