@@ -29,7 +29,7 @@ const Login = () => {
         loginAsRole('super_admin');
         return;
       } else {
-        setErrorMsg('❌ Invalid password for Super Admin account.');
+        setErrorMsg('Invalid password for Super Admin account.');
         return;
       }
     }
@@ -39,7 +39,7 @@ const Login = () => {
         loginAsRole('admin');
         return;
       } else {
-        setErrorMsg('❌ Invalid password for Admin account.');
+        setErrorMsg('Invalid password for Admin account.');
         return;
       }
     }
@@ -49,7 +49,7 @@ const Login = () => {
         loginAsRole('farm_staff');
         return;
       } else {
-        setErrorMsg('❌ Invalid password for Farm Staff account.');
+        setErrorMsg('Invalid password for Farm Staff account.');
         return;
       }
     }
@@ -59,7 +59,7 @@ const Login = () => {
         loginAsRole('mobile_app');
         return;
       } else {
-        setErrorMsg('❌ Invalid password for Farmer account.');
+        setErrorMsg('Invalid password for Farmer account.');
         return;
       }
     }
@@ -78,7 +78,7 @@ const Login = () => {
 
     if (matchedUser) {
       if (matchedUser.password && matchedUser.password !== cleanPass) {
-        setErrorMsg('❌ Invalid password. Please check your password and try again.');
+        setErrorMsg('Invalid password. Please check your password and try again.');
         return;
       }
 
@@ -92,7 +92,7 @@ const Login = () => {
     }
 
     // 3. Reject unrecognized accounts
-    setErrorMsg('❌ Account not registered or invalid credentials. Only Cooperative Administrators can create and authorize accounts.');
+    setErrorMsg('Account not registered or invalid credentials. Only Cooperative Administrators can create and authorize accounts.');
   };
 
   return (
