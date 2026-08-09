@@ -18,23 +18,53 @@ const Login = () => {
     const cleanUser = (username || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
-    // Smart role routing based on credentials entered
-    if (!cleanUser || cleanUser === 'staff' || cleanUser.includes('staff') || cleanUser.includes('ramon') || cleanUser.includes('farm')) {
-      loginAsRole('farm_staff');
+    if (!cleanUser || !cleanPass) {
+      setErrorMsg('Please enter both your username/email and password.');
       return;
     }
 
-    if (cleanUser === 'superadmin' || cleanUser.includes('super') || cleanUser.includes('rosa') || cleanUser.includes('executive')) {
-      loginAsRole('super_admin');
-      return;
+    // 1. Check Pre-Seeded System Role Quick Credentials
+    if (cleanUser === 'superadmin' || cleanUser === 'rosa@mariwska.coop' || cleanUser === 'executive') {
+      if (cleanPass === 'super123' || cleanPass === 'password123') {
+        loginAsRole('super_admin');
+        return;
+      } else {
+        setErrorMsg('❌ Invalid password for Super Admin account.');
+        return;
+      }
     }
 
-    if (cleanUser === 'admin' || cleanUser.includes('admin') || cleanUser.includes('liza')) {
-      loginAsRole('admin');
-      return;
+    if (cleanUser === 'admin' || cleanUser === 'liza@mariwska.coop') {
+      if (cleanPass === 'admin123' || cleanPass === 'password123') {
+        loginAsRole('admin');
+        return;
+      } else {
+        setErrorMsg('❌ Invalid password for Admin account.');
+        return;
+      }
     }
 
-    // Dynamic search against registered users array
+    if (cleanUser === 'staff' || cleanUser === 'ramon@mariwska.coop' || cleanUser === 'farm staff') {
+      if (cleanPass === 'staff123' || cleanPass === 'password123') {
+        loginAsRole('farm_staff');
+        return;
+      } else {
+        setErrorMsg('❌ Invalid password for Farm Staff account.');
+        return;
+      }
+    }
+
+    if (cleanUser === 'farmer' || cleanUser === 'lopezrenier97@gmail.com' || cleanUser === 'rei lopez' || cleanUser === 'mang bert') {
+      if (cleanPass === 'password123') {
+        loginAsRole('mobile_app');
+        return;
+      } else {
+        setErrorMsg('❌ Invalid password for Farmer account.');
+        return;
+      }
+    }
+
+    // 2. Dynamic search against registered users created by Admin
     const matchedUser = (users || []).find(u => {
       if (!u) return false;
       const nameLower = (u.name || '').toLowerCase();
@@ -42,12 +72,16 @@ const Login = () => {
       return (
         emailLower === cleanUser ||
         nameLower === cleanUser ||
-        cleanUser.includes(nameLower) ||
-        nameLower.includes(cleanUser)
+        (cleanUser.includes('@') && emailLower.includes(cleanUser))
       );
     });
 
     if (matchedUser) {
+      if (matchedUser.password && matchedUser.password !== cleanPass) {
+        setErrorMsg('❌ Invalid password. Please check your password and try again.');
+        return;
+      }
+
       const role = matchedUser.role;
       if (role === 'Executive' || role === 'Super Admin') loginAsRole('super_admin', matchedUser);
       else if (role === 'Admin') loginAsRole('admin', matchedUser);
@@ -57,8 +91,8 @@ const Login = () => {
       return;
     }
 
-    // Default formal fallback -> Farm Staff Portal
-    loginAsRole('farm_staff');
+    // 3. Reject unrecognized accounts
+    setErrorMsg('❌ Account not registered or invalid credentials. Only Cooperative Administrators can create and authorize accounts.');
   };
 
   return (
