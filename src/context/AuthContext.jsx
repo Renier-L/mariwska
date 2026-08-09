@@ -10,9 +10,15 @@ const broadcastChannel = typeof window !== 'undefined' && 'BroadcastChannel' in 
   : null;
 
 export const AuthProvider = ({ children }) => {
-  // Restore currentRole from localStorage upon reload!
-  // Always land on 'login' screen when opening or refreshing the web portal!
-  const [currentRole, setCurrentRoleState] = useState('login');
+  // Restore currentRole from localStorage upon page reload/refresh so you stay logged in at your exact location!
+  const [currentRole, setCurrentRoleState] = useState(() => {
+    try {
+      const savedRole = localStorage.getItem('marikha_current_role');
+      return savedRole || 'login';
+    } catch (e) {
+      return 'login';
+    }
+  });
 
   const [currentUser, setCurrentUser] = useState(initialUsers[0]);
   const [tenantInfo] = useState({
@@ -72,7 +78,11 @@ export const AuthProvider = ({ children }) => {
   const setCurrentRole = (roleKey) => {
     setCurrentRoleState(roleKey);
     try {
-      localStorage.setItem('marikha_current_role', roleKey);
+      if (roleKey === 'login') {
+        localStorage.removeItem('marikha_current_role');
+      } else {
+        localStorage.setItem('marikha_current_role', roleKey);
+      }
     } catch (e) {}
   };
 
