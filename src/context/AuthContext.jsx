@@ -11,14 +11,8 @@ const broadcastChannel = typeof window !== 'undefined' && 'BroadcastChannel' in 
 
 export const AuthProvider = ({ children }) => {
   // Restore currentRole from localStorage upon reload!
-  const [currentRole, setCurrentRoleState] = useState(() => {
-    try {
-      const savedRole = localStorage.getItem('marikha_current_role');
-      return savedRole || 'login';
-    } catch (e) {
-      return 'login';
-    }
-  });
+  // Always land on 'login' screen when opening or refreshing the web portal!
+  const [currentRole, setCurrentRoleState] = useState('login');
 
   const [currentUser, setCurrentUser] = useState(initialUsers[0]);
   const [tenantInfo] = useState({
