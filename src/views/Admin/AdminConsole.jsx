@@ -79,11 +79,40 @@ const AdminConsole = ({ activeTab }) => {
   const [editPhone, setEditPhone] = useState('+63 917 555 0100');
   const [editPass, setEditPass] = useState('password123');
 
+  // Multi-Select Checkbox State
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+
   const filteredUsers = users.filter(u => {
     const matchesRole = roleFilter === 'All' || u.role === roleFilter;
     const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesRole && matchesSearch;
   });
+
+  const toggleSelectUser = (id) => {
+    setSelectedUserIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAllUsers = () => {
+    if (selectedUserIds.length === filteredUsers.length) {
+      setSelectedUserIds([]);
+    } else {
+      setSelectedUserIds(filteredUsers.map(u => u.id));
+    }
+  };
+
+  const handleBulkDisable = () => {
+    selectedUserIds.forEach(id => toggleUserStatus(id));
+    setSelectedUserIds([]);
+  };
+
+  const handleBulkDelete = () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedUserIds.length} selected user accounts?`)) {
+      selectedUserIds.forEach(id => deleteUser(id));
+      setSelectedUserIds([]);
+    }
+  };
 
   const handlePublish = () => {
     if (!announcementText.trim()) {
@@ -371,7 +400,7 @@ const AdminConsole = ({ activeTab }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
             <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-              User Accounts & Member Records
+              User Accounts & Member Directory
             </h1>
             <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
               Comprehensive cooperative directory with role-based access controls
@@ -382,6 +411,60 @@ const AdminConsole = ({ activeTab }) => {
             <Plus size={16} /> Create New User Account
           </button>
         </div>
+
+        {/* Floating Bulk Action Bar */}
+        {selectedUserIds.length > 0 && (
+          <div style={{
+            background: '#f0fdf4',
+            border: '1.5px solid #86efac',
+            borderRadius: '12px',
+            padding: '12px 20px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justify: 'space-between',
+            boxShadow: '0 4px 12px rgba(21, 128, 61, 0.12)'
+          }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle2 size={16} color="#16a34a" />
+              <span>{selectedUserIds.length} User Accounts Selected</span>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={handleBulkDisable}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  color: '#334155',
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                Disable / Enable Selected
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkDelete}
+                style={{
+                  background: '#fff1f2',
+                  border: '1px solid #fecdd3',
+                  color: '#e11d48',
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontSize: '0.78rem',
+                  fontWeight: '800',
+                  cursor: 'pointer'
+                }}
+              >
+                Delete Selected
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="m-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
@@ -432,6 +515,14 @@ const AdminConsole = ({ activeTab }) => {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+                <th style={{ padding: '12px 14px', fontWeight: '700', width: '40px', textAlign: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={filteredUsers.length > 0 && selectedUserIds.length === filteredUsers.length}
+                    onChange={toggleSelectAllUsers}
+                    style={{ cursor: 'pointer', accentColor: '#15803d', width: '16px', height: '16px' }}
+                  />
+                </th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>EMAIL ADDRESS</th>
@@ -442,19 +533,27 @@ const AdminConsole = ({ activeTab }) => {
             <tbody>
               {filteredUsers.map(u => {
                 const isProtectedAdmin = u.role === 'Executive' || u.role === 'Admin';
+                const isSelected = selectedUserIds.includes(u.id);
 
                 return (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                  <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6', background: isSelected ? '#f0fdf4' : 'transparent' }}>
+                    <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelectUser(u.id)}
+                        style={{ cursor: 'pointer', accentColor: '#15803d', width: '16px', height: '16px' }}
+                      />
+                    </td>
                     <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
-                        width: '32px', height: '32px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
-                        fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem'
+                        width: '34px', height: '34px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
+                        fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem'
                       }}>
                         {u.initials}
                       </div>
                       <div>
                         <span style={{ fontWeight: '700', color: '#111827', display: 'block' }}>{u.name}</span>
-                        <span style={{ fontSize: '0.7rem', color: '#6b7280' }}>Password: {u.password || 'password123'}</span>
                       </div>
                     </td>
 
@@ -494,81 +593,49 @@ const AdminConsole = ({ activeTab }) => {
 
                     <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
-                        {/* EDIT BUTTON AVAILABLE FOR ALL EXCEPT FARM STAFF */}
-                        {u.role !== 'Farm Staff' && (
+                        {/* EDIT BUTTON */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditModal(u)}
+                          title="Edit User Profile & Credentials"
+                          style={{
+                            background: '#eff6ff',
+                            border: '1px solid #93c5fd',
+                            color: '#1d4ed8',
+                            borderRadius: '7px',
+                            padding: '6px 11px',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Pencil size={13} color="#1d4ed8" /> Edit
+                        </button>
+
+                        {/* DISABLE BUTTON */}
+                        {!isProtectedAdmin && (
                           <button
                             type="button"
-                            onClick={() => handleOpenEditModal(u)}
-                            title="Edit User Profile & Credentials"
+                            onClick={() => toggleUserStatus(u.id)}
                             style={{
-                              background: '#eff6ff',
-                              border: '1px solid #93c5fd',
-                              color: '#1d4ed8',
+                              background: u.status !== false ? '#f8fafc' : '#f0fdf4',
+                              border: u.status !== false ? '1px solid #cbd5e1' : '1px solid #86efac',
+                              color: u.status !== false ? '#475569' : '#15803d',
                               borderRadius: '7px',
                               padding: '6px 11px',
                               fontSize: '0.75rem',
                               fontWeight: '700',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                              transition: 'all 0.15s ease'
+                              cursor: 'pointer'
                             }}
                           >
-                            <Pencil size={13} color="#1d4ed8" /> Edit
+                            {u.status !== false ? 'Disable' : 'Enable'}
                           </button>
                         )}
 
-                        {/* DISABLE BUTTON REMOVED FOR PROTECTED ADMINS & FARM STAFF */}
-                        {!isProtectedAdmin && u.role !== 'Farm Staff' && (
-                          u.status !== false ? (
-                            <button
-                              type="button"
-                              onClick={() => toggleUserStatus(u.id)}
-                              title="Disable user account access"
-                              style={{
-                                background: '#f8fafc',
-                                border: '1px solid #cbd5e1',
-                                color: '#475569',
-                                borderRadius: '7px',
-                                padding: '6px 11px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                transition: 'all 0.15s ease'
-                              }}
-                            >
-                              <UserX size={13} color="#64748b" /> Disable
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => toggleUserStatus(u.id)}
-                              title="Enable user account access"
-                              style={{
-                                background: '#f0fdf4',
-                                border: '1px solid #86efac',
-                                color: '#15803d',
-                                borderRadius: '7px',
-                                padding: '6px 11px',
-                                fontSize: '0.75rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '5px',
-                                transition: 'all 0.15s ease'
-                              }}
-                            >
-                              <UserCheck size={13} color="#16a34a" /> Enable
-                            </button>
-                          )
-                        )}
-
-                        {/* DELETE BUTTON FOR NON-PROTECTED ADMINS (FARM STAFF & FARMER) */}
+                        {/* DELETE BUTTON */}
                         {!isProtectedAdmin && (
                           <button
                             type="button"
@@ -589,8 +656,7 @@ const AdminConsole = ({ activeTab }) => {
                               cursor: 'pointer',
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: '5px',
-                              transition: 'all 0.15s ease'
+                              gap: '4px'
                             }}
                           >
                             <Trash2 size={13} color="#e11d48" /> Delete
@@ -605,7 +671,7 @@ const AdminConsole = ({ activeTab }) => {
           </table>
         </div>
 
-        {/* CREATE USER ACCOUNT MODAL (ENTERPRISE 2-COLUMN DESIGN) */}
+        {/* CREATE USER ACCOUNT MODAL (MULTI-ROLE SELECTOR) */}
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -628,7 +694,7 @@ const AdminConsole = ({ activeTab }) => {
                   </div>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', letterSpacing: '-0.3px' }}>Create User Account</h3>
-                    <span style={{ fontSize: '0.78rem', color: '#86efac' }}>Add new cooperative member or field staff</span>
+                    <span style={{ fontSize: '0.78rem', color: '#86efac' }}>Add new farmer, farm staff, admin, or executive</span>
                   </div>
                 </div>
                 <button onClick={() => setShowAddModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
@@ -637,18 +703,31 @@ const AdminConsole = ({ activeTab }) => {
               </div>
 
               <form onSubmit={handleCreateUser} style={{ padding: '28px' }}>
-                {/* Restricted Role Selector: Farmer Only */}
+                {/* Full Role Selector: Farmer, Farm Staff, Admin, Executive */}
                 <div style={{ marginBottom: '20px' }}>
                   <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '8px' }}>
                     System Access Role
                   </label>
-                  <div style={{ padding: '14px 18px', background: '#f0fdf4', borderRadius: '12px', border: '2px solid #15803d', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div>
-                      <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#15803d' }}>🌾 Farmer Account</div>
-                      <div style={{ fontSize: '0.73rem', color: '#166534' }}>Mobile App User & Cooperative Field Member</div>
-                    </div>
-                    <span style={{ fontSize: '0.72rem', background: '#15803d', color: '#ffffff', padding: '4px 10px', borderRadius: '12px', fontWeight: '700' }}>Selected</span>
-                  </div>
+                  <select
+                    value={newUserRole}
+                    onChange={(e) => setNewUserRole(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      borderRadius: '12px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '0.88rem',
+                      fontWeight: '700',
+                      color: '#0f172a',
+                      background: '#ffffff',
+                      outline: 'none'
+                    }}
+                  >
+                    <option value="Farmer">Farmer (Mobile App User & Cooperative Field Member)</option>
+                    <option value="Farm Staff">Farm Staff (Activity Validator & Field Supervisor)</option>
+                    <option value="Admin">Admin (Cooperative Administrator)</option>
+                    <option value="Executive">Executive (Super Admin / Executive Management)</option>
+                  </select>
                 </div>
 
                 {/* 2-Column Form Fields Grid */}

@@ -36,8 +36,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Administrator Console';
     navItems = [
       { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
-      { id: 'user-accounts', label: 'User Accounts', icon: Users },
-      { id: 'member-records', label: 'Member Directory', icon: Users },
+      { id: 'user-accounts', label: 'User Accounts & Directory', icon: Users },
       { id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
       { id: 'announcements', label: 'Announcements Push', icon: Megaphone },
       { id: 'reports', label: 'Reports', icon: FileText },
