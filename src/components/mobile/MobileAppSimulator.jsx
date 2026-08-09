@@ -911,19 +911,21 @@ const MobileAppSimulator = () => {
               {activeTab === 'tasks' && (
                 <div>
                   <div style={{ background: '#d97706', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
+                    <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none', cursor: 'pointer' }}><ArrowLeft size={18} /></button>
                     <div>
-                      <h3 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Today's Smart Tasks</h3>
-                      <span style={{ fontSize: '0.7rem', color: '#fef3c7' }}>Interactive farming checklist</span>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Today's Smart Tasks</h3>
+                      <span style={{ fontSize: '0.7rem', color: '#fef3c7' }}>Inayos para sa inyong sakahan</span>
                     </div>
                   </div>
 
                   <div style={{ padding: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
                       {[
-                        { id: 't1', title: 'Apply compost · Plot P-021', status: 'OVERDUE', time: '● YESTERDAY', desc: 'Missed scheduled cycle · re-do today', border: '#dc2626', pill: 'pill-critical' },
-                        { id: 't2', title: 'Water Plot P-007', status: 'URGENT', time: '● 06:00 TODAY', desc: 'Heat advisory · double morning ration', border: '#d97706', pill: 'pill-high' },
-                        { id: 't3', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: '● 10:00 TODAY', desc: 'Pods 7–9cm length ready', border: '#16a34a', pill: 'pill-low' }
+                        { id: 't1', title: 'Apply compost - Plot P-021', status: 'OVERDUE', time: '● YESTERDAY', desc: 'Missed scheduled cycle - re-do today', border: '#ef4444', badgeBg: '#fee2e2', badgeColor: '#dc2626' },
+                        { id: 't2', title: 'Water Plot P-007', status: 'URGENT', time: '● 06:00 TODAY', desc: 'Heat advisory - double the morning ratio', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706' },
+                        { id: 't3', title: 'Feed Goat Herd GT-014', status: 'URGENT', time: '● 07:00 TODAY', desc: 'Morning ration + 5kg forage', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706' },
+                        { id: 't4', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Pods 7-9cm length ready', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b' },
+                        { id: 't5', title: 'Water Plot P-002', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Evening ration - 80L drip', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b' }
                       ].map(t => {
                         const isDone = completedTasks[t.id];
                         return (
@@ -932,37 +934,59 @@ const MobileAppSimulator = () => {
                             onClick={() => toggleTaskCompleted(t.id)}
                             style={{
                               background: isDone ? '#f0fdf4' : '#ffffff',
-                              borderRadius: '10px',
-                              borderLeft: `4px solid ${isDone ? '#16a34a' : t.border}`,
-                              border: isDone ? '1px solid #86efac' : '1px solid #e5e7eb',
-                              padding: '10px 12px',
+                              borderRadius: '12px',
+                              border: isDone ? '1.5px solid #86efac' : `1.5px solid ${t.border}`,
+                              padding: '12px 14px',
                               cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justify: 'space-between'
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
                             }}
                           >
-                            <div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                                <span style={{ fontSize: '0.68rem', color: isDone ? '#16a34a' : t.border, fontWeight: '800' }}>{t.time}</span>
-                                <span className={`pill ${isDone ? 'pill-compliant' : t.pill}`}>{isDone ? 'COMPLETED ✓' : t.status}</span>
-                              </div>
-                              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: isDone ? '#15803d' : '#111827', textDecoration: isDone ? 'line-through' : 'none' }}>
-                                {t.title}
-                              </h4>
-                              <p style={{ fontSize: '0.7rem', color: '#6b7280', margin: 0 }}>{t.desc}</p>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                              <span style={{ fontSize: '0.68rem', color: isDone ? '#16a34a' : t.border, fontWeight: '800' }}>{t.time}</span>
+                              <span style={{ background: isDone ? '#dcfce7' : t.badgeBg, color: isDone ? '#15803d' : t.badgeColor, fontSize: '0.65rem', padding: '2px 8px', borderRadius: '10px', fontWeight: '900' }}>
+                                {isDone ? 'COMPLETED ✓' : t.status}
+                              </span>
                             </div>
-                            <div style={{
-                              width: '24px', height: '24px', borderRadius: '50%',
-                              background: isDone ? '#16a34a' : '#f1f5f9',
-                              color: isDone ? '#fff' : 'transparent',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center'
-                            }}>
-                              <CheckCircle2 size={16} />
-                            </div>
+                            <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: isDone ? '#15803d' : '#111827', margin: '0 0 2px 0', textDecoration: isDone ? 'line-through' : 'none' }}>
+                              {t.title}
+                            </h4>
+                            <p style={{ fontSize: '0.72rem', color: '#6b7280', margin: 0 }}>{t.desc}</p>
                           </div>
                         );
                       })}
+                    </div>
+
+                    {/* PGS ORGANIC CERTIFICATION CARD WITH CHECKLIST ITEM ALERT (Image 3) */}
+                    <div style={{ background: '#ffffff', borderRadius: '14px', border: '1.5px solid #16a34a', padding: '14px', marginTop: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <ShieldCheck size={18} color="#16a34a" />
+                          <div>
+                            <div style={{ fontSize: '0.62rem', fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>PGS ORGANIC CERTIFICATION</div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619' }}>Certified · 94% complete</div>
+                          </div>
+                        </div>
+                        <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.65rem', padding: '2px 8px', borderRadius: '10px', fontWeight: '800' }}>Active</span>
+                      </div>
+
+                      <div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden', margin: '8px 0' }}>
+                        <div style={{ width: '94%', height: '100%', background: '#16a34a' }} />
+                      </div>
+
+                      <div style={{ background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: '10px', padding: '10px', marginTop: '6px' }}>
+                        <div style={{ fontSize: '0.72rem', fontWeight: '900', color: '#b45309', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <AlertTriangle size={14} /> 1 CHECKLIST ITEM TO FIX
+                        </div>
+                        <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#78350f', marginBottom: '4px' }}>
+                          Submit photo of compost batch #14 (1 day overdue)
+                        </div>
+                        <button
+                          onClick={() => setActiveTab('log')}
+                          style={{ background: '#fef3c7', color: '#b45309', border: 'none', borderRadius: '6px', padding: '4px 8px', fontSize: '0.65rem', fontWeight: '800', cursor: 'pointer' }}
+                        >
+                          Tip: Open Log Activity → attach photo → submit to cloud
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
