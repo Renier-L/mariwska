@@ -412,60 +412,6 @@ const AdminConsole = ({ activeTab }) => {
           </button>
         </div>
 
-        {/* Floating Bulk Action Bar */}
-        {selectedUserIds.length > 0 && (
-          <div style={{
-            background: '#f0fdf4',
-            border: '1.5px solid #86efac',
-            borderRadius: '12px',
-            padding: '12px 20px',
-            marginBottom: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justify: 'space-between',
-            boxShadow: '0 4px 12px rgba(21, 128, 61, 0.12)'
-          }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <CheckCircle2 size={16} color="#16a34a" />
-              <span>{selectedUserIds.length} User Accounts Selected</span>
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                type="button"
-                onClick={handleBulkDisable}
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  color: '#334155',
-                  borderRadius: '8px',
-                  padding: '7px 14px',
-                  fontSize: '0.78rem',
-                  fontWeight: '700',
-                  cursor: 'pointer'
-                }}
-              >
-                Disable / Enable Selected
-              </button>
-              <button
-                type="button"
-                onClick={handleBulkDelete}
-                style={{
-                  background: '#fff1f2',
-                  border: '1px solid #fecdd3',
-                  color: '#e11d48',
-                  borderRadius: '8px',
-                  padding: '7px 14px',
-                  fontSize: '0.78rem',
-                  fontWeight: '800',
-                  cursor: 'pointer'
-                }}
-              >
-                Delete Selected
-              </button>
-            </div>
-          </div>
-        )}
-
         <div className="m-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
             <div style={{ display: 'flex', gap: '6px' }}>
@@ -515,14 +461,6 @@ const AdminConsole = ({ activeTab }) => {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-                <th style={{ padding: '12px 14px', fontWeight: '700', width: '40px', textAlign: 'center' }}>
-                  <input
-                    type="checkbox"
-                    checked={filteredUsers.length > 0 && selectedUserIds.length === filteredUsers.length}
-                    onChange={toggleSelectAllUsers}
-                    style={{ cursor: 'pointer', accentColor: '#15803d', width: '16px', height: '16px' }}
-                  />
-                </th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>EMAIL ADDRESS</th>
@@ -533,18 +471,9 @@ const AdminConsole = ({ activeTab }) => {
             <tbody>
               {filteredUsers.map(u => {
                 const isProtectedAdmin = u.role === 'Executive' || u.role === 'Admin';
-                const isSelected = selectedUserIds.includes(u.id);
 
                 return (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6', background: isSelected ? '#f0fdf4' : 'transparent' }}>
-                    <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSelectUser(u.id)}
-                        style={{ cursor: 'pointer', accentColor: '#15803d', width: '16px', height: '16px' }}
-                      />
-                    </td>
+                  <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                     <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
                         width: '34px', height: '34px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
