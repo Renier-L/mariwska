@@ -267,38 +267,7 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Demo Quick Roles Access Pills */}
-        <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid #f1f5f9' }}>
-          <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', textAlign: 'center', textTransform: 'uppercase', marginBottom: '10px' }}>
-            DEMO ONE-TAP LOGIN ACCESSIBILITY
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <button
-              onClick={() => loginAsRole('super_admin')}
-              style={{ padding: '8px', borderRadius: '10px', background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer' }}
-            >
-              👑 Super Admin
-            </button>
-            <button
-              onClick={() => loginAsRole('admin')}
-              style={{ padding: '8px', borderRadius: '10px', background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer' }}
-            >
-              🛡️ Admin
-            </button>
-            <button
-              onClick={() => loginAsRole('farm_staff')}
-              style={{ padding: '8px', borderRadius: '10px', background: '#fef3c7', border: '1px solid #fde68a', color: '#92400e', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer' }}
-            >
-              🌾 Farm Staff
-            </button>
-            <button
-              onClick={() => loginAsRole('mobile_app')}
-              style={{ padding: '8px', borderRadius: '10px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer' }}
-            >
-              📱 Mobile App
-            </button>
-          </div>
-        </div>
+
 
         <div style={{
           marginTop: '18px',
