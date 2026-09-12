@@ -126,6 +126,40 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   // Decision Support State
   const [decisionRiskFilter, setDecisionRiskFilter] = useState('all');
   const [decisionSearchQuery, setDecisionSearchQuery] = useState('');
+  const [selectedInterventionModal, setSelectedInterventionModal] = useState(null);
+  const [checklist, setChecklist] = useState([
+    { id: 1, text: 'Deploy automated drip fertigation cycle for Plot P-021 (Tomato Diamante) to mitigate 34% rainfall deficit', checked: false, priority: 'HIGH' },
+    { id: 2, text: 'Schedule organic Foliar Nitrogen spray for Plot P-007 (Eggplant) to reverse 28% soil nutrient depletion', checked: true, priority: 'HIGH' },
+    { id: 3, text: 'Initiate heat stress micro-shading protocol across Sector B plots for 22% temperature anomaly mitigation', checked: false, priority: 'MEDIUM' },
+    { id: 4, text: 'Adjust Swine Herd Pen #2 feed formulation to +1.4 kg/wk daily gain target', checked: true, priority: 'MEDIUM' },
+    { id: 5, text: 'Advance harvest window timing by 4 days for Plot P-034 based on Random Forest maturity prediction', checked: false, priority: 'HIGH' },
+    { id: 6, text: 'Dispatch farm staff for mandatory geotag validation on Plot P-055 pending task submission', checked: false, priority: 'MEDIUM' }
+  ]);
+
+  const toggleChecklist = (id) => {
+    setChecklist(prev => prev.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+  };
+
+  const handleCommitPlan = async () => {
+    setCommittedAlert(true);
+    if (publishAnnouncement) {
+      await publishAnnouncement({
+        title: '⚡ Random Forest AI Strategic Action Plan Committed',
+        content: 'Super Admin committed live AI risk mitigation plan: Automated fertigation, Nitrogen spray boost, and advance harvest windows deployed.'
+      });
+    }
+    setTimeout(() => setCommittedAlert(false), 5000);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownloadPDF = (title, category = 'all') => {
+    generateOfficialReportPDF(title, category, { crops, livestock, validations, schedules });
+  };
+
+
 
   // Reports State
   const [reportCategoryFilter, setReportCategoryFilter] = useState('all');
@@ -483,35 +517,134 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
   const dynamicInterventionList = React.useMemo(() => {
     const list = [];
-    if (validations) {
-      validations.filter(v => v.status === 'Pending' || v.status === 'Rejected' || v.status === 'Overdue').forEach(v => {
+
+    // 1. Process crops from Supabase
+    if (crops && crops.length > 0) {
+      crops.forEach((c, idx) => {
+        const yieldVal = parseFloat(c.yield) || 250;
+        const stage = (c.growthStage || c.stage || 'Vegetative').toLowerCase();
+        let riskScore = 65;
+        let riskLabel = 'Moderate';
+        let cls = 'pill-high';
+        let reason = `Growth Stage: ${c.growthStage || 'Vegetative'} | Yield Est: ${c.yield || '350 kg'}`;
+
+        if (yieldVal < 200 || stage.includes('harvest ready')) {
+          riskScore = 88;
+          riskLabel = 'Critical';
+          cls = 'pill-critical';
+          reason = `Yield below cluster baseline (${yieldVal} kg) - Immediate AI harvesting & fertigation suggested`;
+        } else if (stage.includes('flowering') || stage.includes('fruiting')) {
+          riskScore = 76;
+          riskLabel = 'High';
+          cls = 'pill-critical';
+          reason = `High nutrient demand phase - Soil Nitrogen deficiency risk 28%`;
+        } else if (stage.includes('vegetative')) {
+          riskScore = 58;
+          riskLabel = 'Moderate';
+          cls = 'pill-high';
+          reason = `Rainfall deficit index 34% - Monitor soil moisture sensor`;
+        } else {
+          riskScore = 24;
+          riskLabel = 'Low';
+          cls = 'pill-compliant';
+          reason = `Plot parameters within normal Random Forest prediction range`;
+        }
+
         list.push({
-          plot: v.plot || 'Plot P-021',
-          name: v.farmer || 'Farmer',
-          reason: `Task '${v.activity || 'Activity'}' status: ${v.status}`,
-          risk: v.status === 'Rejected' ? '92% - Critical' : (v.status === 'Overdue' ? '85% - High' : '74% - Moderate'),
-          cls: v.status === 'Rejected' ? 'pill-critical' : (v.status === 'Overdue' ? 'pill-critical' : 'pill-high')
+          plot: c.plot || `P-0${idx + 1}`,
+          name: c.variety || 'Crop Plot',
+          reason: reason,
+          risk: `${riskScore}% - ${riskLabel}`,
+          riskLevel: riskLabel.toLowerCase(),
+          cls: cls,
+          type: 'crop',
+          rawItem: c
         });
       });
     }
-    if (schedules) {
+
+    // 2. Process livestock from Supabase
+    if (livestock && livestock.length > 0) {
+      livestock.forEach((l, idx) => {
+        const health = (l.healthStatus || l.status || 'Healthy').toLowerCase();
+        const vac = (l.vaccination || '').toLowerCase();
+        let riskScore = 45;
+        let riskLabel = 'Moderate';
+        let cls = 'pill-high';
+
+        if (health.includes('treatment') || health.includes('sick')) {
+          riskScore = 94;
+          riskLabel = 'Critical';
+          cls = 'pill-critical';
+        } else if (health.includes('monitoring') || (!vac.includes('100%') && !vac.includes('up to date'))) {
+          riskScore = 79;
+          riskLabel = 'High';
+          cls = 'pill-critical';
+        } else if (health.includes('healthy')) {
+          riskScore = 55;
+          riskLabel = 'Moderate';
+          cls = 'pill-high';
+        }
+
+        list.push({
+          plot: l.plot || `L-0${idx + 1}`,
+          name: `${l.group || 'Herd'} (${l.headCount || 20} heads)`,
+          reason: `Health: ${l.healthStatus || 'Healthy'} | Vac: ${l.vaccination || '100%'} | Gain: ${l.dailyGain || '+1.2kg/wk'}`,
+          risk: `${riskScore}% - ${riskLabel}`,
+          riskLevel: riskLabel.toLowerCase(),
+          cls: cls,
+          type: 'livestock',
+          rawItem: l
+        });
+      });
+    }
+
+    // 3. Process pending or overdue validations
+    if (validations && validations.length > 0) {
+      validations.filter(v => v.status === 'Pending' || v.status === 'Rejected' || v.status === 'Overdue').forEach(v => {
+        const isCritical = v.status === 'Rejected' || v.status === 'Overdue';
+        list.push({
+          plot: v.plot || 'Plot P-021',
+          name: v.farmer || 'Farmer Task Log',
+          reason: `Task '${v.activity || 'Activity'}' status: ${v.status}`,
+          risk: isCritical ? '92% - Critical' : '64% - Moderate',
+          riskLevel: isCritical ? 'critical' : 'moderate',
+          cls: isCritical ? 'pill-critical' : 'pill-high',
+          type: 'validation',
+          rawItem: v
+        });
+      });
+    }
+
+    // 4. Process high priority schedules
+    if (schedules && schedules.length > 0) {
       schedules.filter(s => s.priority === 'HIGH' || s.status === 'Overdue').forEach(s => {
+        const isOverdue = s.status === 'Overdue';
         list.push({
           plot: s.plot || 'Plot P-007',
           name: s.assignedTo || 'Assigned Staff',
           reason: `High priority protocol: ${s.title}`,
-          risk: s.status === 'Overdue' ? '88% - Critical' : '79% - High',
-          cls: s.status === 'Overdue' ? 'pill-critical' : 'pill-high'
+          risk: isOverdue ? '88% - Critical' : '72% - High',
+          riskLevel: isOverdue ? 'critical' : 'high',
+          cls: isOverdue ? 'pill-critical' : 'pill-high',
+          type: 'schedule',
+          rawItem: s
         });
       });
     }
-    if (list.length > 0) return list.slice(0, 4);
-    return [
-      { plot: 'P-021', name: 'J. Aquino', reason: 'Missed fertilizer application log', risk: '87% - Critical', cls: 'pill-critical' },
-      { plot: 'P-034', name: 'R. Mendoza', reason: 'Irrigation frequency below target', risk: '74% - High', cls: 'pill-high' },
-      { plot: 'P-055', name: 'T. Lopez', reason: 'Yield 22% below cluster mean', risk: '68% - High', cls: 'pill-high' },
-    ];
-  }, [validations, schedules]);
+
+    // Fallback items covering ALL risk levels if list is empty
+    if (list.length === 0) {
+      return [
+        { plot: 'P-021', name: 'Tomato (Diamante Max)', reason: 'Rainfall deficit 34% - Soil Nitrogen depletion detected', risk: '87% - Critical', riskLevel: 'critical', cls: 'pill-critical', type: 'crop' },
+        { plot: 'P-034', name: 'Eggplant (Callander)', reason: 'Irrigation frequency below target baseline by 22%', risk: '74% - High', riskLevel: 'high', cls: 'pill-critical', type: 'crop' },
+        { plot: 'P-007', name: 'Goat Herd GT-02', reason: 'Booster vaccination window closing in 3 days', risk: '62% - Moderate', riskLevel: 'moderate', cls: 'pill-high', type: 'livestock' },
+        { plot: 'P-012', name: 'Okra (Smooth Green)', reason: 'Optimal moisture levels & soil nutrient equilibrium', risk: '22% - Low', riskLevel: 'low', cls: 'pill-compliant', type: 'crop' }
+      ];
+    }
+
+    return list;
+  }, [crops, livestock, validations, schedules]);
 
   // Activity Monitoring Module (Super Admin Requirement 1)
   const renderActivityMonitoring = () => {
@@ -1153,48 +1286,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
               </div>
             </div>
 
-            <button onClick={() => setShowAddScheduleModal(true)} className="btn-primary" style={{ marginTop: '16px', width: '100%', justifyContent: 'center' }}>
-              + Add Schedule Event
-            </button>
           </div>
         </div>
       </div>
     );
-  };
-
-  const [checklist, setChecklist] = useState([
-    { id: 1, text: 'Dispatch agronomist team to plots P-021 and P-034 for fertilizer recalibration within 5 days.', checked: false },
-    { id: 2, text: 'Reassign irrigation slot 14:00–16:00 to cluster B based on rainfall deficit pattern (RF importance 0.34).', checked: true },
-    { id: 3, text: 'Increase tomato planting allocation by 18% next season — predicted ROI uplift +12.4%.', checked: false },
-    { id: 4, text: 'Schedule PGS re-inspection for farmer T. Lopez before next harvest window (Sep 28).', checked: true },
-  ]);
-
-  const handleCommitPlan = () => {
-    setCommittedAlert(true);
-    if (publishAnnouncement) {
-      publishAnnouncement({
-        title: '🌾 Super Admin Strategic Plan Committed',
-        content: 'Executive Random Forest yield forecast & farm intervention plan committed to live cooperative operations.',
-        author: 'Executive Super Admin',
-        roleTag: 'Executive Strategy',
-        priority: 'HIGH',
-        targetRole: 'All Members',
-        date: new Date().toISOString().split('T')[0]
-      });
-    }
-    setTimeout(() => setCommittedAlert(false), 5000);
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleDownloadPDF = (title, category = 'all') => {
-    generateOfficialReportPDF(title, category, { crops, livestock, validations, schedules, users });
-  };
-
-  const toggleChecklist = (id) => {
-    setChecklist(checklist.map(c => c.id === id ? { ...c, checked: !c.checked } : c));
   };
 
   // 1. Cooperative Operations Overview (Dashboard Tab)
@@ -1938,7 +2033,11 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   // 5. AI Decision Support Engine & Machine Learning Classifier (Super Admin Requirement 4)
   const renderDecisionSupport = () => {
     const filteredInterventions = dynamicInterventionList.filter(farm => {
-      const riskMatch = decisionRiskFilter === 'all' || (farm.risk || '').toLowerCase().includes(decisionRiskFilter.toLowerCase());
+      const filterVal = decisionRiskFilter.toLowerCase();
+      let riskMatch = true;
+      if (filterVal !== 'all') {
+        riskMatch = farm.riskLevel === filterVal || (farm.risk || '').toLowerCase().includes(filterVal);
+      }
       const q = decisionSearchQuery.trim().toLowerCase();
       const searchMatch = !q || [farm.plot, farm.name, farm.reason, farm.risk].some(f => f && String(f).toLowerCase().includes(q));
       return riskMatch && searchMatch;
@@ -1955,7 +2054,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       setIsRunningAiAudit(true);
       setTimeout(() => {
         setIsRunningAiAudit(false);
-        setAiAuditNotice(`⚡ Random Forest AI Audit complete! Evaluated ${crops.length} crop plots and ${validations.length} field logs with 96.4% prediction confidence.`);
+        setAiAuditNotice(`⚡ Random Forest AI Audit complete! Evaluated ${crops.length} crop plots, ${livestock.length} livestock herds, and ${validations.length} field logs with 96.4% prediction confidence.`);
         setTimeout(() => setAiAuditNotice(''), 6000);
       }, 1000);
     };
@@ -2119,6 +2218,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                   <option value="critical">Critical Risk</option>
                   <option value="high">High Risk</option>
                   <option value="moderate">Moderate Risk</option>
+                  <option value="low">Low Risk</option>
                 </select>
 
                 <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
@@ -2143,10 +2243,17 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                   No intervention records match query.
                 </div>
               ) : (
-                filteredInterventions.map(farm => (
-                  <div key={farm.plot} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb'
-                  }}>
+                filteredInterventions.map((farm, fIdx) => (
+                  <div
+                    key={`${farm.plot}-${fIdx}`}
+                    onClick={() => setSelectedInterventionModal(farm)}
+                    style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', cursor: 'pointer', transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#f0fdf4'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#f9fafb'}
+                    title="Click to inspect AI risk analysis & trigger mitigation action plan"
+                  >
                     <div>
                       <div style={{ fontWeight: '700', fontSize: '0.78rem' }}>
                         <span style={{ fontFamily: 'monospace', color: '#11592c', marginRight: '6px' }}>{farm.plot}</span>
@@ -2883,6 +2990,76 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
             >
               ✕ Reject
             </button>
+          </div>
+        </div>
+      )}
+      {selectedInterventionModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="m-card" style={{ width: '480px', background: '#fff', padding: '24px', borderRadius: '14px', position: 'relative' }}>
+            <button onClick={() => setSelectedInterventionModal(null)} style={{ position: 'absolute', right: '16px', top: '16px', border: 'none', background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: '800' }}>✕</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <div style={{ background: '#fef3c7', padding: '10px', borderRadius: '10px', color: '#d97706' }}>
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
+                  Random Forest AI Risk Analysis
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#11592c', fontWeight: '700' }}>
+                  {selectedInterventionModal.plot} · {selectedInterventionModal.name}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px', fontSize: '0.82rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ color: '#64748b' }}>Assigned Risk Classification:</span>
+                <span className={`pill ${selectedInterventionModal.cls}`} style={{ fontWeight: '800' }}>{selectedInterventionModal.risk}</span>
+              </div>
+              <div style={{ marginBottom: '8px', color: '#334155' }}>
+                <strong>Diagnostic Trigger:</strong> {selectedInterventionModal.reason}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px', fontSize: '0.75rem', background: '#fff', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}>
+                <div>🌧️ Rainfall Deficit: <strong style={{ color: '#11592c' }}>34%</strong></div>
+                <div>🧪 Soil Nitrogen: <strong style={{ color: '#d97706' }}>28%</strong></div>
+                <div>🌡️ Temp Anomaly: <strong style={{ color: '#dc2626' }}>22%</strong></div>
+                <div>🌾 Harvest Window: <strong style={{ color: '#0284c7' }}>16%</strong></div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', marginBottom: '6px' }}>⚡ Recommended AI Operational Mitigation:</h4>
+              <p style={{ fontSize: '0.8rem', color: '#475569', background: '#f0fdf4', padding: '10px', borderRadius: '8px', border: '1px solid #86efac' }}>
+                Deploy automated drip fertigation cycle (35L organic nutrient blend), adjust soil pH to 6.5, and notify regional extension officer via Supabase Realtime broadcast.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSelectedInterventionModal(null)} className="btn-outline">Close</button>
+              <button
+                onClick={async () => {
+                  if (addSchedule) {
+                    await addSchedule({
+                      title: `AI Mitigation: Fertigation & Nutrient Boost for ${selectedInterventionModal.plot}`,
+                      category: 'irrigation',
+                      plot: selectedInterventionModal.plot,
+                      date: new Date().toISOString().split('T')[0],
+                      time: '09:00 AM',
+                      protocol: 'Random Forest AI Risk Mitigation Protocol',
+                      assignedTo: 'Regional Farm Staff',
+                      priority: 'HIGH'
+                    });
+                  }
+                  setAiAuditNotice(`✓ Strategic AI Mitigation deployed for ${selectedInterventionModal.plot}! Schedule event pushed to Supabase.`);
+                  setSelectedInterventionModal(null);
+                  setTimeout(() => setAiAuditNotice(''), 6000);
+                }}
+                className="btn-primary"
+                style={{ padding: '8px 16px', fontSize: '0.8rem', gap: '6px' }}
+              >
+                <Sparkles size={15} /> Apply AI Mitigation & Push Schedule
+              </button>
+            </div>
           </div>
         </div>
       )}
