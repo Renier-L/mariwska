@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initialUsers, initialCrops, initialLivestock, initialAnnouncements, initialValidations, initialMLClassifications } from '../data/mockData';
+import { initialUsers, initialCrops, initialLivestock, initialAnnouncements, initialValidations, initialMLClassifications, initialSchedules } from '../data/mockData';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
@@ -39,8 +39,39 @@ export const AuthProvider = ({ children }) => {
     return initialUsers;
   });
 
-  const [crops, setCrops] = useState(initialCrops);
-  const [livestock, setLivestock] = useState(initialLivestock);
+  const [crops, setCrops] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_crops_list');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return initialCrops;
+  });
+
+  const [livestock, setLivestock] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_livestock_list');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return initialLivestock;
+  });
+
+  const [schedules, setSchedules] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_schedules_list');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return initialSchedules;
+  });
+
   const [announcements, setAnnouncements] = useState(() => {
     try {
       const saved = localStorage.getItem('marikha_announcements_list');
@@ -51,11 +82,22 @@ export const AuthProvider = ({ children }) => {
     } catch (e) {}
     return initialAnnouncements;
   });
-  const [validations, setValidations] = useState(initialValidations);
+
+  const [validations, setValidations] = useState(() => {
+    try {
+      const saved = localStorage.getItem('marikha_validations_list');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return initialValidations;
+  });
   const [mlClassifications, setMlClassifications] = useState(initialMLClassifications);
   
   // Unlimited Real-time Push Notification Popup state
   const [activePushNotice, setActivePushNotice] = useState(null);
+  const [activePushValidation, setActivePushValidation] = useState(null);
 
   // Security Matrix State (Persisted & Synced Live)
   const [permissionsMatrix, setPermissionsMatrix] = useState(() => {
@@ -134,6 +176,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleIncomingValidation = (newVal) => {
+      const rawUrl = newVal.photo_url || newVal.photoUrl;
+      const validUrl = (typeof rawUrl === 'string' && rawUrl.trim().length > 10) 
+        ? rawUrl 
+        : 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
+
       const formatted = {
         id: String(newVal.id || Date.now()),
         farmer: newVal.farmer || 'Mang Juan Dela Cruz',
@@ -143,15 +190,17 @@ export const AuthProvider = ({ children }) => {
         timestamp: 'Just now',
         urgency: 'Normal',
         urgencyCls: 'pill-low',
-        location: newVal.gps || newVal.location || 'Antipolo Field Plot',
-        gps: newVal.gps || newVal.location || 'Antipolo Field Plot',
+        location: newVal.gps || newVal.location || '14.5995° N, 121.1794° E',
+        gps: newVal.gps || newVal.location || '14.5995° N, 121.1794° E',
         farmerNote: newVal.notes || newVal.farmerNote || 'Submitted via Farmers Mobile App',
         notes: newVal.notes || newVal.farmerNote || 'Submitted via Farmers Mobile App',
-        photoUrl: newVal.photo_url || newVal.photoUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
+        photoUrl: validUrl,
+        photo_url: validUrl,
         photoAttached: true,
         status: newVal.status || 'Pending'
       };
       setValidations(prev => [formatted, ...prev.filter(v => String(v.id) !== String(formatted.id))]);
+      setActivePushValidation(formatted);
     };
 
     const handleIncomingUser = (newUser) => {
@@ -258,7 +307,15 @@ export const AuthProvider = ({ children }) => {
             instantPush: true,
             date: new Date(a.created_at || Date.now()).toISOString().split('T')[0]
           }));
-          setAnnouncements(formatted);
+          setAnnouncements(prev => {
+            const merged = [...formatted];
+            prev.forEach(p => {
+              if (!merged.some(m => String(m.id) === String(p.id) || m.content === p.content)) {
+                merged.push(p);
+              }
+            });
+            return merged;
+          });
         }
 
         // 3. TASK VALIDATIONS SYNC
@@ -291,9 +348,75 @@ export const AuthProvider = ({ children }) => {
             photoAttached: true,
             status: v.status || 'Pending'
           }));
-          setValidations(formattedVals);
-        } else {
-          setValidations([]);
+          setValidations(prev => {
+            const merged = [...formattedVals];
+            prev.forEach(p => {
+              if (!merged.some(m => String(m.id) === String(p.id))) {
+                merged.push(p);
+              }
+            });
+            return merged;
+          });
+        }
+
+        // 4. CROPS SYNC
+        const { data: cropData } = await supabase.from('crops').select('*').order('created_at', { ascending: false });
+        if (cropData && cropData.length > 0) {
+          const formattedCrops = cropData.map(c => ({
+            id: String(c.id),
+            variety: c.variety,
+            plot: c.plot,
+            growthStage: c.growth_stage || c.growthStage || 'Vegetative',
+            fertilizer: c.fertilizer || 'Organic Compost',
+            irrigation: c.irrigation || 'Drip System',
+            yield: c.yield || '350 kg'
+          }));
+          setCrops(formattedCrops);
+          try { localStorage.setItem('marikha_crops_list', JSON.stringify(formattedCrops)); } catch (e) {}
+        }
+
+        // 5. LIVESTOCK SYNC
+        const { data: liveData } = await supabase.from('livestock').select('*').order('created_at', { ascending: false });
+        if (liveData && liveData.length > 0) {
+          const formattedLive = liveData.map(l => ({
+            id: String(l.id),
+            group: l.group_name || l.group || 'Goat Herd GT-01',
+            plot: l.plot,
+            headCount: Number(l.head_count || l.headCount) || 25,
+            vaccination: l.vaccination || '100% (Up to date)',
+            healthStatus: l.health_status || l.healthStatus || 'Healthy',
+            dailyGain: l.daily_gain || l.dailyGain || '+1.2 kg/wk'
+          }));
+          setLivestock(formattedLive);
+          try { localStorage.setItem('marikha_livestock_list', JSON.stringify(formattedLive)); } catch (e) {}
+        }
+
+        // 6. SCHEDULES SYNC
+        const { data: schedData } = await supabase.from('schedules').select('*').order('created_at', { ascending: false });
+        if (schedData && schedData.length > 0) {
+          const formattedScheds = schedData.map(s => ({
+            id: String(s.id),
+            title: s.title,
+            category: s.category || 'planting',
+            plot: s.plot || 'Plot P-021',
+            date: s.date || '2026-09-20',
+            time: s.time || '08:00 AM',
+            protocol: s.protocol || 'Standard Organic Protocol',
+            assignedTo: s.assigned_to || s.assignedTo || 'Renier Lopez (Farmer)',
+            priority: s.priority || 'HIGH',
+            status: s.status || 'Upcoming',
+            countdown: s.countdown || 'Upcoming'
+          }));
+          setSchedules(prev => {
+            const merged = [...formattedScheds];
+            prev.forEach(p => {
+              if (!merged.some(m => String(m.id) === String(p.id) || m.title === p.title)) {
+                merged.push(p);
+              }
+            });
+            try { localStorage.setItem('marikha_schedules_list', JSON.stringify(merged)); } catch (e) {}
+            return merged;
+          });
         }
       } catch (err) {
         console.log('Supabase table fallback', err);
@@ -304,7 +427,7 @@ export const AuthProvider = ({ children }) => {
       fetchSupabaseData();
     }, 2000);
 
-    let announcementsChannel, validationsChannel, usersChannel;
+    let announcementsChannel, validationsChannel, usersChannel, schedulesChannel;
     try {
       // Supabase Realtime Subscription for Broadcast Announcements
       announcementsChannel = supabase
@@ -328,25 +451,34 @@ export const AuthProvider = ({ children }) => {
       // Supabase Realtime Subscription for Farmer Task Validations
       validationsChannel = supabase
         .channel('validations_realtime_channel')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'task_validations' }, (payload) => {
-          const newRecord = payload.new;
-          const newEntry = {
-            id: String(newRecord.id),
-            farmer: newRecord.farmer || 'Mang Juan Dela Cruz',
-            plot: newRecord.plot || 'Plot P-007',
-            taskType: newRecord.activity || 'Watering',
-            activity: newRecord.activity || 'Watering',
-            timestamp: 'Just now',
-            urgency: 'Normal',
-            urgencyCls: 'pill-low',
-            location: newRecord.gps || 'Live Mobile GPS',
-            gps: newRecord.gps || 'Live Mobile GPS',
-            farmerNote: newRecord.notes || 'Submitted via Farmers Mobile App',
-            notes: newRecord.notes || 'Submitted via Farmers Mobile App',
-            photoUrl: newRecord.photo_url || null,
-            photoAttached: true
-          };
-          setValidations(prev => [newEntry, ...prev.filter(v => v.id !== newEntry.id)]);
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'task_validations' }, (payload) => {
+          if (payload.new) {
+            const newRecord = payload.new;
+            const newEntry = {
+              id: String(newRecord.id),
+              farmer: newRecord.farmer || 'Mang Juan Dela Cruz',
+              plot: newRecord.plot || 'Plot P-007',
+              taskType: newRecord.activity || 'Watering',
+              activity: newRecord.activity || 'Watering',
+              timestamp: 'Just now',
+              urgency: 'Normal',
+              urgencyCls: 'pill-low',
+              location: newRecord.gps || 'Live Mobile GPS',
+              gps: newRecord.gps || 'Live Mobile GPS',
+              farmerNote: newRecord.notes || 'Submitted via Farmers Mobile App',
+              notes: newRecord.notes || 'Submitted via Farmers Mobile App',
+              photoUrl: newRecord.photo_url || null,
+              photoAttached: true,
+              status: newRecord.status || 'Pending'
+            };
+            setValidations(prev => {
+              const exists = prev.some(v => String(v.id) === String(newEntry.id));
+              if (exists) {
+                return prev.map(v => String(v.id) === String(newEntry.id) ? { ...v, ...newEntry } : v);
+              }
+              return [newEntry, ...prev];
+            });
+          }
         })
         .subscribe();
 
@@ -370,6 +502,40 @@ export const AuthProvider = ({ children }) => {
           }
         })
         .subscribe();
+
+      // Supabase Realtime Subscription for Cooperative Schedules
+      schedulesChannel = supabase
+        .channel('schedules_realtime_channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'schedules' }, (payload) => {
+          if (payload.new) {
+            const s = payload.new;
+            const newSched = {
+              id: String(s.id),
+              title: s.title,
+              category: s.category || 'planting',
+              plot: s.plot || 'Plot P-021',
+              date: s.date || '2026-09-20',
+              time: s.time || '08:00 AM',
+              protocol: s.protocol || 'Standard Organic Protocol',
+              assignedTo: s.assigned_to || s.assignedTo || 'Renier Lopez (Farmer)',
+              priority: s.priority || 'HIGH',
+              status: s.status || 'Upcoming',
+              countdown: s.countdown || 'Upcoming'
+            };
+            setSchedules(prev => {
+              const exists = prev.some(item => String(item.id) === String(newSched.id));
+              let updated;
+              if (exists) {
+                updated = prev.map(item => String(item.id) === String(newSched.id) ? { ...item, ...newSched } : item);
+              } else {
+                updated = [newSched, ...prev];
+              }
+              try { localStorage.setItem('marikha_schedules_list', JSON.stringify(updated)); } catch (e) {}
+              return updated;
+            });
+          }
+        })
+        .subscribe();
     } catch (e) {
       console.warn('Realtime channel subscription fallback', e);
     }
@@ -380,6 +546,7 @@ export const AuthProvider = ({ children }) => {
         if (announcementsChannel) supabase.removeChannel(announcementsChannel);
         if (validationsChannel) supabase.removeChannel(validationsChannel);
         if (usersChannel) supabase.removeChannel(usersChannel);
+        if (schedulesChannel) supabase.removeChannel(schedulesChannel);
       } catch (e) {}
     };
   }, []);
@@ -589,24 +756,39 @@ export const AuthProvider = ({ children }) => {
     setActivePushNotice(null);
   };
 
+  const dismissPushValidation = () => {
+    setActivePushValidation(null);
+  };
+
   const handleValidationAction = async (id, action, notes) => {
-    setValidations(prev => prev.filter(v => String(v.id) !== String(id)));
+    const targetStatus = action === 'Validated' ? 'Validated' : 'Rejected';
+    setValidations(prev => {
+      const next = prev.map(v => String(v.id) === String(id) ? { ...v, status: targetStatus } : v);
+      try { localStorage.setItem('marikha_validations_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
 
     if (broadcastChannel) {
-      broadcastChannel.postMessage({ type: 'VALIDATION_DELETED_PUSH', payload: id });
+      broadcastChannel.postMessage({ type: 'VALIDATION_UPDATED_PUSH', payload: { id, status: targetStatus } });
     }
 
     try {
-      await supabase.from('task_validations').delete().eq('id', id);
+      await supabase.from('task_validations').update({ status: targetStatus }).eq('id', id);
     } catch (e) {
-      console.log('Supabase validation delete error:', e);
+      console.log('Supabase validation update error:', e);
     }
   };
 
   const addFarmerSubmission = async (newSub) => {
-    const farmerName = currentUser?.name || newSub.farmer || 'rei lopez';
+    const farmerName = currentUser?.name || newSub.farmer || 'Rei Lopez';
     const newId = `VAL-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
     const actText = `${newSub.activity} (${newSub.amount || 10} Liters)`;
+    const gpsVal = newSub.gps || newSub.location || '14.5860° N, 121.1760° E';
+    const rawPhoto = newSub.photoUrl || newSub.photo_url;
+    const validPhoto = (typeof rawPhoto === 'string' && rawPhoto.trim().length > 10 && !rawPhoto.includes('photo-1592417817098-8f3d6eb12735'))
+      ? rawPhoto
+      : 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
+
     const newEntry = {
       id: newId,
       farmer: farmerName,
@@ -616,15 +798,23 @@ export const AuthProvider = ({ children }) => {
       timestamp: 'Just now',
       urgency: 'Normal',
       urgencyCls: 'pill-low',
-      location: 'Antipolo Field Plot',
-      gps: 'Antipolo Field Plot',
+      location: gpsVal,
+      gps: gpsVal,
       farmerNote: newSub.note || 'Submitted via Farmers Mobile App',
       notes: newSub.note || 'Submitted via Farmers Mobile App',
-      photoUrl: newSub.photoUrl || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60',
-      photoAttached: true
+      photoUrl: validPhoto,
+      photo_url: validPhoto,
+      photoAttached: true,
+      status: 'Pending'
     };
     
-    setValidations(prev => [newEntry, ...prev]);
+    setValidations(prev => {
+      const next = [newEntry, ...prev];
+      try { localStorage.setItem('marikha_validations_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    setActivePushValidation(newEntry);
 
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'FARMER_SUBMISSION_PUSH', payload: newEntry });
@@ -649,9 +839,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const addCrop = (newCrop) => {
+  const addCrop = async (newCrop) => {
     const cropObj = {
-      id: Date.now(),
+      id: String(Date.now()),
       variety: newCrop.variety,
       plot: newCrop.plot || `P-${Math.floor(100 + Math.random() * 900)}`,
       growthStage: newCrop.growthStage || 'Vegetative',
@@ -659,15 +849,32 @@ export const AuthProvider = ({ children }) => {
       irrigation: newCrop.irrigation || 'Drip System',
       yield: newCrop.yield || '350 kg'
     };
-    setCrops(prev => [cropObj, ...prev]);
+    setCrops(prev => {
+      const next = [cropObj, ...prev];
+      try { localStorage.setItem('marikha_crops_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'CROP_ADDED', payload: cropObj });
     }
+
+    try {
+      await supabase.from('crops').insert([{
+        variety: cropObj.variety,
+        plot: cropObj.plot,
+        growth_stage: cropObj.growthStage,
+        fertilizer: cropObj.fertilizer,
+        irrigation: cropObj.irrigation,
+        yield: cropObj.yield
+      }]);
+    } catch (e) {
+      console.log('Supabase crop insert error:', e);
+    }
   };
 
-  const addLivestock = (newItem) => {
+  const addLivestock = async (newItem) => {
     const itemObj = {
-      id: Date.now(),
+      id: String(Date.now()),
       group: newItem.group,
       plot: newItem.plot || `P-${Math.floor(100 + Math.random() * 900)}`,
       headCount: Number(newItem.headCount) || 25,
@@ -675,9 +882,115 @@ export const AuthProvider = ({ children }) => {
       healthStatus: newItem.healthStatus || 'Healthy',
       dailyGain: newItem.dailyGain || '+1.2 kg/wk'
     };
-    setLivestock(prev => [itemObj, ...prev]);
+    setLivestock(prev => {
+      const next = [itemObj, ...prev];
+      try { localStorage.setItem('marikha_livestock_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'LIVESTOCK_ADDED', payload: itemObj });
+    }
+
+    try {
+      await supabase.from('livestock').insert([{
+        group_name: itemObj.group,
+        plot: itemObj.plot,
+        head_count: itemObj.headCount,
+        vaccination: itemObj.vaccination,
+        health_status: itemObj.healthStatus,
+        daily_gain: itemObj.dailyGain
+      }]);
+    } catch (e) {
+      console.log('Supabase livestock insert error:', e);
+    }
+  };
+
+  const addSchedule = async (newSched) => {
+    const newId = `SCHED-${Date.now()}`;
+    const schedEntry = {
+      id: newId,
+      title: newSched.title,
+      category: newSched.category || 'planting',
+      plot: newSched.plot || 'Plot P-021',
+      date: newSched.date || '2026-09-20',
+      time: newSched.time || '08:00 AM',
+      protocol: newSched.protocol || 'Standard Organic Protocol',
+      assignedTo: newSched.assignedTo || 'Renier Lopez (Farmer)',
+      priority: newSched.priority || 'HIGH',
+      status: 'Upcoming',
+      countdown: 'Upcoming'
+    };
+
+    setSchedules(prev => {
+      const next = [schedEntry, ...prev];
+      try { localStorage.setItem('marikha_schedules_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'SCHEDULE_ADDED_PUSH', payload: schedEntry });
+    }
+
+    try {
+      localStorage.setItem('marikha_live_schedule', JSON.stringify({ ...schedEntry, _t: Date.now() }));
+    } catch (e) {}
+
+    try {
+      const { data, error } = await supabase.from('schedules').insert([{
+        title: schedEntry.title,
+        category: schedEntry.category,
+        plot: schedEntry.plot,
+        date: schedEntry.date,
+        time: schedEntry.time,
+        protocol: schedEntry.protocol,
+        assigned_to: schedEntry.assignedTo,
+        priority: schedEntry.priority,
+        status: schedEntry.status
+      }]).select();
+
+      if (error) {
+        console.error('Supabase Schedule Insert Error:', error);
+      } else {
+        console.log('Supabase Schedule Inserted Live:', data);
+      }
+    } catch (e) {
+      console.log('Supabase schedule insert error:', e);
+    }
+  };
+
+  const updateScheduleStatus = async (schedId, newStatus) => {
+    setSchedules(prev => {
+      const next = prev.map(s => String(s.id) === String(schedId) ? { ...s, status: newStatus } : s);
+      try { localStorage.setItem('marikha_schedules_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'SCHEDULE_UPDATED_PUSH', payload: { id: schedId, status: newStatus } });
+    }
+
+    try {
+      await supabase.from('schedules').update({ status: newStatus }).eq('id', schedId);
+    } catch (e) {
+      console.log('Supabase schedule update error:', e);
+    }
+  };
+
+  const deleteSchedule = async (schedId) => {
+    setSchedules(prev => {
+      const next = prev.filter(s => String(s.id) !== String(schedId));
+      try { localStorage.setItem('marikha_schedules_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'SCHEDULE_DELETED_PUSH', payload: { id: schedId } });
+    }
+
+    try {
+      await supabase.from('schedules').delete().eq('id', schedId);
+    } catch (e) {
+      console.log('Supabase schedule delete error:', e);
     }
   };
 
@@ -760,11 +1073,51 @@ export const AuthProvider = ({ children }) => {
           activity: v.taskType || 'Farm Task',
           notes: v.farmerNote || 'Submitted via App',
           gps: v.location || 'Antipolo Field Plot',
-          photo_url: v.photoUrl || ''
+          photo_url: v.photoUrl || '',
+          status: v.status || 'Pending'
         });
       }
 
-      alert('✅ Successfully synced all User accounts, Announcements, and Validations live into Supabase Cloud Database!');
+      // 4. Sync Crops
+      for (const c of crops) {
+        await supabase.from('crops').insert({
+          variety: c.variety,
+          plot: c.plot,
+          growth_stage: c.growthStage,
+          fertilizer: c.fertilizer,
+          irrigation: c.irrigation,
+          yield: c.yield
+        });
+      }
+
+      // 5. Sync Livestock
+      for (const l of livestock) {
+        await supabase.from('livestock').insert({
+          group_name: l.group,
+          plot: l.plot,
+          head_count: l.headCount,
+          vaccination: l.vaccination,
+          health_status: l.healthStatus,
+          daily_gain: l.dailyGain
+        });
+      }
+
+      // 6. Sync Schedules
+      for (const s of schedules) {
+        await supabase.from('schedules').insert({
+          title: s.title,
+          category: s.category,
+          plot: s.plot,
+          date: s.date,
+          time: s.time,
+          protocol: s.protocol,
+          assigned_to: s.assignedTo,
+          priority: s.priority,
+          status: s.status
+        });
+      }
+
+      alert('✅ Successfully synced all User accounts, Announcements, Validations, Crops, Livestock, and Schedules live into Supabase Cloud Database!');
     } catch (e) {
       console.log('Supabase sync seed error:', e);
       alert('⚠️ Sync completed with notice: Make sure RLS is disabled in Supabase SQL Editor!');
@@ -779,11 +1132,17 @@ export const AuthProvider = ({ children }) => {
       users,
       crops,
       livestock,
+      schedules,
+      setSchedules,
+      addSchedule,
+      updateScheduleStatus,
+      deleteSchedule,
       announcements,
       validations,
       mlClassifications,
       permissionsMatrix,
       activePushNotice,
+      activePushValidation,
       loginAsRole,
       toggleUserStatus,
       addUser,
@@ -792,6 +1151,7 @@ export const AuthProvider = ({ children }) => {
       publishAnnouncement,
       deleteAnnouncement,
       dismissPushNotice,
+      dismissPushValidation,
       handleValidationAction,
       addFarmerSubmission,
       addCrop,

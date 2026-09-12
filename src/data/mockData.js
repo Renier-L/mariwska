@@ -36,11 +36,83 @@ export const adminPdfs = [
 ];
 
 export const superAdminPdfs = [
-  { title: 'Executive Cooperative Governance Audit 2025', date: 'Oct 20, 2025', size: '3.1 MB' },
-  { title: 'Multi-Tenant Resource Utilization Report', date: 'Oct 01, 2025', size: '2.2 MB' }
+  { id: 'rpt-1', title: 'Executive Master Consolidated Cooperative Report', date: 'Live Supabase', size: 'PDF Official', type: 'compliance', category: 'master' },
+  { id: 'rpt-2', title: 'Crop Production & Field Plot Registry Audit', date: 'Live Supabase', size: 'PDF Official', type: 'crop', category: 'crop' },
+  { id: 'rpt-3', title: 'Livestock Operations & Herd Veterinary Audit', date: 'Live Supabase', size: 'PDF Official', type: 'livestock', category: 'livestock' },
+  { id: 'rpt-4', title: 'Farmer Mobile Task Logs & Geotag Proof Audit', date: 'Live Supabase', size: 'PDF Official', type: 'activity', category: 'activity' },
+  { id: 'rpt-5', title: 'Cooperative Field Schedules & Protocol Timeline', date: 'Live Supabase', size: 'PDF Official', type: 'compliance', category: 'schedule' },
+  { id: 'rpt-6', title: 'PGS Organic Certification & Governance Report', date: 'Live Supabase', size: 'PDF Official', type: 'compliance', category: 'compliance' }
 ];
 
 export const farmStaffPdfs = [
   { title: 'Field Operations & Input Task Log Report', date: 'Oct 18, 2025', size: '1.9 MB' },
   { title: 'Daily Yield & Harvest Validation Records', date: 'Sep 28, 2025', size: '2.7 MB' }
+];
+
+export const initialSchedules = [
+  {
+    id: 'SCHED-1',
+    title: 'Tomato Flowering Potassium Boost Application',
+    category: 'planting',
+    plot: 'Plot P-021',
+    date: '2026-09-15',
+    time: '07:30 AM',
+    protocol: 'Organic Potassium Sulfate Spray (2.5L/ha)',
+    assignedTo: 'Renier Lopez (Farmer)',
+    priority: 'HIGH',
+    status: 'Upcoming',
+    countdown: '3 days'
+  },
+  {
+    id: 'SCHED-2',
+    title: 'Goat Herd GT-01 Deworming & Vaccination',
+    category: 'livestock',
+    plot: 'Plot P-007 (Goat Pen B)',
+    date: '2026-09-14',
+    time: '09:00 AM',
+    protocol: 'Quarterly Multi-Strain Vaccine & Dewormer',
+    assignedTo: 'Maria Santos (Livestock Specialist)',
+    priority: 'HIGH',
+    status: 'Upcoming',
+    countdown: '2 days'
+  },
+  {
+    id: 'SCHED-3',
+    title: 'Cooperative Drip Irrigation Cycle (Sector B)',
+    category: 'irrigation',
+    plot: 'Plots P-014 to P-034',
+    date: '2026-09-16',
+    time: '05:30 AM',
+    protocol: '45-minute Drip Fertigation Cycle',
+    assignedTo: 'Juan Dela Cruz (Field Staff)',
+    priority: 'MEDIUM',
+    status: 'Scheduled',
+    countdown: '4 days'
+  },
+  {
+    id: 'SCHED-4',
+    title: 'Okra Vegetative Weeding & Composting',
+    category: 'planting',
+    plot: 'Plot P-007',
+    date: '2026-09-18',
+    time: '08:00 AM',
+    protocol: 'Manual Soil Aeration & Organic Vermicompost 10kg',
+    assignedTo: 'Renier Lopez (Farmer)',
+    priority: 'MEDIUM',
+    status: 'Scheduled',
+    countdown: '6 days'
+  },
+  {
+    id: 'SCHED-5',
+    title: 'Squash Harvest & Packing Protocol',
+    category: 'harvest',
+    plot: 'Plot P-014',
+    date: '2026-09-22',
+    time: '06:00 AM',
+    protocol: 'Early Morning Harvest & Crate Grading',
+    assignedTo: 'Cooperative Harvest Crew B',
+    priority: 'HIGH',
+    status: 'Planned',
+    countdown: '10 days'
+  }
 ];

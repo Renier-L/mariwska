@@ -13,7 +13,9 @@ import {
   Megaphone,
   CheckSquare,
   ShieldAlert,
-  Trees
+  Trees,
+  Activity,
+  CalendarDays
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -26,6 +28,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Super Admin Portal';
     navItems = [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { id: 'activity-monitoring', label: 'Activity Monitoring', icon: Activity },
+      { id: 'scheduling', label: 'Cooperative Scheduling', icon: CalendarDays },
       { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
       { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
       { id: 'analytics', label: 'Analytics & Intelligence', icon: BarChart3 },

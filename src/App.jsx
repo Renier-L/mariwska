@@ -11,7 +11,7 @@ import { Bell, X, Megaphone, Loader2 } from 'lucide-react';
 import './styles/theme.css';
 
 const VALID_TABS = {
-  super_admin: ['dashboard', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
+  super_admin: ['dashboard', 'activity-monitoring', 'scheduling', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
   admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
   farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'livestock-management', 'reports']
 };

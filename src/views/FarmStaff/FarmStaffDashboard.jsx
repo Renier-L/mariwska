@@ -140,11 +140,16 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
       }
     }
 
-    if (url && typeof url === 'string') {
+    if (url && typeof url === 'string' && url.trim().length > 10) {
       if (url.startsWith('data:image')) return url;
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
     }
-    return null;
+    const act = (valObj?.activity || valObj?.taskType || '').toLowerCase();
+    if (act.includes('water')) return 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80';
+    if (act.includes('pest') || act.includes('spray')) return 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
+    if (act.includes('harvest')) return 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=600&q=80';
+    if (act.includes('weed')) return 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80';
+    return 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
   };
 
   // 1. Operations & Verification Dashboard
