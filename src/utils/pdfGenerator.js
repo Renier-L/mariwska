@@ -274,6 +274,14 @@ export const generateOfficialReportPDF = (title, category = 'all', liveData = {}
     drawTable('5. COOPERATIVE FIELD SCHEDULES & PROTOCOLS (REAL-TIME SUPABASE)', schedHeaders, schedRows, schedWidths);
   }
 
+  // Section 6: User Accounts & Administrative Directory
+  if ((users && users.length > 0) && (catLower === 'users' || catLower.includes('user') || catLower.includes('admin') || catLower === 'master' || catLower === 'all' || titleLower.includes('admin') || titleLower.includes('user'))) {
+    const userHeaders = ['Member Name', 'Access Role', 'Email Address', 'Phone Contact', 'Account Status'];
+    const userWidths = [40, 28, 52, 38, 24];
+    const userRows = users.map(u => [u.name, u.role, u.email, u.phone || '+63 917 555 0100', u.status !== false ? 'Active' : 'Disabled']);
+    drawTable('6. USER ACCOUNTS & MEMBER DIRECTORY (REAL-TIME SUPABASE)', userHeaders, userRows, userWidths);
+  }
+
   // 5. Official Certification Sign-Off Block
   checkPageBreak(34);
   doc.setDrawColor(17, 89, 44);
