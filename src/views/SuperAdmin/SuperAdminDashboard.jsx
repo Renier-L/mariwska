@@ -151,12 +151,23 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     setTimeout(() => setCommittedAlert(false), 5000);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const [pdfBannerNotice, setPdfBannerNotice] = useState('');
 
   const handleDownloadPDF = (title, category = 'all') => {
-    generateOfficialReportPDF(title, category, { crops, livestock, validations, schedules });
+    try {
+      const docTitle = typeof title === 'string' && title.trim() ? title : 'Executive Master Consolidated Cooperative Report';
+      generateOfficialReportPDF(docTitle, category, { crops, livestock, validations, schedules });
+      setPdfBannerNotice(`📄 Official PDF Report generated & downloaded: "${docTitle}" (Live Supabase Data)`);
+      setTimeout(() => setPdfBannerNotice(''), 6000);
+    } catch (err) {
+      console.error('PDF Generation Error:', err);
+    }
+  };
+
+  const handlePrint = (title = 'Executive Master Consolidated Cooperative Report', category = 'master') => {
+    const docTitle = typeof title === 'string' && title.trim() ? title : 'Executive Master Consolidated Cooperative Report';
+    const docCat = typeof category === 'string' ? category : 'master';
+    handleDownloadPDF(docTitle, docCat);
   };
 
 
@@ -2333,14 +2344,26 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={handlePrint} className="btn-outline">
-              <Printer size={15} /> Print View
+            <button onClick={() => handleDownloadPDF('Executive Master Consolidated Cooperative Report', 'master')} className="btn-outline" style={{ gap: '6px' }}>
+              <Printer size={15} /> Print View (PDF)
             </button>
             <button onClick={() => handleDownloadPDF('Executive Master Consolidated Cooperative Report', 'master')} className="btn-primary" style={{ gap: '6px' }}>
               <FileText size={15} /> Generate Master PDF (Live Data)
             </button>
           </div>
         </div>
+
+        {pdfBannerNotice && (
+          <div style={{
+            background: '#0c3619', color: '#86efac', border: '1.5px solid #86efac', padding: '12px 18px', borderRadius: '10px', fontSize: '0.85rem', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(12,54,25,0.2)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <CheckCircle2 size={18} color="#86efac" />
+              <span>{pdfBannerNotice}</span>
+            </div>
+            <button onClick={() => setPdfBannerNotice('')} style={{ background: 'none', border: 'none', color: '#86efac', cursor: 'pointer', fontWeight: '800' }}>✕</button>
+          </div>
+        )}
 
         {/* Live Database Metrics Overview */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
@@ -2590,7 +2613,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                     <Download size={14} /> Generate PDF
                   </button>
                   <button
-                    onClick={handlePrint}
+                    onClick={() => handleDownloadPDF(doc.title, doc.category || doc.type)}
                     style={{
                       width: '36px',
                       height: '34px',
@@ -2602,7 +2625,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                       justifyContent: 'center',
                       cursor: 'pointer'
                     }}
-                    title="Print Document"
+                    title="Print Document (Download PDF)"
                   >
                     <Printer size={14} color="#374151" />
                   </button>
