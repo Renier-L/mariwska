@@ -501,9 +501,35 @@ const AdminConsole = ({ activeTab }) => {
             </div>
           </div>
 
+          {selectedUserIds.length > 0 && (
+            <div style={{
+              background: '#f0fdf4', border: '1px solid #86efac', padding: '10px 14px', borderRadius: '8px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#166534' }}>
+                ✓ {selectedUserIds.length} user accounts selected
+              </span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={handleBulkDisable} className="btn-outline" style={{ padding: '4px 10px', fontSize: '0.75rem' }}>
+                  Toggle Selected Status ({selectedUserIds.length})
+                </button>
+                <button onClick={handleBulkDelete} style={{ background: '#dc2626', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}>
+                  Delete Selected ({selectedUserIds.length})
+                </button>
+              </div>
+            </div>
+          )}
+
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
+                <th style={{ padding: '12px 14px', width: '36px' }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedUserIds.length === filteredUsers.length && filteredUsers.length > 0}
+                    onChange={toggleSelectAllUsers}
+                    style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
+                  />
+                </th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
                 <th style={{ padding: '12px 14px', fontWeight: '700' }}>EMAIL ADDRESS</th>
@@ -517,12 +543,20 @@ const AdminConsole = ({ activeTab }) => {
 
                 return (
                   <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                    <td style={{ padding: '12px 14px' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedUserIds.includes(u.id)}
+                        onChange={() => toggleSelectUser(u.id)}
+                        style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
+                      />
+                    </td>
                     <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
                         width: '34px', height: '34px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
                         fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem'
                       }}>
-                        {u.initials}
+                        {u.initials || (u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U')}
                       </div>
                       <div>
                         <span style={{ fontWeight: '700', color: '#111827', display: 'block' }}>{u.name}</span>
@@ -1156,11 +1190,66 @@ const AdminConsole = ({ activeTab }) => {
     </div>
   );
 
-  if (activeTab === 'user-accounts' || activeTab === 'member-records') return renderUserAccounts();
-  if (activeTab === 'roles-permissions') return renderPermissions();
-  if (activeTab === 'announcements') return renderAnnouncements();
-  if (activeTab === 'reports') return renderReports();
-  return renderOperations();
+  let currentView = renderOperations();
+  if (activeTab === 'user-accounts' || activeTab === 'member-records') currentView = renderUserAccounts();
+  if (activeTab === 'roles-permissions') currentView = renderPermissions();
+  if (activeTab === 'announcements') currentView = renderAnnouncements();
+  if (activeTab === 'reports') currentView = renderReports();
+
+  return (
+    <>
+      {currentView}
+
+      {/* Selected Announcement Detail Modal */}
+      {selectedAnnouncement && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="m-card" style={{ width: '480px', background: '#fff', padding: '24px', borderRadius: '14px', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+            <button onClick={() => setSelectedAnnouncement(null)} style={{ position: 'absolute', right: '16px', top: '16px', border: 'none', background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: '800' }}>✕</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ background: '#fef3c7', padding: '10px', borderRadius: '10px', color: '#d97706' }}>
+                <Megaphone size={22} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                  {selectedAnnouncement.title || 'Cooperative Announcement'}
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                  Posted by {selectedAnnouncement.author || 'Liza Cruz (Admin)'} · {selectedAnnouncement.date}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px', fontSize: '0.85rem', color: '#334155', lineHeight: 1.5 }}>
+              {selectedAnnouncement.content}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#64748b', marginBottom: '20px', background: '#f0fdf4', padding: '10px 12px', borderRadius: '8px', border: '1px solid #86efac' }}>
+              <span>📲 Push Alert Status: <strong style={{ color: '#16a34a' }}>Active Live Broadcast</strong></span>
+              <span>🌐 Audience: <strong style={{ color: '#0c3619' }}>All Members</strong></span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`Are you sure you want to delete announcement "${selectedAnnouncement.title}"?`)) {
+                    deleteAnnouncement(selectedAnnouncement.id);
+                    setSelectedAnnouncement(null);
+                  }
+                }}
+                style={{ background: '#fff1f2', border: '1px solid #fecdd3', color: '#e11d48', padding: '8px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer' }}
+              >
+                🗑️ Delete Announcement
+              </button>
+              <button onClick={() => setSelectedAnnouncement(null)} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
+                Close Audit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default AdminConsole;
