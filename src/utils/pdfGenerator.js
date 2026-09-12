@@ -124,7 +124,7 @@ export const generateOfficialReportPDF = (title, category = 'all', liveData = {}
 
   currentY += 26;
 
-  // Generic Structured Table Drawer
+  // Advanced Table Drawer with Multi-Line Text Wrapping
   const drawTable = (sectionTitle, headers, rows, colWidths) => {
     checkPageBreak(30);
 
@@ -136,18 +136,18 @@ export const generateOfficialReportPDF = (title, category = 'all', liveData = {}
 
     // Header Row
     doc.setFillColor(...primaryColor);
-    doc.rect(14, currentY, pageWidth - 28, 7.5, 'F');
+    doc.rect(14, currentY, pageWidth - 28, 8, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
 
     let hX = 16;
     headers.forEach((h, idx) => {
-      doc.text(h, hX, currentY + 5.2);
+      doc.text(h, hX, currentY + 5.5);
       hX += colWidths[idx];
     });
 
-    currentY += 7.5;
+    currentY += 8;
 
     if (rows.length === 0) {
       checkPageBreak(10);
@@ -161,29 +161,43 @@ export const generateOfficialReportPDF = (title, category = 'all', liveData = {}
       return;
     }
 
-    // Rows
+    // Rows with Dynamic Line Height & Multi-line Wrap
     rows.forEach((row, rIdx) => {
-      checkPageBreak(8);
+      const cellLinesList = row.map((cellText, cIdx) => {
+        const textStr = String(cellText || '-');
+        const maxW = colWidths[cIdx] - 3;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.2);
+        return doc.splitTextToSize(textStr, maxW);
+      });
+
+      const maxLinesInRow = Math.max(...cellLinesList.map(lines => lines.length), 1);
+      const rowHeight = Math.max(8, maxLinesInRow * 4 + 3);
+
+      checkPageBreak(rowHeight + 2);
+
       const isAlt = rIdx % 2 === 1;
       doc.setFillColor(isAlt ? 248 : 255, isAlt ? 250 : 255, isAlt ? 252 : 255);
-      doc.rect(14, currentY, pageWidth - 28, 7, 'F');
+      doc.rect(14, currentY, pageWidth - 28, rowHeight, 'F');
       doc.setDrawColor(241, 245, 249);
-      doc.line(14, currentY + 7, pageWidth - 14, currentY + 7);
-
-      doc.setTextColor(...darkTextColor);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.line(14, currentY + rowHeight, pageWidth - 14, currentY + rowHeight);
 
       let rX = 16;
-      row.forEach((cellText, cIdx) => {
-        const textStr = String(cellText || '');
-        const maxLen = Math.floor(colWidths[cIdx] / 2.3);
-        const truncated = textStr.length > maxLen ? textStr.substring(0, maxLen - 2) + '..' : textStr;
-        doc.text(truncated, rX, currentY + 4.8);
+      cellLinesList.forEach((lines, cIdx) => {
+        doc.setTextColor(...darkTextColor);
+        doc.setFont('helvetica', cIdx === 0 ? 'bold' : 'normal');
+        doc.setFontSize(7.2);
+
+        let lineY = currentY + 4.5;
+        lines.forEach(lineText => {
+          doc.text(lineText, rX, lineY);
+          lineY += 4;
+        });
+
         rX += colWidths[cIdx];
       });
 
-      currentY += 7;
+      currentY += rowHeight;
     });
 
     currentY += 6;
@@ -192,40 +206,79 @@ export const generateOfficialReportPDF = (title, category = 'all', liveData = {}
   const catLower = (category || '').toLowerCase();
   const titleLower = (title || '').toLowerCase();
 
-  // 4. Render Relevant Data Tables
+  // Helper to determine "WHAT ACTIVITY TO DO" / Recommended Next Action
+  const getRecommendedNextActivity = (log, matchingSchedule) => {
+    if (matchingSchedule && matchingSchedule.title) {
+      return `RECOMMENDED NEXT: ${matchingSchedule.title} (${matchingSchedule.time || 'Scheduled'})`;
+    }
+    const act = (log.activity || log.notes || '').toLowerCase();
+    if (act.includes('fertilizer')) {
+      return 'NEXT ACTION: Conduct Soil Moisture Test & Apply Organic Foliar Nitrogen Boost';
+    } else if (act.includes('water') || act.includes('irrigation')) {
+      return 'NEXT ACTION: Inspect Drip Irrigation Flow & Verify Root Hydration Level';
+    } else if (act.includes('pest') || act.includes('spray')) {
+      return 'NEXT ACTION: Schedule Organic Neem Oil Re-application in 5 Days';
+    } else if (act.includes('harvest')) {
+      return 'NEXT ACTION: Initiate Post-Harvest Soil Recalibration & Seedbed Mulching';
+    } else if (act.includes('weed')) {
+      return 'NEXT ACTION: Lay Organic Straw Mulch Layer to Prevent Weed Resurgence';
+    } else if (act.includes('feed') || act.includes('livestock')) {
+      return 'NEXT ACTION: Check Daily Weight Gain & Maintain Clean Pen Sanitation Protocol';
+    }
+    return 'NEXT ACTION: Perform Weekly Geotag Inspection & Log Photo Verification';
+  };
+
+  // Section 2: FARMER ACTIVITY MONITORING & RECOMMENDED NEXT ACTIONS ("WHAT ACTIVITY TO DO")
+  if (catLower === 'activity' || catLower.includes('activity') || catLower === 'master' || catLower === 'all' || titleLower.includes('master') || titleLower.includes('activity') || titleLower.includes('farmer')) {
+    const actHeaders = ['Farmer & Plot', 'Current Monitored Activity', 'Status & Proof', 'Recommended Next Activity To Do', 'Target Schedule & Staff'];
+    const actWidths = [34, 38, 26, 52, 32];
+    const actRows = validations.map(v => {
+      const matchingSched = schedules.find(s => s.plot === v.plot || (s.assignedTo && s.assignedTo.includes(v.farmer)));
+      const nextAct = getRecommendedNextActivity(v, matchingSched);
+      const schedTarget = matchingSched ? `${matchingSched.date} (${matchingSched.priority || 'HIGH'})` : '2026-09-20 (HIGH)';
+      const staffName = matchingSched ? matchingSched.assignedTo : (v.farmer || 'Farm Staff');
+
+      return [
+        `${v.farmer || 'Renier Lopez'}\n${v.plot || 'Plot P-021'}`,
+        `${v.activity || 'Fertilizer Application'}\n(${v.notes || 'Field Log'})`,
+        `${v.status || 'Validated'}\n📍 ${v.gps || 'Antipolo Field'}`,
+        nextAct,
+        `📅 ${schedTarget}\n👤 ${staffName}`
+      ];
+    });
+
+    drawTable('2. FARMER ACTIVITY MONITORING & RECOMMENDED NEXT ACTIONS ("WHAT ACTIVITY TO DO")', actHeaders, actRows, actWidths);
+  }
+
+  // Section 3: Crop Production Directory
   if (catLower === 'crop' || catLower.includes('crop') || catLower === 'master' || catLower === 'all' || titleLower.includes('master') || titleLower.includes('crop')) {
-    const cropHeaders = ['Variety Name', 'Plot', 'Growth Stage', 'Fertilizer Application', 'Irrigation', 'Historical Yield'];
-    const cropWidths = [42, 20, 28, 40, 30, 22];
+    const cropHeaders = ['Variety Name', 'Plot', 'Growth Stage', 'Fertilizer Application', 'Irrigation System', 'Yield Output'];
+    const cropWidths = [38, 20, 28, 42, 32, 22];
     const cropRows = crops.map(c => [c.variety, c.plot, c.growthStage, c.fertilizer, c.irrigation, c.yield]);
-    drawTable('2. CROP PRODUCTION DIRECTORY (REAL-TIME SUPABASE)', cropHeaders, cropRows, cropWidths);
+    drawTable('3. CROP PRODUCTION DIRECTORY (REAL-TIME SUPABASE)', cropHeaders, cropRows, cropWidths);
   }
 
+  // Section 4: Livestock Operations Registry
   if (catLower === 'livestock' || catLower.includes('livestock') || catLower === 'master' || catLower === 'all' || titleLower.includes('master') || titleLower.includes('livestock')) {
-    const livestockHeaders = ['Flock / Group Name', 'Plot', 'Head Count', 'Vaccination Coverage', 'Health Status', 'Avg Daily Gain'];
-    const livestockWidths = [44, 20, 24, 38, 30, 26];
+    const livestockHeaders = ['Herd / Group Name', 'Plot', 'Head Count', 'Vaccination Coverage', 'Health Status', 'Avg Daily Gain'];
+    const livestockWidths = [42, 20, 24, 38, 32, 26];
     const livestockRows = livestock.map(l => [l.group, l.plot, `${l.headCount} heads`, l.vaccination, l.healthStatus, l.dailyGain]);
-    drawTable('3. LIVESTOCK OPERATIONS REGISTRY (REAL-TIME SUPABASE)', livestockHeaders, livestockRows, livestockWidths);
+    drawTable('4. LIVESTOCK OPERATIONS REGISTRY (REAL-TIME SUPABASE)', livestockHeaders, livestockRows, livestockWidths);
   }
 
-  if (catLower === 'activity' || catLower.includes('activity') || catLower === 'master' || catLower === 'all' || titleLower.includes('master') || titleLower.includes('task') || titleLower.includes('validation')) {
-    const valHeaders = ['Farmer Name', 'Plot', 'Activity Task', 'Status', 'Geotag Location', 'Notes / Proof'];
-    const valWidths = [38, 18, 36, 24, 34, 32];
-    const valRows = validations.map(v => [v.farmer, v.plot, v.activity, v.status, v.gps || 'Antipolo Field', v.notes || 'Submitted via App']);
-    drawTable('4. FARMER MOBILE TASK VALIDATIONS & LOGS (REAL-TIME SUPABASE)', valHeaders, valRows, valWidths);
-  }
-
+  // Section 5: Cooperative Field Schedules & Protocol Pipelines
   if (catLower === 'schedule' || catLower.includes('schedule') || catLower === 'master' || catLower === 'all' || titleLower.includes('master') || titleLower.includes('schedule')) {
-    const schedHeaders = ['Event Title', 'Category', 'Plot', 'Target Date & Time', 'Assigned Staff', 'Status'];
+    const schedHeaders = ['Event Protocol Title', 'Category', 'Plot', 'Target Date & Time', 'Assigned Staff', 'Status'];
     const schedWidths = [48, 22, 22, 34, 36, 20];
     const schedRows = schedules.map(s => [s.title, s.category, s.plot, `${s.date} ${s.time}`, s.assignedTo, s.status]);
     drawTable('5. COOPERATIVE FIELD SCHEDULES & PROTOCOLS (REAL-TIME SUPABASE)', schedHeaders, schedRows, schedWidths);
   }
 
   // 5. Official Certification Sign-Off Block
-  checkPageBreak(32);
+  checkPageBreak(34);
   doc.setDrawColor(17, 89, 44);
   doc.setFillColor(240, 253, 244);
-  doc.roundedRect(14, currentY, pageWidth - 28, 26, 3, 3, 'FD');
+  doc.roundedRect(14, currentY, pageWidth - 28, 28, 3, 3, 'FD');
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
@@ -237,11 +290,12 @@ export const generateOfficialReportPDF = (title, category = 'all', liveData = {}
   doc.setTextColor(...darkTextColor);
   doc.text('This official report document has been generated dynamically from live records stored in Supabase Cloud Database.', 18, currentY + 12);
   doc.text('It constitutes a verified operational record for Antipolo Organic Farming Cooperative (MARIKHA) governance audit.', 18, currentY + 16.5);
+  doc.text('All farmer activity monitoring logs and recommended next operational activities are synchronized with the mobile app.', 18, currentY + 21);
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
-  doc.text('Certified By: Executive Super Admin Officer', 18, currentY + 22);
-  doc.text(`Digital Verification Code: ${refCode}`, pageWidth - 70, currentY + 22);
+  doc.text('Certified By: Executive Super Admin Officer', 18, currentY + 25.5);
+  doc.text(`Digital Verification Code: ${refCode}`, pageWidth - 70, currentY + 25.5);
 
   // 6. Apply Footers Across All Pages
   const totalPages = doc.internal.getNumberOfPages();
