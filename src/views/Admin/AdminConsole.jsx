@@ -25,6 +25,7 @@ import {
   RefreshCw,
   Phone
 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { generateOfficialReportPDF } from '../../utils/pdfGenerator';
 
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area } from 'recharts';
