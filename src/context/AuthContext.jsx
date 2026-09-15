@@ -70,7 +70,22 @@ export const AuthProvider = ({ children }) => {
       const saved = localStorage.getItem('marikha_livestock_list');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(item => {
+            if (!item) return item;
+            const grpStr = String(item.group || item.animalType || '');
+            if (!grpStr.toLowerCase().includes('goat')) {
+              return {
+                ...item,
+                groupCode: item.groupCode && item.groupCode.startsWith('GT-') ? item.groupCode : `GT-014`,
+                group: `Native Goat Herd GT-014 (34 Goats)`,
+                animalType: 'Native Goats',
+                forage: 'Organic Napier Grass'
+              };
+            }
+            return item;
+          });
+        }
       }
     } catch (e) {}
     return initialLivestock;

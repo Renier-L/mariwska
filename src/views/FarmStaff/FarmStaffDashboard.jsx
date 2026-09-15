@@ -1651,10 +1651,9 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
       const matchesSearch = !q || code.includes(q) || group.includes(q) || plot.includes(q) || forage.includes(q) || health.includes(q);
       
       if (livestockTypeFilter === 'All') return matchesSearch;
-      if (livestockTypeFilter === 'Cattle') return matchesSearch && (group.includes('cattle') || group.includes('cow'));
-      if (livestockTypeFilter === 'Goats') return matchesSearch && group.includes('goat');
-      if (livestockTypeFilter === 'Chickens') return matchesSearch && (group.includes('chicken') || group.includes('poultry'));
-      if (livestockTypeFilter === 'Swine') return matchesSearch && (group.includes('pig') || group.includes('swine') || group.includes('hog'));
+      if (livestockTypeFilter === 'Native Goats') return matchesSearch && group.includes('native');
+      if (livestockTypeFilter === 'Anglo-Nubian') return matchesSearch && (group.includes('anglo') || group.includes('nubian'));
+      if (livestockTypeFilter === 'Boer Goats') return matchesSearch && group.includes('boer');
       return matchesSearch;
     });
 
@@ -1673,21 +1672,21 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
               </span>
             </h1>
             <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-              Animal health records, vaccination schedules, organic forage tracking, weight gain monitoring, and live CRUD operations
+              Goat herd health records, vaccination schedules, organic Napier forage tracking, weight gain monitoring, and live CRUD operations
             </p>
           </div>
 
           <button onClick={() => setShowAddLivestockModal(true)} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontWeight: '800' }}>
-            <Plus size={16} /> Register New Livestock Group
+            <Plus size={16} /> Register New Goat Herd
           </button>
         </div>
 
         {/* Directory Quick Stat Summary Bar */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
           <div className="m-card" style={{ padding: '14px 18px' }}>
-            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL LIVESTOCK GROUPS</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{seasonFilteredLivestock.length} Groups</div>
-            <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>{totalHeadCount} Total Animals</span>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL GOAT HERDS</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{seasonFilteredLivestock.length} Herds</div>
+            <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>{totalHeadCount} Total Goats</span>
           </div>
 
           <div className="m-card" style={{ padding: '14px 18px' }}>
@@ -1717,14 +1716,13 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
         <div className="m-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
-            {/* Livestock Type Filter Capsules */}
+            {/* Goat Breed Filter Capsules */}
             <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
               {[
                 { name: 'All', count: seasonFilteredLivestock.length },
-                { name: 'Cattle', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('cattle') || (l.group || l.animalType || '').toLowerCase().includes('cow')).length },
-                { name: 'Goats', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('goat')).length },
-                { name: 'Chickens', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('chicken') || (l.group || l.animalType || '').toLowerCase().includes('poultry')).length },
-                { name: 'Swine', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('pig') || (l.group || l.animalType || '').toLowerCase().includes('swine')).length }
+                { name: 'Native Goats', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('native')).length },
+                { name: 'Anglo-Nubian', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('anglo') || (l.group || l.animalType || '').toLowerCase().includes('nubian')).length },
+                { name: 'Boer Goats', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('boer')).length }
               ].map(r => (
                 <button
                   key={r.name}
@@ -1748,7 +1746,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
             {/* Right Side Filter Toolbar: Type Dropdown, Search Input */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              {/* Animal Type Dropdown Filter Select */}
+              {/* Goat Breed Dropdown Filter Select */}
               <select
                 value={livestockTypeFilter}
                 onChange={(e) => setLivestockTypeFilter(e.target.value)}
@@ -1764,13 +1762,12 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
                   outline: 'none',
                   boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
                 }}
-                title="Filter by livestock animal category"
+                title="Filter by goat breed category"
               >
-                <option value="All">All Animals</option>
-                <option value="Cattle">Cattle / Cows</option>
-                <option value="Goats">Native Goats</option>
-                <option value="Chickens">Chickens / Poultry</option>
-                <option value="Swine">Swine / Pigs</option>
+                <option value="All">All Goats</option>
+                <option value="Native Goats">Native Goats</option>
+                <option value="Anglo-Nubian">Anglo-Nubian Goats</option>
+                <option value="Boer Goats">Boer Dairy Goats</option>
               </select>
 
               {/* High Contrast Search Bar */}
