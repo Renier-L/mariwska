@@ -757,26 +757,77 @@ const AdminConsole = ({ activeTab }) => {
               ))}
             </div>
 
-            <div style={{ position: 'relative', width: '280px' }}>
-              <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
-              <input
-                type="text"
-                placeholder="Search name, email, RSBSA ID, or plot..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              {/* Role Dropdown Select Filter */}
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
                 style={{
-                  width: '100%',
-                  padding: '9px 12px 9px 34px',
+                  padding: '8px 12px',
                   borderRadius: '8px',
-                  border: '1.5px solid #94a3b8',
-                  fontSize: '0.82rem',
-                  fontWeight: '700',
+                  border: '1.5px solid #11592c',
+                  fontSize: '0.8rem',
+                  fontWeight: '800',
                   color: '#0f172a',
                   background: '#ffffff',
-                  WebkitTextFillColor: '#0f172a',
-                  outline: 'none'
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
                 }}
-              />
+                title="Filter directory by user role"
+              >
+                <option value="All">Filter Role: All Roles</option>
+                <option value="Executive">Filter Role: Executive</option>
+                <option value="Admin">Filter Role: Admin</option>
+                <option value="Farm Staff">Filter Role: Farm Staff</option>
+                <option value="Farmer">Filter Role: Farmer</option>
+              </select>
+
+              {/* Season / Cycle Dropdown Select Filter */}
+              <select
+                value={selectedSeason || '2026 Active Season'}
+                onChange={(e) => setSelectedSeason(e.target.value)}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #11592c',
+                  fontSize: '0.8rem',
+                  fontWeight: '800',
+                  color: '#0f172a',
+                  background: '#ffffff',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+                }}
+                title="Filter active farming season or historical cycle"
+              >
+                <option value="2026 Active Season">2026 Active Season</option>
+                <option value="2025 Historical Cycle">2025 Historical Cycle</option>
+                <option value="2024 Archive Cycle">2024 Archive Cycle</option>
+                <option value="All Seasons Consolidated">All Seasons Consolidated</option>
+              </select>
+
+              <div style={{ position: 'relative', width: '240px' }}>
+                <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
+                <input
+                  type="text"
+                  placeholder="Search name, email, RSBSA ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px 8px 34px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #94a3b8',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    color: '#0f172a',
+                    background: '#ffffff',
+                    WebkitTextFillColor: '#0f172a',
+                    outline: 'none'
+                  }}
+                />
+              </div>
             </div>
           </div>
 

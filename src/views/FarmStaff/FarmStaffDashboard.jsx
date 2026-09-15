@@ -1142,13 +1142,13 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
       <div className="m-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
           {/* Growth Stage Filter Capsules */}
-          <div style={{ display: 'flex', gap: '6px' }}>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
             {[
-              { name: 'All', count: safeCrops.length },
-              { name: 'Seedling', count: safeCrops.filter(c => c.growthStage === 'Seedling').length },
-              { name: 'Vegetative', count: safeCrops.filter(c => c.growthStage === 'Vegetative').length },
-              { name: 'Flowering', count: safeCrops.filter(c => c.growthStage === 'Flowering').length },
-              { name: 'Fruiting', count: safeCrops.filter(c => c.growthStage?.includes('Fruiting')).length }
+              { name: 'All', count: seasonFilteredCrops.length },
+              { name: 'Seedling', count: seasonFilteredCrops.filter(c => c.growthStage === 'Seedling').length },
+              { name: 'Vegetative', count: seasonFilteredCrops.filter(c => c.growthStage === 'Vegetative').length },
+              { name: 'Flowering', count: seasonFilteredCrops.filter(c => c.growthStage === 'Flowering').length },
+              { name: 'Fruiting', count: seasonFilteredCrops.filter(c => c.growthStage?.includes('Fruiting')).length }
             ].map(r => (
               <button
                 key={r.name}
@@ -1160,6 +1160,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
                   fontWeight: '700',
                   background: cropStageFilter === r.name ? '#0c3619' : '#f1f5f9',
                   color: cropStageFilter === r.name ? '#ffffff' : '#4b5563',
+                  border: 'none',
                   cursor: 'pointer'
                 }}
               >
@@ -1168,27 +1169,79 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
             ))}
           </div>
 
-          {/* Search Box */}
-          <div style={{ position: 'relative', width: '280px' }}>
-            <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
-            <input
-              type="text"
-              placeholder="Search crop variety, plot ID, or stage..."
-              value={cropSearchQuery}
-              onChange={(e) => setCropSearchQuery(e.target.value)}
+          {/* Right Side Controls: Dropdown Select Filters & Search Box */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Growth Stage Dropdown Select Filter */}
+            <select
+              value={cropStageFilter}
+              onChange={(e) => setCropStageFilter(e.target.value)}
               style={{
-                width: '100%',
-                padding: '9px 12px 9px 34px',
+                padding: '8px 12px',
                 borderRadius: '8px',
-                border: '1.5px solid #94a3b8',
-                fontSize: '0.82rem',
-                fontWeight: '700',
+                border: '1.5px solid #11592c',
+                fontSize: '0.8rem',
+                fontWeight: '800',
                 color: '#0f172a',
                 background: '#ffffff',
-                WebkitTextFillColor: '#0f172a',
-                outline: 'none'
+                cursor: 'pointer',
+                outline: 'none',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
               }}
-            />
+              title="Filter by crop growth stage"
+            >
+              <option value="All">Filter Stage: All Stages</option>
+              <option value="Seedling">Filter Stage: Seedling</option>
+              <option value="Vegetative">Filter Stage: Vegetative</option>
+              <option value="Flowering">Filter Stage: Flowering</option>
+              <option value="Fruiting">Filter Stage: Fruiting & Harvest</option>
+            </select>
+
+            {/* Season / Cycle Dropdown Select */}
+            <select
+              value={selectedSeason || '2026 Active Season'}
+              onChange={(e) => setSelectedSeason(e.target.value)}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: '1.5px solid #11592c',
+                fontSize: '0.8rem',
+                fontWeight: '800',
+                color: '#0f172a',
+                background: '#ffffff',
+                cursor: 'pointer',
+                outline: 'none',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+              }}
+              title="Filter active farming season or historical cycle"
+            >
+              <option value="2026 Active Season">2026 Active Season</option>
+              <option value="2025 Historical Cycle">2025 Historical Cycle</option>
+              <option value="2024 Archive Cycle">2024 Archive Cycle</option>
+              <option value="All Seasons Consolidated">All Seasons Consolidated</option>
+            </select>
+
+            {/* Search Box */}
+            <div style={{ position: 'relative', width: '240px' }}>
+              <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
+              <input
+                type="text"
+                placeholder="Search crop variety, plot ID..."
+                value={cropSearchQuery}
+                onChange={(e) => setCropSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px 8px 34px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #94a3b8',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  color: '#0f172a',
+                  background: '#ffffff',
+                  WebkitTextFillColor: '#0f172a',
+                  outline: 'none'
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -1610,7 +1663,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
   // 5. Livestock Management & Veterinary Registry (Full Real-Time Live CRUD Operations & Supabase Sync)
   const renderLivestockManagement = () => {
-    const filteredLivestock = safeLivestock.filter(item => {
+    const filteredLivestock = seasonFilteredLivestock.filter(item => {
       if (!item) return false;
       const q = livestockSearchQuery.toLowerCase().trim();
       const code = (item.groupCode || item.code || '').toLowerCase();
@@ -1622,15 +1675,16 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
       const matchesSearch = !q || code.includes(q) || group.includes(q) || plot.includes(q) || forage.includes(q) || health.includes(q);
       
       if (livestockTypeFilter === 'All') return matchesSearch;
+      if (livestockTypeFilter === 'Cattle') return matchesSearch && (group.includes('cattle') || group.includes('cow'));
       if (livestockTypeFilter === 'Goats') return matchesSearch && group.includes('goat');
       if (livestockTypeFilter === 'Chickens') return matchesSearch && (group.includes('chicken') || group.includes('poultry'));
       if (livestockTypeFilter === 'Swine') return matchesSearch && (group.includes('pig') || group.includes('swine') || group.includes('hog'));
       return matchesSearch;
     });
 
-    const totalHeadCount = safeLivestock.reduce((acc, l) => acc + (Number(l.headCount) || 10), 0);
-    const totalDailyForage = safeLivestock.reduce((acc, l) => acc + (Number(l.headCount) || 10) * 3, 0);
-    const criticalAlertsCount = safeLivestock.filter(l => (l.healthStatus || l.health || '').toLowerCase().includes('critical') || (l.healthStatus || l.health || '').toLowerCase().includes('monitoring')).length;
+    const totalHeadCount = seasonFilteredLivestock.reduce((acc, l) => acc + (Number(l.headCount) || 10), 0);
+    const totalDailyForage = seasonFilteredLivestock.reduce((acc, l) => acc + (Number(l.headCount) || 10) * 3, 0);
+    const criticalAlertsCount = seasonFilteredLivestock.filter(l => (l.healthStatus || l.health || '').toLowerCase().includes('critical') || (l.healthStatus || l.health || '').toLowerCase().includes('monitoring')).length;
 
     return (
       <div>
@@ -1656,14 +1710,14 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
           <div className="m-card" style={{ padding: '14px 18px' }}>
             <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL LIVESTOCK GROUPS</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{safeLivestock.length} Groups</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{seasonFilteredLivestock.length} Groups</div>
             <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>{totalHeadCount} Total Animals</span>
           </div>
 
           <div className="m-card" style={{ padding: '14px 18px' }}>
             <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>VACCINATION RATE</span>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#15803d' }}>
-              {safeLivestock.length > 0 ? '98.4% Coverage' : '100% Coverage'}
+              {seasonFilteredLivestock.length > 0 ? '98.4% Coverage' : '100% Coverage'}
             </div>
             <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>Veterinary Registry Synced</span>
           </div>
@@ -1688,12 +1742,13 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
         <div className="m-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
             {/* Livestock Type Filter Capsules */}
-            <div style={{ display: 'flex', gap: '6px' }}>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
               {[
-                { name: 'All', count: safeLivestock.length },
-                { name: 'Goats', count: safeLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('goat')).length },
-                { name: 'Chickens', count: safeLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('chicken') || (l.group || l.animalType || '').toLowerCase().includes('poultry')).length },
-                { name: 'Swine', count: safeLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('pig') || (l.group || l.animalType || '').toLowerCase().includes('swine')).length }
+                { name: 'All', count: seasonFilteredLivestock.length },
+                { name: 'Cattle', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('cattle') || (l.group || l.animalType || '').toLowerCase().includes('cow')).length },
+                { name: 'Goats', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('goat')).length },
+                { name: 'Chickens', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('chicken') || (l.group || l.animalType || '').toLowerCase().includes('poultry')).length },
+                { name: 'Swine', count: seasonFilteredLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('pig') || (l.group || l.animalType || '').toLowerCase().includes('swine')).length }
               ].map(r => (
                 <button
                   key={r.name}
@@ -1715,27 +1770,79 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
               ))}
             </div>
 
-            {/* High Contrast Search Bar */}
-            <div style={{ position: 'relative', width: '280px' }}>
-              <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input
-                type="text"
-                placeholder="Search group code, animal type..."
-                value={livestockSearchQuery}
-                onChange={(e) => setLivestockSearchQuery(e.target.value)}
+            {/* Right Side Filter Toolbar: Type Dropdown, Search Input, Season/Cycle Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              {/* Animal Type Dropdown Filter Select */}
+              <select
+                value={livestockTypeFilter}
+                onChange={(e) => setLivestockTypeFilter(e.target.value)}
                 style={{
-                  width: '100%',
-                  padding: '8px 12px 8px 36px',
+                  padding: '8px 12px',
                   borderRadius: '8px',
-                  border: '1.5px solid #94a3b8',
+                  border: '1.5px solid #11592c',
                   fontSize: '0.8rem',
-                  fontWeight: '700',
+                  fontWeight: '800',
                   color: '#0f172a',
                   background: '#ffffff',
-                  WebkitTextFillColor: '#0f172a',
-                  outline: 'none'
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
                 }}
-              />
+                title="Filter by livestock animal category"
+              >
+                <option value="All">Filter Type: All Animals</option>
+                <option value="Cattle">Filter Type: Cattle / Cows</option>
+                <option value="Goats">Filter Type: Native Goats</option>
+                <option value="Chickens">Filter Type: Chickens / Poultry</option>
+                <option value="Swine">Filter Type: Swine / Pigs</option>
+              </select>
+
+              {/* Season / Cycle Dropdown Select */}
+              <select
+                value={selectedSeason || '2026 Active Season'}
+                onChange={(e) => setSelectedSeason(e.target.value)}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #11592c',
+                  fontSize: '0.8rem',
+                  fontWeight: '800',
+                  color: '#0f172a',
+                  background: '#ffffff',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+                }}
+                title="Filter active farming season or historical cycle"
+              >
+                <option value="2026 Active Season">2026 Active Season</option>
+                <option value="2025 Historical Cycle">2025 Historical Cycle</option>
+                <option value="2024 Archive Cycle">2024 Archive Cycle</option>
+                <option value="All Seasons Consolidated">All Seasons Consolidated</option>
+              </select>
+
+              {/* High Contrast Search Bar */}
+              <div style={{ position: 'relative', width: '250px' }}>
+                <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                <input
+                  type="text"
+                  placeholder="Search group code, animal type..."
+                  value={livestockSearchQuery}
+                  onChange={(e) => setLivestockSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px 8px 36px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #94a3b8',
+                    fontSize: '0.8rem',
+                    fontWeight: '700',
+                    color: '#0f172a',
+                    background: '#ffffff',
+                    WebkitTextFillColor: '#0f172a',
+                    outline: 'none'
+                  }}
+                />
+              </div>
             </div>
           </div>
 
