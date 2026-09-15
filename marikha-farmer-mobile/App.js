@@ -99,6 +99,43 @@ export default function App() {
     { id: '3', title: 'Morning drip irrigation cycle (30 mins)', urgency: 'Normal', done: false }
   ]);
 
+  // Profile Management State matching screenshots
+  const [profileData, setProfileData] = useState({
+    name: 'Mang Juan Dela Cruz',
+    subtitle: 'Farmer · Member since 2021',
+    pgsBadge: 'PGS Certified',
+    mobile: '+63 917 555 0142',
+    email: 'mang.juan@farmer.ph',
+    memberId: 'MRK-2021-00874',
+    barangay: 'Sto. Niño, Sariaya, Quezon',
+    coordinates: '13.9611° N, 121.5266° E',
+    totalArea: '0.95 hectares',
+    coop: 'Likasan Organic Farmers MPC',
+    standing: 'Good · No violations',
+    duesPaidUntil: 'Dec 2026',
+    assignedPlots: [
+      { id: 'P-007', crop: 'Okra', area: '0.4 ha', status: 'Active' },
+      { id: 'P-021', crop: 'Ampalaya', area: '0.3 ha', status: 'Active' },
+      { id: 'P-034', crop: 'Kamatis', area: '0.25 ha', status: 'Harvesting' }
+    ],
+    livestock: [
+      { id: 'GT-014', title: 'Native Goats', count: '12 heads' }
+    ]
+  });
+
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [tempProfile, setTempProfile] = useState(profileData);
+  const [profileSaveAlert, setProfileSaveAlert] = useState(false);
+
+  const handleSaveProfile = () => {
+    setProfileData({ ...tempProfile });
+    setProfileSaveAlert(true);
+    setTimeout(() => {
+      setProfileSaveAlert(false);
+      setShowProfileModal(false);
+    }, 1000);
+  };
+
   // Supabase Realtime Listener & 4-second Polling for 100% Guaranteed Web-to-Mobile Sync
   useEffect(() => {
     fetchAnnouncements();
@@ -523,6 +560,179 @@ export default function App() {
               </TouchableOpacity>
             ))}
           </View>
+        {activeTab === 'profile' && (
+          <View style={{ backgroundColor: '#edf2ee', paddingBottom: 30 }}>
+            {/* Top Header Bar */}
+            <View style={{ backgroundColor: '#0c3619', paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <TouchableOpacity onPress={() => setActiveTab('home')} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800' }}>←</Text>
+                </TouchableOpacity>
+                <View>
+                  <Text style={{ fontSize: 18, fontWeight: '800', color: '#ffffff' }}>My Profile</Text>
+                  <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600' }}>Impormasyon at membership</Text>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => { setTempProfile(profileData); setShowProfileModal(true); }} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18 }}>⚙️</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ padding: 16, gap: 14 }}>
+              {/* CARD 1: MAIN PROFILE CARD */}
+              <View style={styles.profCard}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                  <View style={styles.avatarCircle}>
+                    <Text style={{ fontSize: 24, fontWeight: '900', color: '#1e293b' }}>{profileData.name.charAt(0)}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 17, fontWeight: '800', color: '#0f172a' }}>{profileData.name}</Text>
+                    <Text style={{ fontSize: 12, color: '#475569', fontWeight: '600', marginVertical: 2 }}>{profileData.subtitle}</Text>
+                    <View style={{ backgroundColor: '#15803d', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10, alignSelf: 'flex-start' }}>
+                      <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{profileData.pgsBadge}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* CARD 2: CONTACT */}
+              <View style={styles.profCard}>
+                <Text style={styles.profSectionHeader}>CONTACT</Text>
+                <View style={{ gap: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📞</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>MOBILE</Text>
+                      <Text style={styles.profFieldValue}>{profileData.mobile}</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>✉️</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>EMAIL</Text>
+                      <Text style={styles.profFieldValue}>{profileData.email}</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🪪</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>MEMBER ID</Text>
+                      <Text style={styles.profFieldValue}>{profileData.memberId}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* CARD 3: FARM LOCATION */}
+              <View style={styles.profCard}>
+                <Text style={styles.profSectionHeader}>FARM LOCATION</Text>
+                <View style={{ gap: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📍</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>BARANGAY</Text>
+                      <Text style={styles.profFieldValue}>{profileData.barangay}</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🧭</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>COORDINATES</Text>
+                      <Text style={styles.profFieldValue}>{profileData.coordinates}</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🌱</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>TOTAL AREA</Text>
+                      <Text style={styles.profFieldValue}>{profileData.totalArea}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* CARD 4: COOPERATIVE */}
+              <View style={styles.profCard}>
+                <Text style={styles.profSectionHeader}>COOPERATIVE</Text>
+                <View style={{ gap: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>👥</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>COOP</Text>
+                      <Text style={styles.profFieldValue}>{profileData.coop}</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🛡️</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>STANDING</Text>
+                      <Text style={styles.profFieldValue}>{profileData.standing}</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📅</Text></View>
+                    <View>
+                      <Text style={styles.profFieldLabel}>DUES PAID UNTIL</Text>
+                      <Text style={styles.profFieldValue}>{profileData.duesPaidUntil}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* CARD 5: ASSIGNED PLOTS */}
+              <View style={styles.profCard}>
+                <Text style={styles.profSectionHeader}>ASSIGNED PLOTS</Text>
+                <View style={{ gap: 8 }}>
+                  {profileData.assignedPlots.map(plot => (
+                    <View key={plot.id} style={styles.plotSubCard}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <View style={styles.plotTagPill}><Text style={{ color: '#064e3b', fontWeight: '800', fontSize: 11 }}>{plot.id}</Text></View>
+                        <View>
+                          <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{plot.crop}</Text>
+                          <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{plot.area}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.plotStatusPill}>
+                        <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>{plot.status}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* CARD 6: LIVESTOCK */}
+              <View style={styles.profCard}>
+                <Text style={styles.profSectionHeader}>LIVESTOCK</Text>
+                <View style={{ gap: 8 }}>
+                  {profileData.livestock.map(l => (
+                    <View key={l.id} style={styles.plotSubCard}>
+                      <Text style={{ fontWeight: '800', fontSize: 12, color: '#0f172a', marginRight: 12 }}>{l.id}</Text>
+                      <View>
+                        <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{l.title}</Text>
+                        <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{l.count}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* ACTION BUTTONS */}
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+                <TouchableOpacity onPress={() => { setTempProfile(profileData); setShowProfileModal(true); }} style={[styles.submitBtn, { flex: 1, backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: '#0c3619', marginTop: 0 }]}>
+                  <Text style={{ color: '#0c3619', fontWeight: '800', fontSize: 13 }}>⚙️ Settings</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setIsAuthenticated(false)} style={[styles.submitBtn, { flex: 1, backgroundColor: '#fef2f2', borderWidth: 1.5, borderColor: '#fca5a5', marginTop: 0 }]}>
+                  <Text style={{ color: '#dc2626', fontWeight: '800', fontSize: 13 }}>🚪 Logout</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         )}
       </ScrollView>
 
@@ -547,6 +757,11 @@ export default function App() {
           <Text style={{ fontSize: 18 }}>📋</Text>
           <Text style={[styles.tabText, activeTab === 'tasks' && styles.tabTextActive]}>Tasks</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.tabItem} onPress={() => setActiveTab('profile')}>
+          <Text style={{ fontSize: 18 }}>👤</Text>
+          <Text style={[styles.tabText, activeTab === 'profile' && styles.tabTextActive]}>Profile</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Announcement Modal Popup */}
@@ -561,6 +776,56 @@ export default function App() {
             </ScrollView>
             <TouchableOpacity style={styles.modalCloseBtn} onPress={() => setShowNoticeModal(false)}>
               <Text style={styles.modalCloseText}>Close Notice</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Profile Settings Modal */}
+      <Modal visible={showProfileModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { maxHeight: '85%' }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={styles.modalTitle}>⚙️ Profile & Settings</Text>
+              <TouchableOpacity onPress={() => setShowProfileModal(false)}>
+                <Text style={{ fontSize: 18, color: '#64748b' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {profileSaveAlert && (
+              <View style={{ backgroundColor: '#dcfce7', borderColor: '#86efac', borderWidth: 1, padding: 8, borderRadius: 8, marginBottom: 10 }}>
+                <Text style={{ color: '#166534', fontWeight: '800', fontSize: 12, textAlign: 'center' }}>✓ Profile details updated successfully!</Text>
+              </View>
+            )}
+
+            <ScrollView style={{ flex: 1 }}>
+              <Text style={styles.label}>Full Name</Text>
+              <TextInput style={styles.input} value={tempProfile.name} onChangeText={t => setTempProfile({ ...tempProfile, name: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Mobile Number</Text>
+              <TextInput style={styles.input} value={tempProfile.mobile} onChangeText={t => setTempProfile({ ...tempProfile, mobile: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Email Address</Text>
+              <TextInput style={styles.input} value={tempProfile.email} onChangeText={t => setTempProfile({ ...tempProfile, email: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Member ID</Text>
+              <TextInput style={styles.input} value={tempProfile.memberId} onChangeText={t => setTempProfile({ ...tempProfile, memberId: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Barangay / Address</Text>
+              <TextInput style={styles.input} value={tempProfile.barangay} onChangeText={t => setTempProfile({ ...tempProfile, barangay: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Coordinates</Text>
+              <TextInput style={styles.input} value={tempProfile.coordinates} onChangeText={t => setTempProfile({ ...tempProfile, coordinates: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Total Area</Text>
+              <TextInput style={styles.input} value={tempProfile.totalArea} onChangeText={t => setTempProfile({ ...tempProfile, totalArea: t })} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Cooperative Name</Text>
+              <TextInput style={styles.input} value={tempProfile.coop} onChangeText={t => setTempProfile({ ...tempProfile, coop: t })} />
+            </ScrollView>
+
+            <TouchableOpacity style={[styles.submitBtn, { marginTop: 12 }]} onPress={handleSaveProfile}>
+              <Text style={styles.submitBtnText}>Save Profile Changes</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -643,5 +908,15 @@ const styles = StyleSheet.create({
   modalTitle: { fontSize: 16, fontWeight: '800', color: '#0c3619' },
   modalContent: { fontSize: 14, color: '#334155', lineHeight: 20 },
   modalCloseBtn: { backgroundColor: '#0c3619', padding: 12, borderRadius: 10, alignItems: 'center', marginTop: 10 },
-  modalCloseText: { color: '#ffffff', fontWeight: '800', fontSize: 13 }
+  modalCloseText: { color: '#ffffff', fontWeight: '800', fontSize: 13 },
+
+  profCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+  avatarCircle: { width: 54, height: 54, borderRadius: 27, backgroundColor: '#dce3db', justifyContent: 'center', alignItems: 'center' },
+  profSectionHeader: { fontSize: 11, fontWeight: '800', color: '#334155', letterSpacing: 0.5, marginBottom: 10 },
+  profIconBox: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#847e73', justifyContent: 'center', alignItems: 'center' },
+  profFieldLabel: { fontSize: 9, fontWeight: '800', color: '#64748b', letterSpacing: 0.3 },
+  profFieldValue: { fontSize: 13, fontWeight: '800', color: '#0f172a', marginTop: 1 },
+  plotSubCard: { backgroundColor: '#beb7ab', borderRadius: 12, padding: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  plotTagPill: { backgroundColor: '#98a092', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
+  plotStatusPill: { borderWidth: 1, borderColor: 'rgba(0,0,0,0.15)', backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 16, paddingHorizontal: 10, paddingVertical: 3 }
 });
