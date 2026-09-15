@@ -270,17 +270,17 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
   const calculateAiPredictedYield = (varietyName, growthStage) => {
     const name = (varietyName || '').toLowerCase().trim();
-    let baseKg = 400;
+    if (!name) {
+      return '';
+    }
 
+    let baseKg = 400;
     if (name.includes('tomato') || name.includes('kamatis')) baseKg = 480;
     else if (name.includes('eggplant') || name.includes('talong')) baseKg = 380;
     else if (name.includes('okra')) baseKg = 290;
     else if (name.includes('squash') || name.includes('kalabasa')) baseKg = 520;
     else if (name.includes('lettuce') || name.includes('matsa')) baseKg = 220;
     else if (name.includes('corn') || name.includes('mais')) baseKg = 610;
-    else if (name.includes('pepper') || name.includes('sili')) baseKg = 340;
-    else if (name.includes('cabbage') || name.includes('repolyo')) baseKg = 450;
-    else if (name.includes('ampalaya') || name.includes('gourd')) baseKg = 360;
 
     const stage = (growthStage || 'Vegetative').toLowerCase();
     let multiplier = 1.0;
@@ -318,7 +318,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     return null;
   };
 
-  const [newCropForm, setNewCropForm] = useState({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '408 kg' });
+  const [newCropForm, setNewCropForm] = useState({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '' });
   const [newLivestockForm, setNewLivestockForm] = useState({ group: '', plot: '', headCount: 30, vaccination: '100% (Up to date)', healthStatus: 'Healthy', dailyGain: '+1.2 kg/wk' });
 
   const handleCropVarietyChange = (variety) => {
@@ -347,7 +347,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       : calculateAiPredictedYield(newCropForm.variety, newCropForm.growthStage);
     
     if (addCrop) addCrop({ ...newCropForm, yield: finalYield });
-    setNewCropForm({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '408 kg' });
+    setNewCropForm({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '' });
     setShowAddCropModal(false);
   };
 
@@ -2955,14 +2955,16 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                 
                 {/* Variety Quick Selector Chips */}
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
-                  {['🍅 Tomato', '🍆 Eggplant', '🥬 Okra', '🎃 Squash', '🌽 Sweet Corn', '🥒 Cucumber', '🌶️ Pepper'].map(cropChip => (
+                  {['🍅 Tomato', '🍆 Eggplant', '🥬 Okra', '🎃 Squash'].map(cropChip => (
                     <button
                       key={cropChip}
                       type="button"
                       onClick={() => handleCropVarietyChange(cropChip.split(' ')[1])}
                       style={{
-                        padding: '4px 9px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f8fafc',
-                        fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer', color: '#334155'
+                        padding: '6px 12px', borderRadius: '8px', border: newCropForm.variety === cropChip.split(' ')[1] ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                        background: newCropForm.variety === cropChip.split(' ')[1] ? '#dcfce7' : '#f8fafc',
+                        fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', color: newCropForm.variety === cropChip.split(' ')[1] ? '#15803d' : '#334155',
+                        transition: 'all 0.15s ease'
                       }}
                     >
                       {cropChip}
@@ -3004,19 +3006,24 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                     <Sparkles size={15} color="#16a34a" />
                     AI Auto-Predicted Expected Yield:
                   </label>
-                  <span style={{ fontSize: '0.7rem', background: '#16a34a', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: '800' }}>
-                    AUTOMATIC
+                  <span style={{ fontSize: '0.7rem', background: newCropForm.variety ? '#16a34a' : '#64748b', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: '800' }}>
+                    {newCropForm.variety ? 'AUTOMATIC AI MODEL' : 'AWAITING SELECTION'}
                   </span>
                 </div>
                 <input 
                   type="text"
                   required
                   readOnly
-                  value={newCropForm.yield || calculateAiPredictedYield(newCropForm.variety, newCropForm.growthStage)} 
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #16a34a', background: '#ffffff', fontSize: '1.1rem', fontWeight: '800', color: '#0c3619' }}
+                  placeholder="Select crop variety above (Tomato, Eggplant, Okra, Squash)..."
+                  value={newCropForm.variety ? (newCropForm.yield || calculateAiPredictedYield(newCropForm.variety, newCropForm.growthStage)) : ''} 
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: newCropForm.variety ? '1.5px solid #16a34a' : '1.5px solid #cbd5e1', background: '#ffffff', fontSize: newCropForm.variety ? '1.1rem' : '0.82rem', fontWeight: newCropForm.variety ? '800' : '600', color: newCropForm.variety ? '#0c3619' : '#64748b' }}
                 />
                 <div style={{ fontSize: '0.72rem', color: '#166534', marginTop: '6px', fontWeight: '600' }}>
-                  🤖 Estimated harvest yield generated live by Random Forest algorithm for {newCropForm.variety || 'Tomato'} ({newCropForm.growthStage} stage).
+                  {newCropForm.variety ? (
+                    `🤖 Estimated harvest yield generated live by Random Forest algorithm for ${newCropForm.variety} (${newCropForm.growthStage} stage).`
+                  ) : (
+                    `👆 Click Tomato, Eggplant, Okra, or Squash above to auto-calculate harvest yield prediction.`
+                  )}
                 </div>
               </div>
 
