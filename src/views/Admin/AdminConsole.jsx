@@ -663,10 +663,14 @@ const AdminConsole = ({ activeTab }) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px 12px 8px 34px',
+                  padding: '9px 12px 9px 34px',
                   borderRadius: '8px',
-                  border: '1px solid #d1d5db',
-                  fontSize: '0.8rem',
+                  border: '1.5px solid #94a3b8',
+                  fontSize: '0.82rem',
+                  fontWeight: '700',
+                  color: '#0f172a',
+                  background: '#ffffff',
+                  WebkitTextFillColor: '#0f172a',
                   outline: 'none'
                 }}
               />
@@ -1000,16 +1004,16 @@ const AdminConsole = ({ activeTab }) => {
           </div>
         )}
 
-        {/* CREATE USER ACCOUNT MODAL (FULL ENRICHED FIELDS) */}
+        {/* CREATE USER ACCOUNT MODAL (FULL ENRICHED FIELDS WITH HIGH CONTRAST INPUTS) */}
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
           }}>
             <div className="m-card" style={{
-              width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
-              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+              width: '100%', maxWidth: '620px', padding: '0', borderRadius: '20px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
               border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
               <div style={{
@@ -1021,8 +1025,8 @@ const AdminConsole = ({ activeTab }) => {
                     <Plus size={20} color="#86efac" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Create User Account</h3>
-                    <span style={{ fontSize: '0.75rem', color: '#86efac' }}>Enriched cooperative member registration with RSBSA & sector assignments</span>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Create New User Account</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: '600' }}>Enriched cooperative registration with RSBSA ID & field sector plot</span>
                   </div>
                 </div>
                 <button onClick={() => setShowAddModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
@@ -1031,83 +1035,101 @@ const AdminConsole = ({ activeTab }) => {
               </div>
 
               <form onSubmit={handleCreateUser} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>System Access Role *</label>
+                
+                {/* Section 1: Role & System Access */}
+                <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#15803d', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>
+                    👤 1. SYSTEM ROLE & ACCESS LEVEL
+                  </span>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>System Access Role *</label>
                   <select
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', outline: 'none' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a', outline: 'none' }}
                   >
                     <option value="Farmer">Farmer (Mobile App User & Cooperative Field Member)</option>
                     <option value="Farm Staff">Farm Staff (Activity Validator & Field Supervisor)</option>
                     <option value="Admin">Admin (Cooperative Administrator)</option>
-                    <option value="Executive">Executive (Super Admin / Executive Management)</option>
+                    <option value="Executive">Executive (Super Admin / Executive Governance)</option>
                   </select>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Full Name *</label>
-                    <input type="text" required placeholder="e.g. Danilo Rivera" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
+                {/* Section 2: Account Credentials & Contact */}
+                <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#15803d', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
+                    📞 2. PERSONAL CREDENTIALS & CONTACT INFO
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Full Name *</label>
+                      <input type="text" required placeholder="e.g. Danilo Rivera" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Phone Number *</label>
+                      <input type="text" required placeholder="+63 917 555 0100" value={newUserPhone} onChange={(e) => setNewUserPhone(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Phone Number *</label>
-                    <input type="text" required placeholder="+63 917 555 0100" value={newUserPhone} onChange={(e) => setNewUserPhone(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Email Address *</label>
+                      <input type="email" required placeholder="danilo@mariwska.coop" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Initial Password *</label>
+                      <input type="text" required placeholder="password123" value={newUserPass} onChange={(e) => setNewUserPass(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Email Address *</label>
-                    <input type="email" required placeholder="danilo@mariwska.coop" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                {/* Section 3: Relevant Agricultural & Registry Fields */}
+                <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: '10px', border: '1.5px solid #86efac', marginBottom: '20px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#166534', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
+                    🌾 3. RELEVANT COOPERATIVE DATA FIELDS (RSBSA, PLOT & CERTIFICATION)
+                  </span>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>RSBSA Registry ID</label>
+                      <input type="text" placeholder="RSBSA-03-1425-001" value={newUserRsbsa} onChange={(e) => setNewUserRsbsa(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '800', fontFamily: 'monospace', color: '#15803d', background: '#ffffff', WebkitTextFillColor: '#15803d' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Assigned Sector / Field Plot</label>
+                      <input type="text" placeholder="Plot P-007 (Vegetable Sector)" value={newUserPlot} onChange={(e) => setNewUserPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Assigned Sector / Plot</label>
-                    <input type="text" placeholder="Plot P-007 (Vegetable Sector)" value={newUserPlot} onChange={(e) => setNewUserPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
-                  </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>RSBSA Farmer ID</label>
-                    <input type="text" placeholder="RSBSA-03-1425-001" value={newUserRsbsa} onChange={(e) => setNewUserRsbsa(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '700', fontFamily: 'monospace' }} />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Organic Certification</label>
-                    <input type="text" placeholder="PGS Certified Organic Farmer" value={newUserCert} onChange={(e) => setNewUserCert(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Emergency Contact Person & Phone</label>
-                    <input type="text" placeholder="Maria Lopez (+63 918 777 8888)" value={newUserEmerg} onChange={(e) => setNewUserEmerg(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Initial Password</label>
-                    <input type="text" required placeholder="password123" value={newUserPass} onChange={(e) => setNewUserPass(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Organic Certification Level</label>
+                      <input type="text" placeholder="PGS Certified Organic Farmer" value={newUserCert} onChange={(e) => setNewUserCert(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Emergency Contact Person & Phone</label>
+                      <input type="text" placeholder="Maria Lopez (+63 918 777 8888)" value={newUserEmerg} onChange={(e) => setNewUserEmerg(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
-                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>Cancel</button>
-                  <button type="submit" className="btn-primary" style={{ padding: '9px 20px', fontSize: '0.85rem', background: '#0c3619' }}>✓ Save Account & Sync Live</button>
+                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline" style={{ padding: '10px 18px', fontSize: '0.85rem', fontWeight: '700' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '10px 22px', fontSize: '0.85rem', background: '#0c3619', fontWeight: '800' }}>✓ Create Account & Sync Live</button>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        {/* EDIT USER ACCOUNT MODAL (FULL ENRICHED FIELDS) */}
+        {/* EDIT USER ACCOUNT MODAL (FULL ENRICHED FIELDS WITH HIGH CONTRAST INPUTS) */}
         {showEditModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(6px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
           }}>
             <div className="m-card" style={{
-              width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
-              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+              width: '100%', maxWidth: '620px', padding: '0', borderRadius: '20px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
               border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
               <div style={{
@@ -1119,8 +1141,8 @@ const AdminConsole = ({ activeTab }) => {
                     <Pencil size={20} color="#86efac" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Edit Member Profile & Credentials</h3>
-                    <span style={{ fontSize: '0.75rem', color: '#86efac' }}>Update member role, contact, sector plot, and RSBSA registry ID</span>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Edit Member Profile & Attributes</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: '600' }}>Update contact info, sector plot, RSBSA ID, and certification</span>
                   </div>
                 </div>
                 <button onClick={() => setShowEditModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
@@ -1129,67 +1151,85 @@ const AdminConsole = ({ activeTab }) => {
               </div>
 
               <form onSubmit={handleUpdateUser} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>System Access Role</label>
+                
+                {/* Section 1: System Access Role */}
+                <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#15803d', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>
+                    👤 1. SYSTEM ROLE & ACCESS LEVEL
+                  </span>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>System Access Role</label>
                   {editRole === 'Executive' || editRole === 'Admin' ? (
-                    <div style={{ padding: '10px 14px', background: '#f8fafc', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontWeight: '800', color: '#0c3619', fontSize: '0.85rem' }}>
+                    <div style={{ padding: '10px 14px', background: '#f0fdf4', borderRadius: '8px', border: '1.5px solid #86efac', fontWeight: '800', color: '#0c3619', fontSize: '0.85rem' }}>
                       🔒 Protected Core Administrator ({editRole})
                     </div>
                   ) : (
-                    <select value={editRole} onChange={(e) => setEditRole(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff' }}>
-                      <option value="Farmer">Farmer (Mobile App User & Field Member)</option>
+                    <select value={editRole} onChange={(e) => setEditRole(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }}>
+                      <option value="Farmer">Farmer (Mobile App User & Cooperative Field Member)</option>
                       <option value="Farm Staff">Farm Staff (Activity Validator & Field Inspector)</option>
                     </select>
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Full Name *</label>
-                    <input type="text" required value={editName} onChange={(e) => setEditName(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
+                {/* Section 2: Personal Credentials */}
+                <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#15803d', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
+                    📞 2. PERSONAL CREDENTIALS & CONTACT INFO
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Full Name *</label>
+                      <input type="text" required value={editName} onChange={(e) => setEditName(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Phone Number *</label>
+                      <input type="text" required value={editPhone} onChange={(e) => setEditPhone(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Phone Number *</label>
-                    <input type="text" required value={editPhone} onChange={(e) => setEditPhone(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Email Address *</label>
+                      <input type="email" required value={editEmail} onChange={(e) => setEditEmail(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Password *</label>
+                      <input type="text" required value={editPass} onChange={(e) => setEditPass(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Email Address *</label>
-                    <input type="email" required value={editEmail} onChange={(e) => setEditEmail(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Assigned Sector / Plot</label>
-                    <input type="text" value={editPlot} onChange={(e) => setEditPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
-                  </div>
-                </div>
+                {/* Section 3: Agricultural Relevant Fields */}
+                <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: '10px', border: '1.5px solid #86efac', marginBottom: '20px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#166534', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
+                    🌾 3. RELEVANT COOPERATIVE DATA FIELDS (RSBSA, PLOT & CERTIFICATION)
+                  </span>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>RSBSA Farmer ID</label>
-                    <input type="text" value={editRsbsa} onChange={(e) => setEditRsbsa(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '700', fontFamily: 'monospace' }} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>RSBSA Farmer ID</label>
+                      <input type="text" value={editRsbsa} onChange={(e) => setEditRsbsa(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '800', fontFamily: 'monospace', color: '#15803d', background: '#ffffff', WebkitTextFillColor: '#15803d' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Assigned Sector / Field Plot</label>
+                      <input type="text" value={editPlot} onChange={(e) => setEditPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Organic Certification Level</label>
-                    <input type="text" value={editCert} onChange={(e) => setEditCert(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
-                  </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Emergency Contact Person & Phone</label>
-                    <input type="text" value={editEmerg} onChange={(e) => setEditEmerg(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Password</label>
-                    <input type="text" required value={editPass} onChange={(e) => setEditPass(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Organic Certification Level</label>
+                      <input type="text" value={editCert} onChange={(e) => setEditCert(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Emergency Contact Person & Phone</label>
+                      <input type="text" value={editEmerg} onChange={(e) => setEditEmerg(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                    </div>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
-                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>Cancel</button>
-                  <button type="submit" className="btn-primary" style={{ padding: '9px 20px', fontSize: '0.85rem', background: '#0c3619' }}>✓ Save Changes & Sync Live</button>
+                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline" style={{ padding: '10px 18px', fontSize: '0.85rem', fontWeight: '700' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '10px 22px', fontSize: '0.85rem', background: '#0c3619', fontWeight: '800' }}>✓ Save Changes & Sync Live</button>
                 </div>
               </form>
             </div>
