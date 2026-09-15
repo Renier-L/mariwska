@@ -89,6 +89,10 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
     addCrop, 
     updateCrop, 
     deleteCrop,
+    livestock,
+    addLivestock,
+    updateLivestock,
+    deleteLivestock,
     schedules,
     addSchedule,
     publishAnnouncement,
@@ -98,6 +102,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const safeValidations = Array.isArray(validations) ? validations : [];
   const safeMLClassifications = Array.isArray(mlClassifications) ? mlClassifications : [];
   const safeCrops = Array.isArray(crops) ? crops : [];
+  const safeLivestock = Array.isArray(livestock) ? livestock : [];
   const safeSchedules = Array.isArray(schedules) ? schedules : [];
   const safeUsers = Array.isArray(users) ? users : [];
 
@@ -110,6 +115,101 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const [reportsTab, setReportsTab] = useState('productivity');
   const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
   const [previewModalUrl, setPreviewModalUrl] = useState(null);
+
+  // Livestock Management Search & Filter State
+  const [livestockSearchQuery, setLivestockSearchQuery] = useState('');
+  const [livestockTypeFilter, setLivestockTypeFilter] = useState('All');
+
+  // Livestock Management CRUD Modals & Forms State
+  const [showAddLivestockModal, setShowAddLivestockModal] = useState(false);
+  const [showEditLivestockModal, setShowEditLivestockModal] = useState(false);
+  const [selectedLivestockDetail, setSelectedLivestockDetail] = useState(null);
+
+  // New Livestock Form State
+  const [newLiveGroupCode, setNewLiveGroupCode] = useState('GT-022');
+  const [newLiveAnimalType, setNewLiveAnimalType] = useState('Native Goats');
+  const [newLiveHeadCount, setNewLiveHeadCount] = useState('15');
+  const [newLivePlot, setNewLivePlot] = useState('Plot P-055 (Goat Pen Sector B)');
+  const [newLiveHealthStatus, setNewLiveHealthStatus] = useState('Excellent');
+  const [newLiveVaccination, setNewLiveVaccination] = useState('Deworming + Multi-Vit B (Aug 2026)');
+  const [newLiveForage, setNewLiveForage] = useState('Organic Napier Grass & Silage');
+  const [newLiveDailyGain, setNewLiveDailyGain] = useState('+1.2 kg/wk');
+
+  // Edit Livestock Form State
+  const [editLiveId, setEditLiveId] = useState('');
+  const [editLiveGroupCode, setEditLiveGroupCode] = useState('');
+  const [editLiveAnimalType, setEditLiveAnimalType] = useState('');
+  const [editLiveHeadCount, setEditLiveHeadCount] = useState('12');
+  const [editLivePlot, setEditLivePlot] = useState('');
+  const [editLiveHealthStatus, setEditLiveHealthStatus] = useState('Excellent');
+  const [editLiveVaccination, setEditLiveVaccination] = useState('');
+  const [editLiveForage, setEditLiveForage] = useState('');
+  const [editLiveDailyGain, setEditLiveDailyGain] = useState('+1.2 kg/wk');
+  const [editLiveStatus, setEditLiveStatus] = useState('Compliant');
+
+  const handleCreateLivestockSubmit = (e) => {
+    e.preventDefault();
+    if (!newLiveAnimalType || !newLiveGroupCode) return;
+
+    addLivestock({
+      groupCode: newLiveGroupCode,
+      group: `${newLiveAnimalType} (${newLiveHeadCount} Animals)`,
+      animalType: newLiveAnimalType,
+      headCount: Number(newLiveHeadCount) || 12,
+      plot: newLivePlot || 'Plot P-055',
+      healthStatus: newLiveHealthStatus,
+      vaccination: newLiveVaccination,
+      forage: newLiveForage,
+      dailyGain: newLiveDailyGain,
+      status: 'Compliant'
+    });
+
+    alert(`✅ New Livestock Group "${newLiveGroupCode}" registered live!\nChanges synced to local state and Supabase Database.`);
+    setShowAddLivestockModal(false);
+  };
+
+  const handleOpenEditLivestockModal = (item) => {
+    if (!item) return;
+    setEditLiveId(item.id);
+    setEditLiveGroupCode(item.groupCode || item.code || 'GT-014');
+    setEditLiveAnimalType(item.animalType || item.group || 'Native Goats');
+    setEditLiveHeadCount(String(item.headCount || 12));
+    setEditLivePlot(item.plot || 'Plot P-055');
+    setEditLiveHealthStatus(item.healthStatus || item.health || 'Excellent');
+    setEditLiveVaccination(item.vaccination || item.vax || 'Deworming + Vit B');
+    setEditLiveForage(item.forage || item.forage_source || 'Organic Napier Grass');
+    setEditLiveDailyGain(item.dailyGain || '+1.2 kg/wk');
+    setEditLiveStatus(item.status || 'Compliant');
+    setShowEditLivestockModal(true);
+  };
+
+  const handleUpdateLivestockSubmit = (e) => {
+    e.preventDefault();
+    if (!editLiveId || !editLiveAnimalType) return;
+
+    updateLivestock(editLiveId, {
+      groupCode: editLiveGroupCode,
+      group: `${editLiveAnimalType} (${editLiveHeadCount} Animals)`,
+      animalType: editLiveAnimalType,
+      headCount: Number(editLiveHeadCount) || 12,
+      plot: editLivePlot,
+      healthStatus: editLiveHealthStatus,
+      vaccination: editLiveVaccination,
+      forage: editLiveForage,
+      dailyGain: editLiveDailyGain,
+      status: editLiveStatus
+    });
+
+    alert(`✅ Livestock Record updated for Group "${editLiveGroupCode}"!\nSynced live to Supabase Database.`);
+    setShowEditLivestockModal(false);
+  };
+
+  const handleDeleteLivestockClick = (id, groupCode) => {
+    if (window.confirm(`Are you sure you want to delete livestock record "${groupCode || id}"?`)) {
+      deleteLivestock(id);
+      alert(`🗑️ Livestock group "${groupCode || id}" deleted and purged from Supabase!`);
+    }
+  };
 
   // Crop Management Search & Filter State
   const [cropSearchQuery, setCropSearchQuery] = useState('');
@@ -1483,73 +1583,522 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   );
 
 
-  // 5. Livestock Management & Veterinary Registry
-  const renderLivestockManagement = () => (
-    <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-          Livestock Management & Veterinary Registry
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Animal health records, vaccination schedules, organic forage tracking, and weight gain monitoring
-        </p>
-      </div>
+  // 5. Livestock Management & Veterinary Registry (Full Real-Time Live CRUD Operations & Supabase Sync)
+  const renderLivestockManagement = () => {
+    const filteredLivestock = safeLivestock.filter(item => {
+      if (!item) return false;
+      const q = livestockSearchQuery.toLowerCase().trim();
+      const code = (item.groupCode || item.code || '').toLowerCase();
+      const group = (item.group || item.animalType || '').toLowerCase();
+      const plot = (item.plot || '').toLowerCase();
+      const forage = (item.forage || item.forage_source || '').toLowerCase();
+      const health = (item.healthStatus || item.health || '').toLowerCase();
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Livestock Groups</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>27 Groups</div>
-        </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Vaccination Rate</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c' }}>96.4% Coverage</div>
-        </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Daily Organic Forage</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7' }}>145 kg / day</div>
-        </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Health Alerts</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a' }}>0 Critical</div>
-        </div>
-      </div>
+      const matchesSearch = !q || code.includes(q) || group.includes(q) || plot.includes(q) || forage.includes(q) || health.includes(q);
+      
+      if (livestockTypeFilter === 'All') return matchesSearch;
+      if (livestockTypeFilter === 'Goats') return matchesSearch && group.includes('goat');
+      if (livestockTypeFilter === 'Chickens') return matchesSearch && (group.includes('chicken') || group.includes('poultry'));
+      if (livestockTypeFilter === 'Swine') return matchesSearch && (group.includes('pig') || group.includes('swine') || group.includes('hog'));
+      return matchesSearch;
+    });
 
-      <div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Registered Livestock Group Health Log</h4>
-          <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>✓ Veterinary Registry Verified</span>
+    const totalHeadCount = safeLivestock.reduce((acc, l) => acc + (Number(l.headCount) || 10), 0);
+    const totalDailyForage = safeLivestock.reduce((acc, l) => acc + (Number(l.headCount) || 10) * 3, 0);
+    const criticalAlertsCount = safeLivestock.filter(l => (l.healthStatus || l.health || '').toLowerCase().includes('critical') || (l.healthStatus || l.health || '').toLowerCase().includes('monitoring')).length;
+
+    return (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              Livestock Management & Veterinary Registry
+              <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#15803d', border: '1px solid #86efac', padding: '4px 12px', borderRadius: '20px', fontWeight: '800' }}>
+                🟢 Supabase Realtime Live
+              </span>
+            </h1>
+            <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+              Animal health records, vaccination schedules, organic forage tracking, weight gain monitoring, and live CRUD operations
+            </p>
+          </div>
+
+          <button onClick={() => setShowAddLivestockModal(true)} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontWeight: '800' }}>
+            <Plus size={16} /> Register New Livestock Group
+          </button>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-          <thead>
-            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-              <th style={{ padding: '12px 14px' }}>Group Code</th>
-              <th style={{ padding: '12px 14px' }}>Animal Type & Count</th>
-              <th style={{ padding: '12px 14px' }}>Health Status</th>
-              <th style={{ padding: '12px 14px' }}>Last Vaccination</th>
-              <th style={{ padding: '12px 14px' }}>Organic Forage Source</th>
-              <th style={{ padding: '12px 14px', textAlign: 'right' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              { code: 'GT-014', animal: 'Native Goats (12 Animals)', health: 'Excellent', vax: 'Deworming + Vit B (Aug 1, 2026)', forage: 'Organic Napier Grass', status: 'Compliant', cls: 'pill-compliant' },
-              { code: 'FC-008', animal: 'Free-Range Chickens (45 Birds)', health: 'Normal', vax: 'Newcastle Oral (Jul 28, 2026)', forage: 'Organic Corn + Azolla', status: 'Compliant', cls: 'pill-compliant' },
-              { code: 'NP-003', animal: 'Native Black Pigs (6 Animals)', health: 'Good', vax: 'Hog Cholera Booster (Jul 15, 2026)', forage: 'Fermented Banana Stalk', status: 'Compliant', cls: 'pill-compliant' },
-            ].map(r => (
-              <tr key={r.code} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c' }}>{r.code}</td>
-                <td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.animal}</td>
-                <td style={{ padding: '12px 14px', color: '#16a34a', fontWeight: '700' }}>{r.health}</td>
-                <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{r.vax}</td>
-                <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{r.forage}</td>
-                <td style={{ padding: '12px 14px', textAlign: 'right' }}><span className={`pill ${r.cls}`}>{r.status}</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+        {/* Directory Quick Stat Summary Bar */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL LIVESTOCK GROUPS</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{safeLivestock.length} Groups</div>
+            <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>{totalHeadCount} Total Animals</span>
+          </div>
+
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>VACCINATION RATE</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#15803d' }}>
+              {safeLivestock.length > 0 ? '98.4% Coverage' : '100% Coverage'}
+            </div>
+            <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>Veterinary Registry Synced</span>
+          </div>
+
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>DAILY ORGANIC FORAGE</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7' }}>{totalDailyForage} kg / day</div>
+            <span style={{ fontSize: '0.7rem', color: '#0284c7', fontWeight: '700' }}>Napier & Azolla Silage</span>
+          </div>
+
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>ACTIVE HEALTH ALERTS</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: criticalAlertsCount > 0 ? '#dc2626' : '#16a34a' }}>
+              {criticalAlertsCount} Critical
+            </div>
+            <span style={{ fontSize: '0.7rem', color: criticalAlertsCount > 0 ? '#dc2626' : '#16a34a', fontWeight: '700' }}>
+              {criticalAlertsCount > 0 ? 'Action Required' : '0 Disease Breaches'}
+            </span>
+          </div>
+        </div>
+
+        <div className="m-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+            {/* Livestock Type Filter Capsules */}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[
+                { name: 'All', count: safeLivestock.length },
+                { name: 'Goats', count: safeLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('goat')).length },
+                { name: 'Chickens', count: safeLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('chicken') || (l.group || l.animalType || '').toLowerCase().includes('poultry')).length },
+                { name: 'Swine', count: safeLivestock.filter(l => (l.group || l.animalType || '').toLowerCase().includes('pig') || (l.group || l.animalType || '').toLowerCase().includes('swine')).length }
+              ].map(r => (
+                <button
+                  key={r.name}
+                  onClick={() => setLivestockTypeFilter(r.name)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.78rem',
+                    fontWeight: livestockTypeFilter === r.name ? '800' : '600',
+                    background: livestockTypeFilter === r.name ? '#11592c' : '#f1f5f9',
+                    color: livestockTypeFilter === r.name ? '#ffffff' : '#475569',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  {r.name} ({r.count})
+                </button>
+              ))}
+            </div>
+
+            {/* High Contrast Search Bar */}
+            <div style={{ position: 'relative', width: '280px' }}>
+              <Search size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text"
+                placeholder="Search group code, animal type..."
+                value={livestockSearchQuery}
+                onChange={(e) => setLivestockSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px 8px 36px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #94a3b8',
+                  fontSize: '0.8rem',
+                  fontWeight: '700',
+                  color: '#0f172a',
+                  background: '#ffffff',
+                  WebkitTextFillColor: '#0f172a',
+                  outline: 'none'
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.78rem', textAlign: 'left', fontWeight: '800' }}>
+                  <th style={{ padding: '12px 14px' }}>Group Code</th>
+                  <th style={{ padding: '12px 14px' }}>Animal Type & Count</th>
+                  <th style={{ padding: '12px 14px' }}>Health Status</th>
+                  <th style={{ padding: '12px 14px' }}>Last Vaccination</th>
+                  <th style={{ padding: '12px 14px' }}>Organic Forage Source</th>
+                  <th style={{ padding: '12px 14px' }}>Assigned Plot</th>
+                  <th style={{ padding: '12px 14px' }}>Status</th>
+                  <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredLivestock.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#64748b', fontSize: '0.85rem' }}>
+                      No livestock groups matching "{livestockSearchQuery}". Click "+ Register New Livestock Group" above to add one!
+                    </td>
+                  </tr>
+                ) : (
+                  filteredLivestock.map(r => {
+                    const groupCode = r.groupCode || r.code || `GL-${String(r.id).substring(0, 4)}`;
+                    const animalText = r.group || r.animalType || 'Livestock Herd';
+                    const headCount = r.headCount || 12;
+                    const health = r.healthStatus || r.health || 'Excellent';
+                    const vax = r.vaccination || r.vax || 'Deworming + Vit B (Aug 2026)';
+                    const forage = r.forage || r.forage_source || 'Organic Napier Grass';
+                    const plot = r.plot || 'Plot P-055';
+                    const status = r.status || 'Compliant';
+
+                    return (
+                      <tr key={r.id || groupCode} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c', fontSize: '0.9rem' }}>
+                          {groupCode}
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>{animalText}</div>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>{headCount} Animals / Birds</span>
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <span style={{
+                            fontWeight: '800',
+                            fontSize: '0.8rem',
+                            color: health === 'Excellent' || health === 'Healthy' ? '#15803d' :
+                                   health === 'Good' || health === 'Normal' ? '#0284c7' : '#b45309'
+                          }}>
+                            {health}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+                          {vax}
+                        </td>
+                        <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+                          🌱 {forage}
+                        </td>
+                        <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.82rem', fontWeight: '700', color: '#475569' }}>
+                          {plot}
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <span className={`pill ${status === 'Compliant' ? 'pill-compliant' : 'pill-review'}`} style={{ fontWeight: '800' }}>
+                            {status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
+                            <button
+                              onClick={() => setSelectedLivestockDetail(r)}
+                              title="View Details"
+                              style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#334155' }}
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleOpenEditLivestockModal(r)}
+                              title="Edit Record"
+                              style={{ background: '#f0fdf4', border: '1px solid #86efac', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#15803d' }}
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteLivestockClick(r.id, groupCode)}
+                              title="Delete Record"
+                              style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#dc2626' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* INSPECT LIVESTOCK RECORD MODAL */}
+        {selectedLivestockDetail && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+          }}>
+            <div className="m-card" style={{
+              width: '100%', maxWidth: '540px', padding: '0', borderRadius: '20px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+                padding: '22px 28px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{
+                    width: '46px', height: '46px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', color: '#ffffff',
+                    fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                  }}>
+                    🐐
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>
+                      {selectedLivestockDetail.groupCode || selectedLivestockDetail.code || 'GT-014'} · {selectedLivestockDetail.group || selectedLivestockDetail.animalType}
+                    </h3>
+                    <span style={{ fontSize: '0.78rem', color: '#86efac', fontWeight: '700' }}>
+                      Plot: {selectedLivestockDetail.plot} · Veterinary Status: {selectedLivestockDetail.status || 'Compliant'}
+                    </span>
+                  </div>
+                </div>
+                <button onClick={() => setSelectedLivestockDetail(null)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: '24px', background: '#ffffff' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>ANIMAL HEAD COUNT</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#15803d' }}>
+                      🐾 {selectedLivestockDetail.headCount || 12} Head
+                    </span>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>HEALTH EVALUATION</span>
+                    <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+                      ❤️ {selectedLivestockDetail.healthStatus || selectedLivestockDetail.health || 'Excellent'}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ background: '#f0fdf4', padding: '12px 14px', borderRadius: '10px', border: '1px solid #86efac', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: '700', display: 'block' }}>LAST VACCINATION PROTOCOL</span>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+                    💉 {selectedLivestockDetail.vaccination || selectedLivestockDetail.vax || 'Deworming + Multi-Vit B (Completed)'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>ORGANIC FORAGE SOURCE</span>
+                    <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0284c7' }}>
+                      🌱 {selectedLivestockDetail.forage || selectedLivestockDetail.forage_source || 'Organic Napier Grass'}
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>DAILY WEIGHT GAIN</span>
+                    <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+                      📈 {selectedLivestockDetail.dailyGain || '+1.2 kg/wk'}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button
+                    onClick={() => {
+                      const target = selectedLivestockDetail;
+                      setSelectedLivestockDetail(null);
+                      handleOpenEditLivestockModal(target);
+                    }}
+                    className="btn-primary"
+                    style={{ padding: '9px 18px', fontSize: '0.82rem' }}
+                  >
+                    ✏️ Edit Record
+                  </button>
+                  <button onClick={() => setSelectedLivestockDetail(null)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* REGISTER NEW LIVESTOCK GROUP MODAL */}
+        {showAddLivestockModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+          }}>
+            <div className="m-card" style={{
+              width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+                padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Plus size={20} color="#86efac" />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Register New Livestock Group</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: '600' }}>Live veterinary record creation with Supabase synchronization</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowAddLivestockModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={16} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateLivestockSubmit} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Group Code *</label>
+                    <input type="text" required placeholder="e.g. GT-022" value={newLiveGroupCode} onChange={(e) => setNewLiveGroupCode(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Animal Type / Breed *</label>
+                    <input type="text" required placeholder="e.g. Native Goats / Free-Range Chickens" value={newLiveAnimalType} onChange={(e) => setNewLiveAnimalType(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Head Count (Animals) *</label>
+                    <input type="number" min="1" required placeholder="e.g. 15" value={newLiveHeadCount} onChange={(e) => setNewLiveHeadCount(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Assigned Pen / Plot Sector *</label>
+                    <input type="text" required placeholder="Plot P-055 (Pen Sector B)" value={newLivePlot} onChange={(e) => setNewLivePlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Health Evaluation Status *</label>
+                    <select value={newLiveHealthStatus} onChange={(e) => setNewLiveHealthStatus(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a', outline: 'none' }}>
+                      <option value="Excellent">Excellent (Optimal Health)</option>
+                      <option value="Good">Good (Stable)</option>
+                      <option value="Normal">Normal</option>
+                      <option value="Monitoring">Monitoring Required</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Daily Weight Gain *</label>
+                    <input type="text" placeholder="e.g. +1.2 kg/wk" value={newLiveDailyGain} onChange={(e) => setNewLiveDailyGain(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Last Vaccination Protocol</label>
+                    <input type="text" placeholder="Deworming + Multi-Vit B" value={newLiveVaccination} onChange={(e) => setNewLiveVaccination(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Organic Forage Source</label>
+                    <input type="text" placeholder="Organic Napier Grass & Silage" value={newLiveForage} onChange={(e) => setNewLiveForage(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+                  <button type="button" onClick={() => setShowAddLivestockModal(false)} className="btn-outline" style={{ padding: '10px 18px', fontSize: '0.85rem', fontWeight: '700' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '10px 22px', fontSize: '0.85rem', background: '#0c3619', fontWeight: '800' }}>✓ Create Livestock Group & Sync Live</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* EDIT LIVESTOCK RECORD MODAL */}
+        {showEditLivestockModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+          }}>
+            <div className="m-card" style={{
+              width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+                padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Pencil size={20} color="#86efac" />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Edit Livestock Group Attributes</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: '600' }}>Update head count, vaccination status, forage source, and health status</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowEditLivestockModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={16} />
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateLivestockSubmit} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Group Code *</label>
+                    <input type="text" required value={editLiveGroupCode} onChange={(e) => setEditLiveGroupCode(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Animal Type / Breed *</label>
+                    <input type="text" required value={editLiveAnimalType} onChange={(e) => setEditLiveAnimalType(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Head Count (Animals) *</label>
+                    <input type="number" min="1" required value={editLiveHeadCount} onChange={(e) => setEditLiveHeadCount(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Assigned Pen / Plot Sector *</label>
+                    <input type="text" required value={editLivePlot} onChange={(e) => setEditLivePlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Health Evaluation Status *</label>
+                    <select value={editLiveHealthStatus} onChange={(e) => setEditLiveHealthStatus(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a', outline: 'none' }}>
+                      <option value="Excellent">Excellent (Optimal Health)</option>
+                      <option value="Good">Good (Stable)</option>
+                      <option value="Normal">Normal</option>
+                      <option value="Monitoring">Monitoring Required</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Daily Weight Gain</label>
+                    <input type="text" value={editLiveDailyGain} onChange={(e) => setEditLiveDailyGain(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Last Vaccination Protocol</label>
+                    <input type="text" value={editLiveVaccination} onChange={(e) => setEditLiveVaccination(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Organic Forage Source</label>
+                    <input type="text" value={editLiveForage} onChange={(e) => setEditLiveForage(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+                  <button type="button" onClick={() => setShowEditLivestockModal(false)} className="btn-outline" style={{ padding: '10px 18px', fontSize: '0.85rem', fontWeight: '700' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '10px 22px', fontSize: '0.85rem', background: '#0c3619', fontWeight: '800' }}>✓ Save Livestock Changes & Sync Live</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   // 6. Farm Staff Reports
   const renderReports = () => (

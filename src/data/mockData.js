@@ -16,9 +16,9 @@ export const initialCrops = [
 ];
 
 export const initialLivestock = [
-  { id: 'l1', group: 'Goat Herd GT-014', plot: 'P-055', headCount: 34, healthStatus: 'Healthy', vaccination: '96% (Up to date)', dailyGain: '+1.2 kg/wk' },
-  { id: 'l2', group: 'Poultry Flock PF-003', plot: 'P-012', headCount: 150, healthStatus: 'Healthy', vaccination: '100% (Up to date)', dailyGain: '+0.4 kg/wk' },
-  { id: 'l3', group: 'Cattle Group CG-002', plot: 'P-088', headCount: 18, healthStatus: 'Monitoring', vaccination: '92% (Watch)', dailyGain: '+2.8 kg/wk' }
+  { id: 'l1', groupCode: 'GT-014', group: 'Native Goats (12 Animals)', animalType: 'Native Goats', plot: 'Plot P-055', headCount: 12, healthStatus: 'Excellent', vaccination: 'Deworming + Vit B (Aug 1, 2026)', forage: 'Organic Napier Grass', dailyGain: '+1.2 kg/wk', status: 'Compliant' },
+  { id: 'l2', groupCode: 'FC-008', group: 'Free-Range Chickens (45 Birds)', animalType: 'Free-Range Chickens', plot: 'Plot P-012', headCount: 45, healthStatus: 'Normal', vaccination: 'Newcastle Oral (Jul 28, 2026)', forage: 'Organic Corn + Azolla', dailyGain: '+0.4 kg/wk', status: 'Compliant' },
+  { id: 'l3', groupCode: 'NP-003', group: 'Native Black Pigs (6 Animals)', animalType: 'Native Black Pigs', plot: 'Plot P-088', headCount: 6, healthStatus: 'Good', vaccination: 'Hog Cholera Booster (Jul 15, 2026)', forage: 'Fermented Banana Stalk', dailyGain: '+2.8 kg/wk', status: 'Compliant' }
 ];
 
 export const initialAnnouncements = [

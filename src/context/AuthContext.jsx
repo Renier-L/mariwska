@@ -1010,12 +1010,16 @@ export const AuthProvider = ({ children }) => {
   const addLivestock = async (newItem) => {
     const itemObj = {
       id: String(Date.now()),
-      group: newItem.group,
+      groupCode: newItem.groupCode || `GL-${Math.floor(100 + Math.random() * 900)}`,
+      group: newItem.group || newItem.animalType || 'Livestock Herd',
+      animalType: newItem.animalType || newItem.group || 'Native Livestock',
       plot: newItem.plot || `P-${Math.floor(100 + Math.random() * 900)}`,
-      headCount: Number(newItem.headCount) || 25,
-      vaccination: newItem.vaccination || '100% (Up to date)',
-      healthStatus: newItem.healthStatus || 'Healthy',
-      dailyGain: newItem.dailyGain || '+1.2 kg/wk'
+      headCount: Number(newItem.headCount) || 12,
+      vaccination: newItem.vaccination || 'Deworming + Vit B (Completed)',
+      forage: newItem.forage || 'Organic Napier Grass',
+      healthStatus: newItem.healthStatus || 'Excellent',
+      dailyGain: newItem.dailyGain || '+1.5 kg/wk',
+      status: newItem.status || 'Compliant'
     };
     setLivestock(prev => {
       const next = [itemObj, ...prev];
@@ -1037,6 +1041,50 @@ export const AuthProvider = ({ children }) => {
       }]);
     } catch (e) {
       console.log('Supabase livestock insert error:', e);
+    }
+  };
+
+  const updateLivestock = async (id, updatedFields) => {
+    setLivestock(prev => {
+      const next = prev.map(l => String(l.id) === String(id) ? { ...l, ...updatedFields } : l);
+      try { localStorage.setItem('marikha_livestock_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'LIVESTOCK_UPDATED_PUSH', payload: { id, ...updatedFields } });
+    }
+
+    try {
+      const payload = {
+        group_name: updatedFields.group || updatedFields.animalType,
+        plot: updatedFields.plot,
+        head_count: updatedFields.headCount,
+        vaccination: updatedFields.vaccination,
+        health_status: updatedFields.healthStatus,
+        daily_gain: updatedFields.dailyGain
+      };
+      await supabase.from('livestock').update(payload).eq('id', id);
+    } catch (e) {
+      console.log('Supabase livestock update error:', e);
+    }
+  };
+
+  const deleteLivestock = async (id) => {
+    setLivestock(prev => {
+      const next = prev.filter(l => String(l.id) !== String(id));
+      try { localStorage.setItem('marikha_livestock_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'LIVESTOCK_DELETED_PUSH', payload: { id } });
+    }
+
+    try {
+      await supabase.from('livestock').delete().eq('id', id);
+    } catch (e) {
+      console.log('Supabase livestock delete error:', e);
     }
   };
 
@@ -1310,6 +1358,8 @@ export const AuthProvider = ({ children }) => {
       updateCrop,
       deleteCrop,
       addLivestock,
+      updateLivestock,
+      deleteLivestock,
 
       togglePermission,
       setCurrentRole,
