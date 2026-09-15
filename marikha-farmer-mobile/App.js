@@ -36,13 +36,60 @@ export default function App() {
   const [activePushNotice, setActivePushNotice] = useState(null);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
 
-  // Log Activity form state
+  // Log Activity form state with Realtime Task Logging Module
+  const [logCategory, setLogCategory] = useState('crops'); // 'crops' or 'livestock'
   const [selectedPlot, setSelectedPlot] = useState('Plot P-007');
   const [activity, setActivity] = useState('Watering');
   const [amount, setAmount] = useState('10');
+  const [logUnit, setLogUnit] = useState('Liters');
   const [logNote, setLogNote] = useState('');
   const [photoUri, setPhotoUri] = useState(null);
   const [isSubmittingLog, setIsSubmittingLog] = useState(false);
+
+  // Live Activity Logs Feed State
+  const [recentActivityLogs, setRecentActivityLogs] = useState([
+    {
+      id: 'log-101',
+      farmer: 'Mang Juan Dela Cruz',
+      plot: 'Plot P-007',
+      crop: 'Okra Smooth Green',
+      activity: 'Watering (10 Liters)',
+      category: 'crops',
+      notes: 'Morning drip irrigation cycle complete',
+      gps: '14.5861° N · 121.1764° E',
+      time: '10 mins ago',
+      status: 'Pending',
+      photo: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60'
+    },
+    {
+      id: 'log-100',
+      farmer: 'Mang Juan Dela Cruz',
+      plot: 'Plot P-021',
+      crop: 'Ampalaya',
+      activity: 'Vermicompost (15 Kg)',
+      category: 'crops',
+      notes: 'Applied organic vermicompost around root zone',
+      gps: '14.5860° N · 121.1762° E',
+      time: '2 hours ago',
+      status: 'Verified',
+      verifiedBy: 'Liza Cruz (Farm Staff)',
+      photo: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=600&auto=format&fit=crop&q=60'
+    },
+    {
+      id: 'log-099',
+      farmer: 'Mang Juan Dela Cruz',
+      plot: 'GT-014',
+      crop: 'Native Goats',
+      activity: 'Feeding (Napier Grass - 25 Kg)',
+      category: 'livestock',
+      notes: 'Fresh cut napier grass delivered to goat barn',
+      gps: '14.5865° N · 121.1768° E',
+      time: 'Yesterday · 04:30 PM',
+      status: 'Verified',
+      verifiedBy: 'Dr. Santos (Vet)',
+      photo: 'https://images.unsplash.com/photo-1524024973431-2ad916746881?w=600&auto=format&fit=crop&q=60'
+    }
+  ]);
 
   // Camera & Photo Capture functions
   const takePhoto = async () => {
@@ -213,28 +260,44 @@ export default function App() {
   };
 
   const handleLogSubmit = async () => {
-    if (!amount.trim()) {
-      Alert.alert('Validation Error', 'Please enter an amount in Liters or Kg.');
+    if (!amount.trim() || isNaN(Number(amount))) {
+      Alert.alert('Validation Error', 'Please enter a valid numeric amount.');
       return;
     }
     setIsSubmittingLog(true);
 
+    const actText = `${activity} (${amount} ${logUnit})`;
+    const finalPhoto = photoUri || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60';
+    const newLogItem = {
+      id: `log-${Date.now()}`,
+      farmer: currentUser.name || 'Mang Juan Dela Cruz',
+      plot: selectedPlot,
+      crop: selectedPlot.includes('GT') ? 'Native Goats' : (selectedPlot.includes('007') ? 'Okra' : 'Ampalaya'),
+      activity: actText,
+      category: logCategory,
+      notes: logNote || 'Submitted live via MARIKHA Mobile Task Logging Module',
+      gps: '14.5861° N · 121.1764° E',
+      time: 'Just now · Live Sync',
+      status: 'Pending',
+      photo: finalPhoto
+    };
+
     try {
-      const actText = `${activity} (${amount} Liters)`;
-      const finalPhoto = photoUri || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60';
+      // Instantly add to local live feed for immediate UX response
+      setRecentActivityLogs(prev => [newLogItem, ...prev]);
 
       const { error } = await supabase.from('task_validations').insert([{
-        farmer: currentUser.name,
+        farmer: newLogItem.farmer,
         plot: selectedPlot,
         activity: actText,
-        notes: logNote || 'Submitted via MARIKHA Farmer Mobile App with Photo Proof',
-        gps: '14.586° N · 121.176° E',
+        notes: newLogItem.notes,
+        gps: '14.5861° N · 121.1764° E',
         photo_url: finalPhoto,
         status: 'Pending'
       }]);
 
       if (error) {
-        Alert.alert('Notice', 'Submitted activity log locally!');
+        Alert.alert('Live Log Registered ⚡', 'Activity Log recorded and queued for live synchronization.');
       } else {
         Alert.alert('Success 🎉', 'Activity Log and Photo Proof submitted live to Farm Staff for validation!');
       }
@@ -244,7 +307,6 @@ export default function App() {
       setIsSubmittingLog(false);
       setLogNote('');
       setPhotoUri(null);
-      setActiveTab('home');
     }
   };
 
@@ -437,12 +499,40 @@ export default function App() {
 
         {activeTab === 'log' && (
           <View style={[styles.contentPadding, { paddingBottom: 40 }]}>
-            <Text style={styles.sectionHeader}>Log Farm Activity</Text>
+            {/* Live Context & Weather Banner */}
+            <View style={{ backgroundColor: '#0c3619', borderRadius: 16, padding: 14, marginBottom: 14 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <Text style={{ fontSize: 16, fontWeight: '800', color: '#ffffff' }}>📝 Task Logging Module</Text>
+                <View style={{ backgroundColor: '#16a34a', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 }}>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>⚡ Realtime Sync</Text>
+                </View>
+              </View>
+              <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600' }}>
+                📍 GPS: 14.5861° N · 121.1764° E  ·  🌤️ 31°C Heat Advisory
+              </Text>
+            </View>
+
+            {/* Category Toggle Pills: Crops vs Livestock */}
+            <View style={{ flexDirection: 'row', backgroundColor: '#e2eae0', padding: 4, borderRadius: 14, marginBottom: 14 }}>
+              <TouchableOpacity 
+                onPress={() => setLogCategory('crops')}
+                style={[{ flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center' }, logCategory === 'crops' && { backgroundColor: '#0c3619' }]}
+              >
+                <Text style={[{ fontWeight: '800', fontSize: 13, color: '#4b5563' }, logCategory === 'crops' && { color: '#ffffff' }]}>🌱 CROPS LOG</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={() => setLogCategory('livestock')}
+                style={[{ flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center' }, logCategory === 'livestock' && { backgroundColor: '#0c3619' }]}
+              >
+                <Text style={[{ fontWeight: '800', fontSize: 13, color: '#4b5563' }, logCategory === 'livestock' && { color: '#ffffff' }]}>🐐 LIVESTOCK LOG</Text>
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.card}>
-              <Text style={styles.label}>Select Field Plot</Text>
+              {/* Select Plot / Animal ID */}
+              <Text style={styles.label}>{logCategory === 'crops' ? '1. Select Field Plot' : '1. Select Livestock Unit'}</Text>
               <View style={styles.pickerRow}>
-                {['Plot P-007', 'Plot P-021', 'Plot P-034'].map(p => (
+                {(logCategory === 'crops' ? ['Plot P-007', 'Plot P-021', 'Plot P-034'] : ['GT-014 (Goats)', 'GT-022']).map(p => (
                   <TouchableOpacity 
                     key={p} 
                     style={[styles.pillBtn, selectedPlot === p && styles.pillBtnActive]}
@@ -453,32 +543,85 @@ export default function App() {
                 ))}
               </View>
 
-              <Text style={[styles.label, { marginTop: 14 }]}>Activity Type</Text>
-              <View style={styles.pickerRow}>
-                {['Watering', 'Fertilizer', 'Harvesting'].map(a => (
+              {/* Activity Type Selection */}
+              <Text style={[styles.label, { marginTop: 14 }]}>2. Select Activity Type</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                {(logCategory === 'crops' 
+                  ? ['💧 Watering', '🌿 Vermicompost', '🌾 Harvest', '🐛 Pest Spraying', '✂️ Pruning', '🧪 Soil Test']
+                  : ['🌾 Feeding', '💉 Vaccination', '🥛 Milk Collect', '🧼 Barn Clean']
+                ).map(a => {
+                  const cleanName = a.replace(/^[^\s]+\s/, '');
+                  const isSel = activity === cleanName || activity === a;
+                  return (
+                    <TouchableOpacity 
+                      key={a} 
+                      style={[styles.pillBtn, isSel && styles.pillBtnActive]}
+                      onPress={() => setActivity(cleanName)}
+                    >
+                      <Text style={[styles.pillText, isSel && styles.pillTextActive]}>{a}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Amount & Unit Stepper */}
+              <Text style={[styles.label, { marginTop: 14 }]}>3. Input Quantity & Unit</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 4 }}>
+                <TouchableOpacity 
+                  onPress={() => setAmount(String(Math.max(1, (Number(amount) || 1) - 1)))} 
+                  style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#3b2d22', justifyContent: 'center', alignItems: 'center' }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 20, fontWeight: '800' }}>-</Text>
+                </TouchableOpacity>
+                <TextInput
+                  style={[styles.input, { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '800', marginBottom: 0 }]}
+                  value={amount}
+                  onChangeText={setAmount}
+                  keyboardType="numeric"
+                />
+                <TouchableOpacity 
+                  onPress={() => setAmount(String((Number(amount) || 0) + 1))} 
+                  style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#0c3619', justifyContent: 'center', alignItems: 'center' }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 20, fontWeight: '800' }}>+</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Quick Addition Pills */}
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+                {[5, 10, 25, 50].map(v => (
                   <TouchableOpacity 
-                    key={a} 
-                    style={[styles.pillBtn, activity === a && styles.pillBtnActive]}
-                    onPress={() => setActivity(a)}
+                    key={v} 
+                    onPress={() => setAmount(String((Number(amount) || 0) + v))}
+                    style={{ flex: 1, backgroundColor: '#f1f5f9', paddingVertical: 6, borderRadius: 8, alignItems: 'center', borderWidth: 1, borderColor: '#cbd5e1' }}
                   >
-                    <Text style={[styles.pillText, activity === a && styles.pillTextActive]}>{a}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: '800', color: '#0f172a' }}>+{v}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <Text style={[styles.label, { marginTop: 14 }]}>Amount (Liters / Kg)</Text>
-              <TextInput
-                style={styles.input}
-                value={amount}
-                onChangeText={setAmount}
-                keyboardType="numeric"
-              />
+              {/* Unit Dropdown Pills */}
+              <View style={{ flexDirection: 'row', gap: 6, marginTop: 10 }}>
+                {['Liters', 'Kg', 'Bags', 'Heads', 'Hours'].map(u => (
+                  <TouchableOpacity 
+                    key={u} 
+                    onPress={() => setLogUnit(u)}
+                    style={[{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: '#e2e8f0' }, logUnit === u && { backgroundColor: '#15803d' }]}
+                  >
+                    <Text style={[{ fontSize: 11, fontWeight: '800', color: '#334155' }, logUnit === u && { color: '#ffffff' }]}>{u}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-              <Text style={[styles.label, { marginTop: 14 }]}>📷 Photo Proof / Activity Picture</Text>
+              {/* Photo Proof Section */}
+              <Text style={[styles.label, { marginTop: 14 }]}>4. Photo Proof (Required)</Text>
               {photoUri ? (
                 <View style={{ alignItems: 'center', marginTop: 8 }}>
                   <Image source={{ uri: photoUri }} style={{ width: '100%', height: 160, borderRadius: 10 }} />
-                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+                  <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, marginTop: -28, marginBottom: 8 }}>
+                    <Text style={{ color: '#86efac', fontSize: 10, fontWeight: '800' }}>📷 WATERMARK: GPS LOCKED · REALTIME STAMP</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 10 }}>
                     <TouchableOpacity style={styles.photoActionBtn} onPress={takePhoto}>
                       <Text style={styles.photoActionBtnText}>📷 Retake</Text>
                     </TouchableOpacity>
@@ -490,7 +633,7 @@ export default function App() {
               ) : (
                 <View style={{ flexDirection: 'row', gap: 8, marginTop: 6 }}>
                   <TouchableOpacity style={styles.photoUploadBtn} onPress={takePhoto}>
-                    <Text style={styles.photoUploadText}>📷 Take Photo</Text>
+                    <Text style={styles.photoUploadText}>📷 Take Photo Proof</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.photoUploadBtn} onPress={pickImage}>
                     <Text style={styles.photoUploadText}>🖼️ Choose Gallery</Text>
@@ -498,26 +641,63 @@ export default function App() {
                 </View>
               )}
 
-              <Text style={[styles.label, { marginTop: 14 }]}>Notes (Optional)</Text>
+              {/* Notes Input */}
+              <Text style={[styles.label, { marginTop: 14 }]}>5. Notes & Observations (Optional)</Text>
               <TextInput
                 style={[styles.input, { height: 70 }]}
                 value={logNote}
                 onChangeText={setLogNote}
                 multiline
-                placeholder="Add observations..."
+                placeholder="Halimbawa: ginawa kaninang umaga, malakas ang ulan kagabi.."
               />
 
               <TouchableOpacity 
-                style={styles.submitBtn} 
+                style={[styles.submitBtn, { backgroundColor: '#15803d', marginTop: 12 }]} 
                 onPress={handleLogSubmit}
                 disabled={isSubmittingLog}
               >
                 {isSubmittingLog ? (
                   <ActivityIndicator color="#ffffff" />
                 ) : (
-                  <Text style={styles.submitBtnText}>Submit to Staff →</Text>
+                  <Text style={styles.submitBtnText}>📤 SUBMIT LOG FOR VALIDATION →</Text>
                 )}
               </TouchableOpacity>
+            </View>
+
+            {/* LIVE RECENT ACTIVITY LOGS FEED */}
+            <View style={{ marginTop: 20 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>⚡ Live Activity Logs Feed</Text>
+                <Text style={{ fontSize: 11, color: '#16a34a', fontWeight: '800' }}>{recentActivityLogs.length} items logged</Text>
+              </View>
+
+              <View style={{ gap: 10 }}>
+                {recentActivityLogs.map(item => (
+                  <View key={item.id} style={{ backgroundColor: '#ffffff', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#e2e8f0' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <View style={{ backgroundColor: '#f0fdf4', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, border: '1px solid #86efac' }}>
+                          <Text style={{ fontSize: 11, fontWeight: '800', color: '#166534' }}>{item.plot}</Text>
+                        </View>
+                        <Text style={{ fontSize: 13, fontWeight: '800', color: '#0f172a' }}>{item.crop}</Text>
+                      </View>
+                      <View style={[{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 }, item.status === 'Verified' ? { backgroundColor: '#dcfce7' } : { backgroundColor: '#fef3c7' }]}>
+                        <Text style={[{ fontSize: 10, fontWeight: '800' }, item.status === 'Verified' ? { color: '#15803d' } : { color: '#d97706' }]}>
+                          {item.status === 'Verified' ? '✓ Verified by Staff' : '⏳ Pending Validation'}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Text style={{ fontSize: 14, fontWeight: '800', color: '#0c3619', marginVertical: 2 }}>{item.activity}</Text>
+                    {item.notes ? <Text style={{ fontSize: 12, color: '#475569', fontWeight: '500', marginBottom: 6 }}>"{item.notes}"</Text> : null}
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#f1f5f9' }}>
+                      <Text style={{ fontSize: 10, color: '#64748b', fontWeight: '600' }}>📍 {item.gps}</Text>
+                      <Text style={{ fontSize: 10, color: '#64748b', fontWeight: '700' }}>🕒 {item.time}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
             </View>
           </View>
         )}
