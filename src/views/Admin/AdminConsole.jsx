@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { generateOfficialReportPDF } from '../../utils/pdfGenerator';
 
+import { ResponsiveContainer, AreaChart, XAxis, YAxis, Tooltip, Area } from 'recharts';
+
 const AdminConsole = ({ activeTab }) => {
   const { 
     users, 
