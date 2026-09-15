@@ -763,10 +763,10 @@ const AdminConsole = ({ activeTab }) => {
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 style={{
-                  padding: '8px 12px',
+                  padding: '8px 14px',
                   borderRadius: '8px',
                   border: '1.5px solid #11592c',
-                  fontSize: '0.8rem',
+                  fontSize: '0.85rem',
                   fontWeight: '800',
                   color: '#0f172a',
                   background: '#ffffff',
@@ -776,38 +776,14 @@ const AdminConsole = ({ activeTab }) => {
                 }}
                 title="Filter directory by user role"
               >
-                <option value="All">Filter Role: All Roles</option>
-                <option value="Executive">Filter Role: Executive</option>
-                <option value="Admin">Filter Role: Admin</option>
-                <option value="Farm Staff">Filter Role: Farm Staff</option>
-                <option value="Farmer">Filter Role: Farmer</option>
+                <option value="All">All Roles</option>
+                <option value="Executive">Executive</option>
+                <option value="Admin">Admin</option>
+                <option value="Farm Staff">Farm Staff</option>
+                <option value="Farmer">Farmer</option>
               </select>
 
-              {/* Season / Cycle Dropdown Select Filter */}
-              <select
-                value={selectedSeason || '2026 Active Season'}
-                onChange={(e) => setSelectedSeason(e.target.value)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  border: '1.5px solid #11592c',
-                  fontSize: '0.8rem',
-                  fontWeight: '800',
-                  color: '#0f172a',
-                  background: '#ffffff',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-                }}
-                title="Filter active farming season or historical cycle"
-              >
-                <option value="2026 Active Season">2026 Active Season</option>
-                <option value="2025 Historical Cycle">2025 Historical Cycle</option>
-                <option value="2024 Archive Cycle">2024 Archive Cycle</option>
-                <option value="All Seasons Consolidated">All Seasons Consolidated</option>
-              </select>
-
-              <div style={{ position: 'relative', width: '240px' }}>
+              <div style={{ position: 'relative', width: '250px' }}>
                 <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
                 <input
                   type="text"

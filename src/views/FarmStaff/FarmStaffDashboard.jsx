@@ -1176,10 +1176,10 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
               value={cropStageFilter}
               onChange={(e) => setCropStageFilter(e.target.value)}
               style={{
-                padding: '8px 12px',
+                padding: '8px 14px',
                 borderRadius: '8px',
                 border: '1.5px solid #11592c',
-                fontSize: '0.8rem',
+                fontSize: '0.85rem',
                 fontWeight: '800',
                 color: '#0f172a',
                 background: '#ffffff',
@@ -1189,39 +1189,15 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
               }}
               title="Filter by crop growth stage"
             >
-              <option value="All">Filter Stage: All Stages</option>
-              <option value="Seedling">Filter Stage: Seedling</option>
-              <option value="Vegetative">Filter Stage: Vegetative</option>
-              <option value="Flowering">Filter Stage: Flowering</option>
-              <option value="Fruiting">Filter Stage: Fruiting & Harvest</option>
-            </select>
-
-            {/* Season / Cycle Dropdown Select */}
-            <select
-              value={selectedSeason || '2026 Active Season'}
-              onChange={(e) => setSelectedSeason(e.target.value)}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '8px',
-                border: '1.5px solid #11592c',
-                fontSize: '0.8rem',
-                fontWeight: '800',
-                color: '#0f172a',
-                background: '#ffffff',
-                cursor: 'pointer',
-                outline: 'none',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-              }}
-              title="Filter active farming season or historical cycle"
-            >
-              <option value="2026 Active Season">2026 Active Season</option>
-              <option value="2025 Historical Cycle">2025 Historical Cycle</option>
-              <option value="2024 Archive Cycle">2024 Archive Cycle</option>
-              <option value="All Seasons Consolidated">All Seasons Consolidated</option>
+              <option value="All">All Stages</option>
+              <option value="Seedling">Seedling</option>
+              <option value="Vegetative">Vegetative</option>
+              <option value="Flowering">Flowering</option>
+              <option value="Fruiting">Fruiting & Harvest</option>
             </select>
 
             {/* Search Box */}
-            <div style={{ position: 'relative', width: '240px' }}>
+            <div style={{ position: 'relative', width: '250px' }}>
               <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
               <input
                 type="text"
@@ -1770,17 +1746,17 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
               ))}
             </div>
 
-            {/* Right Side Filter Toolbar: Type Dropdown, Search Input, Season/Cycle Dropdown */}
+            {/* Right Side Filter Toolbar: Type Dropdown, Search Input */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
               {/* Animal Type Dropdown Filter Select */}
               <select
                 value={livestockTypeFilter}
                 onChange={(e) => setLivestockTypeFilter(e.target.value)}
                 style={{
-                  padding: '8px 12px',
+                  padding: '8px 14px',
                   borderRadius: '8px',
                   border: '1.5px solid #11592c',
-                  fontSize: '0.8rem',
+                  fontSize: '0.85rem',
                   fontWeight: '800',
                   color: '#0f172a',
                   background: '#ffffff',
@@ -1790,35 +1766,11 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
                 }}
                 title="Filter by livestock animal category"
               >
-                <option value="All">Filter Type: All Animals</option>
-                <option value="Cattle">Filter Type: Cattle / Cows</option>
-                <option value="Goats">Filter Type: Native Goats</option>
-                <option value="Chickens">Filter Type: Chickens / Poultry</option>
-                <option value="Swine">Filter Type: Swine / Pigs</option>
-              </select>
-
-              {/* Season / Cycle Dropdown Select */}
-              <select
-                value={selectedSeason || '2026 Active Season'}
-                onChange={(e) => setSelectedSeason(e.target.value)}
-                style={{
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  border: '1.5px solid #11592c',
-                  fontSize: '0.8rem',
-                  fontWeight: '800',
-                  color: '#0f172a',
-                  background: '#ffffff',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-                }}
-                title="Filter active farming season or historical cycle"
-              >
-                <option value="2026 Active Season">2026 Active Season</option>
-                <option value="2025 Historical Cycle">2025 Historical Cycle</option>
-                <option value="2024 Archive Cycle">2024 Archive Cycle</option>
-                <option value="All Seasons Consolidated">All Seasons Consolidated</option>
+                <option value="All">All Animals</option>
+                <option value="Cattle">Cattle / Cows</option>
+                <option value="Goats">Native Goats</option>
+                <option value="Chickens">Chickens / Poultry</option>
+                <option value="Swine">Swine / Pigs</option>
               </select>
 
               {/* High Contrast Search Bar */}
