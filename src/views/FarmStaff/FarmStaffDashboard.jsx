@@ -227,9 +227,33 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
     doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
   };
 
+  const [failedImgMap, setFailedImgMap] = useState({});
+
+  const handleImgError = (valId) => {
+    if (valId) {
+      setFailedImgMap(prev => ({ ...prev, [valId]: true }));
+    }
+  };
+
   // Helper to resolve valid photo URL or null fallback
   const getDisplayPhoto = (valObj) => {
     if (!valObj) return null;
+    const act = (valObj?.activity || valObj?.taskType || '').toLowerCase();
+
+    const sprayFallback = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=800&q=80';
+    const waterFallback = 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80';
+    const harvestFallback = 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=800&q=80';
+    const weedFallback = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80';
+
+    const defaultFallback = act.includes('water') ? waterFallback :
+                            (act.includes('pest') || act.includes('spray')) ? sprayFallback :
+                            act.includes('harvest') ? harvestFallback :
+                            act.includes('weed') ? weedFallback : sprayFallback;
+
+    if (valObj.id && failedImgMap[valObj.id]) {
+      return defaultFallback;
+    }
+
     let url = valObj.photoUrl || valObj.photo_url || valObj.photo;
     const notes = valObj.farmerNote || valObj.notes || '';
 
@@ -250,13 +274,10 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
       if (url.startsWith('data:image')) return url;
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
     }
-    const act = (valObj?.activity || valObj?.taskType || '').toLowerCase();
-    if (act.includes('water')) return 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80';
-    if (act.includes('pest') || act.includes('spray')) return 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
-    if (act.includes('harvest')) return 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=600&q=80';
-    if (act.includes('weed')) return 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80';
-    return 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
+
+    return defaultFallback;
   };
+
 
   // 1. Operations & Verification Dashboard
   const renderOperations = () => (
@@ -517,6 +538,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
                   >
                     <img
                       src={photoToRender}
+                      onError={() => handleImgError(selectedValidation?.id)}
                       alt=""
                       style={{
                         position: 'absolute',
@@ -528,6 +550,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
                     />
                     <img
                       src={photoToRender}
+                      onError={() => handleImgError(selectedValidation?.id)}
                       alt="Field verification photo"
                       style={{
                         position: 'relative',
@@ -1591,6 +1614,11 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
             </button>
             <img 
               src={previewModalUrl} 
+              onError={() => {
+                if (selectedValId) handleImgError(selectedValId);
+                const sprayFallback = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=800&q=80';
+                setPreviewModalUrl(sprayFallback);
+              }}
               alt="Enlarged verification proof" 
               style={{ maxWidth: '100%', maxHeight: '85vh', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }} 
             />

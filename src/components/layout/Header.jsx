@@ -16,7 +16,7 @@ const Header = () => {
   const [annPush, setAnnPush] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
 
-  const canBroadcast = currentRole === 'super_admin' || currentRole === 'admin' || currentUser?.role === 'Executive' || currentUser?.role === 'Admin';
+  const canBroadcast = (currentRole === 'super_admin' || currentRole === 'admin') && currentRole !== 'farm_staff';
 
 
   const handleOpenModal = () => {
