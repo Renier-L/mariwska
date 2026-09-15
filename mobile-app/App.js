@@ -22,6 +22,122 @@ export default function App() {
   });
   const [activeSettingsDialog, setActiveSettingsDialog] = useState(null);
 
+  // Detailed Livestock Records Module State (Goat Management)
+  const [showLivestockModal, setShowLivestockModal] = useState(false);
+  const [selectedGoat, setSelectedGoat] = useState(null);
+  const [showAddGoatModal, setShowAddGoatModal] = useState(false);
+  const [showHealthLogModal, setShowHealthLogModal] = useState(false);
+
+  // New Goat Form Inputs
+  const [newGoatTag, setNewGoatTag] = useState('');
+  const [newGoatName, setNewGoatName] = useState('');
+  const [newGoatBreed, setNewGoatBreed] = useState('Philippine Native Goat');
+  const [newGoatSex, setNewGoatSex] = useState('Female (Doe)');
+  const [newGoatAge, setNewGoatAge] = useState('12 months');
+  const [newGoatWeight, setNewGoatWeight] = useState('22.5');
+  const [newGoatHealth, setNewGoatHealth] = useState('Healthy · Good');
+  const [newGoatShed, setNewGoatShed] = useState('Barn Shed 2 - Pen B');
+  const [newGoatNotes, setNewGoatNotes] = useState('');
+
+  // Health & Treatment Log Inputs
+  const [healthTreatmentType, setHealthTreatmentType] = useState('Deworming');
+  const [healthMedicine, setHealthMedicine] = useState('Albendazole 10%');
+  const [healthNotes, setHealthNotes] = useState('');
+
+  const [livestockGoats, setLivestockGoats] = useState([
+    {
+      id: 'GT-014',
+      name: 'Ina (Doe #14)',
+      breed: 'Philippine Native Goat',
+      sex: 'Female (Doe)',
+      age: '24 months',
+      weight: '28.5 kg',
+      health: 'Healthy · Good',
+      status: 'Lactating (1.8 L/day)',
+      lastDewormed: 'Aug 15, 2026',
+      lastVaccine: 'Hemorrhagic Septicemia (Jul 2026)',
+      shed: 'Barn Shed 2 - Pen B',
+      notes: 'Good mother, twin kids born April 2026'
+    },
+    {
+      id: 'GT-015',
+      name: 'Amang (Buck #15)',
+      breed: 'Anglo-Nubian Cross',
+      sex: 'Male (Buck)',
+      age: '30 months',
+      weight: '42.0 kg',
+      health: 'Healthy · Prime Breeder',
+      status: 'Active Breeder',
+      lastDewormed: 'Aug 15, 2026',
+      lastVaccine: 'Hemorrhagic Septicemia (Jul 2026)',
+      shed: 'Barn Shed 1 - Pen A',
+      notes: 'Strong breeding buck for coop herd'
+    },
+    {
+      id: 'GT-022',
+      name: 'Nene (Kid #22)',
+      breed: 'Native Goat',
+      sex: 'Female (Kid)',
+      age: '4 months',
+      weight: '11.2 kg',
+      health: 'Under Observation',
+      status: 'Weanling Kid',
+      lastDewormed: 'Sep 01, 2026',
+      lastVaccine: 'Booster Scheduled',
+      shed: 'Barn Shed 2 - Pen B',
+      notes: 'Slight cough, given herbal oregano extract'
+    }
+  ]);
+
+  const handleAddGoat = () => {
+    if (!newGoatTag.trim()) {
+      Alert.alert('Validation Error', 'Please enter a Tag ID (e.g., GT-025).');
+      return;
+    }
+    const newGoatObj = {
+      id: newGoatTag.trim().toUpperCase(),
+      name: newGoatName.trim() || `Goat ${newGoatTag.trim().toUpperCase()}`,
+      breed: newGoatBreed,
+      sex: newGoatSex,
+      age: newGoatAge,
+      weight: `${newGoatWeight} kg`,
+      health: newGoatHealth,
+      status: 'Active Herd',
+      lastDewormed: 'Just now',
+      lastVaccine: 'Scheduled',
+      shed: newGoatShed,
+      notes: newGoatNotes || 'Registered into cooperative livestock ledger'
+    };
+
+    setLivestockGoats(prev => [newGoatObj, ...prev]);
+    setShowAddGoatModal(false);
+    setNewGoatTag('');
+    setNewGoatName('');
+    setNewGoatNotes('');
+    Alert.alert('Success 🎉', `Goat Record ${newGoatObj.id} registered into Livestock Ledger!`);
+  };
+
+  const handleAddHealthLog = () => {
+    if (!selectedGoat) return;
+    const updatedGoats = livestockGoats.map(g => {
+      if (g.id === selectedGoat.id) {
+        return {
+          ...g,
+          lastDewormed: healthTreatmentType === 'Deworming' ? 'Today · Just now' : g.lastDewormed,
+          lastVaccine: healthTreatmentType === 'Vaccination' ? `${healthMedicine} (Today)` : g.lastVaccine,
+          health: `Treated · ${healthTreatmentType}`,
+          notes: `${g.notes} | Medical: ${healthTreatmentType} (${healthMedicine}) - ${healthNotes}`
+        };
+      }
+      return g;
+    });
+
+    setLivestockGoats(updatedGoats);
+    setShowHealthLogModal(false);
+    setHealthNotes('');
+    Alert.alert('Medical Log Saved 💊', `Health treatment recorded for ${selectedGoat.id} (${selectedGoat.name})`);
+  };
+
   // Profile Management State matching screenshots
   const [profileData, setProfileData] = useState({
     name: 'Mang Juan Dela Cruz',
@@ -317,9 +433,9 @@ export default function App() {
                 <Text style={styles.tileTitle}>LOG DAILY ACTIVITY</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.tile, { backgroundColor: '#452c1e' }]} onPress={() => Alert.alert('Crops', 'Tomato (P-007), Eggplant (P-021), Okra (P-034)')}>
-                <Text style={styles.tileIcon}>🌱</Text>
-                <Text style={styles.tileTitle}>MY CROPS & LIVESTOCK</Text>
+              <TouchableOpacity style={[styles.tile, { backgroundColor: '#452c1e' }]} onPress={() => setShowLivestockModal(true)}>
+                <Text style={styles.tileIcon}>🐐</Text>
+                <Text style={styles.tileTitle}>LIVESTOCK RECORDS</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={[styles.tile, { backgroundColor: '#d97706' }]} onPress={() => setActiveTab('tasks')}>
@@ -701,20 +817,21 @@ export default function App() {
                   </View>
 
                   {/* CARD 6: LIVESTOCK */}
-                  <View style={styles.profCard}>
-                    <Text style={styles.profSectionHeader}>LIVESTOCK</Text>
-                    <View style={{ gap: 8 }}>
-                      {profileData.livestock.map(l => (
-                        <View key={l.id} style={styles.plotSubCard}>
-                          <Text style={{ fontWeight: '800', fontSize: 12, color: '#0f172a', marginRight: 12 }}>{l.id}</Text>
-                          <View>
-                            <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{l.title}</Text>
-                            <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{l.count}</Text>
-                          </View>
-                        </View>
-                      ))}
+                  <TouchableOpacity onPress={() => setShowLivestockModal(true)} style={styles.profCard}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                      <Text style={styles.profSectionHeader}>LIVESTOCK RECORDS</Text>
+                      <Text style={{ fontSize: 11, color: '#16a34a', fontWeight: '800' }}>Manage Records ›</Text>
                     </View>
-                  </View>
+                    <View style={{ gap: 8 }}>
+                      <View style={styles.plotSubCard}>
+                        <Text style={{ fontWeight: '800', fontSize: 12, color: '#0f172a', marginRight: 12 }}>GT-014</Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>Native Goats Herd</Text>
+                          <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{livestockGoats.length} Heads Registered · Tap to view ledger</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
 
                   {/* ACTION BUTTONS */}
                   <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
@@ -973,6 +1090,189 @@ export default function App() {
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleSaveProfile}>
               <Text style={styles.submitBtnText}>Save Profile Changes</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ================= LIVESTOCK RECORDS MODULE MODAL ================= */}
+      <Modal visible={showLivestockModal} transparent animationType="slide">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 16 }}>
+          <View style={{ backgroundColor: '#ffffff', width: '100%', borderRadius: 16, maxHeight: '90%', padding: 0, overflow: 'hidden' }}>
+            {/* Header */}
+            <View style={{ backgroundColor: '#0c3619', padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View>
+                <Text style={{ fontSize: 18, fontWeight: '800', color: '#ffffff' }}>🐐 Livestock Records Module</Text>
+                <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600' }}>Native Goat Herd & Medical Ledger</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowLivestockModal(false)} style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 16, color: '#ffffff', fontWeight: '800' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Herd Metrics Bar */}
+            <View style={{ backgroundColor: '#f0fdf4', padding: 12, borderBottomWidth: 1, borderBottomColor: '#dcfce7', flexDirection: 'row', justifyContent: 'space-around' }}>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619' }}>{livestockGoats.length} Heads</Text>
+                <Text style={{ fontSize: 10, color: '#166534', fontWeight: '700' }}>TOTAL FLOCK</Text>
+              </View>
+              <View style={{ width: 1, backgroundColor: '#bbf7d0' }} />
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619' }}>8.5 L/day</Text>
+                <Text style={{ fontSize: 10, color: '#166534', fontWeight: '700' }}>MILK YIELD</Text>
+              </View>
+              <View style={{ width: 1, backgroundColor: '#bbf7d0' }} />
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619' }}>35 Kg/day</Text>
+                <Text style={{ fontSize: 10, color: '#166534', fontWeight: '700' }}>FEED RATION</Text>
+              </View>
+            </View>
+
+            {/* Action Buttons Header */}
+            <View style={{ padding: 12, backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity 
+                onPress={() => setShowAddGoatModal(true)}
+                style={{ flex: 1, backgroundColor: '#0c3619', paddingVertical: 10, borderRadius: 10, alignItems: 'center' }}
+              >
+                <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 12 }}>➕ Register New Goat</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Goat Cards List */}
+            <ScrollView style={{ flex: 1, padding: 14 }}>
+              <Text style={{ fontSize: 13, fontWeight: '800', color: '#0f172a', marginBottom: 10 }}>Registered Goats ({livestockGoats.length})</Text>
+              
+              <View style={{ gap: 12, paddingBottom: 20 }}>
+                {livestockGoats.map(g => (
+                  <View key={g.id} style={{ backgroundColor: '#ffffff', borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: '#cbd5e1' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <View style={{ backgroundColor: '#0c3619', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 }}>
+                          <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 12 }}>{g.id}</Text>
+                        </View>
+                        <Text style={{ fontSize: 15, fontWeight: '800', color: '#0f172a' }}>{g.name}</Text>
+                      </View>
+                      <View style={{ backgroundColor: g.health.includes('Healthy') ? '#dcfce7' : '#fef3c7', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 }}>
+                        <Text style={{ fontSize: 10, fontWeight: '800', color: g.health.includes('Healthy') ? '#15803d' : '#d97706' }}>{g.health}</Text>
+                      </View>
+                    </View>
+
+                    <View style={{ gap: 4, marginVertical: 6 }}>
+                      <Text style={{ fontSize: 12, color: '#334155', fontWeight: '600' }}>🏷️ <Text style={{ fontWeight: '800' }}>Breed:</Text> {g.breed}  ·  <Text style={{ fontWeight: '800' }}>Sex:</Text> {g.sex}</Text>
+                      <Text style={{ fontSize: 12, color: '#334155', fontWeight: '600' }}>⚖️ <Text style={{ fontWeight: '800' }}>Weight:</Text> {g.weight}  ·  <Text style={{ fontWeight: '800' }}>Age:</Text> {g.age}</Text>
+                      <Text style={{ fontSize: 12, color: '#334155', fontWeight: '600' }}>🏠 <Text style={{ fontWeight: '800' }}>Location:</Text> {g.shed}</Text>
+                      <Text style={{ fontSize: 12, color: '#15803d', fontWeight: '700' }}>💉 <Text style={{ fontWeight: '800' }}>Last Dewormed:</Text> {g.lastDewormed}</Text>
+                      <Text style={{ fontSize: 12, color: '#15803d', fontWeight: '700' }}>🛡️ <Text style={{ fontWeight: '800' }}>Vaccine:</Text> {g.lastVaccine}</Text>
+                      {g.notes ? <Text style={{ fontSize: 11, color: '#64748b', fontStyle: 'italic', marginTop: 4 }}>"{g.notes}"</Text> : null}
+                    </View>
+
+                    <TouchableOpacity 
+                      onPress={() => { setSelectedGoat(g); setShowHealthLogModal(true); }}
+                      style={{ backgroundColor: '#f0fdf4', borderWidth: 1, borderColor: '#86efac', paddingVertical: 8, borderRadius: 8, alignItems: 'center', marginTop: 8 }}
+                    >
+                      <Text style={{ color: '#166534', fontWeight: '800', fontSize: 12 }}>💉 Log Vaccine / Medical Care</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ================= ADD NEW GOAT MODAL ================= */}
+      <Modal visible={showAddGoatModal} transparent animationType="slide">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: '#ffffff', width: '100%', borderRadius: 16, padding: 20, maxHeight: '85%' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '800', color: '#0c3619' }}>🐐 Register New Goat Record</Text>
+              <TouchableOpacity onPress={() => setShowAddGoatModal(false)}>
+                <Text style={{ fontSize: 18, color: '#64748b' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ flex: 1 }}>
+              <Text style={styles.label}>Tag ID (Required e.g. GT-025)</Text>
+              <TextInput style={styles.inputDark} value={newGoatTag} onChangeText={setNewGoatTag} placeholder="GT-025" />
+
+              <Text style={styles.label}>Goat Name / Nickname</Text>
+              <TextInput style={styles.inputDark} value={newGoatName} onChangeText={setNewGoatName} placeholder="e.g. Maya (Doe #25)" />
+
+              <Text style={styles.label}>Breed / Type</Text>
+              <TextInput style={styles.inputDark} value={newGoatBreed} onChangeText={setNewGoatBreed} />
+
+              <Text style={styles.label}>Sex / Gender</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
+                {['Female (Doe)', 'Male (Buck)', 'Kid'].map(s => (
+                  <TouchableOpacity 
+                    key={s} 
+                    onPress={() => setNewGoatSex(s)}
+                    style={[{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: '#cbd5e1' }, newGoatSex === s && { backgroundColor: '#0c3619' }]}
+                  >
+                    <Text style={[{ fontSize: 12, fontWeight: '700', color: '#334155' }, newGoatSex === s && { color: '#ffffff' }]}>{s}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.label}>Weight (kg)</Text>
+              <TextInput style={styles.inputDark} value={newGoatWeight} onChangeText={setNewGoatWeight} keyboardType="numeric" />
+
+              <Text style={styles.label}>Barn / Shed Location</Text>
+              <TextInput style={styles.inputDark} value={newGoatShed} onChangeText={setNewGoatShed} />
+
+              <Text style={styles.label}>Health Status</Text>
+              <TextInput style={styles.inputDark} value={newGoatHealth} onChangeText={setNewGoatHealth} />
+
+              <Text style={styles.label}>Notes / Remarks</Text>
+              <TextInput style={[styles.inputDark, { height: 60 }]} value={newGoatNotes} onChangeText={setNewGoatNotes} multiline />
+            </ScrollView>
+
+            <TouchableOpacity style={[styles.submitBtn, { marginTop: 12 }]} onPress={handleAddGoat}>
+              <Text style={styles.submitBtnText}>Save Goat to Ledger →</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ================= HEALTH LOG TREATMENT MODAL ================= */}
+      <Modal visible={showHealthLogModal} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: '#ffffff', width: '100%', borderRadius: 16, padding: 20 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '800', color: '#0c3619' }}>💉 Medical & Treatment Log</Text>
+              <TouchableOpacity onPress={() => setShowHealthLogModal(false)}>
+                <Text style={{ fontSize: 18, color: '#64748b' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {selectedGoat && (
+              <View style={{ backgroundColor: '#f0fdf4', padding: 10, borderRadius: 8, marginBottom: 12 }}>
+                <Text style={{ fontSize: 13, fontWeight: '800', color: '#0c3619' }}>Target: {selectedGoat.id} - {selectedGoat.name}</Text>
+                <Text style={{ fontSize: 11, color: '#166534' }}>{selectedGoat.breed} · {selectedGoat.weight}</Text>
+              </View>
+            )}
+
+            <Text style={styles.label}>Treatment Category</Text>
+            <View style={{ flexDirection: 'row', gap: 6, marginTop: 4, marginBottom: 10 }}>
+              {['Deworming', 'Vaccination', 'Vitamin Boost', 'Antibiotic'].map(t => (
+                <TouchableOpacity 
+                  key={t} 
+                  onPress={() => setHealthTreatmentType(t)}
+                  style={[{ paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#cbd5e1' }, healthTreatmentType === t && { backgroundColor: '#15803d' }]}
+                >
+                  <Text style={[{ fontSize: 11, fontWeight: '700', color: '#334155' }, healthTreatmentType === t && { color: '#ffffff' }]}>{t}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.label}>Medicine / Vaccine Name</Text>
+            <TextInput style={styles.inputDark} value={healthMedicine} onChangeText={setHealthMedicine} />
+
+            <Text style={styles.label}>Treatment Notes / Vet Remarks</Text>
+            <TextInput style={[styles.inputDark, { height: 60 }]} value={healthNotes} onChangeText={setHealthNotes} multiline placeholder="e.g. Administered 5ml orally, next dose due in 3 months" />
+
+            <TouchableOpacity style={[styles.submitBtn, { marginTop: 12, backgroundColor: '#15803d' }]} onPress={handleAddHealthLog}>
+              <Text style={styles.submitBtnText}>Record Health Treatment →</Text>
             </TouchableOpacity>
           </View>
         </View>
