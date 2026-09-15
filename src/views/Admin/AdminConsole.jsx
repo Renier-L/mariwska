@@ -27,7 +27,10 @@ import {
   Eye,
   MapPin,
   Award,
-  Calendar
+  Calendar,
+  Archive,
+  ArchiveRestore,
+  Clock
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { generateOfficialReportPDF } from '../../utils/pdfGenerator';
@@ -46,7 +49,8 @@ const AdminConsole = ({ activeTab }) => {
     deleteUser, 
     announcements, 
     publishAnnouncement,
-    deleteAnnouncement, 
+    deleteAnnouncement,
+    toggleArchiveAnnouncement,
     permissionsMatrix, 
     togglePermission,
     syncSeedToSupabase 
@@ -56,6 +60,9 @@ const AdminConsole = ({ activeTab }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementText, setAnnouncementText] = useState('');
+  const [annStartDate, setAnnStartDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [annEndDate, setAnnEndDate] = useState(() => new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+  const [annTabFilter, setAnnTabFilter] = useState('active'); // 'active' | 'archived' | 'all'
   const [pushToggle, setPushToggle] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
@@ -133,7 +140,14 @@ const AdminConsole = ({ activeTab }) => {
       alert('Mangyaring mag-type muna ng announcement text!');
       return;
     }
-    publishAnnouncement(announcementTitle.trim() || 'Cooperative Broadcast Notice', announcementText, pushToggle);
+    publishAnnouncement({
+      title: announcementTitle.trim() || 'Cooperative Broadcast Notice',
+      content: announcementText,
+      instantPush: pushToggle,
+      startDate: annStartDate,
+      endDate: annEndDate
+    });
+    alert(`📢 Announcement Published Successfully!\n• Start Date: ${annStartDate}\n• Expiration Date: ${annEndDate}\n• Instant Push: ${pushToggle ? 'ACTIVE' : 'OFF'}`);
     setAnnouncementTitle('');
     setAnnouncementText('');
   };
@@ -1299,165 +1313,307 @@ const AdminConsole = ({ activeTab }) => {
     </div>
   );
 
-  // 4. Announcements & Push Broadcasts Tab
-  const renderAnnouncements = () => (
-    <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-          Cooperative Announcements & Push Alerts
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Broadcast notices to all Farmers, Farm Staff, and Cooperative Members in real time
-        </p>
-      </div>
+  // 4. Announcements & Push Broadcasts Tab (With Start/End Dates & Archive Module)
+  const renderAnnouncements = () => {
+    const activeAnnouncements = announcements.filter(a => !a.archived);
+    const archivedAnnouncements = announcements.filter(a => a.archived);
 
-      {/* Global Announcement Publisher */}
-      <div className="m-card" style={{ border: '1px solid #fbd38d', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <div>
-            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Megaphone size={18} color="#d97706" />
-              Publish Cooperative-Wide Global Announcement
-            </h4>
-            <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>
-              Reaches all Farmers, Farm Staff, and Executives across web and mobile clients.
-            </span>
-          </div>
+    const displayedAnnouncements = annTabFilter === 'active' 
+      ? activeAnnouncements 
+      : annTabFilter === 'archived' 
+      ? archivedAnnouncements 
+      : announcements;
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', fontWeight: '600' }}>
-            <Bell size={15} color="#4b5563" />
-            Instant push notification
-            <label className="toggle-switch">
-              <input type="checkbox" checked={pushToggle} onChange={() => setPushToggle(!pushToggle)} />
-              <span className="slider" />
-            </label>
-          </div>
+    return (
+      <div>
+        <div style={{ marginBottom: '20px' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
+            Announcement Management & Push Alerts Module
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            Schedule broadcast notices with start/end validity dates, instant push alerts, and notice archiving
+          </p>
         </div>
 
-        <input
-          type="text"
-          value={announcementTitle}
-          onChange={(e) => setAnnouncementTitle(e.target.value)}
-          placeholder="Notice Title (e.g. Fertilizer Distribution Schedule)"
-          style={{
-            width: '100%',
-            padding: '10px 14px',
-            borderRadius: '8px',
-            border: '1.5px solid #cbd5e1',
-            fontSize: '0.85rem',
-            marginBottom: '10px',
-            fontWeight: '700',
-            outline: 'none',
-            background: '#ffffff'
-          }}
-        />
-
-        <textarea
-          value={announcementText}
-          onChange={(e) => setAnnouncementText(e.target.value)}
-          placeholder="I-type dito ang bagong abiso para sa mga magsasaka..."
-          rows={3}
-          style={{
-            width: '100%',
-            padding: '12px 14px',
-            borderRadius: '8px',
-            border: '1px solid #d1d5db',
-            fontSize: '0.85rem',
-            marginBottom: '16px',
-            outline: 'none'
-          }}
-        />
-
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-          <button onClick={handlePublish} className="btn-orange">
-            <Megaphone size={16} /> Publish Announcement
-          </button>
-        </div>
-      </div>
-
-      {/* Interactive Announcements List Feed */}
-      <div className="m-card">
-        <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Radio size={16} color="#16a34a" /> Live Cooperative Broadcast Feed ({announcements.length} Published Notices)
-        </h4>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {announcements.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '24px', color: '#6b7280', fontSize: '0.85rem' }}>
-              No announcements published yet. Write an announcement above to broadcast live!
+        {/* Global Announcement Publisher with Date Controls */}
+        <div className="m-card" style={{ border: '1.5px solid #d97706', marginBottom: '20px', background: '#ffffff' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <div>
+              <h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                <Megaphone size={18} color="#d97706" />
+                Publish Cooperative Announcement with Start & End Validity Dates
+              </h4>
+              <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>
+                Reaches all Farmers, Farm Staff, and Executives across web and mobile clients.
+              </span>
             </div>
-          ) : (
-            announcements.map((ann) => (
-              <div
-                key={ann.id}
-                onClick={() => setSelectedAnnouncement(ann)}
-                style={{
-                  background: '#f9fafb',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '10px',
-                  padding: '14px 16px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justify: 'space-between'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: '800', fontSize: '0.88rem', color: '#111827' }}>
-                      {ann.title || 'Cooperative Announcement'}
-                    </span>
-                    {ann.instantPush && (
-                      <span className="pill pill-high" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
-                        Push Active
-                      </span>
-                    )}
-                  </div>
-                  <p style={{ fontSize: '0.78rem', color: '#4b5563', margin: 0 }}>
-                    {ann.content}
-                  </p>
-                  <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '6px' }}>
-                    Posted by {ann.author || 'Liza Cruz (Admin)'} · {ann.date}
-                  </div>
-                </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (window.confirm(`Are you sure you want to delete announcement "${ann.title}"?`)) {
-                        deleteAnnouncement(ann.id);
-                      }
-                    }}
-                    style={{
-                      background: '#fff1f2',
-                      border: '1px solid #fecdd3',
-                      color: '#e11d48',
-                      borderRadius: '7px',
-                      padding: '6px 11px',
-                      fontSize: '0.75rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '5px'
-                    }}
-                  >
-                    <Trash2 size={13} color="#e11d48" /> Delete Notice
-                  </button>
-                  <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
-                    Inspect Audit →
-                  </button>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', fontWeight: '700', color: '#0f172a' }}>
+              <Bell size={15} color="#d97706" />
+              Instant push alert
+              <label className="toggle-switch">
+                <input type="checkbox" checked={pushToggle} onChange={() => setPushToggle(!pushToggle)} />
+                <span className="slider" />
+              </label>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>
+              Announcement Header / Title *
+            </label>
+            <input
+              type="text"
+              value={announcementTitle}
+              onChange={(e) => setAnnouncementTitle(e.target.value)}
+              placeholder="Notice Title (e.g. Fertilizer Distribution Schedule)"
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1.5px solid #94a3b8',
+                fontSize: '0.85rem',
+                fontWeight: '700',
+                color: '#0f172a',
+                outline: 'none',
+                background: '#ffffff',
+                WebkitTextFillColor: '#0f172a'
+              }}
+            />
+          </div>
+
+          {/* Start & End Dates Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>
+                🗓️ Start Broadcast Date *
+              </label>
+              <input
+                type="date"
+                value={annStartDate}
+                onChange={(e) => setAnnStartDate(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #94a3b8',
+                  fontSize: '0.85rem',
+                  fontWeight: '700',
+                  color: '#0f172a',
+                  outline: 'none',
+                  background: '#ffffff',
+                  WebkitTextFillColor: '#0f172a'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>
+                ⏳ Expiration / End Date *
+              </label>
+              <input
+                type="date"
+                value={annEndDate}
+                onChange={(e) => setAnnEndDate(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #94a3b8',
+                  fontSize: '0.85rem',
+                  fontWeight: '700',
+                  color: '#0f172a',
+                  outline: 'none',
+                  background: '#ffffff',
+                  WebkitTextFillColor: '#0f172a'
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>
+              Announcement Details & Instructions *
+            </label>
+            <textarea
+              value={announcementText}
+              onChange={(e) => setAnnouncementText(e.target.value)}
+              placeholder="I-type dito ang bagong abiso para sa mga magsasaka..."
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                border: '1.5px solid #94a3b8',
+                fontSize: '0.85rem',
+                fontWeight: '600',
+                color: '#0f172a',
+                outline: 'none',
+                background: '#ffffff',
+                WebkitTextFillColor: '#0f172a'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <button onClick={handlePublish} className="btn-orange" style={{ padding: '10px 22px', fontSize: '0.85rem', fontWeight: '800' }}>
+              <Megaphone size={16} /> Publish Announcement
+            </button>
+          </div>
+        </div>
+
+        {/* Interactive Feed Header with Active vs Archived Tabs */}
+        <div className="m-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+              <Radio size={16} color="#16a34a" /> Live Cooperative Broadcast Feed ({displayedAnnouncements.length} Notices)
+            </h4>
+
+            {/* Filter Capsule Buttons */}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[
+                { id: 'active', label: `📢 Active Broadcasts (${activeAnnouncements.length})` },
+                { id: 'archived', label: `📦 Archived Notices (${archivedAnnouncements.length})` },
+                { id: 'all', label: `All Notices (${announcements.length})` }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setAnnTabFilter(tab.id)}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    background: annTabFilter === tab.id ? '#0c3619' : '#f1f5f9',
+                    color: annTabFilter === tab.id ? '#ffffff' : '#4b5563',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {displayedAnnouncements.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px', color: '#64748b', fontSize: '0.85rem', background: '#f8fafc', borderRadius: '10px', border: '1px dashed #cbd5e1' }}>
+                {annTabFilter === 'archived' 
+                  ? '📦 No archived announcements found.' 
+                  : '📢 No active announcements published yet. Write an announcement above to broadcast live!'}
               </div>
-            ))
-          )}
+            ) : (
+              displayedAnnouncements.map((ann) => (
+                <div
+                  key={ann.id}
+                  onClick={() => setSelectedAnnouncement(ann)}
+                  style={{
+                    background: ann.archived ? '#f8fafc' : '#ffffff',
+                    border: ann.archived ? '1px solid #cbd5e1' : '1.5px solid #bbf7d0',
+                    borderRadius: '12px',
+                    padding: '16px 18px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: ann.archived ? 'none' : '0 2px 8px rgba(0,0,0,0.03)'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ fontWeight: '800', fontSize: '0.9rem', color: '#111827' }}>
+                        {ann.title || 'Cooperative Announcement'}
+                      </span>
+                      {ann.archived ? (
+                        <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#64748b', background: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', border: '1px solid #cbd5e1' }}>
+                          📦 Archived Notice
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#15803d', background: '#dcfce7', padding: '2px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+                          🟢 Active Broadcast
+                        </span>
+                      )}
+                      {ann.instantPush && !ann.archived && (
+                        <span className="pill pill-high" style={{ fontSize: '0.68rem', padding: '2px 6px' }}>
+                          Push Active
+                        </span>
+                      )}
+                    </div>
+                    <p style={{ fontSize: '0.8rem', color: '#334155', margin: 0, fontWeight: '500', lineHeight: 1.4 }}>
+                      {ann.content}
+                    </p>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '8px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+                      <span>👤 Author: <strong style={{ color: '#0f172a' }}>{ann.author || 'Liza Cruz (Admin)'}</strong></span>
+                      <span>🗓️ Start Date: <strong style={{ color: '#15803d' }}>{ann.startDate || ann.date}</strong></span>
+                      <span>⏳ End Date: <strong style={{ color: '#d97706' }}>{ann.endDate || '2026-09-30'}</strong></span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {/* ARCHIVE / UNARCHIVE BUTTON */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleArchiveAnnouncement(ann.id);
+                      }}
+                      style={{
+                        background: ann.archived ? '#f0fdf4' : '#f8fafc',
+                        border: ann.archived ? '1px solid #86efac' : '1px solid #cbd5e1',
+                        color: ann.archived ? '#15803d' : '#475569',
+                        borderRadius: '7px',
+                        padding: '6px 11px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      {ann.archived ? <ArchiveRestore size={13} color="#15803d" /> : <Archive size={13} color="#475569" />}
+                      {ann.archived ? 'Unarchive' : 'Archive Notice'}
+                    </button>
+
+                    {/* DELETE BUTTON */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (window.confirm(`Are you sure you want to delete announcement "${ann.title}"?`)) {
+                          deleteAnnouncement(ann.id);
+                        }
+                      }}
+                      style={{
+                        background: '#fff1f2',
+                        border: '1px solid #fecdd3',
+                        color: '#e11d48',
+                        borderRadius: '7px',
+                        padding: '6px 11px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      <Trash2 size={13} color="#e11d48" /> Delete
+                    </button>
+
+                    <button className="btn-outline" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
+                      Inspect Audit →
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // 5. Admin Reports
   const renderReports = () => (
@@ -1511,13 +1667,13 @@ const AdminConsole = ({ activeTab }) => {
     <>
       {currentView}
 
-      {/* Selected Announcement Detail Modal */}
+      {/* Selected Announcement Detail Modal with Start/End Dates & Archive Control */}
       {selectedAnnouncement && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="m-card" style={{ width: '480px', background: '#fff', padding: '24px', borderRadius: '14px', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+          <div className="m-card" style={{ width: '520px', background: '#fff', padding: '24px', borderRadius: '16px', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
             <button onClick={() => setSelectedAnnouncement(null)} style={{ position: 'absolute', right: '16px', top: '16px', border: 'none', background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: '800' }}>✕</button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              <div style={{ background: '#fef3c7', padding: '10px', borderRadius: '10px', color: '#d97706' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+              <div style={{ background: '#fef3c7', padding: '10px', borderRadius: '12px', color: '#d97706' }}>
                 <Megaphone size={22} />
               </div>
               <div>
@@ -1525,21 +1681,48 @@ const AdminConsole = ({ activeTab }) => {
                   {selectedAnnouncement.title || 'Cooperative Announcement'}
                 </h3>
                 <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                  Posted by {selectedAnnouncement.author || 'Liza Cruz (Admin)'} · {selectedAnnouncement.date}
+                  Posted by {selectedAnnouncement.author || 'Liza Cruz (Admin)'}
                 </span>
               </div>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px', fontSize: '0.85rem', color: '#334155', lineHeight: 1.5 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>BROADCAST START DATE</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#15803d' }}>
+                  🗓️ {selectedAnnouncement.startDate || selectedAnnouncement.date}
+                </span>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '700', display: 'block' }}>EXPIRATION / END DATE</span>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#d97706' }}>
+                  ⏳ {selectedAnnouncement.endDate || '2026-09-30'}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px', fontSize: '0.85rem', color: '#334155', lineHeight: 1.5, fontWeight: '500' }}>
               {selectedAnnouncement.content}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#64748b', marginBottom: '20px', background: '#f0fdf4', padding: '10px 12px', borderRadius: '8px', border: '1px solid #86efac' }}>
-              <span>📲 Push Alert Status: <strong style={{ color: '#16a34a' }}>Active Live Broadcast</strong></span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#64748b', marginBottom: '20px', background: selectedAnnouncement.archived ? '#f1f5f9' : '#f0fdf4', padding: '10px 12px', borderRadius: '8px', border: selectedAnnouncement.archived ? '1px solid #cbd5e1' : '1px solid #86efac' }}>
+              <span>📦 Status: <strong style={{ color: selectedAnnouncement.archived ? '#64748b' : '#16a34a' }}>{selectedAnnouncement.archived ? 'Archived Notice' : 'Active Live Broadcast'}</strong></span>
               <span>🌐 Audience: <strong style={{ color: '#0c3619' }}>All Members</strong></span>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  toggleArchiveAnnouncement(selectedAnnouncement.id);
+                  setSelectedAnnouncement(null);
+                }}
+                className="btn-outline"
+                style={{ padding: '8px 14px', fontSize: '0.8rem', fontWeight: '700' }}
+              >
+                {selectedAnnouncement.archived ? '🔓 Restore Notice' : '📦 Archive Notice'}
+              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -1550,7 +1733,7 @@ const AdminConsole = ({ activeTab }) => {
                 }}
                 style={{ background: '#fff1f2', border: '1px solid #fecdd3', color: '#e11d48', padding: '8px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer' }}
               >
-                🗑️ Delete Announcement
+                🗑️ Delete Notice
               </button>
               <button onClick={() => setSelectedAnnouncement(null)} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
                 Close Audit

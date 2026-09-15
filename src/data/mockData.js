@@ -21,7 +21,30 @@ export const initialLivestock = [
   { id: 'l3', group: 'Cattle Group CG-002', plot: 'P-088', headCount: 18, healthStatus: 'Monitoring', vaccination: '92% (Watch)', dailyGain: '+2.8 kg/wk' }
 ];
 
-export const initialAnnouncements = [];
+export const initialAnnouncements = [
+  {
+    id: 'ann-1',
+    title: 'Fertilizer & Organic Inputs Distribution Schedule',
+    content: 'All cooperative members are requested to pick up their allocated Vermicompost and Bio-pesticides at Sector B Field Office.',
+    author: 'Liza Cruz (Admin)',
+    date: '2026-09-16',
+    startDate: '2026-09-16',
+    endDate: '2026-09-30',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: 'ann-2',
+    title: 'PGS Organic Certification Audit Notice',
+    content: 'Third-party Organic Field Inspectors will conduct farm audits for Tomato Diamante and Eggplant Mistisa plots.',
+    author: 'Rosa Mendoza (Executive)',
+    date: '2026-09-10',
+    startDate: '2026-09-10',
+    endDate: '2026-09-25',
+    archived: false,
+    instantPush: true
+  }
+];
 
 export const initialValidations = [];
 

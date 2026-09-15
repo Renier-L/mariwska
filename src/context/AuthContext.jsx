@@ -309,7 +309,10 @@ export const AuthProvider = ({ children }) => {
             content: a.content,
             author: a.author || 'Liza Cruz (Admin)',
             instantPush: true,
-            date: new Date(a.created_at || Date.now()).toISOString().split('T')[0]
+            date: a.start_date || new Date(a.created_at || Date.now()).toISOString().split('T')[0],
+            startDate: a.start_date || new Date(a.created_at || Date.now()).toISOString().split('T')[0],
+            endDate: a.end_date || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+            archived: a.is_archived || a.archived || false
           }));
           setAnnouncements(prev => {
             const merged = [...formatted];
@@ -703,17 +706,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // INSTANT MULTI-WINDOW REALTIME BROADCAST
-  const publishAnnouncement = async (title, content, instantPush) => {
+  // INSTANT MULTI-WINDOW REALTIME BROADCAST WITH START/END DATES & ARCHIVE
+  const publishAnnouncement = async (title, content, instantPush, startDate, endDate) => {
     let annTitle = title;
     let annContent = content;
     let push = instantPush;
+    let sDate = startDate || new Date().toISOString().split('T')[0];
+    let eDate = endDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
 
-    // Support object argument: publishAnnouncement({ title: '...', content: '...' })
+    // Support object argument: publishAnnouncement({ title: '...', content: '...', startDate: '...', endDate: '...' })
     if (typeof title === 'object' && title !== null) {
       annTitle = title.title || title.announcementTitle || title.name || 'Cooperative Broadcast Notice';
       annContent = title.content || title.announcementText || title.text || '';
       push = title.instantPush ?? title.pushToggle ?? true;
+      sDate = title.startDate || title.sDate || new Date().toISOString().split('T')[0];
+      eDate = title.endDate || title.eDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
     } else if (!content && typeof title === 'string') {
       // Support single string argument: publishAnnouncement('Announcement content here')
       annContent = title;
@@ -731,7 +738,10 @@ export const AuthProvider = ({ children }) => {
       id: `ANN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
       title: cleanTitle, 
       content: cleanText, 
-      date: new Date().toISOString().split('T')[0], 
+      date: sDate, 
+      startDate: sDate,
+      endDate: eDate,
+      archived: false,
       author: currentUser?.name || 'Liza Cruz (Admin)', 
       instantPush: push !== false,
       pushId: Date.now() + Math.random()
@@ -760,11 +770,20 @@ export const AuthProvider = ({ children }) => {
         title: cleanTitle, 
         content: cleanText, 
         author: currentUser?.name || 'Liza Cruz (Admin)', 
-        instant_push: push !== false
+        instant_push: push !== false,
+        start_date: sDate,
+        end_date: eDate,
+        is_archived: false
       }]).select();
 
       if (error) {
-        console.error('Supabase Announcement Insert Error:', error);
+        // Fallback insert without start_date / end_date / is_archived if columns don't exist yet
+        await supabase.from('announcements').insert([{ 
+          title: cleanTitle, 
+          content: cleanText, 
+          author: currentUser?.name || 'Liza Cruz (Admin)', 
+          instant_push: push !== false
+        }]);
       } else {
         console.log('Supabase Announcement Inserted Live:', data);
       }
@@ -773,6 +792,35 @@ export const AuthProvider = ({ children }) => {
     }
 
     return newAnn;
+  };
+
+  const toggleArchiveAnnouncement = async (annId) => {
+    let targetAnn = null;
+    setAnnouncements(prev => {
+      const next = prev.map(a => {
+        if (String(a.id) === String(annId)) {
+          targetAnn = { ...a, archived: !a.archived };
+          return targetAnn;
+        }
+        return a;
+      });
+      try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel && targetAnn) {
+      try {
+        broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_ARCHIVE_PUSH', payload: targetAnn });
+      } catch (e) {}
+    }
+
+    if (targetAnn) {
+      try {
+        await supabase.from('announcements').update({ is_archived: targetAnn.archived }).eq('id', annId);
+      } catch (e) {
+        console.log('Supabase archive update error:', e);
+      }
+    }
   };
 
   const deleteAnnouncement = async (annId) => {
@@ -1208,6 +1256,7 @@ export const AuthProvider = ({ children }) => {
       deleteUser,
       publishAnnouncement,
       deleteAnnouncement,
+      toggleArchiveAnnouncement,
       dismissPushNotice,
       dismissPushValidation,
       handleValidationAction,
