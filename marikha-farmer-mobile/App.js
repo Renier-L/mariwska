@@ -18,7 +18,7 @@ import { supabase } from './src/supabase';
 
 export default function App() {
   // Navigation & Auth state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [activeTab, setActiveTab] = useState('home'); // 'home', 'log', 'ai', 'tasks'
   const [currentUser, setCurrentUser] = useState({
     name: 'rei lopez',
@@ -682,7 +682,7 @@ export default function App() {
   };
 
   // Splash / Flash Screen state
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -2264,13 +2264,13 @@ const styles = StyleSheet.create({
   modalCloseBtn: { backgroundColor: '#0c3619', padding: 12, borderRadius: 10, alignItems: 'center', marginTop: 10 },
   modalCloseText: { color: '#ffffff', fontWeight: '800', fontSize: 13 },
 
-  profCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#e2e8f0' },
-  avatarCircle: { width: 54, height: 54, borderRadius: 27, backgroundColor: '#dce3db', justifyContent: 'center', alignItems: 'center' },
-  profSectionHeader: { fontSize: 11, fontWeight: '800', color: '#334155', letterSpacing: 0.5, marginBottom: 10 },
-  profIconBox: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#847e73', justifyContent: 'center', alignItems: 'center' },
+  profCard: { backgroundColor: '#ffffff', borderRadius: 16, padding: 16, borderWidth: 1.5, borderColor: '#cbd5e1' },
+  avatarCircle: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#dcfce7', borderWidth: 2, borderColor: '#059669', justifyContent: 'center', alignItems: 'center' },
+  profSectionHeader: { fontSize: 11, fontWeight: '800', color: '#0c3619', letterSpacing: 0.5, marginBottom: 10 },
+  profIconBox: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#f0fdf4', borderWidth: 1, borderColor: '#86efac', justifyContent: 'center', alignItems: 'center' },
   profFieldLabel: { fontSize: 9, fontWeight: '800', color: '#64748b', letterSpacing: 0.3 },
   profFieldValue: { fontSize: 13, fontWeight: '800', color: '#0f172a', marginTop: 1 },
-  plotSubCard: { backgroundColor: '#beb7ab', borderRadius: 12, padding: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  plotTagPill: { backgroundColor: '#98a092', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 },
-  plotStatusPill: { borderWidth: 1, borderColor: 'rgba(0,0,0,0.15)', backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 16, paddingHorizontal: 10, paddingVertical: 3 }
+  plotSubCard: { backgroundColor: '#f0fdf4', borderWidth: 1.5, borderColor: '#86efac', borderRadius: 12, padding: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  plotTagPill: { backgroundColor: '#0c3619', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  plotStatusPill: { borderWidth: 1, borderColor: '#86efac', backgroundColor: '#dcfce7', borderRadius: 16, paddingHorizontal: 10, paddingVertical: 3 }
 });
