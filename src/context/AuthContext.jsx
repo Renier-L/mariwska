@@ -685,29 +685,50 @@ export const AuthProvider = ({ children }) => {
 
   // INSTANT MULTI-WINDOW REALTIME BROADCAST
   const publishAnnouncement = async (title, content, instantPush) => {
-    const cleanText = String(content || '').trim();
-    if (!cleanText) return;
+    let annTitle = title;
+    let annContent = content;
+    let push = instantPush;
+
+    // Support object argument: publishAnnouncement({ title: '...', content: '...' })
+    if (typeof title === 'object' && title !== null) {
+      annTitle = title.title || title.announcementTitle || title.name || 'Cooperative Broadcast Notice';
+      annContent = title.content || title.announcementText || title.text || '';
+      push = title.instantPush ?? title.pushToggle ?? true;
+    } else if (!content && typeof title === 'string') {
+      // Support single string argument: publishAnnouncement('Announcement content here')
+      annContent = title;
+      annTitle = 'Cooperative Broadcast Notice';
+    }
+
+    const cleanTitle = String(annTitle || 'Cooperative Broadcast Notice').trim();
+    const cleanText = String(annContent || '').trim();
+    if (!cleanText) {
+      console.warn('publishAnnouncement cancelled: empty content text');
+      return null;
+    }
 
     const newAnn = { 
       id: `ANN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
-      title: title || 'Cooperative Broadcast Notice', 
+      title: cleanTitle, 
       content: cleanText, 
       date: new Date().toISOString().split('T')[0], 
       author: currentUser?.name || 'Liza Cruz (Admin)', 
-      instantPush: true,
-      pushId: Math.random()
+      instantPush: push !== false,
+      pushId: Date.now() + Math.random()
     };
     
     setAnnouncements(prev => {
-      const next = [newAnn, ...prev];
+      const next = [newAnn, ...prev.filter(a => a.id !== newAnn.id)];
       try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {}
       return next;
     });
 
-    setActivePushNotice({ ...newAnn, pushId: Math.random() });
+    setActivePushNotice(newAnn);
 
     if (broadcastChannel) {
-      broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_PUSH', payload: newAnn });
+      try {
+        broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_PUSH', payload: newAnn });
+      } catch (e) {}
     }
 
     try {
@@ -716,21 +737,22 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const { data, error } = await supabase.from('announcements').insert([{ 
-        title: title || 'Cooperative Broadcast Notice', 
+        title: cleanTitle, 
         content: cleanText, 
         author: currentUser?.name || 'Liza Cruz (Admin)', 
-        instant_push: true 
+        instant_push: push !== false
       }]).select();
 
       if (error) {
         console.error('Supabase Announcement Insert Error:', error);
-        alert(`⚠️ Supabase Cloud Notice: ${error.message}. Make sure RLS is disabled in Supabase SQL Editor.`);
       } else {
-        console.log('Supabase Announcement Inserted:', data);
+        console.log('Supabase Announcement Inserted Live:', data);
       }
     } catch (e) {
       console.log('Supabase sync error:', e);
     }
+
+    return newAnn;
   };
 
   const deleteAnnouncement = async (annId) => {

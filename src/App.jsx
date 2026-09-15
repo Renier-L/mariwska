@@ -11,13 +11,14 @@ import { Bell, X, Megaphone, Loader2 } from 'lucide-react';
 import './styles/theme.css';
 
 const VALID_TABS = {
-  super_admin: ['dashboard', 'activity-monitoring', 'scheduling', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
+  super_admin: ['dashboard', 'activity-monitoring', 'scheduling', 'announcements', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
   admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
   farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'livestock-management', 'reports']
 };
 
 const MainContent = () => {
   const { currentRole, activePushNotice, dismissPushNotice } = useAuth();
+  const [showFullNoticeModal, setShowFullNoticeModal] = useState(false);
   
   // Persist activeTab per role in localStorage so page refresh maintains exact position & view!
   const [activeTab, setActiveTabState] = useState(() => {
@@ -81,8 +82,8 @@ const MainContent = () => {
           position: 'fixed',
           top: '24px',
           right: '24px',
-          zIndex: 9999,
-          width: '360px',
+          zIndex: 99999,
+          width: '380px',
           background: '#ffffff',
           border: '2px solid #d97706',
           borderRadius: '16px',
@@ -114,13 +115,84 @@ const MainContent = () => {
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f3f4f6', paddingTop: '10px', fontSize: '0.7rem', color: '#6b7280' }}>
-            <span>By {activePushNotice.author}</span>
+            <span>By {activePushNotice.author || 'Liza Cruz (Admin)'}</span>
             <button
-              onClick={() => {}}
-              style={{ background: '#11592c', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
+              onClick={() => setShowFullNoticeModal(true)}
+              style={{ background: '#11592c', color: '#fff', border: 'none', padding: '5px 12px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer' }}
             >
-              Open Notice Chat →
+              Open Notice Modal →
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* POP-UP ANNOUNCEMENT MODAL */}
+      {(showFullNoticeModal || (activePushNotice && activePushNotice._autoOpenModal)) && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100000
+        }}>
+          <div className="m-card" style={{
+            width: '100%', maxWidth: '520px', padding: '0', borderRadius: '20px',
+            overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #11592c 0%, #16a34a 100%)',
+              padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Megaphone size={22} color="#ffffff" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>
+                    {activePushNotice?.title || 'Cooperative Announcement'}
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#dcfce7' }}>
+                    Official Live Broadcast · {activePushNotice?.date || new Date().toISOString().split('T')[0]}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowFullNoticeModal(false); dismissPushNotice(); }}
+                style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '24px', background: '#ffffff' }}>
+              <div style={{ fontSize: '0.78rem', color: '#4b5563', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontWeight: '700', color: '#11592c' }}>Author:</span>
+                <span>{activePushNotice?.author || 'Liza Cruz (Admin)'}</span>
+              </div>
+
+              <div style={{
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '16px 18px',
+                fontSize: '0.9rem',
+                color: '#1e293b',
+                lineHeight: 1.6,
+                whiteSpace: 'pre-wrap',
+                marginBottom: '20px'
+              }}>
+                {activePushNotice?.content}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  onClick={() => { setShowFullNoticeModal(false); dismissPushNotice(); }}
+                  className="btn-primary"
+                  style={{ padding: '10px 20px', fontSize: '0.85rem' }}
+                >
+                  ✓ Acknowledge & Dismiss
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

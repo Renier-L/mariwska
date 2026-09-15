@@ -30,6 +30,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'activity-monitoring', label: 'Activity Monitoring', icon: Activity },
       { id: 'scheduling', label: 'Cooperative Scheduling', icon: CalendarDays },
+      { id: 'announcements', label: 'Announcements Push', icon: Megaphone },
       { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
       { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
       { id: 'analytics', label: 'Analytics & Intelligence', icon: BarChart3 },

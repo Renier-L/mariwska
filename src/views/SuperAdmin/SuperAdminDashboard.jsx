@@ -30,7 +30,11 @@ import {
   Check,
   RotateCcw,
   RefreshCw,
-  Cpu
+  Cpu,
+  Megaphone,
+  Bell,
+  Radio,
+  Trash2
 } from 'lucide-react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
@@ -92,7 +96,11 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
-  const { crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule } = useAuth();
+  const { crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule } = useAuth();
+  const [announcementTitle, setAnnouncementTitle] = useState('');
+  const [announcementText, setAnnouncementText] = useState('');
+  const [pushToggle, setPushToggle] = useState(true);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [directoryTab, setDirectoryTab] = useState('crop');
   const [reportsSubTab, setReportsSubTab] = useState('pdf');
   const [committedAlert, setCommittedAlert] = useState(false);
@@ -3433,9 +3441,209 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     </>
   );
 
+  const handlePublishAnnouncementSA = async () => {
+    if (!announcementText.trim()) {
+      alert('Mangyaring mag-type muna ng announcement text!');
+      return;
+    }
+    await publishAnnouncement({
+      title: announcementTitle.trim() || 'Cooperative Broadcast Notice',
+      content: announcementText.trim(),
+      instantPush: pushToggle
+    });
+    alert('📢 Global Announcement Published Live & Push Pop-Up Broadcasted!');
+    setAnnouncementTitle('');
+    setAnnouncementText('');
+  };
+
+  const renderAnnouncementsPublisher = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Megaphone size={22} color="#d97706" />
+            Cooperative Announcements & Push Alerts
+          </h3>
+          <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '4px 0 0 0' }}>
+            Publish live announcements and trigger instant pop-up notifications across all connected web and mobile users.
+          </p>
+        </div>
+      </div>
+
+      {/* Global Announcement Publisher Card */}
+      <div className="m-card" style={{ border: '1px solid #fbd38d' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Megaphone size={18} color="#d97706" />
+              Publish Cooperative-Wide Global Announcement
+            </h4>
+            <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>
+              Reaches all Farmers, Farm Staff, and Executives instantly.
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.78rem', fontWeight: '600' }}>
+            <Bell size={15} color="#4b5563" />
+            Instant push notification
+            <label className="toggle-switch">
+              <input type="checkbox" checked={pushToggle} onChange={() => setPushToggle(!pushToggle)} />
+              <span className="slider" />
+            </label>
+          </div>
+        </div>
+
+        <input
+          type="text"
+          value={announcementTitle}
+          onChange={(e) => setAnnouncementTitle(e.target.value)}
+          placeholder="Notice Title (e.g. Fertilizer Distribution Schedule)"
+          style={{
+            width: '100%',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            border: '1.5px solid #cbd5e1',
+            fontSize: '0.85rem',
+            marginBottom: '10px',
+            fontWeight: '700',
+            outline: 'none',
+            background: '#ffffff'
+          }}
+        />
+
+        <textarea
+          value={announcementText}
+          onChange={(e) => setAnnouncementText(e.target.value)}
+          placeholder="I-type dito ang bagong abiso para sa mga magsasaka..."
+          rows={3}
+          style={{
+            width: '100%',
+            padding: '12px 14px',
+            borderRadius: '8px',
+            border: '1px solid #d1d5db',
+            fontSize: '0.85rem',
+            marginBottom: '16px',
+            outline: 'none'
+          }}
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button onClick={handlePublishAnnouncementSA} className="btn-orange">
+            <Megaphone size={16} /> Publish Announcement
+          </button>
+        </div>
+      </div>
+
+      {/* Live Feed */}
+      <div className="m-card">
+        <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Radio size={16} color="#16a34a" /> Live Cooperative Broadcast Feed ({(announcements || []).length} Published Notices)
+        </h4>
+
+        {(!announcements || announcements.length === 0) ? (
+          <div style={{ padding: '30px', textAlign: 'center', color: '#6b7280', fontSize: '0.85rem' }}>
+            No announcements published yet. Write an announcement above to broadcast live!
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {announcements.map((ann) => (
+              <div
+                key={ann.id}
+                onClick={() => setSelectedAnnouncement(ann)}
+                style={{
+                  padding: '14px 18px',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  background: '#f8fafc',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  display: 'flex',
+                  justify: 'space-between',
+                  alignItems: 'flex-start'
+                }}
+              >
+                <div>
+                  <h5 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0' }}>
+                    {ann.title || 'Cooperative Announcement'}
+                  </h5>
+                  <p style={{ fontSize: '0.8rem', color: '#475569', margin: '0 0 6px 0', lineHeight: 1.4 }}>
+                    {ann.content}
+                  </p>
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: '600' }}>
+                    Posted by {ann.author || 'Super Admin'} · {ann.date}
+                  </span>
+                </div>
+                {deleteAnnouncement && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm(`Are you sure you want to delete announcement "${ann.title}"?`)) {
+                        deleteAnnouncement(ann.id);
+                      }
+                    }}
+                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                    title="Delete Announcement"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Selected Detail Modal */}
+      {selectedAnnouncement && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="m-card" style={{ width: '100%', maxWidth: '500px', padding: '24px', borderRadius: '16px', background: '#ffffff', position: 'relative' }}>
+            <button
+              onClick={() => setSelectedAnnouncement(null)}
+              style={{ position: 'absolute', right: '16px', top: '16px', border: 'none', background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: '800' }}
+            >
+              ✕
+            </button>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', marginBottom: '4px' }}>
+              {selectedAnnouncement.title || 'Cooperative Announcement'}
+            </h3>
+            <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: '16px' }}>
+              Posted by {selectedAnnouncement.author || 'Super Admin'} · {selectedAnnouncement.date}
+            </span>
+            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px', fontSize: '0.85rem', color: '#334155', lineHeight: 1.5, marginBottom: '20px' }}>
+              {selectedAnnouncement.content}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              {deleteAnnouncement && (
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Are you sure you want to delete announcement "${selectedAnnouncement.title}"?`)) {
+                      deleteAnnouncement(selectedAnnouncement.id);
+                      setSelectedAnnouncement(null);
+                    }
+                  }}
+                  style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fca5a5', padding: '8px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  🗑️ Delete Announcement
+                </button>
+              )}
+              <button onClick={() => setSelectedAnnouncement(null)} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   let currentView = renderOverviewDashboard();
   if (activeTab === 'activity-monitoring') currentView = renderActivityMonitoring();
   if (activeTab === 'scheduling') currentView = renderSchedulingModule();
+  if (activeTab === 'announcements') currentView = renderAnnouncementsPublisher();
   if (activeTab === 'crop-monitoring') currentView = renderCropMonitoring();
   if (activeTab === 'livestock-monitoring') currentView = renderLivestockMonitoring();
   if (activeTab === 'analytics') currentView = renderAnalytics();

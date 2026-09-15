@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Cloud, UserCheck, Pencil, X } from 'lucide-react';
+import { Cloud, UserCheck, Pencil, X, Megaphone, Bell, Send } from 'lucide-react';
 
 const Header = () => {
-  const { tenantInfo, currentUser, updateProfile } = useAuth();
+  const { tenantInfo, currentUser, updateProfile, publishAnnouncement } = useAuth();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
   const [passInput, setPassInput] = useState('');
+
+  // Announcement Modal State
+  const [showAnnModal, setShowAnnModal] = useState(false);
+  const [annTitle, setAnnTitle] = useState('');
+  const [annContent, setAnnContent] = useState('');
+  const [annPush, setAnnPush] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const handleOpenModal = () => {
     if (!currentUser) return;
@@ -31,6 +38,33 @@ const Header = () => {
     setShowProfileModal(false);
   };
 
+  const handlePublishAnnSubmit = async (e) => {
+    e.preventDefault();
+    if (!annContent.trim()) {
+      alert('⚠️ Mangyaring mag-input muna ng announcement text!');
+      return;
+    }
+
+    setIsPublishing(true);
+    try {
+      if (publishAnnouncement) {
+        await publishAnnouncement({
+          title: annTitle.trim() || 'Cooperative Broadcast Notice',
+          content: annContent.trim(),
+          instantPush: annPush
+        });
+      }
+      alert('📢 Global Announcement Published Live & Instant Push Pop-Up Broadcasted across all connected clients!');
+      setAnnTitle('');
+      setAnnContent('');
+      setShowAnnModal(false);
+    } catch (err) {
+      console.error('Publish error:', err);
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   return (
     <header style={{
       display: 'flex',
@@ -50,8 +84,32 @@ const Header = () => {
         </span>
       </div>
 
-      {/* Right User & Cloud Sync info matching screenshots */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      {/* Right User & Quick Actions info */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Quick Announcement Push Button */}
+        <button
+          onClick={() => setShowAnnModal(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+            color: '#ffffff',
+            border: 'none',
+            padding: '7px 16px',
+            borderRadius: '20px',
+            fontWeight: '700',
+            fontSize: '0.78rem',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)',
+            transition: 'all 0.15s ease'
+          }}
+          title="Publish Live Cooperative Broadcast & Instant Push Notice"
+        >
+          <Megaphone size={15} />
+          📢 Broadcast Announcement
+        </button>
+
         {/* Cloud sync · Live Badge */}
         <div style={{
           display: 'flex',
@@ -60,8 +118,8 @@ const Header = () => {
           fontSize: '0.75rem',
           color: '#15803d',
           background: '#dcfce7',
-          padding: '4px 12px',
-          borderRadius: '16px',
+          padding: '6px 14px',
+          borderRadius: '20px',
           fontWeight: '600',
           border: '1px solid #86efac'
         }}>
@@ -110,6 +168,133 @@ const Header = () => {
           </div>
         </button>
       </div>
+
+      {/* QUICK BROADCAST ANNOUNCEMENT POP-UP MODAL */}
+      {showAnnModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100000
+        }}>
+          <div className="m-card" style={{
+            width: '100%', maxWidth: '500px', padding: '0', borderRadius: '20px',
+            overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+              padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Megaphone size={22} color="#ffffff" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>
+                    Publish Live Broadcast Announcement
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#fef3c7' }}>
+                    Sends live pop-up push notification across web and mobile
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAnnModal(false)}
+                style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handlePublishAnnSubmit} style={{ padding: '24px', background: '#ffffff' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>
+                  Notice Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="Notice Title (e.g. Organic Fertilizer Advisory)"
+                  value={annTitle}
+                  onChange={(e) => setAnnTitle(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    fontSize: '0.88rem',
+                    fontWeight: '700',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>
+                  Announcement Details / Content *
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  placeholder="I-type dito ang bagong abiso para sa mga magsasaka..."
+                  value={annContent}
+                  onChange={(e) => setAnnContent(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '10px',
+                    border: '1.5px solid #cbd5e1',
+                    fontSize: '0.88rem',
+                    outline: 'none',
+                    lineHeight: 1.5
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '10px 14px', borderRadius: '10px', marginBottom: '20px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: '700', color: '#334155' }}>
+                  <Bell size={16} color="#d97706" /> Trigger Live Pop-Up Broadcast
+                </div>
+                <input
+                  type="checkbox"
+                  checked={annPush}
+                  onChange={(e) => setAnnPush(e.target.checked)}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAnnModal(false)}
+                  style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isPublishing}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.85rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Send size={15} />
+                  {isPublishing ? 'Publishing...' : '🚀 Send Live Push Broadcast'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* EDIT MY PROFILE MODAL */}
       {showProfileModal && (
