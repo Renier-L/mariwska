@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Cloud, UserCheck, Pencil, X, Megaphone, Bell, Send } from 'lucide-react';
 
 const Header = () => {
-  const { tenantInfo, currentUser, updateProfile, publishAnnouncement } = useAuth();
+  const { tenantInfo, currentUser, currentRole, updateProfile, publishAnnouncement } = useAuth();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [phoneInput, setPhoneInput] = useState('');
@@ -15,6 +15,9 @@ const Header = () => {
   const [annContent, setAnnContent] = useState('');
   const [annPush, setAnnPush] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
+
+  const canBroadcast = currentRole === 'super_admin' || currentRole === 'admin' || currentUser?.role === 'Executive' || currentUser?.role === 'Admin';
+
 
   const handleOpenModal = () => {
     if (!currentUser) return;
@@ -86,29 +89,32 @@ const Header = () => {
 
       {/* Right User & Quick Actions info */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {/* Quick Announcement Push Button */}
-        <button
-          onClick={() => setShowAnnModal(true)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
-            color: '#ffffff',
-            border: 'none',
-            padding: '7px 16px',
-            borderRadius: '20px',
-            fontWeight: '700',
-            fontSize: '0.78rem',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)',
-            transition: 'all 0.15s ease'
-          }}
-          title="Publish Live Cooperative Broadcast & Instant Push Notice"
-        >
-          <Megaphone size={15} />
-          📢 Broadcast Announcement
-        </button>
+        {/* Quick Announcement Push Button - Admin & Super Admin Only */}
+        {canBroadcast && (
+          <button
+            onClick={() => setShowAnnModal(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+              color: '#ffffff',
+              border: 'none',
+              padding: '7px 16px',
+              borderRadius: '20px',
+              fontWeight: '700',
+              fontSize: '0.78rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(217, 119, 6, 0.3)',
+              transition: 'all 0.15s ease'
+            }}
+            title="Publish Live Cooperative Broadcast & Instant Push Notice"
+          >
+            <Megaphone size={15} />
+            📢 Broadcast Announcement
+          </button>
+        )}
+
 
         {/* Cloud sync · Live Badge */}
         <div style={{
