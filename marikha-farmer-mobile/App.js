@@ -131,13 +131,7 @@ export default function App() {
   // AI Recommendation state
   const [season, setSeason] = useState('Tag-init (Dry)');
   const [isCalculatingAI, setIsCalculatingAI] = useState(false);
-  const [aiResult, setAiResult] = useState({
-    crop: 'Tomato · Diamante',
-    confidence: '87%',
-    output: '412 kg',
-    sacks: '~ 8 sacks',
-    harvestWindow: 'Nov 18 – Dec 02, 2025'
-  });
+
 
   // Real-Time Yield Prediction Module State & Logic
   const [showYieldPredictionModal, setShowYieldPredictionModal] = useState(false);
