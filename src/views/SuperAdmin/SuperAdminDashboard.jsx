@@ -274,13 +274,15 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       return '';
     }
 
+    // Generate random predictive variance per crop type (Random Forest Model Simulation)
     let baseKg = 400;
-    if (name.includes('tomato') || name.includes('kamatis')) baseKg = 480;
-    else if (name.includes('eggplant') || name.includes('talong')) baseKg = 380;
-    else if (name.includes('okra')) baseKg = 290;
-    else if (name.includes('squash') || name.includes('kalabasa')) baseKg = 520;
-    else if (name.includes('lettuce') || name.includes('matsa')) baseKg = 220;
-    else if (name.includes('corn') || name.includes('mais')) baseKg = 610;
+    if (name.includes('tomato') || name.includes('kamatis')) baseKg = 460 + Math.floor(Math.random() * 50);
+    else if (name.includes('eggplant') || name.includes('talong')) baseKg = 360 + Math.floor(Math.random() * 45);
+    else if (name.includes('okra')) baseKg = 270 + Math.floor(Math.random() * 35);
+    else if (name.includes('squash') || name.includes('kalabasa')) baseKg = 500 + Math.floor(Math.random() * 65);
+    else if (name.includes('lettuce') || name.includes('matsa')) baseKg = 210 + Math.floor(Math.random() * 30);
+    else if (name.includes('corn') || name.includes('mais')) baseKg = 580 + Math.floor(Math.random() * 60);
+    else baseKg = 350 + Math.floor(Math.random() * 50);
 
     const stage = (growthStage || 'Vegetative').toLowerCase();
     let multiplier = 1.0;
@@ -2995,12 +2997,12 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                   <select 
                     value={newCropForm.growthStage} 
                     onChange={e => handleCropStageChange(e.target.value)}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px', background: '#fff', fontWeight: '600' }}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px', background: '#ffffff', color: '#0f172a', fontWeight: '700', outline: 'none', cursor: 'pointer' }}
                   >
-                    <option value="Vegetative">Vegetative (85% Output)</option>
-                    <option value="Flowering">Flowering (100% Target)</option>
-                    <option value="Fruiting">Fruiting (115% Peak)</option>
-                    <option value="Harvest Ready">Harvest Ready (125% Max)</option>
+                    <option value="Vegetative" style={{ color: '#0f172a', background: '#ffffff' }}>Vegetative (85% Output)</option>
+                    <option value="Flowering" style={{ color: '#0f172a', background: '#ffffff' }}>Flowering (100% Target)</option>
+                    <option value="Fruiting" style={{ color: '#0f172a', background: '#ffffff' }}>Fruiting (115% Peak)</option>
+                    <option value="Harvest Ready" style={{ color: '#0f172a', background: '#ffffff' }}>Harvest Ready (125% Max)</option>
                   </select>
                 </div>
               </div>
