@@ -28,6 +28,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     portalTitle = 'Super Admin Portal';
     navItems = [
       { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { id: 'member-records', label: 'Member Records', icon: Users },
       { id: 'activity-monitoring', label: 'Activity Monitoring', icon: Activity },
       { id: 'scheduling', label: 'Cooperative Scheduling', icon: CalendarDays },
       { id: 'announcements', label: 'Announcements Push', icon: Megaphone },

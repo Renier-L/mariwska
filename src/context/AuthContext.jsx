@@ -569,6 +569,11 @@ export const AuthProvider = ({ children }) => {
     const userObj = { 
       ...newUser, 
       id: String(Date.now()), 
+      assignedPlot: newUser.assignedPlot || 'Plot P-007 (Tomato Diamante)',
+      rsbsaNo: newUser.rsbsaNo || 'RSBSA-03-1425-001',
+      certification: newUser.certification || 'PGS Certified Organic Farmer',
+      emergencyContact: newUser.emergencyContact || 'Maria Lopez (+63 918 777 8888)',
+      joinDate: newUser.joinDate || new Date().toISOString().split('T')[0],
       password: newUser.password ? String(newUser.password).trim() : 'password123',
       initials: newUser.name ? newUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
     };
@@ -593,20 +598,29 @@ export const AuthProvider = ({ children }) => {
         role: newUser.role, 
         email: newUser.email, 
         phone: newUser.phone || '+63 917 555 0100',
+        assigned_plot: newUser.assignedPlot || 'Plot P-007 (Tomato Diamante)',
+        rsbsa_no: newUser.rsbsaNo || 'RSBSA-03-1425-001',
+        certification: newUser.certification || 'PGS Certified Organic Farmer',
+        emergency_contact: newUser.emergencyContact || 'Maria Lopez (+63 918 777 8888)',
+        join_date: newUser.joinDate || new Date().toISOString().split('T')[0],
         password: newUser.password ? String(newUser.password).trim() : 'password123',
         status: newUser.status !== false
       };
 
       const { data, error } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
 
-      if (error && error.message.includes('password')) {
-        // Fallback retry without password column if missing in Supabase schema
-        delete payload.password;
-        await supabase.from('users').upsert(payload, { onConflict: 'email' });
-      } else if (error) {
-        console.error('Supabase User Insert Error:', error);
+      if (error) {
+        // Fallback retry with base columns if custom columns fail in Supabase schema
+        const basicPayload = {
+          name: newUser.name,
+          role: newUser.role,
+          email: newUser.email,
+          phone: newUser.phone || '+63 917 555 0100',
+          status: newUser.status !== false
+        };
+        await supabase.from('users').upsert(basicPayload, { onConflict: 'email' });
       } else if (data && data[0]) {
-        console.log('Supabase User Inserted/Updated:', data[0]);
+        console.log('Supabase Member Record Inserted Live:', data[0]);
       }
     } catch (e) {
       console.log('Supabase sync error:', e);
@@ -632,24 +646,26 @@ export const AuthProvider = ({ children }) => {
         role: updatedData.role,
         email: updatedData.email,
         phone: updatedData.phone || '+63 917 555 0100',
+        assigned_plot: updatedData.assignedPlot || 'Plot P-007 (Vegetable Sector)',
+        rsbsa_no: updatedData.rsbsaNo || 'RSBSA-03-1425-001',
+        certification: updatedData.certification || 'PGS Certified Organic Farmer',
+        emergency_contact: updatedData.emergencyContact || 'Family Contact (+63 918 555 0100)',
         password: updatedData.password ? String(updatedData.password).trim() : 'password123'
       };
 
       const { data, error } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
 
-      if (error && error.message.includes('password')) {
-        // Fallback retry without password column if missing in Supabase schema
-        delete payload.password;
-        const { data: retryData, error: retryError } = await supabase.from('users').upsert(payload, { onConflict: 'email' }).select();
-        if (!retryError) {
-          console.log('Supabase User Updated Live (schema fallback):', retryData);
-        } else {
-          console.error('Supabase User Update Retry Error:', retryError);
-        }
-      } else if (error) {
-        console.error('Supabase User Update Error:', error);
+      if (error) {
+        // Fallback retry with basic columns
+        const basicPayload = {
+          name: updatedData.name,
+          role: updatedData.role,
+          email: updatedData.email,
+          phone: updatedData.phone || '+63 917 555 0100'
+        };
+        await supabase.from('users').upsert(basicPayload, { onConflict: 'email' });
       } else {
-        console.log('Supabase User Updated Live:', data);
+        console.log('Supabase Member Record Updated Live:', data);
       }
     } catch (e) {
       console.log('Supabase update error:', e);
@@ -1069,16 +1085,32 @@ export const AuthProvider = ({ children }) => {
   // Manual One-Click Supabase Seed & Sync Repair
   const syncSeedToSupabase = async () => {
     try {
-      // 1. Sync Users
+      // 1. Sync Member Records & User Accounts
       for (const u of users) {
-        await supabase.from('users').upsert({
-          name: u.name,
-          role: u.role,
-          email: u.email,
-          phone: u.phone || '+63 917 555 0100',
-          password: u.password || 'password123',
-          status: u.status !== false
-        }, { onConflict: 'email' });
+        try {
+          await supabase.from('users').upsert({
+            name: u.name,
+            role: u.role,
+            email: u.email,
+            phone: u.phone || '+63 917 555 0100',
+            assigned_plot: u.assignedPlot || 'Plot P-007 (Tomato Diamante)',
+            rsbsa_no: u.rsbsaNo || 'RSBSA-03-1425-001',
+            certification: u.certification || 'PGS Certified Organic Farmer',
+            emergency_contact: u.emergencyContact || 'Maria Lopez (+63 918 777 8888)',
+            join_date: u.joinDate || '2024-03-15',
+            password: u.password || 'password123',
+            status: u.status !== false
+          }, { onConflict: 'email' });
+        } catch (err) {
+          // Fallback basic upsert
+          await supabase.from('users').upsert({
+            name: u.name,
+            role: u.role,
+            email: u.email,
+            phone: u.phone || '+63 917 555 0100',
+            status: u.status !== false
+          }, { onConflict: 'email' });
+        }
       }
 
       // 2. Sync Announcements

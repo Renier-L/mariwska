@@ -11,7 +11,7 @@ import { Bell, X, Megaphone, Loader2 } from 'lucide-react';
 import './styles/theme.css';
 
 const VALID_TABS = {
-  super_admin: ['dashboard', 'activity-monitoring', 'scheduling', 'announcements', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
+  super_admin: ['dashboard', 'member-records', 'user-accounts', 'activity-monitoring', 'scheduling', 'announcements', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
   admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
   farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'livestock-management', 'reports']
 };
@@ -70,7 +70,11 @@ const MainContent = () => {
       <div className="main-viewport">
         <Header />
         <main className="content-inner">
-          {currentRole === 'super_admin' && <SuperAdminDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
+          {currentRole === 'super_admin' && (
+            (activeTab === 'member-records' || activeTab === 'user-accounts')
+              ? <AdminConsole activeTab={activeTab} />
+              : <SuperAdminDashboard activeTab={activeTab} setActiveTab={setActiveTab} />
+          )}
           {currentRole === 'admin' && <AdminConsole activeTab={activeTab} />}
           {currentRole === 'farm_staff' && <FarmStaffDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
         </main>
