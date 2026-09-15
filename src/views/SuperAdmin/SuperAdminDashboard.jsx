@@ -433,26 +433,29 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
   const dynamicOverviewTrendData = React.useMemo(() => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const baseTarget = [60, 64, 68, 70, 74, 76, 78, 80, 82, 84, 86, 88];
+    const baseTarget = [60, 64, 68, 70, 74, 76, 78, 80, 82, 85, 88, 90];
+    const seasonalCurve = [64, 68, 72, 75, 82, 86, 91, 88, 94, 90, 93, 96];
+
     const totalC = crops ? crops.length : 5;
     const valC = validatedCount;
     
     if (resetCycleNotice) {
       // Post-reset new planting cycle horizon
-      return months.slice(0, 4).map((m, idx) => ({
+      return months.map((m, idx) => ({
         month: m,
-        index: Math.min(95, Math.round(48 + (idx * 5) + (valC * 1.2))),
-        target: 60 + idx * 5
+        index: Math.min(96, Math.round(45 + (idx * 4) + (valC * 0.8))),
+        target: 60 + Math.round(idx * 2.5)
       }));
     }
 
-    const activeMonths = trendSeason === '2026' ? months.slice(0, 9) : months;
-    return activeMonths.map((m, idx) => {
-      const idxScore = Math.min(98, Math.round(55 + (idx * 4.2) + (totalC * 1.2) + (valC * 1.8)));
+    return months.map((m, idx) => {
+      // Dynamic real-time calculation adjusting for live crops and validation score
+      const liveBoost = Math.round((totalC * 0.5) + (valC * 0.8));
+      const idxScore = Math.min(98, Math.max(50, seasonalCurve[idx] + Math.min(5, liveBoost - 4)));
       return {
         month: m,
         index: idxScore,
-        target: baseTarget[idx] || 80
+        target: baseTarget[idx]
       };
     });
   }, [crops, validatedCount, resetCycleNotice, trendSeason]);
@@ -489,15 +492,18 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
   const dynamicMonthlyYieldForecast = React.useMemo(() => {
     const months = [
-      { month: 'Jan', harvestKg: 420, predictedKg: 460, topCrop: 'Tomato (Diamante)' },
-      { month: 'Feb', harvestKg: 480, predictedKg: 510, topCrop: 'Eggplant (Callander)' },
-      { month: 'Mar', harvestKg: 530, predictedKg: 580, topCrop: 'Okra (Smooth Green)' },
-      { month: 'Apr', harvestKg: 590, predictedKg: 640, topCrop: 'Squash (Suprema)' },
-      { month: 'May', harvestKg: 650, predictedKg: 710, topCrop: 'Tomato (Diamante)' },
-      { month: 'Jun', harvestKg: 720, predictedKg: 780, topCrop: 'Sweet Corn (Glutinous)' },
-      { month: 'Jul', harvestKg: 780, predictedKg: 840, topCrop: 'Eggplant (Callander)' },
-      { month: 'Aug', harvestKg: 840, predictedKg: 910, topCrop: 'Okra (Smooth Green)' },
-      { month: 'Sep', harvestKg: 910, predictedKg: 980, topCrop: 'Squash (Suprema)' }
+      { month: 'Jan', harvestKg: 420, predictedKg: 460, topCrop: 'Tomato' },
+      { month: 'Feb', harvestKg: 480, predictedKg: 510, topCrop: 'Eggplant' },
+      { month: 'Mar', harvestKg: 530, predictedKg: 580, topCrop: 'Okra' },
+      { month: 'Apr', harvestKg: 590, predictedKg: 640, topCrop: 'Squash' },
+      { month: 'May', harvestKg: 650, predictedKg: 710, topCrop: 'Tomato' },
+      { month: 'Jun', harvestKg: 720, predictedKg: 780, topCrop: 'Eggplant' },
+      { month: 'Jul', harvestKg: 780, predictedKg: 840, topCrop: 'Okra' },
+      { month: 'Aug', harvestKg: 840, predictedKg: 910, topCrop: 'Squash' },
+      { month: 'Sep', harvestKg: 910, predictedKg: 980, topCrop: 'Tomato' },
+      { month: 'Oct', harvestKg: 860, predictedKg: 920, topCrop: 'Eggplant' },
+      { month: 'Nov', harvestKg: 890, predictedKg: 950, topCrop: 'Okra' },
+      { month: 'Dec', harvestKg: 940, predictedKg: 1020, topCrop: 'Squash' }
     ];
 
     if (!crops || crops.length === 0) return months;
@@ -1631,7 +1637,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
             <div>
               <div style={{ height: '170px' }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dynamicMonthlyYieldForecast.slice(0, 9)} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart data={dynamicMonthlyYieldForecast} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <XAxis dataKey="month" stroke="#94a3b8" fontSize={10} tickLine={false} />
                     <YAxis stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
                     <Tooltip 
@@ -1647,7 +1653,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
               {/* Dynamic Monthly Forecast Legend & Top Crop Preview */}
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 10px', borderRadius: '8px', marginTop: '8px', fontSize: '0.72rem', color: '#166534', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <strong>Peak Month:</strong> Sep Harvest (~{dynamicMonthlyYieldForecast[8]?.predictedKg || 980} kg Predicted)
+                  <strong>Peak Month:</strong> Dec Harvest (~{dynamicMonthlyYieldForecast[11]?.predictedKg || 1020} kg Predicted)
                 </div>
                 <div style={{ fontWeight: '800', color: '#0c3619' }}>
                   Total: {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg AI Annual Forecast
