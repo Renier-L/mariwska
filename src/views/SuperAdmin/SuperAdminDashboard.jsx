@@ -96,7 +96,25 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
-  const { crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule } = useAuth();
+  const { crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule, selectedSeason, setSelectedSeason } = useAuth();
+
+  const filterBySeason = (items) => {
+    if (!Array.isArray(items)) return [];
+    if (!selectedSeason || selectedSeason.includes('All Seasons')) return items;
+    let targetYear = '2026';
+    if (selectedSeason.includes('2025')) targetYear = '2025';
+    if (selectedSeason.includes('2024')) targetYear = '2024';
+
+    return items.filter(item => {
+      if (!item) return false;
+      if (item.season && item.season.includes(targetYear)) return true;
+      if (item.year && String(item.year) === targetYear) return true;
+      const d = item.date || item.timestamp || item.createdAt || item.joinDate || item.lastUpdated || item.startDate;
+      if (d && String(d).includes(targetYear)) return true;
+      if (targetYear === '2026') return true;
+      return false;
+    });
+  };
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementText, setAnnouncementText] = useState('');
   const [pushToggle, setPushToggle] = useState(true);

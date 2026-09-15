@@ -96,7 +96,9 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
     schedules,
     addSchedule,
     publishAnnouncement,
-    users
+    users,
+    selectedSeason,
+    setSelectedSeason
   } = useAuth();
 
   const safeValidations = Array.isArray(validations) ? validations : [];
@@ -105,6 +107,29 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const safeLivestock = Array.isArray(livestock) ? livestock : [];
   const safeSchedules = Array.isArray(schedules) ? schedules : [];
   const safeUsers = Array.isArray(users) ? users : [];
+
+  const filterBySeason = (items) => {
+    if (!Array.isArray(items)) return [];
+    if (!selectedSeason || selectedSeason.includes('All Seasons')) return items;
+    let targetYear = '2026';
+    if (selectedSeason.includes('2025')) targetYear = '2025';
+    if (selectedSeason.includes('2024')) targetYear = '2024';
+
+    return items.filter(item => {
+      if (!item) return false;
+      if (item.season && item.season.includes(targetYear)) return true;
+      if (item.year && String(item.year) === targetYear) return true;
+      const d = item.date || item.timestamp || item.createdAt || item.joinDate || item.lastUpdated || item.startDate;
+      if (d && String(d).includes(targetYear)) return true;
+      if (targetYear === '2026') return true;
+      return false;
+    });
+  };
+
+  const seasonFilteredValidations = filterBySeason(safeValidations);
+  const seasonFilteredCrops = filterBySeason(safeCrops);
+  const seasonFilteredLivestock = filterBySeason(safeLivestock);
+  const seasonFilteredSchedules = filterBySeason(safeSchedules);
 
   const [preventivePlanApplied, setPreventivePlanApplied] = useState(false);
   const [isReRunningRF, setIsReRunningRF] = useState(false);
@@ -237,7 +262,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   const [editCropIrrigation, setEditCropIrrigation] = useState('');
   const [editCropYield, setEditCropYield] = useState('');
 
-  const filteredCrops = safeCrops.filter(c => {
+  const filteredCrops = seasonFilteredCrops.filter(c => {
     if (!c) return false;
     const matchesStage = cropStageFilter === 'All' || c.growthStage === cropStageFilter || (cropStageFilter === 'Fruiting' && c.growthStage?.includes('Fruiting'));
     const q = cropSearchQuery.toLowerCase().trim();
@@ -307,7 +332,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
   };
 
 
-  const filteredValidations = safeValidations.filter(v => {
+  const filteredValidations = seasonFilteredValidations.filter(v => {
     if (!v) return false;
     const query = (farmerSearchQuery || '').toLowerCase().trim();
     if (!query) return true;

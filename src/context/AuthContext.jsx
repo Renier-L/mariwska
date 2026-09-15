@@ -20,6 +20,21 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
+  const [selectedSeason, setSelectedSeasonState] = useState(() => {
+    try {
+      return localStorage.getItem('marikha_selected_season') || '2026 Active Season';
+    } catch (e) {
+      return '2026 Active Season';
+    }
+  });
+
+  const setSelectedSeason = (season) => {
+    setSelectedSeasonState(season);
+    try {
+      localStorage.setItem('marikha_selected_season', season);
+    } catch (e) {}
+  };
+
   const [currentUser, setCurrentUser] = useState(initialUsers[0]);
   const [tenantInfo] = useState({
     name: 'Antipolo Organic Farming Cooperative',
@@ -1327,6 +1342,8 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       currentUser,
       currentRole,
+      selectedSeason,
+      setSelectedSeason,
       tenantInfo,
       users,
       crops,
