@@ -217,6 +217,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
   const [scheduleCategory, setScheduleCategory] = useState('all');
   const [showAddScheduleModal, setShowAddScheduleModal] = useState(false);
+  const [selectedCalDate, setSelectedCalDate] = useState(null);
   const [calDate, setCalDate] = useState(() => new Date(2026, 8, 1));
 
   const handlePrevMonth = () => {
@@ -1096,7 +1097,17 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         s.priority,
         s.category
       ].some(f => f && String(f).toLowerCase().includes(q));
-      return catMatch && statusMatch && searchMatch;
+
+      let dateMatch = true;
+      if (selectedCalDate) {
+        if (s.date) {
+          dateMatch = String(s.date).trim() === String(selectedCalDate).trim();
+        } else {
+          dateMatch = false;
+        }
+      }
+
+      return catMatch && statusMatch && searchMatch && dateMatch;
     });
 
     const upcomingCount = (schedules || []).filter(s => s.status === 'Upcoming' || s.status === 'Scheduled').length;
@@ -1119,11 +1130,19 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     const handleDayClick = (dayNum) => {
       const mm = String(calMonth + 1).padStart(2, '0');
       const dd = String(dayNum).padStart(2, '0');
+      const dateStr = `${calYear}-${mm}-${dd}`;
+      
+      // Toggle date selection: click same date again to clear, or filter by clicked date
+      if (selectedCalDate === dateStr) {
+        setSelectedCalDate(null);
+      } else {
+        setSelectedCalDate(dateStr);
+      }
+
       setNewScheduleForm(prev => ({
         ...prev,
-        date: `${calYear}-${mm}-${dd}`
+        date: dateStr
       }));
-      setShowAddScheduleModal(true);
     };
 
     return (
@@ -1264,6 +1283,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
               {monthDaysList.map((dayNum) => {
                 const isToday = isCurrentRealMonth && dayNum === realTodayDate;
+                const formattedDateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                const isSelectedDate = selectedCalDate === formattedDateStr;
+
                 const dayEvents = (schedules || []).filter(s => {
                   if (!s.date) return false;
                   try {
@@ -1285,10 +1307,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                   <div
                     key={dayNum}
                     onClick={() => handleDayClick(dayNum)}
-                    title={`Click to schedule an event on ${monthNames[calMonth]} ${dayNum}, ${calYear}`}
+                    title={`Click to view/filter tasks for ${monthNames[calMonth]} ${dayNum}, ${calYear}`}
                     style={{
-                      background: isToday ? '#e4f0e6' : (dayEvents.length > 0 ? '#f0fdf4' : '#ffffff'),
-                      border: isToday ? '2px solid #11592c' : (dayEvents.length > 0 ? '1.5px solid #86efac' : '1px solid #e2e8f0'),
+                      background: isSelectedDate ? '#dcfce7' : (isToday ? '#e4f0e6' : (dayEvents.length > 0 ? '#f0fdf4' : '#ffffff')),
+                      border: isSelectedDate ? '2.5px solid #16a34a' : (isToday ? '2px solid #11592c' : (dayEvents.length > 0 ? '1.5px solid #86efac' : '1px solid #e2e8f0')),
                       borderRadius: '8px',
                       padding: '6px 8px',
                       height: '58px',
@@ -1296,16 +1318,19 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                       flexDirection: 'column',
                       justifyContent: 'space-between',
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      boxShadow: isSelectedDate ? '0 0 10px rgba(22,163,74,0.35)' : 'none'
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: isToday ? '800' : '700', color: isToday ? '#11592c' : '#374151' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: (isToday || isSelectedDate) ? '800' : '700', color: isSelectedDate ? '#15803d' : (isToday ? '#11592c' : '#374151') }}>
                         {dayNum}
                       </span>
-                      {isToday && (
+                      {isSelectedDate ? (
+                        <span style={{ fontSize: '0.58rem', background: '#16a34a', color: '#ffffff', padding: '1px 5px', borderRadius: '4px', fontWeight: '800' }}>ACTIVE</span>
+                      ) : (isToday && (
                         <span style={{ fontSize: '0.6rem', background: '#11592c', color: '#ffffff', padding: '1px 4px', borderRadius: '4px', fontWeight: '800' }}>TODAY</span>
-                      )}
+                      ))}
                     </div>
                     <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap', alignItems: 'center' }}>
                       {dayEvents.map((evt, eIdx) => (
@@ -1333,17 +1358,61 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           {/* Upcoming Event Summaries & Interactive Activity Timelines */}
           <div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', marginBottom: '4px' }}>
-                Upcoming Activity Timelines
-              </h4>
-              <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '14px' }}>
-                Live operational execution timeline synced with Supabase
-              </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                  Upcoming Activity Timelines
+                </h4>
+                {selectedCalDate && (
+                  <button 
+                    onClick={() => setSelectedCalDate(null)} 
+                    style={{
+                      background: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b',
+                      padding: '3px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer'
+                    }}
+                  >
+                    ✕ Show All Dates
+                  </button>
+                )}
+              </div>
+
+              {selectedCalDate ? (
+                <div style={{
+                  background: '#f0fdf4', border: '1.5px solid #86efac', padding: '8px 12px', borderRadius: '8px',
+                  marginBottom: '14px', fontSize: '0.78rem', color: '#15803d', fontWeight: '800', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                }}>
+                  <span>📅 Showing Tasks Due on {selectedCalDate} ({filteredSchedules.length} Tasks)</span>
+                  <button 
+                    onClick={() => setShowAddScheduleModal(true)}
+                    style={{ background: '#0c3619', color: '#ffffff', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer' }}
+                  >
+                    + Add Task
+                  </button>
+                </div>
+              ) : (
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', display: 'block', marginBottom: '14px' }}>
+                  Live operational execution timeline synced with Supabase · Click any calendar date to filter tasks
+                </span>
+              )}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '420px', overflowY: 'auto', paddingRight: '4px' }}>
                 {filteredSchedules.length === 0 ? (
-                  <div style={{ padding: '24px', textAlign: 'center', color: '#6b7280', fontSize: '0.82rem', background: '#fafafa', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
-                    No schedules found for selected filter.
+                  <div style={{ padding: '24px', textAlign: 'center', color: '#475569', fontSize: '0.85rem', background: '#fafafa', borderRadius: '10px', border: '1.5px dashed #cbd5e1' }}>
+                    <div style={{ fontSize: '1.4rem', marginBottom: '6px' }}>📅</div>
+                    <div style={{ fontWeight: '800', color: '#1e293b', marginBottom: '4px' }}>
+                      {selectedCalDate ? `No Activities Scheduled for ${selectedCalDate}` : 'No schedules found for selected filter'}
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: '12px' }}>
+                      {selectedCalDate ? 'There are no active tasks or routines assigned on this day.' : 'Try selecting a different date or filter category.'}
+                    </div>
+                    {selectedCalDate && (
+                      <button 
+                        onClick={() => setShowAddScheduleModal(true)} 
+                        className="btn-primary" 
+                        style={{ padding: '6px 14px', fontSize: '0.78rem', margin: '0 auto' }}
+                      >
+                        + Add Schedule for {selectedCalDate}
+                      </button>
+                    )}
                   </div>
                 ) : (
                   filteredSchedules.map((s) => {
