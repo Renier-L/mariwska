@@ -89,31 +89,6 @@ const Header = () => {
 
       {/* Right User & Quick Actions info */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {/* Season / Cycle Filter Dropdown Matching User Request */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <select
-            value={selectedSeason || '2026 Active Season'}
-            onChange={(e) => setSelectedSeason(e.target.value)}
-            style={{
-              padding: '7px 14px',
-              borderRadius: '20px',
-              border: '1.5px solid #11592c',
-              fontSize: '0.78rem',
-              fontWeight: '800',
-              color: '#11592c',
-              background: '#ffffff',
-              cursor: 'pointer',
-              outline: 'none',
-              boxShadow: '0 2px 8px rgba(17, 89, 44, 0.15)'
-            }}
-            title="Filter data cycle across all modules"
-          >
-            <option value="2026 Active Season">2026 Active Season</option>
-            <option value="2025 Historical Cycle">2025 Historical Cycle</option>
-            <option value="2024 Archive Cycle">2024 Archive Cycle</option>
-            <option value="All Seasons">All Seasons Consolidated</option>
-          </select>
-        </div>
 
         {/* Quick Announcement Push Button - Admin & Super Admin Only */}
         {canBroadcast && (
