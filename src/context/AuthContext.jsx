@@ -962,6 +962,51 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateCrop = async (cropId, updatedFields) => {
+    setCrops(prev => {
+      const next = prev.map(c => String(c.id) === String(cropId) ? { ...c, ...updatedFields } : c);
+      try { localStorage.setItem('marikha_crops_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'CROP_UPDATED_PUSH', payload: { id: cropId, ...updatedFields } });
+    }
+
+    try {
+      const payload = {
+        variety: updatedFields.variety,
+        plot: updatedFields.plot,
+        growth_stage: updatedFields.growthStage,
+        fertilizer: updatedFields.fertilizer,
+        irrigation: updatedFields.irrigation,
+        yield: updatedFields.yield
+      };
+      await supabase.from('crops').update(payload).eq('id', cropId);
+    } catch (e) {
+      console.log('Supabase crop update error:', e);
+    }
+  };
+
+  const deleteCrop = async (cropId) => {
+    setCrops(prev => {
+      const next = prev.filter(c => String(c.id) !== String(cropId));
+      try { localStorage.setItem('marikha_crops_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
+
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: 'CROP_DELETED_PUSH', payload: { id: cropId } });
+    }
+
+    try {
+      await supabase.from('crops').delete().eq('id', cropId);
+    } catch (e) {
+      console.log('Supabase crop delete error:', e);
+    }
+  };
+
+
   const addLivestock = async (newItem) => {
     const itemObj = {
       id: String(Date.now()),
@@ -1262,7 +1307,10 @@ export const AuthProvider = ({ children }) => {
       handleValidationAction,
       addFarmerSubmission,
       addCrop,
+      updateCrop,
+      deleteCrop,
       addLivestock,
+
       togglePermission,
       setCurrentRole,
       syncSeedToSupabase

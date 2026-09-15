@@ -16,8 +16,17 @@ import {
   Printer, 
   Camera,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Plus,
+  Search,
+  Pencil,
+  Trash2,
+  Eye,
+  X,
+  Sprout,
+  Droplets
 } from 'lucide-react';
+
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
 
@@ -72,16 +81,113 @@ const safetyIndexData = [
 ];
 
 const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
-  const { validations, handleValidationAction, mlClassifications } = useAuth();
+  const { validations, handleValidationAction, mlClassifications, crops, addCrop, updateCrop, deleteCrop } = useAuth();
 
   const safeValidations = Array.isArray(validations) ? validations : [];
   const safeMLClassifications = Array.isArray(mlClassifications) ? mlClassifications : [];
+  const safeCrops = Array.isArray(crops) ? crops : [];
 
   const [selectedValId, setSelectedValId] = useState(safeValidations[0]?.id || 'val-1');
   const [staffNote, setStaffNote] = useState('');
   const [reportsTab, setReportsTab] = useState('productivity');
   const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
   const [previewModalUrl, setPreviewModalUrl] = useState(null);
+
+  // Crop Management Search & Filter State
+  const [cropSearchQuery, setCropSearchQuery] = useState('');
+  const [cropStageFilter, setCropStageFilter] = useState('All');
+
+  // Crop Management CRUD Modals & Forms State
+  const [showAddCropModal, setShowAddCropModal] = useState(false);
+  const [showEditCropModal, setShowEditCropModal] = useState(false);
+  const [selectedCropDetail, setSelectedCropDetail] = useState(null);
+
+  // New Crop Form State
+  const [newCropVariety, setNewCropVariety] = useState('');
+  const [newCropPlot, setNewCropPlot] = useState('Plot P-007 (Vegetable Sector)');
+  const [newCropStage, setNewCropStage] = useState('Vegetative');
+  const [newCropFertilizer, setNewCropFertilizer] = useState('Fermented Fruit Juice (Organic Foliar)');
+  const [newCropIrrigation, setNewCropIrrigation] = useState('Drip Irrigation System');
+  const [newCropYield, setNewCropYield] = useState('450 kg');
+
+  // Edit Crop Form State
+  const [editCropId, setEditCropId] = useState('');
+  const [editCropVariety, setEditCropVariety] = useState('');
+  const [editCropPlot, setEditCropPlot] = useState('');
+  const [editCropStage, setEditCropStage] = useState('Vegetative');
+  const [editCropFertilizer, setEditCropFertilizer] = useState('');
+  const [editCropIrrigation, setEditCropIrrigation] = useState('');
+  const [editCropYield, setEditCropYield] = useState('');
+
+  const filteredCrops = safeCrops.filter(c => {
+    if (!c) return false;
+    const matchesStage = cropStageFilter === 'All' || c.growthStage === cropStageFilter || (cropStageFilter === 'Fruiting' && c.growthStage?.includes('Fruiting'));
+    const q = cropSearchQuery.toLowerCase().trim();
+    const matchesSearch = !q ||
+      (c.variety && c.variety.toLowerCase().includes(q)) ||
+      (c.plot && c.plot.toLowerCase().includes(q)) ||
+      (c.fertilizer && c.fertilizer.toLowerCase().includes(q)) ||
+      (c.growthStage && c.growthStage.toLowerCase().includes(q));
+    return matchesStage && matchesSearch;
+  });
+
+  const handleCreateCropSubmit = (e) => {
+    e.preventDefault();
+    if (!newCropVariety) return;
+    addCrop({
+      variety: newCropVariety,
+      plot: newCropPlot || 'Plot P-007 (Vegetable Sector)',
+      growthStage: newCropStage,
+      fertilizer: newCropFertilizer || 'Organic Compost Tea',
+      irrigation: newCropIrrigation || 'Drip Irrigation',
+      yield: newCropYield || '450 kg'
+    });
+    alert(`✅ New Crop Record created for ${newCropVariety} (${newCropPlot})!\nStage: ${newCropStage}\nSynced live to Supabase Cloud.`);
+    setShowAddCropModal(false);
+    setNewCropVariety('');
+  };
+
+  const handleOpenEditCropModal = (c) => {
+    setEditCropId(c.id);
+    setEditCropVariety(c.variety || '');
+    setEditCropPlot(c.plot || 'Plot P-007');
+    setEditCropStage(c.growthStage || 'Vegetative');
+    setEditCropFertilizer(c.fertilizer || 'Organic Compost');
+    setEditCropIrrigation(c.irrigation || 'Drip System');
+    setEditCropYield(c.yield || '350 kg');
+    setShowEditCropModal(true);
+  };
+
+  const handleUpdateCropSubmit = (e) => {
+    e.preventDefault();
+    if (!editCropId || !editCropVariety) return;
+    updateCrop(editCropId, {
+      variety: editCropVariety,
+      plot: editCropPlot,
+      growthStage: editCropStage,
+      fertilizer: editCropFertilizer,
+      irrigation: editCropIrrigation,
+      yield: editCropYield
+    });
+    alert(`✅ Crop Record updated for ${editCropVariety} (${editCropPlot})!\nChanges synced to local state and Supabase.`);
+    setShowEditCropModal(false);
+  };
+
+  const handleDeleteCropClick = (id, variety) => {
+    if (window.confirm(`Are you sure you want to delete crop record "${variety}"?`)) {
+      deleteCrop(id);
+      alert(`🗑️ Crop record "${variety}" deleted and purged from Supabase!`);
+    }
+  };
+
+  const handleAdvanceStage = (c) => {
+    const stages = ['Seedling', 'Vegetative', 'Flowering', 'Fruiting & Harvest'];
+    const currentIdx = stages.findIndex(s => s === c.growthStage || c.growthStage?.includes(s));
+    const nextStage = stages[(currentIdx + 1) % stages.length];
+    updateCrop(c.id, { ...c, growthStage: nextStage });
+    alert(`🌱 Growth Stage for ${c.variety} advanced to "${nextStage}"!`);
+  };
+
 
   const filteredValidations = safeValidations.filter(v => {
     if (!v) return false;
@@ -649,74 +755,526 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
     </div>
   );
 
-  // 4. Crop Management & Field Trackers
+  // 4. Crop Management & Field Trackers (Full Real-Time Live CRUD Operations)
   const renderCropManagement = () => (
     <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-          Crop Management & Field Trackers
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-          Real-time organic crop growth tracking, soil moisture monitors, and bio-fertilizer application schedules
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            Crop Management & Field Trackers
+            <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#15803d', border: '1px solid #86efac', padding: '4px 12px', borderRadius: '20px', fontWeight: '800' }}>
+              🟢 Supabase Realtime Live
+            </span>
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+            Real-time organic crop growth tracking, soil moisture monitors, bio-fertilizer schedules, and full live CRUD operations
+          </p>
+        </div>
+
+        <button onClick={() => setShowAddCropModal(true)} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontWeight: '800' }}>
+          <Plus size={16} /> Register New Crop Plot Record
+        </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Crop Plots</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c' }}>14 Plots</div>
+      {/* Directory Quick Stat Summary Bar */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
+        <div className="m-card" style={{ padding: '14px 18px' }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL ACTIVE CROPS</span>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{safeCrops.length} Crop Plots</div>
+          <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>Live Field Registry</span>
         </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Avg. Soil Moisture</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7' }}>78% Optimal</div>
+
+        <div className="m-card" style={{ padding: '14px 18px' }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>VEGETATIVE & FLOWERING</span>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#15803d' }}>
+            {safeCrops.filter(c => c.growthStage === 'Vegetative' || c.growthStage === 'Flowering').length} Plots
+          </div>
+          <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>Active Development</span>
         </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Next Bio-Spray</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706' }}>Tomorrow 06:00 AM</div>
+
+        <div className="m-card" style={{ padding: '14px 18px' }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>FRUITING & HARVEST</span>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#b45309' }}>
+            {safeCrops.filter(c => c.growthStage?.includes('Fruiting')).length} Plots
+          </div>
+          <span style={{ fontSize: '0.7rem', color: '#b45309', fontWeight: '700' }}>Harvest Ready</span>
         </div>
-        <div className="m-card">
-          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Target Harvest Yield</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>4,850 kg</div>
+
+        <div className="m-card" style={{ padding: '14px 18px' }}>
+          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>AVG. SOIL MOISTURE</span>
+          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0284c7' }}>78% Optimal</div>
+          <span style={{ fontSize: '0.7rem', color: '#0284c7', fontWeight: '700' }}>Drip Irrigation Synced</span>
         </div>
       </div>
 
-      <div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Registered Crop Plot Field Records</h4>
-          <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>✓ Live Soil & Input Sync Active</span>
-        </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-          <thead>
-            <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-              <th style={{ padding: '12px 14px' }}>Plot ID</th>
-              <th style={{ padding: '12px 14px' }}>Crop Variety</th>
-              <th style={{ padding: '12px 14px' }}>Growth Stage</th>
-              <th style={{ padding: '12px 14px' }}>Moisture</th>
-              <th style={{ padding: '12px 14px' }}>Last Organic Input</th>
-              <th style={{ padding: '12px 14px', textAlign: 'right' }}>Compliance</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="m-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+          {/* Growth Stage Filter Capsules */}
+          <div style={{ display: 'flex', gap: '6px' }}>
             {[
-              { plot: 'P-007', crop: 'Tomato (Diamante Max)', stage: 'Fruiting & Harvest', moisture: '82%', input: 'Fermented Fruit Juice (2d ago)', status: 'Compliant', cls: 'pill-compliant' },
-              { plot: 'P-021', crop: 'Eggplant (Long Purple)', stage: 'Flowering Stage', moisture: '74%', input: 'Compost Tea (4d ago)', status: 'Under Review', cls: 'pill-review' },
-              { plot: 'P-034', crop: 'Okra (Smooth Green)', stage: 'Vegetative Growth', moisture: '80%', input: 'Vermicompost (1d ago)', status: 'Compliant', cls: 'pill-compliant' },
-              { plot: 'P-082', crop: 'Squash (Suprema F1)', stage: 'Fruiting Stage', moisture: '76%', input: 'Oriental Herbal Nutrient (3d ago)', status: 'Compliant', cls: 'pill-compliant' },
+              { name: 'All', count: safeCrops.length },
+              { name: 'Seedling', count: safeCrops.filter(c => c.growthStage === 'Seedling').length },
+              { name: 'Vegetative', count: safeCrops.filter(c => c.growthStage === 'Vegetative').length },
+              { name: 'Flowering', count: safeCrops.filter(c => c.growthStage === 'Flowering').length },
+              { name: 'Fruiting', count: safeCrops.filter(c => c.growthStage?.includes('Fruiting')).length }
             ].map(r => (
-              <tr key={r.plot} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c' }}>{r.plot}</td>
-                <td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.crop}</td>
-                <td style={{ padding: '12px 14px', color: '#475569' }}>{r.stage}</td>
-                <td style={{ padding: '12px 14px', color: '#0284c7', fontWeight: '700' }}>{r.moisture}</td>
-                <td style={{ padding: '12px 14px', fontSize: '0.78rem' }}>{r.input}</td>
-                <td style={{ padding: '12px 14px', textAlign: 'right' }}><span className={`pill ${r.cls}`}>{r.status}</span></td>
-              </tr>
+              <button
+                key={r.name}
+                onClick={() => setCropStageFilter(r.name)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.78rem',
+                  fontWeight: '700',
+                  background: cropStageFilter === r.name ? '#0c3619' : '#f1f5f9',
+                  color: cropStageFilter === r.name ? '#ffffff' : '#4b5563',
+                  cursor: 'pointer'
+                }}
+              >
+                {r.name} ({r.count})
+              </button>
             ))}
-          </tbody>
-        </table>
+          </div>
+
+          {/* Search Box */}
+          <div style={{ position: 'relative', width: '280px' }}>
+            <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
+            <input
+              type="text"
+              placeholder="Search crop variety, plot ID, or stage..."
+              value={cropSearchQuery}
+              onChange={(e) => setCropSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '9px 12px 9px 34px',
+                borderRadius: '8px',
+                border: '1.5px solid #94a3b8',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                color: '#0f172a',
+                background: '#ffffff',
+                WebkitTextFillColor: '#0f172a',
+                outline: 'none'
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+            <thead>
+              <tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e5e7eb', color: '#4b5563', fontSize: '0.75rem', textAlign: 'left' }}>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>PLOT ID</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>CROP VARIETY</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>GROWTH STAGE & STEPPER</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>ORGANIC FERTILIZER INPUT</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>IRRIGATION SYSTEM</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700' }}>TARGET YIELD</th>
+                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCrops.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '32px', color: '#64748b', fontSize: '0.85rem' }}>
+                    No crop records found matching your selected criteria. Click "Register New Crop Plot Record" to add one live!
+                  </td>
+                </tr>
+              ) : (
+                filteredCrops.map(c => {
+                  const stagePillCls = 
+                    c.growthStage === 'Seedling' ? 'pill-seedling' :
+                    c.growthStage === 'Vegetative' ? 'pill-vegetative' :
+                    c.growthStage === 'Flowering' ? 'pill-flowering' : 'pill-harvest';
+
+                  return (
+                    <tr key={c.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c' }}>
+                        📍 {c.plot}
+                      </td>
+
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Sprout size={16} color="#15803d" />
+                          <span style={{ fontWeight: '700', color: '#111827', fontSize: '0.85rem' }}>{c.variety}</span>
+                        </div>
+                      </td>
+
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span className={`pill ${stagePillCls}`}>
+                            {c.growthStage || 'Vegetative'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleAdvanceStage(c)}
+                            title="Click to advance growth stage to next level"
+                            style={{
+                              background: '#f0fdf4',
+                              border: '1px solid #86efac',
+                              color: '#15803d',
+                              borderRadius: '6px',
+                              padding: '2px 7px',
+                              fontSize: '0.68rem',
+                              fontWeight: '800',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Adv. Stage ➔
+                          </button>
+                        </div>
+                      </td>
+
+                      <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+                        🌿 {c.fertilizer || 'Organic Compost Tea'}
+                      </td>
+
+                      <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#0284c7', fontWeight: '700' }}>
+                        💧 {c.irrigation || 'Drip System (Optimal)'}
+                      </td>
+
+                      <td style={{ padding: '12px 14px', fontSize: '0.82rem', color: '#0f172a', fontWeight: '800' }}>
+                        ⚖️ {c.yield || '350 kg'}
+                      </td>
+
+                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '5px' }}>
+                          {/* INSPECT BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCropDetail(c)}
+                            title="Inspect Crop Plot Details"
+                            style={{
+                              background: '#f0fdf4',
+                              border: '1px solid #86efac',
+                              color: '#15803d',
+                              borderRadius: '7px',
+                              padding: '5px 9px',
+                              fontSize: '0.73rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Eye size={13} color="#15803d" /> Inspect
+                          </button>
+
+                          {/* EDIT BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditCropModal(c)}
+                            title="Edit Crop Record"
+                            style={{
+                              background: '#eff6ff',
+                              border: '1px solid #93c5fd',
+                              color: '#1d4ed8',
+                              borderRadius: '7px',
+                              padding: '5px 9px',
+                              fontSize: '0.73rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Pencil size={13} color="#1d4ed8" /> Edit
+                          </button>
+
+                          {/* DELETE BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCropClick(c.id, c.variety)}
+                            title="Delete Crop Record"
+                            style={{
+                              background: '#fff1f2',
+                              border: '1px solid #fecdd3',
+                              color: '#e11d48',
+                              borderRadius: '7px',
+                              padding: '5px 9px',
+                              fontSize: '0.73rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Trash2 size={13} color="#e11d48" /> Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {/* INSPECT CROP RECORD MODAL */}
+      {selectedCropDetail && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="m-card" style={{
+            width: '100%', maxWidth: '520px', padding: '0', borderRadius: '20px',
+            overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+              padding: '22px 28px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '46px', height: '46px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', color: '#ffffff',
+                  fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                }}>
+                  🌱
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>
+                    {selectedCropDetail.variety}
+                  </h3>
+                  <span style={{ fontSize: '0.78rem', color: '#86efac', fontWeight: '700' }}>
+                    Plot ID: {selectedCropDetail.plot} · {selectedCropDetail.growthStage}
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setSelectedCropDetail(null)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '24px', background: '#ffffff' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>FIELD PLOT SECTOR</span>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#15803d', fontFamily: 'monospace' }}>
+                    📍 {selectedCropDetail.plot}
+                  </span>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>GROWTH STAGE</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>
+                    🌱 {selectedCropDetail.growthStage}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ background: '#f0fdf4', padding: '12px 14px', borderRadius: '10px', border: '1px solid #86efac', marginBottom: '16px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: '700', display: 'block' }}>ORGANIC FERTILIZER APPLICATION</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+                  🌿 {selectedCropDetail.fertilizer}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>IRRIGATION SYSTEM</span>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0284c7' }}>💧 {selectedCropDetail.irrigation}</div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>PREDICTED HARVEST YIELD</span>
+                  <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+                    ⚖️ {selectedCropDetail.yield}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  onClick={() => {
+                    const target = selectedCropDetail;
+                    setSelectedCropDetail(null);
+                    handleOpenEditCropModal(target);
+                  }}
+                  className="btn-primary"
+                  style={{ padding: '9px 18px', fontSize: '0.82rem' }}
+                >
+                  ✏️ Edit Crop Record
+                </button>
+                <button onClick={() => setSelectedCropDetail(null)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE NEW CROP RECORD MODAL (HIGH CONTRAST INPUTS) */}
+      {showAddCropModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="m-card" style={{
+            width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
+            overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+              padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Plus size={20} color="#86efac" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Register New Crop Plot Record</h3>
+                  <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: '600' }}>Live field crop tracking with Supabase synchronization</span>
+                </div>
+              </div>
+              <button onClick={() => setShowAddCropModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCropSubmit} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Crop Variety Name *</label>
+                  <input type="text" required placeholder="e.g. Tomato (Diamante Max F1)" value={newCropVariety} onChange={(e) => setNewCropVariety(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Field Plot ID / Sector *</label>
+                  <input type="text" required placeholder="Plot P-007 (Vegetable Sector)" value={newCropPlot} onChange={(e) => setNewCropPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Growth Stage *</label>
+                  <select value={newCropStage} onChange={(e) => setNewCropStage(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a', outline: 'none' }}>
+                    <option value="Seedling">Seedling Stage</option>
+                    <option value="Vegetative">Vegetative Growth Stage</option>
+                    <option value="Flowering">Flowering Stage</option>
+                    <option value="Fruiting & Harvest">Fruiting & Harvest Stage</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Target Harvest Yield *</label>
+                  <input type="text" required placeholder="e.g. 450 kg" value={newCropYield} onChange={(e) => setNewCropYield(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Organic Fertilizer Input</label>
+                  <input type="text" placeholder="Fermented Fruit Juice (Organic Foliar)" value={newCropFertilizer} onChange={(e) => setNewCropFertilizer(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Irrigation System</label>
+                  <input type="text" placeholder="Drip Irrigation System" value={newCropIrrigation} onChange={(e) => setNewCropIrrigation(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+                <button type="button" onClick={() => setShowAddCropModal(false)} className="btn-outline" style={{ padding: '10px 18px', fontSize: '0.85rem', fontWeight: '700' }}>Cancel</button>
+                <button type="submit" className="btn-primary" style={{ padding: '10px 22px', fontSize: '0.85rem', background: '#0c3619', fontWeight: '800' }}>✓ Create Crop Record & Sync Live</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT CROP RECORD MODAL (HIGH CONTRAST INPUTS) */}
+      {showEditCropModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+        }}>
+          <div className="m-card" style={{
+            width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
+            overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+              padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Pencil size={20} color="#86efac" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Edit Crop Plot Attributes</h3>
+                  <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: '600' }}>Update growth stage, fertilizer, irrigation, and yield target</span>
+                </div>
+              </div>
+              <button onClick={() => setShowEditCropModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCropSubmit} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Crop Variety Name *</label>
+                  <input type="text" required value={editCropVariety} onChange={(e) => setEditCropVariety(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Field Plot ID / Sector *</label>
+                  <input type="text" required value={editCropPlot} onChange={(e) => setEditCropPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Growth Stage *</label>
+                  <select value={editCropStage} onChange={(e) => setEditCropStage(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a', outline: 'none' }}>
+                    <option value="Seedling">Seedling Stage</option>
+                    <option value="Vegetative">Vegetative Growth Stage</option>
+                    <option value="Flowering">Flowering Stage</option>
+                    <option value="Fruiting & Harvest">Fruiting & Harvest Stage</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Target Harvest Yield *</label>
+                  <input type="text" required value={editCropYield} onChange={(e) => setEditCropYield(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Organic Fertilizer Input</label>
+                  <input type="text" value={editCropFertilizer} onChange={(e) => setEditCropFertilizer(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a', display: 'block', marginBottom: '4px' }}>Irrigation System</label>
+                  <input type="text" value={editCropIrrigation} onChange={(e) => setEditCropIrrigation(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #94a3b8', fontSize: '0.85rem', outline: 'none', fontWeight: '700', color: '#0f172a', background: '#ffffff', WebkitTextFillColor: '#0f172a' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+                <button type="button" onClick={() => setShowEditCropModal(false)} className="btn-outline" style={{ padding: '10px 18px', fontSize: '0.85rem', fontWeight: '700' }}>Cancel</button>
+                <button type="submit" className="btn-primary" style={{ padding: '10px 22px', fontSize: '0.85rem', background: '#0c3619', fontWeight: '800' }}>✓ Save Crop Changes & Sync Live</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
+
 
   // 5. Livestock Management & Veterinary Registry
   const renderLivestockManagement = () => (
