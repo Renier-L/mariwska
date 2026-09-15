@@ -292,6 +292,32 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     return `${Math.round(baseKg * multiplier)} kg`;
   };
 
+  const sanitizeCropVarietyName = (rawVariety) => {
+    if (!rawVariety) return 'Tomato';
+    const name = String(rawVariety).trim().toLowerCase();
+    
+    // Filter out numeric test data like "11", short strings, and common dummy test entries
+    if (/^\d+$/.test(name) || name.length < 3) return null;
+    if (['test', 'asdf', 'qwerty', 'sdada', 'pau', 'angel', 'get', 'xyz', 'abc', 'foo', 'bar'].some(t => name.includes(t))) return null;
+
+    if (name.includes('tomato') || name.includes('kamatis')) return 'Tomato';
+    if (name.includes('eggplant') || name.includes('talong')) return 'Eggplant';
+    if (name.includes('okra')) return 'Okra';
+    if (name.includes('squash') || name.includes('kalabasa')) return 'Squash';
+    if (name.includes('corn') || name.includes('mais')) return 'Sweet Corn';
+    if (name.includes('pepper') || name.includes('sili')) return 'Pepper';
+    if (name.includes('cucumber') || name.includes('pipino')) return 'Cucumber';
+    if (name.includes('lettuce') || name.includes('matsa')) return 'Lettuce';
+    if (name.includes('cabbage') || name.includes('repolyo')) return 'Cabbage';
+    if (name.includes('ampalaya') || name.includes('gourd')) return 'Ampalaya';
+
+    const cleanWord = name.split(' ')[0];
+    if (/^[a-zA-Z]{3,}$/.test(cleanWord)) {
+      return cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1);
+    }
+    return null;
+  };
+
   const [newCropForm, setNewCropForm] = useState({ variety: '', plot: '', growthStage: 'Vegetative', fertilizer: 'Organic Compost', irrigation: 'Drip System', yield: '408 kg' });
   const [newLivestockForm, setNewLivestockForm] = useState({ group: '', plot: '', headCount: 30, vaccination: '100% (Up to date)', healthStatus: 'Healthy', dailyGain: '+1.2 kg/wk' });
 
@@ -432,25 +458,33 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   }, [crops, validatedCount, resetCycleNotice, trendSeason]);
 
   const dynamicYieldShareData = React.useMemo(() => {
-    if (!crops || crops.length === 0) return yieldShareData;
+    const defaultData = [
+      { name: 'Tomato', value: 412, color: '#11592c' },
+      { name: 'Eggplant', value: 305, color: '#d97706' },
+      { name: 'Okra', value: 240, color: '#0284c7' },
+      { name: 'Squash', value: 158, color: '#16a34a' }
+    ];
+
+    if (!crops || crops.length === 0) return defaultData;
+
     const map = {};
     crops.forEach(c => {
-      let raw = (c.variety || 'Tomato').trim();
-      // Remove trailing digits or plot numbers if any
-      raw = raw.split(' ')[0];
-      if (!raw || raw.toLowerCase() === 'get' || raw.length < 2) return; // ignore test noise
-      const cleanKey = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
-      const val = parseFloat(c.yield) || 250;
+      const cleanKey = sanitizeCropVarietyName(c.variety);
+      if (!cleanKey) return;
+      const val = parseFloat(c.yield) || 200;
       map[cleanKey] = (map[cleanKey] || 0) + val;
     });
-    const palette = ['#11592c', '#d97706', '#0284c7', '#16a34a', '#8b5cf6', '#dc2626'];
+
+    const palette = ['#11592c', '#d97706', '#0284c7', '#16a34a', '#8b5cf6', '#dc2626', '#059669'];
+    const keys = Object.keys(map);
+    if (keys.length === 0) return defaultData;
+
     let idx = 0;
-    const result = Object.keys(map).map(k => ({
+    return keys.map(k => ({
       name: k,
       value: Math.round(map[k]),
       color: palette[idx++ % palette.length]
-    })).sort((a, b) => b.value - a.value);
-    return result.length > 0 ? result : yieldShareData;
+    })).sort((a, b) => b.value - a.value).slice(0, 5);
   }, [crops]);
 
   const dynamicMonthlyYieldForecast = React.useMemo(() => {
@@ -482,10 +516,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     if (!crops || crops.length === 0) return harvestPerformanceData;
     const map = {};
     crops.forEach(c => {
-      let raw = (c.variety || 'Tomato').trim();
-      raw = raw.split(' ')[0];
-      if (!raw || raw.toLowerCase() === 'get' || raw.length < 2) return;
-      const cleanKey = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+      const cleanKey = sanitizeCropVarietyName(c.variety);
+      if (!cleanKey) return;
       const currentYield = parseFloat(c.yield) || 200;
       map[cleanKey] = (map[cleanKey] || 0) + currentYield;
     });
@@ -1623,18 +1655,41 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
               </div>
             </div>
           ) : (
-            <div style={{ height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={dynamicYieldShareData} dataKey="value" innerRadius={45} outerRadius={70} paddingAngle={4}>
-                    {dynamicYieldShareData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(val) => [`${val} kg`, 'Output']} />
-                  <Legend verticalAlign="bottom" height={36} iconSize={8} formatter={(val) => <span style={{ fontSize: '0.72rem', color: '#4b5563' }}>{val}</span>} />
-                </PieChart>
-              </ResponsiveContainer>
+            <div>
+              <div style={{ height: '175px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie 
+                      data={dynamicYieldShareData} 
+                      dataKey="value" 
+                      innerRadius={42} 
+                      outerRadius={68} 
+                      paddingAngle={4}
+                    >
+                      {dynamicYieldShareData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(val, name) => [`${val} kg`, `${name} Yield`]} />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={32} 
+                      iconSize={8} 
+                      formatter={(val) => <span style={{ fontSize: '0.75rem', color: '#1e293b', fontWeight: '700' }}>{val}</span>} 
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Clean Executive Summary Banner */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '8px', marginTop: '6px', fontSize: '0.72rem', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong>Top Share:</strong> {dynamicYieldShareData[0]?.name || 'Tomato'} ({dynamicYieldShareData[0]?.value || 412} kg)
+                </div>
+                <div style={{ fontWeight: '800', color: '#11592c' }}>
+                  Total Harvested: {dynamicYieldShareData.reduce((sum, d) => sum + d.value, 0).toLocaleString()} kg
+                </div>
+              </div>
             </div>
           )}
         </div>
