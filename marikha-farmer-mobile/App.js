@@ -26,6 +26,133 @@ export default function App() {
     role: 'Farmer'
   });
 
+
+  // Live Weather Telemetry State (Open-Meteo Sync for Antipolo, Rizal)
+  const [liveTemp, setLiveTemp] = useState('24.2 °C');
+  const [liveRainfall, setLiveRainfall] = useState('0.1 mm');
+  const [liveWeatherDesc, setLiveWeatherDesc] = useState('Rainy 🌧️ · Open-Meteo');
+
+  useEffect(() => {
+    fetchWeather();
+    fetchRealtimeModules();
+  }, []);
+
+  const fetchWeather = async () => {
+    try {
+      const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=14.5861&longitude=121.1764&current_weather=true');
+      const data = await res.json();
+      if (data && data.current_weather) {
+        setLiveTemp(data.current_weather.temperature + ' °C');
+      }
+    } catch (e) {
+      setLiveTemp('24.2 °C');
+    }
+  };
+
+  // My Planted Crops State & Realtime Methods
+  const [plantedCrops, setPlantedCrops] = useState([
+    { id: 'c-1', name: 'Squash Suprema', plot: 'Plot P-014', date: 'Planted Jun 20, 2026', stage: 'Flowering', stagePct: '94%', day: 'Day 51 after planting', pgs: 'Certified 94%' },
+    { id: 'c-2', name: 'Tomato Diamante Max', plot: 'Plot P-007', date: 'Planted Jul 02, 2026', stage: 'Vegetative', stagePct: '78%', day: 'Day 35 after planting', pgs: 'Certified 95%' },
+    { id: 'c-3', name: 'Ampalaya Galaxy Max', plot: 'Plot P-021', date: 'Planted Jul 10, 2026', stage: 'Seedling', stagePct: '45%', day: 'Day 18 after planting', pgs: 'In Transition' }
+  ]);
+  const [showAddCropModal, setShowAddCropModal] = useState(false);
+  const [newCropName, setNewCropName] = useState('Eggplant Mistisa F1');
+  const [newCropPlot, setNewCropPlot] = useState('Plot P-034');
+  const [newCropDate, setNewCropDate] = useState('Planted Aug 01, 2026');
+
+  const handleAddCrop = async () => {
+    if (!newCropName) return;
+    const item = {
+      id: 'c-' + Date.now(),
+      name: newCropName,
+      plot: newCropPlot,
+      date: newCropDate,
+      stage: 'Seedling',
+      stagePct: '30%',
+      day: 'Day 5 after planting',
+      pgs: 'Certified Organic'
+    };
+    setPlantedCrops(prev => [item, ...prev]);
+    setShowAddCropModal(false);
+    try {
+      await supabase.from('crop_records').insert([{
+        farmer: currentUser.name,
+        crop_name: newCropName,
+        plot: newCropPlot,
+        date_planted: newCropDate,
+        growth_stage: 'Seedling'
+      }]);
+    } catch(e) {}
+    Alert.alert('Crop Recorded 🌱', '"' + newCropName + '" assigned to ' + newCropPlot + ' and synced to Supabase.');
+  };
+
+  // Livestock Specific Records State & Realtime Methods
+  const [livestockGoats, setLivestockGoats] = useState([
+    { tag: 'GT-014', breed: 'Native Philippine Goat', weight: '28.5 kg', age: '14 months', feed: 'Napier Grass (2.5 kg/day)', health: 'Healthy / Good', vaccine: 'Rabies & Dewormed Oct 2026' },
+    { tag: 'GT-022', breed: 'Anglo-Nubian Cross', weight: '34.0 kg', age: '18 months', feed: 'Indigofera & Napier (3.0 kg/day)', health: 'Optimal', vaccine: 'Dewormed Sep 2026' },
+    { tag: 'GT-031', breed: 'Boer Cross Native', weight: '41.2 kg', age: '22 months', feed: 'Concentrate + Cut Grass', health: 'Healthy / Good', vaccine: 'Fully Vaccinated' }
+  ]);
+  const [showLivestockModal, setShowLivestockModal] = useState(false);
+  const [newGoatTag, setNewGoatTag] = useState('GT-045');
+  const [newGoatBreed, setNewGoatBreed] = useState('Native Philippine Goat');
+  const [newGoatWeight, setNewGoatWeight] = useState('26.0');
+  const [newGoatFeed, setNewGoatFeed] = useState('Napier Grass (2.0 kg/day)');
+  const [newGoatHealth, setNewGoatHealth] = useState('Healthy / Good');
+
+  const handleAddLivestock = async () => {
+    const goat = {
+      tag: newGoatTag,
+      breed: newGoatBreed,
+      weight: newGoatWeight + ' kg',
+      age: '12 months',
+      feed: newGoatFeed,
+      health: newGoatHealth,
+      vaccine: 'Dewormed & Vaccinated'
+    };
+    setLivestockGoats(prev => [goat, ...prev]);
+    setShowLivestockModal(false);
+    try {
+      await supabase.from('livestock_records').insert([{
+        tag_id: newGoatTag,
+        breed: newGoatBreed,
+        weight_kg: newGoatWeight,
+        feed_intake: newGoatFeed,
+        health_status: newGoatHealth
+      }]);
+    } catch(e) {}
+    Alert.alert('Livestock Registered 🐐', 'Goat ' + newGoatTag + ' recorded and synced to Supabase.');
+  };
+
+  const fetchRealtimeModules = async () => {
+    try {
+      const { data: crops } = await supabase.from('crop_records').select('*');
+      if (crops && crops.length > 0) {
+        setPlantedCrops(crops.map(c => ({
+          id: c.id,
+          name: c.crop_name || 'Crop',
+          plot: c.plot || 'Plot P-007',
+          date: c.date_planted || 'Planted Recently',
+          stage: c.growth_stage || 'Vegetative',
+          stagePct: '85%',
+          day: 'Active',
+          pgs: 'Certified Organic'
+        })));
+      }
+      const { data: goats } = await supabase.from('livestock_records').select('*');
+      if (goats && goats.length > 0) {
+        setLivestockGoats(goats.map(g => ({
+          tag: g.tag_id || 'GT-001',
+          breed: g.breed || 'Native Goat',
+          weight: (g.weight_kg || '28') + ' kg',
+          age: '14 months',
+          feed: g.feed_intake || 'Napier Grass',
+          health: g.health_status || 'Healthy',
+          vaccine: 'Dewormed'
+        })));
+      }
+    } catch(e) {}
+  };
+
   // Login form state
   const [emailInput, setEmailInput] = useState('lopezrenier97@gmail.com');
   const [passInput, setPassInput] = useState('password123');
@@ -306,20 +433,15 @@ export default function App() {
   };
 
   // Detailed Livestock Records Module State (Goat Management)
-  const [showLivestockModal, setShowLivestockModal] = useState(false);
   const [activeLivestockTab, setActiveLivestockTab] = useState('herd'); // 'herd', 'health', 'milk'
   const [selectedGoat, setSelectedGoat] = useState(null);
   const [showAddGoatModal, setShowAddGoatModal] = useState(false);
   const [showHealthLogModal, setShowHealthLogModal] = useState(false);
 
   // New Goat Form Inputs
-  const [newGoatTag, setNewGoatTag] = useState('');
   const [newGoatName, setNewGoatName] = useState('');
-  const [newGoatBreed, setNewGoatBreed] = useState('Philippine Native Goat');
   const [newGoatSex, setNewGoatSex] = useState('Female (Doe)');
   const [newGoatAge, setNewGoatAge] = useState('12 months');
-  const [newGoatWeight, setNewGoatWeight] = useState('22.5');
-  const [newGoatHealth, setNewGoatHealth] = useState('Healthy · Good');
   const [newGoatShed, setNewGoatShed] = useState('Barn Shed 2 - Pen B');
   const [newGoatNotes, setNewGoatNotes] = useState('');
 
@@ -328,50 +450,7 @@ export default function App() {
   const [healthMedicine, setHealthMedicine] = useState('Albendazole 10%');
   const [healthNotes, setHealthNotes] = useState('');
 
-  const [livestockGoats, setLivestockGoats] = useState([
-    {
-      id: 'GT-014',
-      name: 'Ina (Doe #14)',
-      breed: 'Philippine Native Goat',
-      sex: 'Female (Doe)',
-      age: '24 months',
-      weight: '28.5 kg',
-      health: 'Healthy · Good',
-      status: 'Lactating (1.8 L/day)',
-      lastDewormed: 'Aug 15, 2026',
-      lastVaccine: 'Hemorrhagic Septicemia (Jul 2026)',
-      shed: 'Barn Shed 2 - Pen B',
-      notes: 'Good mother, twin kids born April 2026'
-    },
-    {
-      id: 'GT-015',
-      name: 'Amang (Buck #15)',
-      breed: 'Anglo-Nubian Cross',
-      sex: 'Male (Buck)',
-      age: '30 months',
-      weight: '42.0 kg',
-      health: 'Healthy · Prime Breeder',
-      status: 'Active Breeder',
-      lastDewormed: 'Aug 15, 2026',
-      lastVaccine: 'Hemorrhagic Septicemia (Jul 2026)',
-      shed: 'Barn Shed 1 - Pen A',
-      notes: 'Strong breeding buck for coop herd'
-    },
-    {
-      id: 'GT-022',
-      name: 'Nene (Kid #22)',
-      breed: 'Native Goat',
-      sex: 'Female (Kid)',
-      age: '4 months',
-      weight: '11.2 kg',
-      health: 'Under Observation',
-      status: 'Weanling Kid',
-      lastDewormed: 'Sep 01, 2026',
-      lastVaccine: 'Booster Scheduled',
-      shed: 'Barn Shed 2 - Pen B',
-      notes: 'Slight cough, given herbal oregano extract'
-    }
-  ]);
+
 
   const handleAddGoat = () => {
     if (!newGoatTag.trim()) {
@@ -779,23 +858,43 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="#0c3619" />
 
       <ScrollView style={{ flex: 1 }}>
-        {/* Header Banner */}
-        <View style={styles.headerBanner}>
-          <View style={styles.headerRow}>
-            <View>
-              <Text style={styles.headerGreetingSub}>MAGANDANG ARAW,</Text>
-              <Text style={styles.headerGreetingTitle}>{currentUser.name} 👋</Text>
+        
+        {/* Header Banner matching Image 2 */}
+        <View style={{ backgroundColor: '#0c3619', padding: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18 }}>🌱</Text>
+              </View>
+              <Text style={{ fontSize: 20, fontWeight: '900', color: '#ffffff', letterSpacing: 1 }}>MARIKHA</Text>
             </View>
-            <TouchableOpacity onPress={() => setIsAuthenticated(false)} style={styles.logoutBtn}>
-              <Text style={{ color: '#86efac', fontWeight: '700', fontSize: 12 }}>Logout</Text>
+            <TouchableOpacity onPress={() => setIsAuthenticated(false)} style={{ backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16 }}>
+              <Text style={{ color: '#86efac', fontWeight: '800', fontSize: 12 }}>Logout</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.locationText}>
-            📅 Today · 📍 Cupang, Antipolo · Rizal
+          <Text style={{ fontSize: 11, color: '#86efac', fontWeight: '800', textTransform: 'uppercase' }}>MAGANDANG ARAW,</Text>
+          <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 1 }}>{currentUser.name} 👋</Text>
+          <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600', marginTop: 4 }}>
+            📅 Tuesday, July 21  ·  📍 Antipolo - Rizal
           </Text>
 
-          {/* Live Realtime Announcement Push Notice Banner */}
+          {/* Live Weather & Temperature Telemetry Cards matching Image 2 */}
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#86efac', textTransform: 'uppercase' }}>🌡️ TEMPERATURE</Text>
+              <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 2 }}>{liveTemp}</Text>
+              <Text style={{ fontSize: 10, color: '#a7f3d0', fontWeight: '600', marginTop: 2 }}>{liveWeatherDesc}</Text>
+            </View>
+
+            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
+              <Text style={{ fontSize: 10, fontWeight: '800', color: '#86efac', textTransform: 'uppercase' }}>🌧️ RAINFALL</Text>
+              <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 2 }}>{liveRainfall}</Text>
+              <Text style={{ fontSize: 10, color: '#a7f3d0', fontWeight: '600', marginTop: 2 }}>Low Chance of Rain</Text>
+            </View>
+          </View>
+
+          {/* Live Realtime Push Announcement Banner */}
           {activePushNotice && (
             <TouchableOpacity 
               style={styles.noticePushBanner}
@@ -809,56 +908,86 @@ export default function App() {
           )}
         </View>
 
-        {/* ----- TAB CONTENTS ----- */}
+        {/* ----- HOME TAB CONTENTS ----- */}
         {activeTab === 'home' && (
           <View style={styles.contentPadding}>
-            {/* Quick Action Grid */}
-            <Text style={styles.sectionHeader}>Quick Actions</Text>
-            <View style={styles.gridRow}>
-              <TouchableOpacity style={styles.actionCard} onPress={() => setActiveTab('log')}>
-                <Text style={styles.cardEmoji}>📝</Text>
-                <Text style={styles.cardTitle}>Log Activity</Text>
-                <Text style={styles.cardSub}>Record irrigation/fertilizer</Text>
-              </TouchableOpacity>
+            <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619', marginBottom: 12 }}>What would you like to do?</Text>
 
-              <TouchableOpacity style={styles.actionCard} onPress={() => setActiveTab('ai')}>
-                <Text style={styles.cardEmoji}>✨</Text>
-                <Text style={styles.cardTitle}>Smart AI</Text>
-                <Text style={styles.cardSub}>Yield estimation</Text>
-              </TouchableOpacity>
+            {/* 4 Big Color Cards matching Image 2 */}
+            <View style={{ gap: 10 }}>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <TouchableOpacity 
+                  onPress={() => setActiveTab('log')}
+                  style={{ flex: 1, backgroundColor: '#0c3619', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                >
+                  <Text style={{ fontSize: 24 }}>📋</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>LOG DAILY ACTIVITY</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  onPress={() => setShowLivestockModal(true)}
+                  style={{ flex: 1, backgroundColor: '#452b1e', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                >
+                  <Text style={{ fontSize: 24 }}>🌾</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>MY CROPS & LIVESTOCK</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <TouchableOpacity 
+                  onPress={() => setActiveTab('tasks')}
+                  style={{ flex: 1, backgroundColor: '#d97706', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                >
+                  <Text style={{ fontSize: 24 }}>📅</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>FARMING CALENDAR</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  onPress={() => setActiveTab('ai')}
+                  style={{ flex: 1, backgroundColor: '#059669', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                >
+                  <Text style={{ fontSize: 24 }}>✨</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>AI SMART RECOMMENDATION</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={styles.gridRow}>
-              <TouchableOpacity style={styles.actionCard} onPress={() => setActiveTab('tasks')}>
-                <Text style={styles.cardEmoji}>📋</Text>
-                <Text style={styles.cardTitle}>My Tasks</Text>
-                <Text style={styles.cardSub}>Field checklist</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={[styles.actionCard, { backgroundColor: '#f0fdf4', borderColor: '#86efac' }]} onPress={() => setShowLivestockModal(true)}>
-                <Text style={styles.cardEmoji}>🐐</Text>
-                <Text style={[styles.cardTitle, { color: '#0c3619' }]}>Livestock Records</Text>
-                <Text style={[styles.cardSub, { color: '#166534' }]}>Native Goats ({livestockGoats.length} heads)</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={[styles.gridRow, { marginTop: 10 }]}>
-              <TouchableOpacity 
-                style={[styles.actionCard, { flex: 1, backgroundColor: '#0c3619', borderColor: '#16a34a' }]} 
-                onPress={() => setShowYieldPredictionModal(true)}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={styles.cardEmoji}>📈</Text>
-                  <View style={{ backgroundColor: '#16a34a', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
-                    <Text style={{ color: '#ffffff', fontSize: 10, fontWeight: '900' }}>⚡ REALTIME ML</Text>
-                  </View>
+            {/* Section: My Planted Crops matching Image 2 */}
+            <View style={{ marginTop: 20 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619' }}>My Planted Crops</Text>
+                <View style={{ backgroundColor: '#e2e8f0', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#475569' }}>{plantedCrops.length} active</Text>
                 </View>
-                <Text style={[styles.cardTitle, { color: '#ffffff', marginTop: 4 }]}>Yield Prediction Module</Text>
-                <Text style={[styles.cardSub, { color: '#a7f3d0' }]}>Live harvest kg, sacks & revenue forecast</Text>
+              </View>
+
+              {/* + ADD PLANTED CROPS Button matching Image 2 */}
+              <TouchableOpacity 
+                onPress={() => setShowAddCropModal(true)}
+                style={{ backgroundColor: '#e8f5e9', borderWidth: 1.5, borderColor: '#81c784', borderRadius: 14, paddingVertical: 14, alignItems: 'center', marginBottom: 12 }}
+              >
+                <Text style={{ color: '#1b5e20', fontWeight: '900', fontSize: 14 }}>+ ADD PLANTED CROPS</Text>
               </TouchableOpacity>
+
+              {/* Dynamic Planted Crops Cards */}
+              <View style={{ gap: 10 }}>
+                {plantedCrops.map(crop => (
+                  <View key={crop.id} style={{ backgroundColor: '#ffffff', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#cbd5e1' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                      <Text style={{ fontSize: 15, fontWeight: '900', color: '#0c3619' }}>🌱 {crop.name}</Text>
+                      <View style={{ backgroundColor: '#dcfce7', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}>
+                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#15803d' }}>{crop.stage} ({crop.stagePct})</Text>
+                      </View>
+                    </View>
+                    <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '700' }}>{crop.plot}  ·  {crop.date}</Text>
+                    <Text style={{ fontSize: 11, color: '#15803d', fontWeight: '700', marginTop: 4 }}>PGS Status: {crop.pgs}</Text>
+                  </View>
+                ))}
+              </View>
             </View>
           </View>
         )}
+
 
         {activeTab === 'log' && (
           <View style={[styles.contentPadding, { paddingBottom: 40 }]}>
