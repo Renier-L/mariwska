@@ -586,16 +586,19 @@ const AdminConsole = ({ activeTab }) => {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
-              User Accounts & Member Directory
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              Member Records Management Module
+              <span style={{ fontSize: '0.72rem', background: '#dcfce7', color: '#15803d', border: '1px solid #86efac', padding: '4px 12px', borderRadius: '20px', fontWeight: '800' }}>
+                🟢 Supabase Realtime Live
+              </span>
             </h1>
             <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-              Comprehensive cooperative directory with full CRUD management, RSBSA IDs, organic certifications, and sector assignments
+              Designed schema data models, full CRUD operations (Create, Read, Update, Delete), searching, filtering, and live Supabase Cloud synchronization
             </p>
           </div>
 
-          <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <Plus size={16} /> Create New User Account
+          <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', fontWeight: '800' }}>
+            <Plus size={16} /> Create New Member Record
           </button>
         </div>
 
