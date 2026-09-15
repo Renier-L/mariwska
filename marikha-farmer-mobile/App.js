@@ -193,7 +193,7 @@ export default function App() {
       id: 'log-100',
       farmer: 'Mang Juan Dela Cruz',
       plot: 'Plot P-021',
-      crop: 'Ampalaya',
+      crop: 'Talong (Eggplant)',
       activity: 'Vermicompost (15 Kg)',
       category: 'crops',
       notes: 'Applied organic vermicompost around root zone',
@@ -299,7 +299,7 @@ export default function App() {
       let baseKgPerPlant = 0.48;
       let pricePerKg = 65;
 
-      if (yieldCrop.includes('Ampalaya')) {
+      if (yieldCrop.includes('Talong (Eggplant)')) {
         baseKgPerPlant = 0.40;
         pricePerKg = 80;
       } else if (yieldCrop.includes('Eggplant') || yieldCrop.includes('Talong')) {
@@ -522,7 +522,7 @@ export default function App() {
     duesPaidUntil: 'Dec 2026',
     assignedPlots: [
       { id: 'P-007', crop: 'Okra', area: '0.4 ha', status: 'Active' },
-      { id: 'P-021', crop: 'Ampalaya', area: '0.3 ha', status: 'Active' },
+      { id: 'P-021', crop: 'Talong (Eggplant)', area: '0.3 ha', status: 'Active' },
       { id: 'P-034', crop: 'Kamatis', area: '0.25 ha', status: 'Harvesting' }
     ],
     livestock: [
@@ -590,6 +590,13 @@ export default function App() {
       const { data } = await supabase.from('announcements').select('*').order('id', { ascending: false });
       if (data && data.length > 0) {
         setAnnouncements(data);
+        const latest = {
+          id: data[0].id,
+          title: data[0].title || 'Cooperative Broadcast',
+          content: data[0].content || data[0].title || 'Official Announcement',
+          author: data[0].author || 'Liza Cruz (Admin)'
+        };
+        setActivePushNotice(latest);
       }
     } catch (e) {}
   };
@@ -632,7 +639,7 @@ export default function App() {
       id: `log-${Date.now()}`,
       farmer: currentUser.name || 'Mang Juan Dela Cruz',
       plot: selectedPlot,
-      crop: selectedPlot.includes('GT') ? 'Native Goats' : (selectedPlot.includes('007') ? 'Okra' : 'Ampalaya'),
+      crop: selectedPlot.includes('GT') ? 'Native Goats' : (selectedPlot.includes('007') ? 'Okra' : 'Talong (Eggplant)'),
       activity: actText,
       category: logCategory,
       notes: logNote || 'Submitted live via MARIKHA Mobile Task Logging Module',
@@ -724,7 +731,7 @@ export default function App() {
         computedWindow = 'Dec 15 – Jan 05, 2027';
         computedFert = 'Organic Compost + Calcium Nitrate';
       } else if (aiNitrogen.includes('High')) {
-        computedCrop = 'Ampalaya · Galaxy Max';
+        computedCrop = 'Okra · Smooth Green';
         computedYield = '430 kg';
         computedSacks = '~ 9.5 sacks';
         computedWindow = 'Nov 28 – Dec 14, 2026';
@@ -2194,7 +2201,7 @@ export default function App() {
               <View style={{ flexDirection: 'row', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
                 {[
                   { plot: 'Plot P-007', crop: 'Tomato Diamante Max', area: '0.40' },
-                  { plot: 'Plot P-021', crop: 'Ampalaya Galaxy Max', area: '0.30' },
+                  { plot: 'Plot P-021', crop: 'Eggplant Mistisa F1', area: '0.30' },
                   { plot: 'Plot P-034', crop: 'Eggplant Mistisa F1', area: '0.25' }
                 ].map(item => (
                   <TouchableOpacity 
