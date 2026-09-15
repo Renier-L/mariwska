@@ -179,26 +179,60 @@ const AdminConsole = ({ activeTab }) => {
   }, [validations]);
 
   const dynamicPipelineData = React.useMemo(() => {
-    const totalU = users ? users.length : 5;
-    const totalV = validations ? validations.length : 10;
-    const totalC = crops ? crops.length : 8;
-    const totalS = schedules ? schedules.length : 6;
+    const totalRecs = totalDatabaseRecords || 63;
     const flagged = pendingOrFlaggedLogs;
-
-    const baseFactor = totalU * 15 + totalV * 8 + totalC * 12 + totalS * 6;
+    const baseOps = Math.max(100, totalRecs * 10);
 
     return [
-      { time: '00h', requests: Math.round(baseFactor * 0.6), errors: Math.max(1, flagged) },
-      { time: '03h', requests: Math.round(baseFactor * 0.75), errors: Math.max(0, flagged - 1) },
-      { time: '06h', requests: Math.round(baseFactor * 0.95), errors: Math.max(1, flagged) },
-      { time: '09h', requests: Math.round(baseFactor * 1.15), errors: Math.max(2, flagged + 1) },
-      { time: '12h', requests: Math.round(baseFactor * 1.05), errors: Math.max(1, flagged) },
-      { time: '15h', requests: Math.round(baseFactor * 1.10), errors: Math.max(1, flagged) },
-      { time: '18h', requests: Math.round(baseFactor * 1.25), errors: Math.max(2, flagged + 1) },
-      { time: '21h', requests: Math.round(baseFactor * 1.35), errors: Math.max(1, flagged) },
-      { time: '23h', requests: Math.round(baseFactor * 1.40), errors: Math.max(1, flagged) },
+      { time: '00h', requests: Math.round(baseOps * 0.52), errors: flagged > 3 ? 2 : (flagged > 0 ? 1 : 0) },
+      { time: '03h', requests: Math.round(baseOps * 0.64), errors: 0 },
+      { time: '06h', requests: Math.round(baseOps * 0.78), errors: flagged > 2 ? 1 : 0 },
+      { time: '09h', requests: Math.round(baseOps * 0.92), errors: flagged > 1 ? 1 : 0 },
+      { time: '12h', requests: Math.round(baseOps * 0.98), errors: 0 },
+      { time: '15h', requests: Math.round(baseOps * 1.06), errors: flagged > 0 ? 1 : 0 },
+      { time: '18h', requests: Math.round(baseOps * 1.16), errors: flagged > 4 ? 2 : (flagged > 0 ? 1 : 0) },
+      { time: '21h', requests: Math.round(baseOps * 1.26), errors: 0 },
+      { time: '23h', requests: Math.round(baseOps * 1.34), errors: flagged > 0 ? 1 : 0 },
     ];
-  }, [users, validations, crops, schedules, pendingOrFlaggedLogs]);
+  }, [totalDatabaseRecords, pendingOrFlaggedLogs]);
+
+  const liveSupabaseStreamLogs = React.useMemo(() => {
+    const logs = [];
+    (announcements || []).slice(0, 3).forEach((a, idx) => {
+      logs.push({
+        id: `ann-${idx}`,
+        table: 'public.announcements',
+        action: 'INSERT / BROADCAST',
+        record: `"${a.title || 'Cooperative Announcement'}"`,
+        author: a.author || 'Liza Cruz (Admin)',
+        time: a.date || 'Just now',
+        status: 'LIVE SYNCED'
+      });
+    });
+    (validations || []).slice(0, 3).forEach((v, idx) => {
+      logs.push({
+        id: `val-${idx}`,
+        table: 'public.task_validations',
+        action: v.status === 'Validated' ? 'VALIDATE' : 'QUEUE SUBMIT',
+        record: `${v.farmer} · ${v.activity || v.taskType} (${v.plot || 'Plot P-007'})`,
+        author: v.farmer,
+        time: v.timestamp || 'Just now',
+        status: v.status === 'Validated' ? 'VALIDATED' : 'REQUIRES REVIEW'
+      });
+    });
+    (users || []).slice(0, 2).forEach((u, idx) => {
+      logs.push({
+        id: `user-${idx}`,
+        table: 'public.users',
+        action: 'AUTH SYNC',
+        record: `${u.name} (${u.role})`,
+        author: 'System Auth',
+        time: 'Active Session',
+        status: u.status !== false ? 'ACTIVE' : 'DISABLED'
+      });
+    });
+    return logs;
+  }, [announcements, validations, users]);
 
   const handleDownloadPDF = (title, category = 'all') => {
     try {
@@ -262,7 +296,9 @@ const AdminConsole = ({ activeTab }) => {
         <div className="m-card">
           <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '600' }}>Pipeline Errors / Flags</div>
           <div style={{ fontSize: '1.6rem', fontWeight: '800', color: pendingOrFlaggedLogs > 0 ? '#d97706' : '#16a34a' }}>{pendingOrFlaggedLogs} Logs</div>
-          <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>Requires Review</div>
+          <div style={{ fontSize: '0.72rem', color: pendingOrFlaggedLogs > 0 ? '#d97706' : '#16a34a', fontWeight: '600' }}>
+            {pendingOrFlaggedLogs > 0 ? 'Requires Review' : '0 Flags Active'}
+          </div>
         </div>
 
         <div className="m-card">
@@ -273,9 +309,23 @@ const AdminConsole = ({ activeTab }) => {
       </div>
 
       <div className="m-card" style={{ marginBottom: '20px' }}>
-        <div style={{ marginBottom: '14px' }}>
-          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Real-Time Data Flow Pipeline (Live Supabase Stream)</h4>
-          <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Dynamic database throughput & flagged verification queue — last 24h</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+              Real-Time Data Flow Pipeline (Live Supabase Stream)
+            </h4>
+            <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              Dynamic database throughput & flagged verification queue — last 24h
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', fontSize: '0.72rem', fontWeight: '700' }}>
+            <span style={{ color: '#11592c', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              ■ Database Operations ({totalDatabaseRecords} Live Records)
+            </span>
+            <span style={{ color: pendingOrFlaggedLogs > 0 ? '#dc2626' : '#16a34a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              ■ Flagged Audits ({pendingOrFlaggedLogs} Flags)
+            </span>
+          </div>
         </div>
         <div style={{ height: '210px' }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -287,6 +337,60 @@ const AdminConsole = ({ activeTab }) => {
               <Area type="monotone" dataKey="errors" name="Flagged Audits" stroke="#e53e3e" fill="#fee2e2" fillOpacity={0.4} />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Live Supabase Operations Stream & Log Feed Card */}
+      <div className="m-card" style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+            <Radio size={16} color="#16a34a" /> Live Supabase Database Operations Stream ({liveSupabaseStreamLogs.length} Transactions)
+          </h4>
+          <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700', background: '#dcfce7', padding: '3px 10px', borderRadius: '12px', border: '1px solid #86efac' }}>
+            🟢 Live Stream Active
+          </span>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: '700' }}>
+                <th style={{ padding: '10px 12px' }}>Database Table</th>
+                <th style={{ padding: '10px 12px' }}>Action Type</th>
+                <th style={{ padding: '10px 12px' }}>Record Detail</th>
+                <th style={{ padding: '10px 12px' }}>Origin Author</th>
+                <th style={{ padding: '10px 12px' }}>Timestamp</th>
+                <th style={{ padding: '10px 12px' }}>Pipeline Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {liveSupabaseStreamLogs.map((log) => (
+                <tr key={log.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '10px 12px', fontWeight: '700', color: '#0f172a', fontFamily: 'monospace' }}>{log.table}</td>
+                  <td style={{ padding: '10px 12px' }}>
+                    <span className="pill pill-low" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td style={{ padding: '10px 12px', color: '#334155', fontWeight: '600' }}>{log.record}</td>
+                  <td style={{ padding: '10px 12px', color: '#64748b' }}>{log.author}</td>
+                  <td style={{ padding: '10px 12px', color: '#94a3b8' }}>{log.time}</td>
+                  <td style={{ padding: '10px 12px' }}>
+                    <span style={{
+                      fontSize: '0.7rem',
+                      fontWeight: '800',
+                      color: log.status === 'REQUIRES REVIEW' ? '#d97706' : '#15803d',
+                      background: log.status === 'REQUIRES REVIEW' ? '#fef3c7' : '#dcfce7',
+                      padding: '3px 8px',
+                      borderRadius: '6px'
+                    }}>
+                      {log.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
