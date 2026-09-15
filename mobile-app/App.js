@@ -11,6 +11,17 @@ export default function App() {
   const [username, setUsername] = useState('mang.juan@farmer.ph');
   const [password, setPassword] = useState('password123');
 
+  // Profile Sub View: 'profile' or 'settings'
+  const [profileSubView, setProfileSubView] = useState('profile');
+  const [settingsData, setSettingsData] = useState({
+    pushNotifications: true,
+    smsReminders: false,
+    language: 'Tagalog',
+    darkMode: false,
+    offlineMode: true
+  });
+  const [activeSettingsDialog, setActiveSettingsDialog] = useState(null);
+
   // Profile Management State matching screenshots
   const [profileData, setProfileData] = useState({
     name: 'Mang Juan Dela Cruz',

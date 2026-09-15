@@ -36,7 +36,11 @@ import {
   CreditCard,
   Compass,
   Users,
-  Settings
+  Settings,
+  Globe,
+  Moon,
+  HelpCircle,
+  Info
 } from 'lucide-react';
 
 const MobileAppSimulator = () => {
@@ -79,6 +83,17 @@ const MobileAppSimulator = () => {
       { id: 'GT-014', title: 'Native Goats', count: '12 heads' }
     ]
   });
+
+  // Settings view & preferences state
+  const [profileSubView, setProfileSubView] = useState('profile'); // 'profile' or 'settings'
+  const [settingsData, setSettingsData] = useState({
+    pushNotifications: false,
+    smsReminders: false,
+    language: 'Tagalog',
+    darkMode: false,
+    offlineMode: true
+  });
+  const [activeSettingsDialog, setActiveSettingsDialog] = useState(null); // 'password' | 'privacy' | 'help' | 'about'
 
   const [tempProfile, setTempProfile] = useState(profileData);
   const [profileSaveSuccess, setProfileSaveSuccess] = useState(false);
@@ -1035,263 +1050,529 @@ const MobileAppSimulator = () => {
                 </div>
               )}
 
-              {/* ----- PROFILE TAB (MATCHING USER SCREENSHOTS EXACTLY) ----- */}
+              {/* ----- PROFILE TAB & SETTINGS SCREEN (MATCHING ALL USER SCREENSHOTS) ----- */}
               {activeTab === 'profile' && (
                 <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#edf2ee' }}>
-                  {/* Top Dark Green Header Bar */}
-                  <div style={{
-                    background: '#0c3619', color: '#ffffff', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <button
-                        onClick={() => setActiveTab('home')}
-                        style={{
-                          width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.16)', color: '#ffffff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                        }}
-                      >
-                        <ArrowLeft size={18} />
-                      </button>
-                      <div>
-                        <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#ffffff', lineHeight: 1.1 }}>
-                          My Profile
-                        </h2>
-                        <span style={{ fontSize: '0.72rem', color: '#a7f3d0', fontWeight: '600' }}>
-                          Impormasyon at membership
-                        </span>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setTempProfile(profileData);
-                        setShowProfileSettingsModal(true);
-                      }}
-                      title="Profile Settings"
-                      style={{
-                        width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', color: '#ffffff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                      }}
-                    >
-                      <Settings size={20} />
-                    </button>
-                  </div>
-
-                  {/* Scrollable Content Container */}
-                  <div style={{ flex: 1, overflowY: 'auto', padding: '14px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    
-                    {/* CARD 1: FARMER MAIN BADGE CARD */}
-                    <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  {profileSubView === 'profile' ? (
+                    /* ================= VIEW A: MY PROFILE SCREEN ================= */
+                    <>
+                      {/* Top Dark Green Header Bar */}
                       <div style={{
-                        width: '62px', height: '62px', borderRadius: '50%', background: '#dce3db', color: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.7rem', fontWeight: '900', flexShrink: 0
+                        background: '#0c3619', color: '#ffffff', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0
                       }}>
-                        {profileData.name ? profileData.name.charAt(0).toUpperCase() : 'M'}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: '1.18rem', fontWeight: '900', color: '#0f172a', margin: '0 0 2px 0', lineHeight: 1.2 }}>
-                          {profileData.name}
-                        </h3>
-                        <div style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', marginBottom: '6px' }}>
-                          {profileData.subtitle}
-                        </div>
-                        <span style={{ background: '#15803d', color: '#ffffff', fontSize: '0.68rem', fontWeight: '900', padding: '4px 12px', borderRadius: '14px', display: 'inline-block' }}>
-                          {profileData.pgsBadge}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* CARD 2: CONTACT */}
-                    <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
-                        CONTACT
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Phone size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MOBILE</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.mobile}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Mail size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>EMAIL</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.email}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <CreditCard size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MEMBER ID</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.memberId}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CARD 3: FARM LOCATION */}
-                    <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
-                        FARM LOCATION
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <MapPin size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>BARANGAY</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.barangay}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Compass size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>COORDINATES</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.coordinates}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Sprout size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>TOTAL AREA</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.totalArea}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CARD 4: COOPERATIVE */}
-                    <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
-                        COOPERATIVE
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Users size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>COOP</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.coop}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <ShieldCheck size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>STANDING</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.standing}</div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Calendar size={20} color="#ffffff" />
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>DUES PAID UNTIL</div>
-                            <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.duesPaidUntil}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* CARD 5: ASSIGNED PLOTS */}
-                    <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
-                        ASSIGNED PLOTS
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {profileData.assignedPlots.map((plot) => (
-                          <div
-                            key={plot.id}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <button
+                            onClick={() => setActiveTab('home')}
                             style={{
-                              background: '#beb7ab', borderRadius: '14px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                              width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.16)', color: '#ffffff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <span style={{ background: '#98a092', color: '#064e3b', fontWeight: '900', fontSize: '0.72rem', padding: '4px 10px', borderRadius: '8px', flexShrink: 0 }}>
-                                {plot.id}
-                              </span>
+                            <ArrowLeft size={18} />
+                          </button>
+                          <div>
+                            <h2 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: '#ffffff', lineHeight: 1.1 }}>
+                              My Profile
+                            </h2>
+                            <span style={{ fontSize: '0.72rem', color: '#a7f3d0', fontWeight: '600' }}>
+                              Impormasyon at membership
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => setProfileSubView('settings')}
+                          title="Open Settings"
+                          style={{
+                            width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', color: '#ffffff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}
+                        >
+                          <Settings size={20} />
+                        </button>
+                      </div>
+
+                      {/* Scrollable Content Container */}
+                      <div style={{ flex: 1, overflowY: 'auto', padding: '14px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        
+                        {/* CARD 1: FARMER MAIN BADGE CARD */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <div style={{
+                            width: '62px', height: '62px', borderRadius: '50%', background: '#dce3db', color: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.7rem', fontWeight: '900', flexShrink: 0
+                          }}>
+                            {profileData.name ? profileData.name.charAt(0).toUpperCase() : 'M'}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <h3 style={{ fontSize: '1.18rem', fontWeight: '900', color: '#0f172a', margin: '0 0 2px 0', lineHeight: 1.2 }}>
+                              {profileData.name}
+                            </h3>
+                            <div style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', marginBottom: '6px' }}>
+                              {profileData.subtitle}
+                            </div>
+                            <span style={{ background: '#15803d', color: '#ffffff', fontSize: '0.68rem', fontWeight: '900', padding: '4px 12px', borderRadius: '14px', display: 'inline-block' }}>
+                              {profileData.pgsBadge}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* CARD 2: CONTACT */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            CONTACT
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Phone size={20} color="#ffffff" />
+                              </div>
                               <div>
-                                <div style={{ fontWeight: '900', fontSize: '0.95rem', color: '#0f172a' }}>{plot.crop}</div>
-                                <div style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700' }}>{plot.area}</div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MOBILE</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.mobile}</div>
                               </div>
                             </div>
-                            <span style={{ border: '1px solid rgba(0,0,0,0.18)', background: 'rgba(255,255,255,0.25)', color: '#0f172a', borderRadius: '20px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '900' }}>
-                              {plot.status}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    {/* CARD 6: LIVESTOCK */}
-                    <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
-                        LIVESTOCK
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {profileData.livestock.map((item) => (
-                          <div
-                            key={item.id}
-                            style={{
-                              background: '#beb7ab', borderRadius: '14px', padding: '12px 14px', display: 'flex', alignItems: 'center'
-                            }}
-                          >
-                            <span style={{ fontWeight: '900', fontSize: '0.78rem', color: '#0f172a', marginRight: '16px', minWidth: '55px' }}>
-                              {item.id}
-                            </span>
-                            <div>
-                              <div style={{ fontWeight: '900', fontSize: '0.95rem', color: '#0f172a' }}>{item.title}</div>
-                              <div style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700' }}>{item.count}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Mail size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>EMAIL</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.email}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <CreditCard size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>MEMBER ID</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.memberId}</div>
+                              </div>
                             </div>
                           </div>
-                        ))}
+                        </div>
+
+                        {/* CARD 3: FARM LOCATION */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            FARM LOCATION
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <MapPin size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>BARANGAY</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.barangay}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Compass size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>COORDINATES</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.coordinates}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Sprout size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>TOTAL AREA</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.totalArea}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CARD 4: COOPERATIVE */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            COOPERATIVE
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Users size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>COOP</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.coop}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <ShieldCheck size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>STANDING</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.standing}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                              <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Calendar size={20} color="#ffffff" />
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '0.64rem', fontWeight: '900', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.3px' }}>DUES PAID UNTIL</div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a', marginTop: '1px' }}>{profileData.duesPaidUntil}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CARD 5: ASSIGNED PLOTS */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            ASSIGNED PLOTS
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {profileData.assignedPlots.map((plot) => (
+                              <div
+                                key={plot.id}
+                                style={{
+                                  background: '#beb7ab', borderRadius: '14px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                  <span style={{ background: '#98a092', color: '#064e3b', fontWeight: '900', fontSize: '0.72rem', padding: '4px 10px', borderRadius: '8px', flexShrink: 0 }}>
+                                    {plot.id}
+                                  </span>
+                                  <div>
+                                    <div style={{ fontWeight: '900', fontSize: '0.95rem', color: '#0f172a' }}>{plot.crop}</div>
+                                    <div style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700' }}>{plot.area}</div>
+                                  </div>
+                                </div>
+                                <span style={{ border: '1px solid rgba(0,0,0,0.18)', background: 'rgba(255,255,255,0.25)', color: '#0f172a', borderRadius: '20px', padding: '4px 14px', fontSize: '0.72rem', fontWeight: '900' }}>
+                                  {plot.status}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* CARD 6: LIVESTOCK */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            LIVESTOCK
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {profileData.livestock.map((item) => (
+                              <div
+                                key={item.id}
+                                style={{
+                                  background: '#beb7ab', borderRadius: '14px', padding: '12px 14px', display: 'flex', alignItems: 'center'
+                                }}
+                              >
+                                <span style={{ fontWeight: '900', fontSize: '0.78rem', color: '#0f172a', marginRight: '16px', minWidth: '55px' }}>
+                                  {item.id}
+                                </span>
+                                <div>
+                                  <div style={{ fontWeight: '900', fontSize: '0.95rem', color: '#0f172a' }}>{item.title}</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '700' }}>{item.count}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* QUICK ACTION BUTTONS */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '4px' }}>
+                          <button
+                            onClick={() => setProfileSubView('settings')}
+                            style={{
+                              padding: '12px', borderRadius: '12px', background: '#ffffff', border: '1.5px solid #0c3619', color: '#0c3619', fontWeight: '900', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                            }}
+                          >
+                            <Settings size={16} /> App Settings
+                          </button>
+
+                          <button
+                            onClick={() => { setTempProfile(profileData); setShowProfileSettingsModal(true); }}
+                            style={{
+                              padding: '12px', borderRadius: '12px', background: '#0c3619', border: 'none', color: '#ffffff', fontWeight: '900', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                            }}
+                          >
+                            <User size={16} /> Edit Info
+                          </button>
+                        </div>
+
                       </div>
-                    </div>
+                    </>
+                  ) : (
+                    /* ================= VIEW B: SETTINGS SCREEN (MATCHING USER SCREENSHOTS) ================= */
+                    <>
+                      {/* Top Dark Green Header Bar for Settings */}
+                      <div style={{
+                        background: '#0c3619', color: '#ffffff', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <button
+                            onClick={() => setProfileSubView('profile')}
+                            style={{
+                              width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.16)', color: '#ffffff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}
+                          >
+                            <ArrowLeft size={18} />
+                          </button>
+                          <div>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: '900', margin: 0, color: '#ffffff', lineHeight: 1.1 }}>
+                              Settings
+                            </h2>
+                            <span style={{ fontSize: '0.72rem', color: '#a7f3d0', fontWeight: '600' }}>
+                              Mga kagustuhan sa app
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* QUICK ACTION: EDIT PROFILE OR LOGOUT */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '4px' }}>
-                      <button
-                        onClick={() => {
-                          setTempProfile(profileData);
-                          setShowProfileSettingsModal(true);
-                        }}
-                        style={{
-                          padding: '12px', borderRadius: '12px', background: '#ffffff', border: '1.5px solid #0c3619', color: '#0c3619', fontWeight: '900', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                        }}
-                      >
-                        <Settings size={16} /> Profile Settings
-                      </button>
+                      {/* Scrollable Settings Content Container */}
+                      <div style={{ flex: 1, overflowY: 'auto', padding: '14px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        
+                        {/* SETTINGS CARD 1: NOTIFICATIONS */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            NOTIFICATIONS
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* Push notifications */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Bell size={20} color="#ffffff" />
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Push notifications</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>Task, weather and alerts</div>
+                                </div>
+                              </div>
+                              {/* Toggle Switch */}
+                              <div
+                                onClick={() => setSettingsData(prev => ({ ...prev, pushNotifications: !prev.pushNotifications }))}
+                                style={{
+                                  width: '46px', height: '26px', borderRadius: '13px',
+                                  background: settingsData.pushNotifications ? '#0c3619' : '#e2e8f0',
+                                  padding: '2px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                  justifyContent: settingsData.pushNotifications ? 'flex-end' : 'flex-start',
+                                  transition: 'all 0.2s ease'
+                                }}
+                              >
+                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                              </div>
+                            </div>
 
-                      <button
-                        onClick={() => { setMobileAuth(false); setMobileScreen('login'); }}
-                        style={{
-                          padding: '12px', borderRadius: '12px', background: '#fef2f2', border: '1.5px solid #fca5a5', color: '#dc2626', fontWeight: '900', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                        }}
-                      >
-                        <LogOut size={16} /> Logout
-                      </button>
-                    </div>
+                            <div style={{ height: '1px', background: '#f1f5f9' }} />
 
-                  </div>
+                            {/* SMS reminders */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Phone size={20} color="#ffffff" />
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>SMS reminders</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>Kapag walang internet</div>
+                                </div>
+                              </div>
+                              {/* Toggle Switch */}
+                              <div
+                                onClick={() => setSettingsData(prev => ({ ...prev, smsReminders: !prev.smsReminders }))}
+                                style={{
+                                  width: '46px', height: '26px', borderRadius: '13px',
+                                  background: settingsData.smsReminders ? '#0c3619' : '#e2e8f0',
+                                  padding: '2px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                  justifyContent: settingsData.smsReminders ? 'flex-end' : 'flex-start',
+                                  transition: 'all 0.2s ease'
+                                }}
+                              >
+                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* SETTINGS CARD 2: PREFERENCES */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            PREFERENCES
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* Language */}
+                            <div
+                              onClick={() => setSettingsData(prev => ({ ...prev, language: prev.language === 'Tagalog' ? 'English' : 'Tagalog' }))}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Globe size={20} color="#ffffff" />
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Language</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>Tap to change</div>
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0c3619' }}>{settingsData.language}</span>
+                                <ChevronRight size={18} color="#64748b" />
+                              </div>
+                            </div>
+
+                            <div style={{ height: '1px', background: '#f1f5f9' }} />
+
+                            {/* Dark mode */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Moon size={20} color="#ffffff" />
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Dark mode</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>Mas madaling basahin sa gabi</div>
+                                </div>
+                              </div>
+                              {/* Toggle Switch */}
+                              <div
+                                onClick={() => setSettingsData(prev => ({ ...prev, darkMode: !prev.darkMode }))}
+                                style={{
+                                  width: '46px', height: '26px', borderRadius: '13px',
+                                  background: settingsData.darkMode ? '#0c3619' : '#e2e8f0',
+                                  padding: '2px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                  justifyContent: settingsData.darkMode ? 'flex-end' : 'flex-start',
+                                  transition: 'all 0.2s ease'
+                                }}
+                              >
+                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                              </div>
+                            </div>
+
+                            <div style={{ height: '1px', background: '#f1f5f9' }} />
+
+                            {/* Offline mode */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Wifi size={20} color="#ffffff" />
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Offline mode</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>I-save ang logs kapag walang signal</div>
+                                </div>
+                              </div>
+                              {/* Toggle Switch */}
+                              <div
+                                onClick={() => setSettingsData(prev => ({ ...prev, offlineMode: !prev.offlineMode }))}
+                                style={{
+                                  width: '46px', height: '26px', borderRadius: '13px',
+                                  background: settingsData.offlineMode ? '#0c3619' : '#e2e8f0',
+                                  padding: '2px', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                  justifyContent: settingsData.offlineMode ? 'flex-end' : 'flex-start',
+                                  transition: 'all 0.2s ease'
+                                }}
+                              >
+                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* SETTINGS CARD 3: ACCOUNT & SECURITY */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            ACCOUNT & SECURITY
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* Change password */}
+                            <div
+                              onClick={() => setActiveSettingsDialog('password')}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Lock size={20} color="#ffffff" />
+                                </div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Change password</div>
+                              </div>
+                              <ChevronRight size={18} color="#64748b" />
+                            </div>
+
+                            <div style={{ height: '1px', background: '#f1f5f9' }} />
+
+                            {/* Privacy & data */}
+                            <div
+                              onClick={() => setActiveSettingsDialog('privacy')}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <ShieldCheck size={20} color="#ffffff" />
+                                </div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Privacy & data</div>
+                              </div>
+                              <ChevronRight size={18} color="#64748b" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* SETTINGS CARD 4: SUPPORT */}
+                        <div style={{ background: '#ffffff', borderRadius: '18px', padding: '16px 18px', border: '1px solid #e2e8f0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '900', color: '#334155', letterSpacing: '0.6px', marginBottom: '14px', textTransform: 'uppercase' }}>
+                            SUPPORT
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* Help center */}
+                            <div
+                              onClick={() => setActiveSettingsDialog('help')}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <HelpCircle size={20} color="#ffffff" />
+                                </div>
+                                <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>Help center</div>
+                              </div>
+                              <ChevronRight size={18} color="#64748b" />
+                            </div>
+
+                            <div style={{ height: '1px', background: '#f1f5f9' }} />
+
+                            {/* About MARIKHA */}
+                            <div
+                              onClick={() => setActiveSettingsDialog('about')}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: '#847e73', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <Info size={20} color="#ffffff" />
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '0.92rem', fontWeight: '900', color: '#0f172a' }}>About MARIKHA</div>
+                                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>v1.0.0</div>
+                                </div>
+                              </div>
+                              <ChevronRight size={18} color="#64748b" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* RED LOGOUT PILL BUTTON (EXACTLY MATCHING SCREENSHOT 2) */}
+                        <button
+                          onClick={() => { setMobileAuth(false); setMobileScreen('login'); }}
+                          style={{
+                            width: '100%', padding: '14px', borderRadius: '16px', background: '#dc2626', border: 'none', color: '#ffffff', fontWeight: '900', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '4px', boxShadow: '0 4px 12px rgba(220, 38, 38, 0.25)'
+                          }}
+                        >
+                          <LogOut size={18} color="#ffffff" /> Log out
+                        </button>
+
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 
