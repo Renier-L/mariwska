@@ -1398,7 +1398,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px', marginBottom: '20px' }}>
         <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>TOTAL ACTIVE CROP PLOTS</div>
@@ -1414,7 +1414,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           <div>
             <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>LIVE LIVESTOCK HEADCOUNT</div>
             <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', margin: '2px 0' }}>{totalLivestockHeads} Heads</div>
-            <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>{livestock ? livestock.length : 0} Active Herd Groups</div>
+            <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>{livestock ? livestock.length : 0} Active Herds</div>
           </div>
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
             <Binary size={20} />
@@ -1425,18 +1425,33 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           <div>
             <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>OVERALL PGS COMPLIANCE</div>
             <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#16a34a', margin: '2px 0' }}>{pgsComplianceRate}</div>
-            <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '600' }}>{validatedCount} / {totalValidationsCount} Validated</div>
+            <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '600' }}>{validatedCount} Validated</div>
           </div>
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
             <ShieldCheck size={20} />
           </div>
         </div>
 
+        <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)', border: '1.5px solid #86efac' }}>
+          <div>
+            <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Sparkles size={12} color="#16a34a" /> AI PREDICTED HARVEST
+            </div>
+            <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0c3619', margin: '2px 0' }}>
+              {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg
+            </div>
+            <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700' }}>Random Forest Model</div>
+          </div>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803d' }}>
+            <Sparkles size={20} />
+          </div>
+        </div>
+
         <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>PENDING OPERATIONS CONCERNS</div>
+            <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>PENDING CONCERNS</div>
             <div style={{ fontSize: '1.8rem', fontWeight: '800', color: pendingValidationsCount > 0 ? '#d97706' : '#111827', margin: '2px 0' }}>{pendingValidationsCount}</div>
-            <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>Awaiting Staff Review</div>
+            <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>Awaiting Review</div>
           </div>
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
             <AlertCircle size={20} />
@@ -2861,79 +2876,100 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       )}
 
       {showAddCropModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="m-card" style={{ width: '450px', background: '#fff', padding: '24px', borderRadius: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ background: '#e4f0e6', padding: '8px', borderRadius: '10px', color: '#11592c' }}>
-                <Sprout size={20} />
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="m-card" style={{ width: '480px', background: '#fff', padding: '24px', borderRadius: '14px', border: '2px solid #16a34a', boxShadow: '0 20px 40px rgba(0,0,0,0.25)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <div style={{ background: '#dcfce7', padding: '10px', borderRadius: '12px', color: '#15803d' }}>
+                <Sparkles size={22} />
               </div>
               <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#11592c' }}>🌾 Register New Crop Plot</h3>
-                <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Random Forest AI Algorithmic Yield Engine Active</span>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#0c3619' }}>🌾 Register Crop Plot & AI Yield Engine</h3>
+                <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>Random Forest Algorithmic Harvest Prediction Active</span>
               </div>
             </div>
 
-            <form onSubmit={handleAddCropSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form onSubmit={handleAddCropSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Crop Variety Name</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b' }}>Crop Variety Name</label>
                 <input 
-                  type="text" required placeholder="e.g. Tomato · Diamante Max" 
+                  type="text" required placeholder="Type variety e.g. Tomato, Eggplant, Okra, Squash, Corn..." 
                   value={newCropForm.variety} 
                   onChange={e => handleCropVarietyChange(e.target.value)}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.88rem', marginTop: '4px', fontWeight: '600' }}
                 />
+                
+                {/* Variety Quick Selector Chips */}
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px' }}>
+                  {['🍅 Tomato', '🍆 Eggplant', '🥬 Okra', '🎃 Squash', '🌽 Sweet Corn', '🥒 Cucumber', '🌶️ Pepper'].map(cropChip => (
+                    <button
+                      key={cropChip}
+                      type="button"
+                      onClick={() => handleCropVarietyChange(cropChip.split(' ')[1])}
+                      style={{
+                        padding: '4px 9px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f8fafc',
+                        fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer', color: '#334155'
+                      }}
+                    >
+                      {cropChip}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div>
-                <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Plot Location Code</label>
-                <input 
-                  type="text" placeholder="e.g. P-099" 
-                  value={newCropForm.plot} 
-                  onChange={e => setNewCropForm({ ...newCropForm, plot: e.target.value })}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#374151' }}>Growth Stage</label>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b' }}>Plot Location Code</label>
+                  <input 
+                    type="text" placeholder="e.g. P-099" 
+                    value={newCropForm.plot} 
+                    onChange={e => setNewCropForm({ ...newCropForm, plot: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b' }}>Growth Stage</label>
                   <select 
                     value={newCropForm.growthStage} 
                     onChange={e => handleCropStageChange(e.target.value)}
-                    style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginTop: '4px' }}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', marginTop: '4px', background: '#fff', fontWeight: '600' }}
                   >
-                    <option value="Vegetative">Vegetative</option>
-                    <option value="Flowering">Flowering</option>
-                    <option value="Fruiting">Fruiting</option>
-                    <option value="Harvest Ready">Harvest Ready</option>
+                    <option value="Vegetative">Vegetative (85% Output)</option>
+                    <option value="Flowering">Flowering (100% Target)</option>
+                    <option value="Fruiting">Fruiting (115% Peak)</option>
+                    <option value="Harvest Ready">Harvest Ready (125% Max)</option>
                   </select>
                 </div>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#11592c', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Sparkles size={12} color="#16a34a" /> Expected Yield
-                    </label>
-                    <span style={{ fontSize: '0.65rem', background: '#dcfce7', color: '#15803d', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>AI Auto</span>
-                  </div>
-                  <input 
-                    type="text"
-                    required
-                    readOnly
-                    value={newCropForm.yield || calculateAiPredictedYield(newCropForm.variety, newCropForm.growthStage)} 
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1.5px solid #16a34a', background: '#f0fdf4', fontSize: '0.85rem', fontWeight: '800', color: '#0c3619', marginTop: '4px' }}
-                  />
+              </div>
+
+              {/* Prominent AI Auto-Predicted Expected Yield Box */}
+              <div style={{ background: '#f0fdf4', border: '2px solid #86efac', padding: '12px 14px', borderRadius: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#15803d', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Sparkles size={15} color="#16a34a" />
+                    AI Auto-Predicted Expected Yield:
+                  </label>
+                  <span style={{ fontSize: '0.7rem', background: '#16a34a', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontWeight: '800' }}>
+                    AUTOMATIC
+                  </span>
+                </div>
+                <input 
+                  type="text"
+                  required
+                  readOnly
+                  value={newCropForm.yield || calculateAiPredictedYield(newCropForm.variety, newCropForm.growthStage)} 
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #16a34a', background: '#ffffff', fontSize: '1.1rem', fontWeight: '800', color: '#0c3619' }}
+                />
+                <div style={{ fontSize: '0.72rem', color: '#166534', marginTop: '6px', fontWeight: '600' }}>
+                  🤖 Estimated harvest yield generated live by Random Forest algorithm for {newCropForm.variety || 'Tomato'} ({newCropForm.growthStage} stage).
                 </div>
               </div>
 
-              {/* AI Yield Prediction Explanation Banner */}
-              <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', padding: '10px 12px', borderRadius: '8px', fontSize: '0.75rem', color: '#334155', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <Cpu size={16} color="#11592c" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <div>
-                  <strong style={{ color: '#0c3619' }}>Random Forest AI Prediction:</strong> Expected yield is automatically calculated based on crop variety baseline ({newCropForm.variety || 'Standard Crop'}), growth stage ({newCropForm.growthStage}), and soil fertility index.
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px', justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowAddCropModal(false)} className="btn-outline">Cancel</button>
-                <button type="submit" className="btn-primary">✓ Add Crop Plot (Save AI Yield)</button>
+                <button type="submit" className="btn-primary" style={{ background: '#0c3619', padding: '10px 18px', fontWeight: '800' }}>
+                  ✓ Register Plot (Save AI Yield)
+                </button>
               </div>
             </form>
           </div>
