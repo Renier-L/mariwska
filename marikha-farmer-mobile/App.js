@@ -51,9 +51,10 @@ export default function App() {
 
   // My Planted Crops State & Realtime Methods
   const [plantedCrops, setPlantedCrops] = useState([
-    { id: 'c-1', name: 'Squash Suprema', plot: 'Plot P-014', date: 'Planted Jun 20, 2026', stage: 'Flowering', stagePct: '94%', day: 'Day 51 after planting', pgs: 'Certified 94%' },
-    { id: 'c-2', name: 'Tomato Diamante Max', plot: 'Plot P-007', date: 'Planted Jul 02, 2026', stage: 'Vegetative', stagePct: '78%', day: 'Day 35 after planting', pgs: 'Certified 95%' },
-    { id: 'c-3', name: 'Ampalaya Galaxy Max', plot: 'Plot P-021', date: 'Planted Jul 10, 2026', stage: 'Seedling', stagePct: '45%', day: 'Day 18 after planting', pgs: 'In Transition' }
+    { id: 'c-1', name: 'Tomato · Diamante Max (Kamatis)', plot: 'Plot P-034', date: 'Planted Jun 20, 2026', stage: 'Harvesting', stagePct: '96%', day: 'Day 55 after planting', pgs: 'Certified Organic 95%', emoji: '🍅', area: '0.25 ha' },
+    { id: 'c-2', name: 'Eggplant · Mistisa F1 (Talong)', plot: 'Plot P-021', date: 'Planted Jul 02, 2026', stage: 'Vegetative', stagePct: '82%', day: 'Day 38 after planting', pgs: 'Certified Organic 94%', emoji: '🍆', area: '0.30 ha' },
+    { id: 'c-3', name: 'Okra · Smooth Green', plot: 'Plot P-007', date: 'Planted Jul 10, 2026', stage: 'Flowering', stagePct: '75%', day: 'Day 28 after planting', pgs: 'Certified Organic 94%', emoji: '🌱', area: '0.40 ha' },
+    { id: 'c-4', name: 'Squash · Suprema F1 (Kalabasa)', plot: 'Plot P-014', date: 'Planted Jul 18, 2026', stage: 'Seedling', stagePct: '40%', day: 'Day 14 after planting', pgs: 'In Transition', emoji: '🎃', area: '0.35 ha' }
   ]);
   const [showAddCropModal, setShowAddCropModal] = useState(false);
   const [newCropName, setNewCropName] = useState('Eggplant Mistisa F1');
@@ -232,7 +233,9 @@ export default function App() {
         base64: true
       });
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        setPhotoUri(result.assets[0].uri);
+        const asset = result.assets[0];
+        const dataUrl = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
+        setPhotoUri(dataUrl);
       }
     } catch (err) {
       Alert.alert('Notice', 'Opening camera...');
@@ -248,7 +251,9 @@ export default function App() {
         base64: true
       });
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        setPhotoUri(result.assets[0].uri);
+        const asset = result.assets[0];
+        const dataUrl = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
+        setPhotoUri(dataUrl);
       }
     } catch (err) {
       Alert.alert('Notice', 'Opening photo library...');
@@ -859,134 +864,186 @@ export default function App() {
 
       <ScrollView style={{ flex: 1 }}>
         
-        {/* Header Banner matching Image 2 */}
-        <View style={{ backgroundColor: '#0c3619', padding: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        {/* Compact Header for non-Home tabs */}
+        {activeTab !== 'home' && (
+          <View style={{ backgroundColor: '#0c3619', paddingHorizontal: 18, paddingVertical: 14, borderBottomLeftRadius: 18, borderBottomRightRadius: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 18 }}>🌱</Text>
+              <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 14 }}>🌱</Text>
               </View>
-              <Text style={{ fontSize: 20, fontWeight: '900', color: '#ffffff', letterSpacing: 1 }}>MARIKHA</Text>
+              <Text style={{ fontSize: 18, fontWeight: '900', color: '#ffffff', letterSpacing: 0.5 }}>MARIKHA</Text>
             </View>
-            <TouchableOpacity onPress={() => setIsAuthenticated(false)} style={{ backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16 }}>
-              <Text style={{ color: '#86efac', fontWeight: '800', fontSize: 12 }}>Logout</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={{ fontSize: 11, color: '#86efac', fontWeight: '800', textTransform: 'uppercase' }}>MAGANDANG ARAW,</Text>
-          <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 1 }}>{currentUser.name} 👋</Text>
-          <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600', marginTop: 4 }}>
-            📅 Tuesday, July 21  ·  📍 Antipolo - Rizal
-          </Text>
-
-          {/* Live Weather & Temperature Telemetry Cards matching Image 2 */}
-          <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
-              <Text style={{ fontSize: 10, fontWeight: '800', color: '#86efac', textTransform: 'uppercase' }}>🌡️ TEMPERATURE</Text>
-              <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 2 }}>{liveTemp}</Text>
-              <Text style={{ fontSize: 10, color: '#a7f3d0', fontWeight: '600', marginTop: 2 }}>{liveWeatherDesc}</Text>
-            </View>
-
-            <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
-              <Text style={{ fontSize: 10, fontWeight: '800', color: '#86efac', textTransform: 'uppercase' }}>🌧️ RAINFALL</Text>
-              <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 2 }}>{liveRainfall}</Text>
-              <Text style={{ fontSize: 10, color: '#a7f3d0', fontWeight: '600', marginTop: 2 }}>Low Chance of Rain</Text>
-            </View>
-          </View>
-
-          {/* Live Realtime Push Announcement Banner */}
-          {activePushNotice && (
-            <TouchableOpacity 
-              style={styles.noticePushBanner}
-              onPress={() => setShowNoticeModal(true)}
-            >
-              <Text style={styles.noticePushTitle}>📢 LIVE COOPERATIVE BROADCAST</Text>
-              <Text style={styles.noticePushText} numberOfLines={1}>
-                "{activePushNotice.content || activePushNotice.title}"
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* ----- HOME TAB CONTENTS ----- */}
-        {activeTab === 'home' && (
-          <View style={styles.contentPadding}>
-            <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619', marginBottom: 12 }}>What would you like to do?</Text>
-
-            {/* 4 Big Color Cards matching Image 2 */}
-            <View style={{ gap: 10 }}>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
-                <TouchableOpacity 
-                  onPress={() => setActiveTab('log')}
-                  style={{ flex: 1, backgroundColor: '#0c3619', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
-                >
-                  <Text style={{ fontSize: 24 }}>📋</Text>
-                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>LOG DAILY ACTIVITY</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  onPress={() => setShowLivestockModal(true)}
-                  style={{ flex: 1, backgroundColor: '#452b1e', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
-                >
-                  <Text style={{ fontSize: 24 }}>🌾</Text>
-                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>MY CROPS & LIVESTOCK</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={{ flexDirection: 'row', gap: 10 }}>
-                <TouchableOpacity 
-                  onPress={() => setActiveTab('tasks')}
-                  style={{ flex: 1, backgroundColor: '#d97706', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
-                >
-                  <Text style={{ fontSize: 24 }}>📅</Text>
-                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>FARMING CALENDAR</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  onPress={() => setActiveTab('ai')}
-                  style={{ flex: 1, backgroundColor: '#059669', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
-                >
-                  <Text style={{ fontSize: 24 }}>✨</Text>
-                  <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>AI SMART RECOMMENDATION</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Section: My Planted Crops matching Image 2 */}
-            <View style={{ marginTop: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619' }}>My Planted Crops</Text>
-                <View style={{ backgroundColor: '#e2e8f0', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#475569' }}>{plantedCrops.length} active</Text>
-                </View>
-              </View>
-
-              {/* + ADD PLANTED CROPS Button matching Image 2 */}
-              <TouchableOpacity 
-                onPress={() => setShowAddCropModal(true)}
-                style={{ backgroundColor: '#e8f5e9', borderWidth: 1.5, borderColor: '#81c784', borderRadius: 14, paddingVertical: 14, alignItems: 'center', marginBottom: 12 }}
-              >
-                <Text style={{ color: '#1b5e20', fontWeight: '900', fontSize: 14 }}>+ ADD PLANTED CROPS</Text>
-              </TouchableOpacity>
-
-              {/* Dynamic Planted Crops Cards */}
-              <View style={{ gap: 10 }}>
-                {plantedCrops.map(crop => (
-                  <View key={crop.id} style={{ backgroundColor: '#ffffff', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#cbd5e1' }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <Text style={{ fontSize: 15, fontWeight: '900', color: '#0c3619' }}>🌱 {crop.name}</Text>
-                      <View style={{ backgroundColor: '#dcfce7', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}>
-                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#15803d' }}>{crop.stage} ({crop.stagePct})</Text>
-                      </View>
-                    </View>
-                    <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '700' }}>{crop.plot}  ·  {crop.date}</Text>
-                    <Text style={{ fontSize: 11, color: '#15803d', fontWeight: '700', marginTop: 4 }}>PGS Status: {crop.pgs}</Text>
-                  </View>
-                ))}
-              </View>
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+              <Text style={{ color: '#86efac', fontWeight: '800', fontSize: 11, textTransform: 'uppercase' }}>{activeTab}</Text>
             </View>
           </View>
         )}
+
+        {/* ----- HOME TAB CONTENTS & WEATHER (HOMEPAGE ONLY) ----- */}
+        {activeTab === 'home' && (
+          <>
+            {/* Header Banner matching Image 2 */}
+            <View style={{ backgroundColor: '#0c3619', padding: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 18 }}>🌱</Text>
+                  </View>
+                  <Text style={{ fontSize: 20, fontWeight: '900', color: '#ffffff', letterSpacing: 1 }}>MARIKHA</Text>
+                </View>
+                <TouchableOpacity onPress={() => setIsAuthenticated(false)} style={{ backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16 }}>
+                  <Text style={{ color: '#86efac', fontWeight: '800', fontSize: 12 }}>Logout</Text>
+                </TouchableOpacity>
+              </View>
+
+              <Text style={{ fontSize: 11, color: '#86efac', fontWeight: '800', textTransform: 'uppercase' }}>MAGANDANG ARAW,</Text>
+              <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 1 }}>{currentUser.name} 👋</Text>
+              <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600', marginTop: 4 }}>
+                📅 Tuesday, July 21  ·  📍 Antipolo - Rizal
+              </Text>
+
+              {/* Live Weather & Temperature Telemetry Cards (HOMEPAGE ONLY) */}
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 14 }}>
+                <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
+                  <Text style={{ fontSize: 10, fontWeight: '800', color: '#86efac', textTransform: 'uppercase' }}>🌡️ TEMPERATURE</Text>
+                  <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 2 }}>{liveTemp}</Text>
+                  <Text style={{ fontSize: 10, color: '#a7f3d0', fontWeight: '600', marginTop: 2 }}>{liveWeatherDesc}</Text>
+                </View>
+
+                <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' }}>
+                  <Text style={{ fontSize: 10, fontWeight: '800', color: '#86efac', textTransform: 'uppercase' }}>🌧️ RAINFALL</Text>
+                  <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 2 }}>{liveRainfall}</Text>
+                  <Text style={{ fontSize: 10, color: '#a7f3d0', fontWeight: '600', marginTop: 2 }}>Low Chance of Rain</Text>
+                </View>
+              </View>
+
+              {/* Live Realtime Push Announcement Banner */}
+              {activePushNotice && (
+                <TouchableOpacity 
+                  style={styles.noticePushBanner}
+                  onPress={() => setShowNoticeModal(true)}
+                >
+                  <Text style={styles.noticePushTitle}>📢 LIVE COOPERATIVE BROADCAST</Text>
+                  <Text style={styles.noticePushText} numberOfLines={1}>
+                    "{activePushNotice.content || activePushNotice.title}"
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View style={styles.contentPadding}>
+              <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619', marginBottom: 12 }}>What would you like to do?</Text>
+
+              {/* 4 Big Color Cards matching Image 2 */}
+              <View style={{ gap: 10 }}>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity 
+                    onPress={() => setActiveTab('log')}
+                    style={{ flex: 1, backgroundColor: '#0c3619', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                  >
+                    <Text style={{ fontSize: 24 }}>📋</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>LOG DAILY ACTIVITY</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    onPress={() => setShowLivestockModal(true)}
+                    style={{ flex: 1, backgroundColor: '#452b1e', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                  >
+                    <Text style={{ fontSize: 24 }}>🌾</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>MY CROPS & LIVESTOCK</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TouchableOpacity 
+                    onPress={() => setActiveTab('tasks')}
+                    style={{ flex: 1, backgroundColor: '#d97706', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                  >
+                    <Text style={{ fontSize: 24 }}>📅</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>FARMING CALENDAR</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    onPress={() => setActiveTab('ai')}
+                    style={{ flex: 1, backgroundColor: '#059669', borderRadius: 16, padding: 16, minHeight: 110, justifyContent: 'space-between' }}
+                  >
+                    <Text style={{ fontSize: 24 }}>✨</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '900', color: '#ffffff' }}>AI SMART RECOMMENDATION</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Section: My Planted Crops HORIZONTAL CAROUSEL VIEW */}
+              <View style={{ marginTop: 22 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619' }}>My Planted Crops</Text>
+                    <Text style={{ fontSize: 11, color: '#059669', fontWeight: '800' }}>‹ Swipe Horizontally ›</Text>
+                  </View>
+                  <View style={{ backgroundColor: '#dcfce7', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '800', color: '#15803d' }}>{plantedCrops.length} Assigned</Text>
+                  </View>
+                </View>
+
+                {/* + ADD PLANTED CROPS Button */}
+                <TouchableOpacity 
+                  onPress={() => setShowAddCropModal(true)}
+                  style={{ backgroundColor: '#e8f5e9', borderWidth: 1.5, borderColor: '#81c784', borderRadius: 14, paddingVertical: 12, alignItems: 'center', marginBottom: 14 }}
+                >
+                  <Text style={{ color: '#1b5e20', fontWeight: '900', fontSize: 13 }}>+ ADD PLANTED CROPS</Text>
+                </TouchableOpacity>
+
+                {/* HORIZONTAL CAROUSEL VIEW FOR CROPS (Tomato, Eggplant, Okra, Squash) */}
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 12, paddingRight: 10 }}
+                >
+                  {plantedCrops.map(crop => (
+                    <View 
+                      key={crop.id} 
+                      style={{ 
+                        width: 250, 
+                        backgroundColor: '#ffffff', 
+                        borderRadius: 16, 
+                        padding: 16, 
+                        borderWidth: 1.5, 
+                        borderColor: '#86efac', 
+                        shadowColor: '#0c3619', 
+                        shadowOffset: { width: 0, height: 4 }, 
+                        shadowOpacity: 0.1, 
+                        elevation: 3 
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#f0fdf4', borderWidth: 1, borderColor: '#86efac', justifyContent: 'center', alignItems: 'center' }}>
+                          <Text style={{ fontSize: 20 }}>{crop.emoji || '🌱'}</Text>
+                        </View>
+                        <View style={{ backgroundColor: crop.stage === 'Harvesting' ? '#fef3c7' : '#dcfce7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}>
+                          <Text style={{ fontSize: 10, fontWeight: '900', color: crop.stage === 'Harvesting' ? '#b45309' : '#15803d' }}>
+                            {crop.stage} ({crop.stagePct || '85%'})
+                          </Text>
+                        </View>
+                      </View>
+
+                      <Text style={{ fontSize: 16, fontWeight: '900', color: '#0c3619', marginBottom: 2 }} numberOfLines={1}>{crop.name}</Text>
+                      <Text style={{ fontSize: 11, color: '#475569', fontWeight: '700', marginBottom: 8 }}>
+                        📍 {crop.plot} ({crop.area || '0.3 ha'})  ·  📅 {crop.date}
+                      </Text>
+
+                      <View style={{ backgroundColor: '#f8fafc', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#e2e8f0', gap: 4 }}>
+                        <Text style={{ fontSize: 10, fontWeight: '800', color: '#64748b' }}>GROWTH PROGRESS</Text>
+                        <Text style={{ fontSize: 12, fontWeight: '800', color: '#0f172a' }}>{crop.day || 'Day 35 after planting'}</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#059669', marginTop: 2 }}>PGS: {crop.pgs || 'Certified Organic'}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+          </>
+        )
+      }
 
 
         {activeTab === 'log' && (
