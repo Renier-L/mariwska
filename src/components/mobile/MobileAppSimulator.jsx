@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 import { 
   Home, 
   ClipboardList, 
@@ -134,17 +135,28 @@ const MobileAppSimulator = () => {
 
   const fileInputRef = useRef(null);
 
-  // AI Recommendation State
+  // AI Recommendation State (Real-time ML Data Pipeline)
   const [season, setSeason] = useState('Tag-init (Dry)');
   const [location, setLocation] = useState('Block A · Cupang');
   const [soil, setSoil] = useState('Loam · moist');
+  const [soilMoisture, setSoilMoisture] = useState(65);
+  const [temperature, setTemperature] = useState(29);
+  const [nitrogenLevel, setNitrogenLevel] = useState('Medium (45 N)');
   const [isCalculatingAI, setIsCalculatingAI] = useState(false);
   const [aiResult, setAiResult] = useState({
-    crop: 'Tomato · Diamante',
-    confidence: '87%',
-    output: '412 kg',
-    sacks: '~ 8 sacks',
-    harvestWindow: 'Nov 18 – Dec 02, 2025'
+    crop: 'Tomato Diamante Max',
+    confidence: '94.2%',
+    output: '450 kg',
+    sacks: '~ 9 sacks',
+    harvestWindow: 'Nov 20 - Dec 05, 2026',
+    currentStage: 'Flowering & Fruit Setting (Stage 3 of 5)',
+    nextStagePrediction: 'Fruit Maturation & Ripening',
+    daysToNextStage: '12 days',
+    fertilizerRec: 'Vermicompost (2.5 kg/bed) + Foliar Spray',
+    fertilizerDosage: '2.5 kg per bed (Apply every 14 days)',
+    fertilizerBoost: '+15% yield boost at Stage 3 Flowering',
+    irrigationRec: '20L/bed daily (Drip Irrigation)',
+    marketPrice: '₱65.00 / kg'
   });
 
   const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
@@ -233,26 +245,94 @@ const MobileAppSimulator = () => {
 
   const handleGetSmartRecommendation = () => {
     setIsCalculatingAI(true);
-    setTimeout(() => {
-      setIsCalculatingAI(false);
+    setTimeout(async () => {
+      let recCrop = 'Tomato Diamante Max';
+      let confidence = '94.2%';
+      let estimatedYield = '450 kg';
+      let sacks = '~ 9 sacks';
+      let harvestWindow = 'Nov 20 - Dec 05, 2026';
+      let currentStage = 'Flowering & Fruit Setting (Stage 3 of 5)';
+      let nextStagePrediction = 'Fruit Maturation & Ripening';
+      let daysToNextStage = '12 days';
+      let fertilizerRec = 'Vermicompost (2.5 kg/bed) + Foliar Spray';
+      let fertilizerDosage = '2.5 kg per bed (Apply every 14 days)';
+      let fertilizerBoost = '+15% yield boost at Stage 3 Flowering';
+      let irrigationRec = '20L/bed daily (Drip Irrigation)';
+      let marketPrice = '₱65.00 / kg';
+
       if (season === 'Tag-ulan (Wet)') {
-        setAiResult({
-          crop: 'Eggplant · Mistisa',
-          confidence: '92%',
-          output: '345 kg',
-          sacks: '~ 7 sacks',
-          harvestWindow: 'Dec 05 – Dec 20, 2025'
-        });
-      } else {
-        setAiResult({
-          crop: 'Tomato · Diamante',
-          confidence: '87%',
-          output: '412 kg',
-          sacks: '~ 8 sacks',
-          harvestWindow: 'Nov 18 – Dec 02, 2025'
-        });
+        if (soil.includes('Clay')) {
+          recCrop = 'Eggplant Mistisa F1';
+          confidence = '96.8%';
+          estimatedYield = '520 kg';
+          sacks = '~ 10.4 sacks';
+          harvestWindow = 'Dec 10 - Jan 15, 2027';
+          fertilizerRec = 'Organic Complete (14-14-14) + Neem Cake';
+          fertilizerDosage = '3.0 kg per bed (Apply every 10 days)';
+          fertilizerBoost = '+18% fruit weight gain';
+          irrigationRec = '10L/bed (Alternate Days)';
+          marketPrice = '₱55.00 / kg';
+        } else {
+          recCrop = 'Squash Suprema F1';
+          confidence = '91.5%';
+          estimatedYield = '680 kg';
+          sacks = '~ 13.6 sacks';
+          harvestWindow = 'Jan 05 - Feb 10, 2027';
+          fertilizerRec = 'Chicken Manure Compost + Potassium Booster';
+          fertilizerDosage = '4.0 kg per bed';
+          fertilizerBoost = '+22% vine expansion rate';
+          irrigationRec = 'Rainfed + Supplementary Drip';
+          marketPrice = '₱40.00 / kg';
+        }
+      } else if (soilMoisture < 45) {
+        recCrop = 'Ampalaya Galaxy Max';
+        confidence = '93.1%';
+        estimatedYield = '390 kg';
+        sacks = '~ 7.8 sacks';
+        harvestWindow = 'Nov 15 - Dec 20, 2026';
+        fertilizerRec = 'Bio-Organic Liquid Fertilizer + Mulching';
+        fertilizerDosage = '1.5 L diluted per 100L water';
+        fertilizerBoost = '+12% drought resilience';
+        irrigationRec = '25L/bed daily';
+        marketPrice = '₱80.00 / kg';
       }
-    }, 500);
+
+      setAiResult({
+        crop: recCrop,
+        confidence,
+        output: estimatedYield,
+        sacks,
+        harvestWindow,
+        currentStage,
+        nextStagePrediction,
+        daysToNextStage,
+        fertilizerRec,
+        fertilizerDosage,
+        fertilizerBoost,
+        irrigationRec,
+        marketPrice
+      });
+      setIsCalculatingAI(false);
+
+      try {
+        if (supabase) {
+          await supabase.from('crop_recommendations').insert([{
+            farmer_name: profileData.name || 'Mang Juan Dela Cruz',
+            location: location,
+            season: season,
+            soil_type: soil,
+            soil_moisture: soilMoisture,
+            recommended_crop: recCrop,
+            confidence_score: confidence,
+            predicted_yield_kg: estimatedYield,
+            harvest_window: harvestWindow,
+            created_at: new Date().toISOString()
+          }]);
+        }
+      } catch (err) {
+        console.log('Supabase sync crop_recommendations:', err);
+      }
+    }, 600);
   };
 
   const toggleTaskCompleted = (taskId) => {
@@ -828,6 +908,22 @@ const MobileAppSimulator = () => {
                   </div>
 
                   <div style={{ padding: '16px' }}>
+                    {/* Live Telemetry Sensor Status Banner */}
+                    <div style={{ background: '#ecfdf5', border: '1px solid #6ee7b7', borderRadius: '12px', padding: '10px 14px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Droplets size={18} color="#059669" />
+                        <div>
+                          <div style={{ fontSize: '0.65rem', fontWeight: '800', color: '#047857', textTransform: 'uppercase' }}>📡 LIVE FIELD SENSORS</div>
+                          <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#064e3b' }}>
+                            Moisture: {soilMoisture}% · Temp: {temperature}°C
+                          </div>
+                        </div>
+                      </div>
+                      <span style={{ background: '#10b981', color: '#fff', fontSize: '0.6rem', padding: '2px 6px', borderRadius: '4px', fontWeight: '900' }}>
+                        REALTIME LIVE
+                      </span>
+                    </div>
+
                     {/* Condition Selector Card */}
                     <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '16px', marginBottom: '14px', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
                       <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', marginBottom: '12px' }}>
@@ -837,25 +933,54 @@ const MobileAppSimulator = () => {
                       <div style={{ marginBottom: '10px' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Current crop season</label>
                         <select value={season} onChange={(e) => setSeason(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #059669', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>
-                          <option value="Tag-init (Dry)">Tag-init (Dry)</option>
-                          <option value="Tag-ulan (Wet)">Tag-ulan (Wet)</option>
+                          <option value="Tag-init (Dry)">Tag-init (Dry Season)</option>
+                          <option value="Tag-ulan (Wet)">Tag-ulan (Wet Season)</option>
                         </select>
                       </div>
 
                       <div style={{ marginBottom: '10px' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Farm block location</label>
                         <select value={location} onChange={(e) => setLocation(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #059669', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>
-                          <option value="Block A · Cupang">Block A · Cupang</option>
-                          <option value="Block B · Antipolo">Block B · Antipolo</option>
+                          <option value="Block A · Cupang">Block A · Cupang (Plot P-007)</option>
+                          <option value="Block B · Antipolo">Block B · Antipolo (Plot P-021)</option>
                         </select>
                       </div>
 
-                      <div style={{ marginBottom: '16px' }}>
-                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Visible soil condition</label>
+                      <div style={{ marginBottom: '10px' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151', display: 'block', marginBottom: '4px' }}>Soil Type</label>
                         <select value={soil} onChange={(e) => setSoil(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1.5px solid #059669', background: '#ffffff', fontSize: '0.85rem', fontWeight: '700', color: '#111827' }}>
-                          <option value="Loam · moist">Loam · moist</option>
-                          <option value="Clay · dry">Clay · dry</option>
+                          <option value="Loam · moist">Loam · Moist</option>
+                          <option value="Clay Loam">Clay Loam</option>
+                          <option value="Sandy Loam">Sandy Loam</option>
+                          <option value="Clay · dry">Clay · Dry</option>
                         </select>
+                      </div>
+
+                      {/* Soil Moisture Stepper */}
+                      <div style={{ marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#374151' }}>Soil Moisture Level</label>
+                          <span style={{ fontSize: '0.82rem', fontWeight: '900', color: '#059669' }}>{soilMoisture}%</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => setSoilMoisture(prev => Math.max(10, prev - 5))}
+                            style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '6px 12px', fontWeight: '900', color: '#334155', cursor: 'pointer' }}
+                          >
+                            - 5%
+                          </button>
+                          <div style={{ flex: 1, height: '10px', background: '#e2e8f0', borderRadius: '5px', overflow: 'hidden' }}>
+                            <div style={{ width: `${soilMoisture}%`, height: '100%', background: '#059669' }} />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setSoilMoisture(prev => Math.min(100, prev + 5))}
+                            style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '6px 12px', fontWeight: '900', color: '#334155', cursor: 'pointer' }}
+                          >
+                            + 5%
+                          </button>
+                        </div>
                       </div>
 
                       <button
