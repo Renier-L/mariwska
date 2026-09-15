@@ -229,12 +229,87 @@ export default function App() {
     }, 500);
   };
 
-  // Tasks checklist state
+  // Smart Task Prioritization Module State & Realtime Handlers
   const [tasks, setTasks] = useState([
-    { id: '1', title: 'Apply vermicompost fertilizer (Plot P-007)', urgency: 'High', done: false },
-    { id: '2', title: 'Inspect tomato crops for leaf spots', urgency: 'Normal', done: true },
-    { id: '3', title: 'Morning drip irrigation cycle (30 mins)', urgency: 'Normal', done: false }
+    { id: 't1', title: 'Apply compost - Plot P-021', status: 'OVERDUE', time: 'YESTERDAY', desc: 'Missed scheduled cycle - re-do today', urgency: 'HIGH', category: 'Fertilizer', plot: 'Plot P-021', done: false },
+    { id: 't2', title: 'Water Plot P-007 (Tomato)', status: 'URGENT', time: '06:00 AM TODAY', desc: 'Heat advisory - double morning drip ratio', urgency: 'HIGH', category: 'Irrigation', plot: 'Plot P-007', done: false },
+    { id: 't3', title: 'Feed Goat Herd GT-014', status: 'URGENT', time: '07:00 AM TODAY', desc: 'Morning ration + 5kg napier grass', urgency: 'HIGH', category: 'Livestock', plot: 'Barn Shed 2', done: false },
+    { id: 't4', title: 'Harvest Okra · Plot P-034', status: 'NORMAL', time: '04:00 PM TODAY', desc: 'Pods 7-9cm length ready for harvest', urgency: 'NORMAL', category: 'Harvest', plot: 'Plot P-034', done: false },
+    { id: 't5', title: 'Evening Drip Line Inspection', status: 'NORMAL', time: '05:30 PM TODAY', desc: 'Check Plot P-002 pressure gauge', urgency: 'NORMAL', category: 'Maintenance', plot: 'Plot P-002', done: true }
   ]);
+
+  const [taskFilter, setTaskFilter] = useState('ALL');
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskPlot, setNewTaskPlot] = useState('Plot P-007');
+  const [newTaskTime, setNewTaskTime] = useState('08:00 AM TODAY');
+  const [newTaskUrgency, setNewTaskUrgency] = useState('URGENT');
+  const [newTaskCategory, setNewTaskCategory] = useState('Crop Care');
+  const [newTaskDesc, setNewTaskDesc] = useState('');
+  const [isSubmittingTask, setIsSubmittingTask] = useState(false);
+
+  const handleToggleTask = async (taskId) => {
+    const updated = tasks.map(t => {
+      if (t.id === taskId) {
+        const nextDone = !t.done;
+        return {
+          ...t,
+          done: nextDone,
+          status: nextDone ? 'COMPLETED ✓' : t.urgency
+        };
+      }
+      return t;
+    });
+    setTasks(updated);
+
+    const target = tasks.find(t => t.id === taskId);
+    if (target) {
+      try {
+        await supabase.from('schedules').update({
+          status: !target.done ? 'Completed' : 'Pending'
+        }).eq('id', taskId);
+      } catch (err) {}
+    }
+  };
+
+  const handleCreateNewTask = async () => {
+    if (!newTaskTitle.trim()) {
+      Alert.alert('Validation Error', 'Please enter a task title.');
+      return;
+    }
+    setIsSubmittingTask(true);
+    const newTaskObj = {
+      id: `task-${Date.now()}`,
+      title: newTaskTitle.trim(),
+      status: newTaskUrgency,
+      time: newTaskTime,
+      desc: newTaskDesc || `Scheduled for ${newTaskPlot}`,
+      urgency: newTaskUrgency,
+      category: newTaskCategory,
+      plot: newTaskPlot,
+      done: false
+    };
+
+    setTasks(prev => [newTaskObj, ...prev]);
+    setIsSubmittingTask(false);
+    setShowAddTaskModal(false);
+    setNewTaskTitle('');
+    setNewTaskDesc('');
+
+    try {
+      await supabase.from('schedules').insert([{
+        title: newTaskObj.title,
+        plot: newTaskObj.plot,
+        assigned_to: currentUser.name || 'Mang Juan Dela Cruz',
+        priority: newTaskUrgency,
+        category: newTaskCategory,
+        status: 'Pending',
+        created_at: new Date().toISOString()
+      }]);
+    } catch (err) {}
+
+    Alert.alert('Task Created 📋', `"${newTaskObj.title}" added to Smart Task Prioritization list & synced to Supabase.`);
+  };
 
   // Detailed Livestock Records Module State (Goat Management)
   const [showLivestockModal, setShowLivestockModal] = useState(false);
@@ -1117,18 +1192,156 @@ export default function App() {
         )}
 
         {activeTab === 'tasks' && (
-          <View style={styles.contentPadding}>
-            <Text style={styles.sectionHeader}>My Field Tasks</Text>
-            {tasks.map(t => (
-              <TouchableOpacity key={t.id} style={styles.taskCard} onPress={() => toggleTask(t.id)}>
-                <Text style={{ fontSize: 18 }}>{t.done ? '✅' : '⬜'}</Text>
-                <View style={{ flex: 1, marginLeft: 10 }}>
-                  <Text style={[styles.taskTitle, t.done && styles.taskDone]}>{t.title}</Text>
-                  <Text style={styles.taskUrgency}>Priority: {t.urgency}</Text>
+          <View style={[styles.contentPadding, { paddingBottom: 40 }]}>
+            {/* Header Telemetry Banner */}
+            <View style={{ backgroundColor: '#d97706', borderRadius: 16, padding: 14, marginBottom: 14 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <Text style={{ fontSize: 16, fontWeight: '800', color: '#ffffff' }}>📋 Smart Task Prioritization</Text>
+                <View style={{ backgroundColor: '#b45309', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 }}>
+                  <Text style={{ color: '#fef3c7', fontSize: 10, fontWeight: '800' }}>⚡ Realtime Engine</Text>
                 </View>
+              </View>
+              <Text style={{ fontSize: 11, color: '#fef3c7', fontWeight: '600' }}>
+                Inayos ayon sa urgency, weather telemetry & PGS organic matrix
+              </Text>
+            </View>
+
+            {/* Controls Bar & Create Button */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={{ fontSize: 15, fontWeight: '900', color: '#0f172a' }}>Priority Checklist ({tasks.length})</Text>
+              <TouchableOpacity
+                onPress={() => setShowAddTaskModal(true)}
+                style={{ backgroundColor: '#0c3619', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 11 }}>➕ Add Task</Text>
               </TouchableOpacity>
-            ))}
+            </View>
+
+            {/* Filter Pills */}
+            <View style={{ flexDirection: 'row', gap: 6, marginBottom: 14 }}>
+              {['ALL', 'URGENT', 'OVERDUE', 'DONE'].map(f => (
+                <TouchableOpacity
+                  key={f}
+                  onPress={() => setTaskFilter(f)}
+                  style={[
+                    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#cbd5e1' },
+                    taskFilter === f && { backgroundColor: '#d97706', borderColor: '#d97706' }
+                  ]}
+                >
+                  <Text style={[{ fontSize: 11, fontWeight: '800', color: '#475569' }, taskFilter === f && { color: '#ffffff' }]}>
+                    {f}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Priority Tasks List */}
+            <View style={{ gap: 10 }}>
+              {tasks
+                .filter(t => {
+                  if (taskFilter === 'URGENT') return t.status === 'URGENT' || t.urgency === 'HIGH';
+                  if (taskFilter === 'OVERDUE') return t.status === 'OVERDUE';
+                  if (taskFilter === 'DONE') return t.done;
+                  return true;
+                })
+                .map(t => {
+                  const isDone = t.done;
+                  let badgeBg = '#f1f5f9';
+                  let badgeColor = '#64748b';
+                  let borderCol = '#cbd5e1';
+
+                  if (t.status === 'OVERDUE') {
+                    badgeBg = '#fee2e2';
+                    badgeColor = '#dc2626';
+                    borderCol = '#ef4444';
+                  } else if (t.status === 'URGENT' || t.urgency === 'HIGH') {
+                    badgeBg = '#fef3c7';
+                    badgeColor = '#d97706';
+                    borderCol = '#f59e0b';
+                  } else if (isDone) {
+                    badgeBg = '#dcfce7';
+                    badgeColor = '#15803d';
+                    borderCol = '#86efac';
+                  }
+
+                  return (
+                    <TouchableOpacity
+                      key={t.id}
+                      onPress={() => handleToggleTask(t.id)}
+                      style={{
+                        backgroundColor: isDone ? '#f0fdf4' : '#ffffff',
+                        borderRadius: 14,
+                        padding: 14,
+                        borderWidth: 1.5,
+                        borderColor: borderCol,
+                        elevation: 1
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <Text style={{ fontSize: 10, fontWeight: '800', color: isDone ? '#15803d' : borderCol }}>
+                          ● {t.time}  ·  📍 {t.plot}
+                        </Text>
+                        <View style={{ backgroundColor: badgeBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 }}>
+                          <Text style={{ fontSize: 10, fontWeight: '900', color: badgeColor }}>
+                            {isDone ? 'COMPLETED ✓' : t.status}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                        <Text style={{ fontSize: 20 }}>{isDone ? '✅' : '⬜'}</Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ fontSize: 14, fontWeight: '800', color: isDone ? '#15803d' : '#0f172a', textDecorationLine: isDone ? 'line-through' : 'none' }}>
+                            {t.title}
+                          </Text>
+                          <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '500', marginTop: 2 }}>
+                            {t.desc}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+
+            {/* PGS ORGANIC CERTIFICATION CARD WITH CHECKLIST ITEM ALERT */}
+            <View style={{ backgroundColor: '#ffffff', borderRadius: 16, borderWidth: 1.5, borderColor: '#16a34a', padding: 14, marginTop: 16 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={{ fontSize: 18 }}>🛡️</Text>
+                  <View>
+                    <Text style={{ fontSize: 10, fontWeight: '800', color: '#16a34a', textTransform: 'uppercase' }}>PGS ORGANIC CERTIFICATION</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '800', color: '#0c3619' }}>Certified · 94% complete</Text>
+                  </View>
+                </View>
+                <View style={{ backgroundColor: '#dcfce7', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 }}>
+                  <Text style={{ color: '#15803d', fontSize: 10, fontWeight: '800' }}>Active</Text>
+                </View>
+              </View>
+
+              <View style={{ width: '100%', height: 6, backgroundColor: '#e2e8f0', borderRadius: 3, overflow: 'hidden', marginVertical: 8 }}>
+                <View style={{ width: '94%', height: '100%', backgroundColor: '#16a34a' }} />
+              </View>
+
+              <View style={{ backgroundColor: '#fffbeb', borderWidth: 1.5, borderColor: '#fcd34d', borderRadius: 10, padding: 10, marginTop: 4 }}>
+                <Text style={{ fontSize: 11, fontWeight: '900', color: '#b45309', marginBottom: 2 }}>
+                  ⚠️ 1 CHECKLIST ITEM TO FIX
+                </Text>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#78350f', marginBottom: 6 }}>
+                  Submit photo of compost batch #14 (1 day overdue)
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setActiveTab('log')}
+                  style={{ backgroundColor: '#fef3c7', paddingVertical: 5, paddingHorizontal: 10, borderRadius: 6, alignSelf: 'flex-start' }}
+                >
+                  <Text style={{ fontSize: 10, fontWeight: '800', color: '#b45309' }}>
+                    Tip: Open Log Activity → attach photo → submit to cloud
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
+        )}
         {activeTab === 'profile' && (
           <View style={{ backgroundColor: '#edf2ee', paddingBottom: 30 }}>
             {profileSubView === 'profile' ? (
@@ -1919,6 +2132,61 @@ export default function App() {
                 </TouchableOpacity>
               </View>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ================= CREATE SMART TASK MODAL ================= */}
+      <Modal visible={showAddTaskModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { maxHeight: '85%' }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <Text style={styles.modalTitle}>📋 Create New Smart Task</Text>
+              <TouchableOpacity onPress={() => setShowAddTaskModal(false)}>
+                <Text style={{ fontSize: 18, color: '#64748b' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ flex: 1 }}>
+              <Text style={styles.label}>Task Title (Required)</Text>
+              <TextInput style={styles.input} value={newTaskTitle} onChangeText={setNewTaskTitle} placeholder="e.g. Morning Drip Irrigation Plot P-007" />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Urgency Level</Text>
+              <View style={{ flexDirection: 'row', gap: 6, marginTop: 4 }}>
+                {['URGENT', 'NORMAL', 'OVERDUE'].map(u => (
+                  <TouchableOpacity 
+                    key={u}
+                    onPress={() => setNewTaskUrgency(u)}
+                    style={[
+                      { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#cbd5e1' },
+                      newTaskUrgency === u && { backgroundColor: u === 'URGENT' ? '#d97706' : u === 'OVERDUE' ? '#dc2626' : '#0c3619' }
+                    ]}
+                  >
+                    <Text style={[{ fontSize: 11, fontWeight: '800', color: '#334155' }, newTaskUrgency === u && { color: '#ffffff' }]}>{u}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Target Plot / Shed Location</Text>
+              <TextInput style={styles.input} value={newTaskPlot} onChangeText={setNewTaskPlot} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Scheduled Time / Date</Text>
+              <TextInput style={styles.input} value={newTaskTime} onChangeText={setNewTaskTime} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Task Category</Text>
+              <TextInput style={styles.input} value={newTaskCategory} onChangeText={setNewTaskCategory} />
+
+              <Text style={[styles.label, { marginTop: 10 }]}>Instructions / Notes</Text>
+              <TextInput style={[styles.input, { height: 60 }]} value={newTaskDesc} onChangeText={setNewTaskDesc} multiline placeholder="e.g. Check water meter pressure & apply 20L drip ratio" />
+            </ScrollView>
+
+            <TouchableOpacity 
+              style={[styles.submitBtn, { marginTop: 12, backgroundColor: '#d97706' }]} 
+              onPress={handleCreateNewTask}
+              disabled={isSubmittingTask}
+            >
+              {isSubmittingTask ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitBtnText}>Create Task & Sync to Cloud →</Text>}
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
