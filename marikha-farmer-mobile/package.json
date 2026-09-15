@@ -10,16 +10,16 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
-    "expo": "~57.0.0",
-    "expo-file-system": "~20.0.0",
-    "expo-image-picker": "~18.0.0",
-    "expo-status-bar": "~3.0.9",
+    "expo": "^57.0.0",
+    "expo-file-system": "*",
+    "expo-image-picker": "*",
+    "expo-status-bar": "*",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-native": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "babel-preset-expo": "~57.0.0"
+    "babel-preset-expo": "*"
   },
   "private": true
 }
