@@ -267,7 +267,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     async function fetchSupabaseData() {
       try {
-        // 1. USERS SYNC
         const { data: userData } = await supabase.from('users').select('*');
         if (userData && userData.length > 0) {
           const formattedUsers = userData.map(u => ({
@@ -276,9 +275,14 @@ export const AuthProvider = ({ children }) => {
             role: u.role,
             email: u.email,
             phone: u.phone || '+63 917 555 0100',
+            assignedPlot: u.assigned_plot || u.assignedPlot || (u.role === 'Executive' ? 'Administrative HQ' : u.role === 'Admin' ? 'Operations & Compliance Center' : u.role === 'Farm Staff' ? 'Sector B (Plot P-007)' : 'Plot P-007 (Tomato Diamante)'),
+            rsbsaNo: u.rsbsa_no || u.rsbsaNo || (u.role === 'Farmer' ? 'RSBSA-03-1425-001' : 'RSBSA-03-1000-COOP'),
+            certification: u.certification || (u.role === 'Farmer' ? 'PGS Certified Organic Farmer' : u.role === 'Farm Staff' ? 'PGS Level II Supervisor' : 'Certified Organic Auditor'),
+            emergencyContact: u.emergency_contact || u.emergencyContact || 'Family Contact (+63 918 555 0100)',
+            joinDate: u.join_date || u.joinDate || '2024-03-15',
             password: u.password || 'password123',
             status: u.status !== false,
-            initials: u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+            initials: u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
           }));
           setUsers(formattedUsers);
           try { localStorage.setItem('marikha_registered_users', JSON.stringify(formattedUsers)); } catch (e) {}

@@ -23,7 +23,11 @@ import {
   Edit,
   Pencil,
   RefreshCw,
-  Phone
+  Phone,
+  Eye,
+  MapPin,
+  Award,
+  Calendar
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { generateOfficialReportPDF } from '../../utils/pdfGenerator';
@@ -61,6 +65,10 @@ const AdminConsole = ({ activeTab }) => {
   const [newUserRole, setNewUserRole] = useState('Farmer');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPhone, setNewUserPhone] = useState('+63 917 555 0100');
+  const [newUserPlot, setNewUserPlot] = useState('Plot P-007 (Vegetable Sector)');
+  const [newUserRsbsa, setNewUserRsbsa] = useState('RSBSA-03-1425-001');
+  const [newUserCert, setNewUserCert] = useState('PGS Certified Organic Farmer');
+  const [newUserEmerg, setNewUserEmerg] = useState('Maria Lopez (+63 918 777 8888)');
   const [newUserPass, setNewUserPass] = useState('password123');
 
   // Edit Modal State
@@ -70,14 +78,27 @@ const AdminConsole = ({ activeTab }) => {
   const [editRole, setEditRole] = useState('Farmer');
   const [editEmail, setEditEmail] = useState('');
   const [editPhone, setEditPhone] = useState('+63 917 555 0100');
+  const [editPlot, setEditPlot] = useState('');
+  const [editRsbsa, setEditRsbsa] = useState('');
+  const [editCert, setEditCert] = useState('');
+  const [editEmerg, setEditEmerg] = useState('');
   const [editPass, setEditPass] = useState('password123');
+
+  // Member Detail Inspector State
+  const [selectedUserDetail, setSelectedUserDetail] = useState(null);
 
   // Multi-Select Checkbox State
   const [selectedUserIds, setSelectedUserIds] = useState([]);
 
   const filteredUsers = users.filter(u => {
     const matchesRole = roleFilter === 'All' || u.role === roleFilter;
-    const matchesSearch = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || (u.email && u.email.toLowerCase().includes(searchQuery.toLowerCase()));
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = !q || 
+      u.name.toLowerCase().includes(q) || 
+      (u.email && u.email.toLowerCase().includes(q)) ||
+      (u.phone && u.phone.toLowerCase().includes(q)) ||
+      (u.rsbsaNo && u.rsbsaNo.toLowerCase().includes(q)) ||
+      (u.assignedPlot && u.assignedPlot.toLowerCase().includes(q));
     return matchesRole && matchesSearch;
   });
 
@@ -126,15 +147,24 @@ const AdminConsole = ({ activeTab }) => {
       role: newUserRole,
       email: newUserEmail,
       phone: newUserPhone || '+63 917 555 0100',
+      assignedPlot: newUserPlot || 'Plot P-007 (Vegetable Sector)',
+      rsbsaNo: newUserRsbsa || 'RSBSA-03-1425-001',
+      certification: newUserCert || 'PGS Certified Organic Farmer',
+      emergencyContact: newUserEmerg || 'Family Contact (+63 918 555 0100)',
+      joinDate: new Date().toISOString().split('T')[0],
       password: newUserPass || 'password123',
       status: true
     });
 
-    alert(`✅ Account created for ${newUserName} (${newUserRole})! Email: ${newUserEmail}. Active & ready to log in.`);
+    alert(`✅ Member account created for ${newUserName} (${newUserRole})!\n• Email: ${newUserEmail}\n• RSBSA No: ${newUserRsbsa}\n• Assigned Plot: ${newUserPlot}\n• Organic Cert: ${newUserCert}\nActive & ready to log in.`);
     setShowAddModal(false);
     setNewUserName('');
     setNewUserEmail('');
     setNewUserPhone('+63 917 555 0100');
+    setNewUserPlot('Plot P-007 (Vegetable Sector)');
+    setNewUserRsbsa('RSBSA-03-1425-001');
+    setNewUserCert('PGS Certified Organic Farmer');
+    setNewUserEmerg('Maria Lopez (+63 918 777 8888)');
     setNewUserPass('password123');
   };
 
@@ -144,6 +174,10 @@ const AdminConsole = ({ activeTab }) => {
     setEditRole(u.role);
     setEditEmail(u.email);
     setEditPhone(u.phone || '+63 917 555 0100');
+    setEditPlot(u.assignedPlot || 'Plot P-007 (Vegetable Sector)');
+    setEditRsbsa(u.rsbsaNo || 'RSBSA-03-1425-001');
+    setEditCert(u.certification || 'PGS Certified Organic Farmer');
+    setEditEmerg(u.emergencyContact || 'Family Contact (+63 918 555 0100)');
     setEditPass(u.password || 'password123');
     setShowEditModal(true);
   };
@@ -157,10 +191,14 @@ const AdminConsole = ({ activeTab }) => {
       role: editRole,
       email: editEmail,
       phone: editPhone,
+      assignedPlot: editPlot,
+      rsbsaNo: editRsbsa,
+      certification: editCert,
+      emergencyContact: editEmerg,
       password: editPass
     });
 
-    alert(`✅ Account updated for ${editName} (${editRole})! Changes synced live.`);
+    alert(`✅ Account updated live for ${editName} (${editRole})!\n• Assigned Sector: ${editPlot}\n• RSBSA ID: ${editRsbsa}\nChanges synced to local state and Supabase.`);
     setShowEditModal(false);
   };
 
@@ -552,13 +590,40 @@ const AdminConsole = ({ activeTab }) => {
               User Accounts & Member Directory
             </h1>
             <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-              Comprehensive cooperative directory with role-based access controls
+              Comprehensive cooperative directory with full CRUD management, RSBSA IDs, organic certifications, and sector assignments
             </p>
           </div>
 
-          <button onClick={() => setShowAddModal(true)} className="btn-primary">
+          <button onClick={() => setShowAddModal(true)} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
             <Plus size={16} /> Create New User Account
           </button>
+        </div>
+
+        {/* Directory Quick Stat Summary Bar */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '20px' }}>
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>TOTAL DIRECTORY</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>{allCount} Members</div>
+            <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>Active Registry</span>
+          </div>
+
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>REGISTERED FARMERS</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#15803d' }}>{farmerCount} Members</div>
+            <span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>RSBSA & Organic Certified</span>
+          </div>
+
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>FARM STAFF & VALIDATORS</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#b45309' }}>{staffCount} Staff</div>
+            <span style={{ fontSize: '0.7rem', color: '#b45309', fontWeight: '700' }}>Field Supervisors</span>
+          </div>
+
+          <div className="m-card" style={{ padding: '14px 18px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>ADMINS & EXECUTIVES</span>
+            <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1e1b4b' }}>{execCount + adminCount} Officers</div>
+            <span style={{ fontSize: '0.7rem', color: '#6366f1', fontWeight: '700' }}>System Governance</span>
+          </div>
         </div>
 
         <div className="m-card">
@@ -580,19 +645,20 @@ const AdminConsole = ({ activeTab }) => {
                     fontSize: '0.78rem',
                     fontWeight: '700',
                     background: roleFilter === r.name ? '#0c3619' : '#f1f5f9',
-                    color: roleFilter === r.name ? '#ffffff' : '#4b5563'
+                    color: roleFilter === r.name ? '#ffffff' : '#4b5563',
+                    cursor: 'pointer'
                   }}
                 >
-                  {r.name} {r.count}
+                  {r.name} ({r.count})
                 </button>
               ))}
             </div>
 
-            <div style={{ position: 'relative', width: '250px' }}>
-              <Search size={15} style={{ position: 'absolute', left: '12px', top: '9px', color: '#94a3b8' }} />
+            <div style={{ position: 'relative', width: '280px' }}>
+              <Search size={15} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
               <input
                 type="text"
-                placeholder="Search name or email..."
+                placeholder="Search name, email, RSBSA ID, or plot..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -625,145 +691,129 @@ const AdminConsole = ({ activeTab }) => {
             </div>
           )}
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-            <thead>
-              <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
-                <th style={{ padding: '12px 14px', width: '36px' }}>
-                  <input
-                    type="checkbox"
-                    checked={selectedUserIds.length === filteredUsers.length && filteredUsers.length > 0}
-                    onChange={toggleSelectAllUsers}
-                    style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
-                  />
-                </th>
-                <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700' }}>EMAIL ADDRESS</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'center' }}>STATUS</th>
-                <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map(u => {
-                const isProtectedAdmin = u.role === 'Executive' || u.role === 'Admin';
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+              <thead>
+                <tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e5e7eb', color: '#4b5563', fontSize: '0.75rem', textAlign: 'left' }}>
+                  <th style={{ padding: '12px 14px', width: '36px' }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedUserIds.length === filteredUsers.length && filteredUsers.length > 0}
+                      onChange={toggleSelectAllUsers}
+                      style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
+                    />
+                  </th>
+                  <th style={{ padding: '12px 14px', fontWeight: '700' }}>MEMBER PROFILE</th>
+                  <th style={{ padding: '12px 14px', fontWeight: '700' }}>ROLE & ORGANIC CERTIFICATION</th>
+                  <th style={{ padding: '12px 14px', fontWeight: '700' }}>ASSIGNED SECTOR / PLOT</th>
+                  <th style={{ padding: '12px 14px', fontWeight: '700' }}>CONTACT & EMERGENCY</th>
+                  <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'center' }}>STATUS</th>
+                  <th style={{ padding: '12px 14px', fontWeight: '700', textAlign: 'right' }}>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map(u => {
+                  const isProtectedAdmin = u.role === 'Executive' || u.role === 'Admin';
+                  const rsbsa = u.rsbsaNo || (u.role === 'Farmer' ? 'RSBSA-03-1425-001' : 'RSBSA-03-1000-COOP');
+                  const cert = u.certification || (u.role === 'Farmer' ? 'PGS Certified Organic Farmer' : u.role === 'Farm Staff' ? 'PGS Level II Supervisor' : 'Certified Organic Auditor');
+                  const plot = u.assignedPlot || (u.role === 'Executive' ? 'Administrative HQ' : u.role === 'Admin' ? 'Operations & Compliance Center' : 'Plot P-007 (Tomato Diamante)');
+                  const emerg = u.emergencyContact || 'Family Contact (+63 918 555 0100)';
 
-                return (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                    <td style={{ padding: '12px 14px' }}>
-                      <input
-                        type="checkbox"
-                        checked={selectedUserIds.includes(u.id)}
-                        onChange={() => toggleSelectUser(u.id)}
-                        style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
-                      />
-                    </td>
-                    <td style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{
-                        width: '34px', height: '34px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
-                        fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem'
-                      }}>
-                        {u.initials || (u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U')}
-                      </div>
-                      <div>
-                        <span style={{ fontWeight: '700', color: '#111827', display: 'block' }}>{u.name}</span>
-                      </div>
-                    </td>
+                  return (
+                    <tr key={u.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px 14px' }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedUserIds.includes(u.id)}
+                          onChange={() => toggleSelectUser(u.id)}
+                          style={{ accentColor: '#0c3619', width: '16px', height: '16px', cursor: 'pointer' }}
+                        />
+                      </td>
 
-                    <td style={{ padding: '12px 14px' }}>
-                      <span className={`pill ${
-                        u.role === 'Executive' ? 'pill-flowering' :
-                        u.role === 'Admin' ? 'pill-compliant' :
-                        u.role === 'Farm Staff' ? 'pill-high' : 'pill-harvest'
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
+                      {/* Member Profile + RSBSA */}
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{
+                            width: '36px', height: '36px', borderRadius: '50%', background: '#e2eae0', color: '#0c3619',
+                            fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', flexShrink: 0
+                          }}>
+                            {u.initials || (u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U')}
+                          </div>
+                          <div>
+                            <span style={{ fontWeight: '700', color: '#111827', display: 'block', fontSize: '0.85rem' }}>{u.name}</span>
+                            <span style={{ fontSize: '0.68rem', fontFamily: 'monospace', fontWeight: '700', color: '#15803d', background: '#dcfce7', padding: '1px 6px', borderRadius: '4px' }}>
+                              {rsbsa}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
 
-                    <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: '#111827', fontWeight: '700' }}>
-                      {u.email}
-                    </td>
+                      {/* Role & Organic Cert */}
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                          <span className={`pill ${
+                            u.role === 'Executive' ? 'pill-flowering' :
+                            u.role === 'Admin' ? 'pill-compliant' :
+                            u.role === 'Farm Staff' ? 'pill-high' : 'pill-harvest'
+                          }`}>
+                            {u.role}
+                          </span>
+                          <span style={{ fontSize: '0.7rem', color: '#475569', fontWeight: '600' }}>
+                            🌱 {cert}
+                          </span>
+                        </div>
+                      </td>
 
-                    <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                      <span
-                        className={`pill ${u.status !== false ? 'pill-compliant' : ''}`}
-                        style={{
-                          padding: '5px 12px',
-                          fontSize: '0.75rem',
-                          fontWeight: '700',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          background: u.status !== false ? '#dcfce7' : '#f1f5f9',
-                          color: u.status !== false ? '#15803d' : '#64748b',
-                          border: u.status !== false ? '1px solid #86efac' : '1px solid #cbd5e1'
-                        }}
-                      >
-                        {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
-                        {u.status !== false ? (isProtectedAdmin ? `Active (${u.role})` : 'Active') : 'Disabled'}
-                      </span>
-                    </td>
+                      {/* Assigned Plot / Sector */}
+                      <td style={{ padding: '12px 14px', color: '#1e293b', fontWeight: '600', fontSize: '0.8rem' }}>
+                        📍 {plot}
+                      </td>
 
-                    <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
-                        {/* EDIT BUTTON */}
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditModal(u)}
-                          title="Edit User Profile & Credentials"
+                      {/* Contact & Emergency */}
+                      <td style={{ padding: '12px 14px', fontSize: '0.76rem' }}>
+                        <div style={{ fontWeight: '700', color: '#0f172a' }}>📞 {u.phone}</div>
+                        <div style={{ color: '#64748b' }}>✉️ {u.email}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#dc2626', fontWeight: '600', marginTop: '2px' }}>
+                          🆘 {emerg}
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                        <span
+                          className={`pill ${u.status !== false ? 'pill-compliant' : ''}`}
                           style={{
-                            background: '#eff6ff',
-                            border: '1px solid #93c5fd',
-                            color: '#1d4ed8',
-                            borderRadius: '7px',
-                            padding: '6px 11px',
-                            fontSize: '0.75rem',
+                            padding: '4px 10px',
+                            fontSize: '0.72rem',
                             fontWeight: '700',
-                            cursor: 'pointer',
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '4px'
+                            gap: '4px',
+                            background: u.status !== false ? '#dcfce7' : '#f1f5f9',
+                            color: u.status !== false ? '#15803d' : '#64748b',
+                            border: u.status !== false ? '1px solid #86efac' : '1px solid #cbd5e1'
                           }}
                         >
-                          <Pencil size={13} color="#1d4ed8" /> Edit
-                        </button>
+                          {u.status !== false ? <CheckCircle2 size={12} /> : <Ban size={12} />}
+                          {u.status !== false ? (isProtectedAdmin ? `Active (${u.role})` : 'Active') : 'Disabled'}
+                        </span>
+                      </td>
 
-                        {/* DISABLE BUTTON */}
-                        {!isProtectedAdmin && (
+                      {/* Actions */}
+                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '5px' }}>
+                          {/* INSPECT PROMPT BUTTON */}
                           <button
                             type="button"
-                            onClick={() => toggleUserStatus(u.id)}
+                            onClick={() => setSelectedUserDetail({ ...u, rsbsaNo: rsbsa, certification: cert, assignedPlot: plot, emergencyContact: emerg })}
+                            title="Inspect Full Member Profile"
                             style={{
-                              background: u.status !== false ? '#f8fafc' : '#f0fdf4',
-                              border: u.status !== false ? '1px solid #cbd5e1' : '1px solid #86efac',
-                              color: u.status !== false ? '#475569' : '#15803d',
+                              background: '#f0fdf4',
+                              border: '1px solid #86efac',
+                              color: '#15803d',
                               borderRadius: '7px',
-                              padding: '6px 11px',
-                              fontSize: '0.75rem',
-                              fontWeight: '700',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            {u.status !== false ? 'Disable' : 'Enable'}
-                          </button>
-                        )}
-
-                        {/* DELETE BUTTON */}
-                        {!isProtectedAdmin && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
-                                deleteUser(u.id);
-                              }
-                            }}
-                            title="Delete User Account"
-                            style={{
-                              background: '#fff1f2',
-                              border: '1px solid #fecdd3',
-                              color: '#e11d48',
-                              borderRadius: '7px',
-                              padding: '6px 11px',
-                              fontSize: '0.75rem',
+                              padding: '5px 9px',
+                              fontSize: '0.73rem',
                               fontWeight: '700',
                               cursor: 'pointer',
                               display: 'inline-flex',
@@ -771,19 +821,186 @@ const AdminConsole = ({ activeTab }) => {
                               gap: '4px'
                             }}
                           >
-                            <Trash2 size={13} color="#e11d48" /> Delete
+                            <Eye size={13} color="#15803d" /> Inspect
                           </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+
+                          {/* EDIT BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEditModal({ ...u, rsbsaNo: rsbsa, certification: cert, assignedPlot: plot, emergencyContact: emerg })}
+                            title="Edit Member Profile & Attributes"
+                            style={{
+                              background: '#eff6ff',
+                              border: '1px solid #93c5fd',
+                              color: '#1d4ed8',
+                              borderRadius: '7px',
+                              padding: '5px 9px',
+                              fontSize: '0.73rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Pencil size={13} color="#1d4ed8" /> Edit
+                          </button>
+
+                          {/* DISABLE BUTTON */}
+                          {!isProtectedAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => toggleUserStatus(u.id)}
+                              style={{
+                                background: u.status !== false ? '#f8fafc' : '#f0fdf4',
+                                border: u.status !== false ? '1px solid #cbd5e1' : '1px solid #86efac',
+                                color: u.status !== false ? '#475569' : '#15803d',
+                                borderRadius: '7px',
+                                padding: '5px 9px',
+                                fontSize: '0.73rem',
+                                fontWeight: '700',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              {u.status !== false ? 'Disable' : 'Enable'}
+                            </button>
+                          )}
+
+                          {/* DELETE BUTTON */}
+                          {!isProtectedAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete user account "${u.name}" (${u.role})?`)) {
+                                  deleteUser(u.id);
+                                }
+                              }}
+                              title="Delete User Account"
+                              style={{
+                                background: '#fff1f2',
+                                border: '1px solid #fecdd3',
+                                color: '#e11d48',
+                                borderRadius: '7px',
+                                padding: '5px 9px',
+                                fontSize: '0.73rem',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <Trash2 size={13} color="#e11d48" /> Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* CREATE USER ACCOUNT MODAL (MULTI-ROLE SELECTOR) */}
+        {/* INSPECT MEMBER PROFILE DETAIL MODAL */}
+        {selectedUserDetail && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000
+          }}>
+            <div className="m-card" style={{
+              width: '100%', maxWidth: '520px', padding: '0', borderRadius: '20px',
+              overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
+                padding: '22px 28px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{
+                    width: '46px', height: '46px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', color: '#ffffff',
+                    fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem'
+                  }}>
+                    {selectedUserDetail.initials || selectedUserDetail.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>
+                      {selectedUserDetail.name}
+                    </h3>
+                    <span style={{ fontSize: '0.78rem', color: '#86efac', fontWeight: '700' }}>
+                      {selectedUserDetail.role} · Member since {selectedUserDetail.joinDate || '2024-03-15'}
+                    </span>
+                  </div>
+                </div>
+                <button onClick={() => setSelectedUserDetail(null)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: '24px', background: '#ffffff' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>RSBSA REGISTRY ID</span>
+                    <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#15803d', fontFamily: 'monospace' }}>
+                      {selectedUserDetail.rsbsaNo}
+                    </span>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>ORGANIC CERTIFICATION</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>
+                      🌱 {selectedUserDetail.certification}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>ASSIGNED FIELD PLOT / SECTOR</span>
+                  <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>
+                    📍 {selectedUserDetail.assignedPlot}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', display: 'block' }}>CONTACT INFO</span>
+                    <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>📞 {selectedUserDetail.phone}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>✉️ {selectedUserDetail.email}</div>
+                  </div>
+
+                  <div style={{ background: '#fef2f2', padding: '12px 14px', borderRadius: '10px', border: '1px solid #fecdd3' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#991b1b', fontWeight: '700', display: 'block' }}>EMERGENCY CONTACT</span>
+                    <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#991b1b' }}>
+                      🆘 {selectedUserDetail.emergencyContact}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button
+                    onClick={() => {
+                      const target = selectedUserDetail;
+                      setSelectedUserDetail(null);
+                      handleOpenEditModal(target);
+                    }}
+                    className="btn-primary"
+                    style={{ padding: '9px 18px', fontSize: '0.82rem' }}
+                  >
+                    ✏️ Edit Member Profile
+                  </button>
+                  <button onClick={() => setSelectedUserDetail(null)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CREATE USER ACCOUNT MODAL (FULL ENRICHED FIELDS) */}
         {showAddModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -791,49 +1008,35 @@ const AdminConsole = ({ activeTab }) => {
             display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
             <div className="m-card" style={{
-              width: '100%', maxWidth: '520px', padding: '0', borderRadius: '20px',
+              width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
               overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
               border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
-              {/* Premium Modal Header */}
               <div style={{
                 background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
-                padding: '22px 28px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Plus size={22} color="#86efac" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Plus size={20} color="#86efac" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', letterSpacing: '-0.3px' }}>Create User Account</h3>
-                    <span style={{ fontSize: '0.78rem', color: '#86efac' }}>Add new farmer, farm staff, admin, or executive</span>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Create User Account</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac' }}>Enriched cooperative member registration with RSBSA & sector assignments</span>
                   </div>
                 </div>
-                <button onClick={() => setShowAddModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
-                  <X size={18} />
+                <button onClick={() => setShowAddModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={16} />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateUser} style={{ padding: '28px' }}>
-                {/* Full Role Selector: Farmer, Farm Staff, Admin, Executive */}
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '8px' }}>
-                    System Access Role
-                  </label>
+              <form onSubmit={handleCreateUser} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>System Access Role *</label>
                   <select
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: '12px',
-                      border: '1.5px solid #cbd5e1',
-                      fontSize: '0.88rem',
-                      fontWeight: '700',
-                      color: '#0f172a',
-                      background: '#ffffff',
-                      outline: 'none'
-                    }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', outline: 'none' }}
                   >
                     <option value="Farmer">Farmer (Mobile App User & Cooperative Field Member)</option>
                     <option value="Farm Staff">Farm Staff (Activity Validator & Field Supervisor)</option>
@@ -842,69 +1045,60 @@ const AdminConsole = ({ activeTab }) => {
                   </select>
                 </div>
 
-                {/* 2-Column Form Fields Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Full Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Danilo Rivera"
-                      value={newUserName}
-                      onChange={(e) => setNewUserName(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc', fontWeight: '600' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Full Name *</label>
+                    <input type="text" required placeholder="e.g. Danilo Rivera" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
                   </div>
-
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Phone Number</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="+63 917 555 0100"
-                      value={newUserPhone}
-                      onChange={(e) => setNewUserPhone(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc', fontWeight: '600' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Phone Number *</label>
+                    <input type="text" required placeholder="+63 917 555 0100" value={newUserPhone} onChange={(e) => setNewUserPhone(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="danilo@mariwska.coop"
-                      value={newUserEmail}
-                      onChange={(e) => setNewUserEmail(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Email Address *</label>
+                    <input type="email" required placeholder="danilo@mariwska.coop" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
                   </div>
-
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Password</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="password123"
-                      value={newUserPass}
-                      onChange={(e) => setNewUserPass(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Assigned Sector / Plot</label>
+                    <input type="text" placeholder="Plot P-007 (Vegetable Sector)" value={newUserPlot} onChange={(e) => setNewUserPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
-                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline" style={{ borderRadius: '10px', padding: '11px 20px', fontWeight: '700' }}>Cancel</button>
-                  <button type="submit" className="btn-primary" style={{ borderRadius: '10px', padding: '11px 24px', fontWeight: '800', background: '#0c3619' }}>✓ Save Account & Sync Live</button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>RSBSA Farmer ID</label>
+                    <input type="text" placeholder="RSBSA-03-1425-001" value={newUserRsbsa} onChange={(e) => setNewUserRsbsa(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '700', fontFamily: 'monospace' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Organic Certification</label>
+                    <input type="text" placeholder="PGS Certified Organic Farmer" value={newUserCert} onChange={(e) => setNewUserCert(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Emergency Contact Person & Phone</label>
+                    <input type="text" placeholder="Maria Lopez (+63 918 777 8888)" value={newUserEmerg} onChange={(e) => setNewUserEmerg(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Initial Password</label>
+                    <input type="text" required placeholder="password123" value={newUserPass} onChange={(e) => setNewUserPass(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '9px 20px', fontSize: '0.85rem', background: '#0c3619' }}>✓ Save Account & Sync Live</button>
                 </div>
               </form>
             </div>
           </div>
         )}
 
-        {/* EDIT USER ACCOUNT MODAL (ENTERPRISE 2-COLUMN DESIGN) */}
+        {/* EDIT USER ACCOUNT MODAL (FULL ENRICHED FIELDS) */}
         {showEditModal && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -912,122 +1106,90 @@ const AdminConsole = ({ activeTab }) => {
             display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
           }}>
             <div className="m-card" style={{
-              width: '100%', maxWidth: '520px', padding: '0', borderRadius: '20px',
+              width: '100%', maxWidth: '580px', padding: '0', borderRadius: '20px',
               overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
               border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
-              {/* Premium Modal Header */}
               <div style={{
                 background: 'linear-gradient(135deg, #0c3619 0%, #15803d 100%)',
-                padding: '22px 28px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                padding: '20px 24px', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Pencil size={22} color="#86efac" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Pencil size={20} color="#86efac" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#ffffff', letterSpacing: '-0.3px' }}>Edit User Account</h3>
-                    <span style={{ fontSize: '0.78rem', color: '#86efac' }}>Update credentials & phone contact</span>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: '#ffffff' }}>Edit Member Profile & Credentials</h3>
+                    <span style={{ fontSize: '0.75rem', color: '#86efac' }}>Update member role, contact, sector plot, and RSBSA registry ID</span>
                   </div>
                 </div>
-                <button onClick={() => setShowEditModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
-                  <X size={18} />
+                <button onClick={() => setShowEditModal(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}>
+                  <X size={16} />
                 </button>
               </div>
 
-              <form onSubmit={handleUpdateUser} style={{ padding: '28px' }}>
-                {/* Role Selector */}
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '8px' }}>
-                    System Access Role
-                  </label>
+              <form onSubmit={handleUpdateUser} style={{ padding: '24px', background: '#ffffff', maxHeight: '80vh', overflowY: 'auto' }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>System Access Role</label>
                   {editRole === 'Executive' || editRole === 'Admin' ? (
-                    <div style={{ padding: '12px 16px', background: '#f8fafc', borderRadius: '12px', border: '1.5px solid #cbd5e1', fontWeight: '800', color: '#0c3619', fontSize: '0.88rem' }}>
+                    <div style={{ padding: '10px 14px', background: '#f8fafc', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontWeight: '800', color: '#0c3619', fontSize: '0.85rem' }}>
                       🔒 Protected Core Administrator ({editRole})
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                      <button
-                        type="button"
-                        onClick={() => setEditRole('Farmer')}
-                        style={{
-                          padding: '12px 14px', borderRadius: '12px', border: editRole === 'Farmer' ? '2px solid #15803d' : '1.5px solid #cbd5e1',
-                          background: editRole === 'Farmer' ? '#f0fdf4' : '#ffffff',
-                          textAlign: 'left', cursor: 'pointer', transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ fontSize: '0.88rem', fontWeight: '800', color: editRole === 'Farmer' ? '#15803d' : '#334155' }}>🌾 Farmer</div>
-                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Mobile App User</div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setEditRole('Farm Staff')}
-                        style={{
-                          padding: '12px 14px', borderRadius: '12px', border: editRole === 'Farm Staff' ? '2px solid #15803d' : '1.5px solid #cbd5e1',
-                          background: editRole === 'Farm Staff' ? '#f0fdf4' : '#ffffff',
-                          textAlign: 'left', cursor: 'pointer', transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ fontSize: '0.88rem', fontWeight: '800', color: editRole === 'Farm Staff' ? '#15803d' : '#334155' }}>🚜 Farm Staff</div>
-                        <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Field Inspector</div>
-                      </button>
-                    </div>
+                    <select value={editRole} onChange={(e) => setEditRole(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', background: '#ffffff' }}>
+                      <option value="Farmer">Farmer (Mobile App User & Field Member)</option>
+                      <option value="Farm Staff">Farm Staff (Activity Validator & Field Inspector)</option>
+                    </select>
                   )}
                 </div>
 
-                {/* 2-Column Form Fields Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Full Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc', fontWeight: '600' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Full Name *</label>
+                    <input type="text" required value={editName} onChange={(e) => setEditName(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
                   </div>
-
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Phone Number</label>
-                    <input
-                      type="text"
-                      required
-                      value={editPhone}
-                      onChange={(e) => setEditPhone(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc', fontWeight: '600' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Phone Number *</label>
+                    <input type="text" required value={editPhone} onChange={(e) => setEditPhone(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      value={editEmail}
-                      onChange={(e) => setEditEmail(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Email Address *</label>
+                    <input type="email" required value={editEmail} onChange={(e) => setEditEmail(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
                   </div>
-
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '6px' }}>Password</label>
-                    <input
-                      type="text"
-                      required
-                      value={editPass}
-                      onChange={(e) => setEditPass(e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', background: '#f8fafc' }}
-                    />
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Assigned Sector / Plot</label>
+                    <input type="text" value={editPlot} onChange={(e) => setEditPlot(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
-                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline" style={{ borderRadius: '10px', padding: '11px 20px', fontWeight: '700' }}>Cancel</button>
-                  <button type="submit" className="btn-primary" style={{ borderRadius: '10px', padding: '11px 24px', fontWeight: '800', background: '#0c3619' }}>✓ Save Changes & Sync Live</button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>RSBSA Farmer ID</label>
+                    <input type="text" value={editRsbsa} onChange={(e) => setEditRsbsa(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '700', fontFamily: 'monospace' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Organic Certification Level</label>
+                    <input type="text" value={editCert} onChange={(e) => setEditCert(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none', fontWeight: '600' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Emergency Contact Person & Phone</label>
+                    <input type="text" value={editEmerg} onChange={(e) => setEditEmerg(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1e293b', display: 'block', marginBottom: '4px' }}>Password</label>
+                    <input type="text" required value={editPass} onChange={(e) => setEditPass(e.target.value)} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.85rem', outline: 'none' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
+                  <button type="button" onClick={() => setShowEditModal(false)} className="btn-outline" style={{ padding: '9px 16px', fontSize: '0.82rem' }}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ padding: '9px 20px', fontSize: '0.85rem', background: '#0c3619' }}>✓ Save Changes & Sync Live</button>
                 </div>
               </form>
             </div>

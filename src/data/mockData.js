@@ -1,7 +1,9 @@
 export const initialUsers = [
-  { id: '1', name: 'Rosa Mendoza', role: 'Executive', email: 'rosa@mariwska.coop', phone: '+63 917 555 0101', password: 'Superadmin123', status: true, initials: 'RM' },
-  { id: '2', name: 'Liza Cruz', role: 'Admin', email: 'liza@mariwska.coop', phone: '+63 917 555 0102', password: '123Admin', status: true, initials: 'LC' },
-  { id: '3', name: 'Ramon Velasco', role: 'Farm Staff', email: 'ramon@mariwska.coop', phone: '+63 917 555 0103', password: 'staff123', status: true, initials: 'RV' },
+  { id: '1', name: 'Rosa Mendoza', role: 'Executive', email: 'rosa@mariwska.coop', phone: '+63 917 555 0101', assignedPlot: 'Administrative HQ', rsbsaNo: 'RSBSA-03-1001-EXEC', certification: 'PGS Governance Board', emergencyContact: 'Jose Mendoza (+63 918 111 2222)', joinDate: '2023-01-15', password: 'Superadmin123', status: true, initials: 'RM' },
+  { id: '2', name: 'Liza Cruz', role: 'Admin', email: 'liza@mariwska.coop', phone: '+63 917 555 0102', assignedPlot: 'Operations & Compliance Center', rsbsaNo: 'RSBSA-03-1002-ADM', certification: 'Certified Organic Auditor', emergencyContact: 'Mark Cruz (+63 918 333 4444)', joinDate: '2023-05-20', password: '123Admin', status: true, initials: 'LC' },
+  { id: '3', name: 'Ramon Velasco', role: 'Farm Staff', email: 'ramon@mariwska.coop', phone: '+63 917 555 0103', assignedPlot: 'Sector B (Plot P-007 & P-021)', rsbsaNo: 'RSBSA-03-1003-STF', certification: 'PGS Organic Level II Supervisor', emergencyContact: 'Elena Velasco (+63 918 555 6666)', joinDate: '2024-02-10', password: 'staff123', status: true, initials: 'RV' },
+  { id: '4', name: 'Renier Lopez', role: 'Farmer', email: 'lopezrenier97@gmail.com', phone: '+63 917 555 0100', assignedPlot: 'Plot P-007 (Tomato Diamante)', rsbsaNo: 'RSBSA-03-1425-001', certification: 'PGS Certified Organic Farmer', emergencyContact: 'Maria Lopez (+63 918 777 8888)', joinDate: '2024-03-15', password: 'password123', status: true, initials: 'RL' },
+  { id: '5', name: 'Mang Juan Dela Cruz', role: 'Farmer', email: 'juan@mariwska.coop', phone: '+63 917 555 0105', assignedPlot: 'Plot P-021 (Eggplant Mistisa)', rsbsaNo: 'RSBSA-03-1425-002', certification: 'PGS Organic Certified', emergencyContact: 'Juana Dela Cruz (+63 918 999 0000)', joinDate: '2024-04-01', password: 'password123', status: true, initials: 'JC' }
 ];
 
 export const initialCrops = [
