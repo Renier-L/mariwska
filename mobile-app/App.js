@@ -314,179 +314,361 @@ export default function App() {
           </View>
         )}
 
-        {/* TAB 5: PROFILE MANAGEMENT */}
+        {/* TAB 5: PROFILE MANAGEMENT & SETTINGS */}
         {activeTab === 'profile' && (
           <View style={{ backgroundColor: '#edf2ee', paddingBottom: 30 }}>
-            {/* Header */}
-            <View style={{ backgroundColor: '#0c3619', paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <TouchableOpacity onPress={() => setActiveTab('home')} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800' }}>←</Text>
-                </TouchableOpacity>
-                <View>
-                  <Text style={{ fontSize: 18, fontWeight: '800', color: '#ffffff' }}>My Profile</Text>
-                  <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600' }}>Impormasyon at membership</Text>
+            {profileSubView === 'profile' ? (
+              /* ===== VIEW A: MY PROFILE SCREEN ===== */
+              <>
+                {/* Top Header Bar */}
+                <View style={{ backgroundColor: '#0c3619', paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <TouchableOpacity onPress={() => setActiveTab('home')} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
+                      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800' }}>←</Text>
+                    </TouchableOpacity>
+                    <View>
+                      <Text style={{ fontSize: 18, fontWeight: '800', color: '#ffffff' }}>My Profile</Text>
+                      <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600' }}>Impormasyon at membership</Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={() => setProfileSubView('settings')} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 18 }}>⚙️</Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
-              <TouchableOpacity onPress={() => { setTempProfile(profileData); setShowProfileModal(true); }} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 18 }}>⚙️</Text>
-              </TouchableOpacity>
-            </View>
 
-            <View style={{ padding: 16, gap: 14 }}>
-              {/* CARD 1: MAIN BADGE */}
-              <View style={styles.profCard}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-                  <View style={styles.avatarCircle}>
-                    <Text style={{ fontSize: 24, fontWeight: '900', color: '#1e293b' }}>{profileData.name.charAt(0)}</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 17, fontWeight: '800', color: '#0f172a' }}>{profileData.name}</Text>
-                    <Text style={{ fontSize: 12, color: '#475569', fontWeight: '600', marginVertical: 2 }}>{profileData.subtitle}</Text>
-                    <View style={{ backgroundColor: '#15803d', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10, alignSelf: 'flex-start' }}>
-                      <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{profileData.pgsBadge}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* CARD 2: CONTACT */}
-              <View style={styles.profCard}>
-                <Text style={styles.profSectionHeader}>CONTACT</Text>
-                <View style={{ gap: 12 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📞</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>MOBILE</Text>
-                      <Text style={styles.profFieldValue}>{profileData.mobile}</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>✉️</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>EMAIL</Text>
-                      <Text style={styles.profFieldValue}>{profileData.email}</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🪪</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>MEMBER ID</Text>
-                      <Text style={styles.profFieldValue}>{profileData.memberId}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* CARD 3: FARM LOCATION */}
-              <View style={styles.profCard}>
-                <Text style={styles.profSectionHeader}>FARM LOCATION</Text>
-                <View style={{ gap: 12 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📍</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>BARANGAY</Text>
-                      <Text style={styles.profFieldValue}>{profileData.barangay}</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🧭</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>COORDINATES</Text>
-                      <Text style={styles.profFieldValue}>{profileData.coordinates}</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🌱</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>TOTAL AREA</Text>
-                      <Text style={styles.profFieldValue}>{profileData.totalArea}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* CARD 4: COOPERATIVE */}
-              <View style={styles.profCard}>
-                <Text style={styles.profSectionHeader}>COOPERATIVE</Text>
-                <View style={{ gap: 12 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>👥</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>COOP</Text>
-                      <Text style={styles.profFieldValue}>{profileData.coop}</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🛡️</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>STANDING</Text>
-                      <Text style={styles.profFieldValue}>{profileData.standing}</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📅</Text></View>
-                    <View>
-                      <Text style={styles.profFieldLabel}>DUES PAID UNTIL</Text>
-                      <Text style={styles.profFieldValue}>{profileData.duesPaidUntil}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* CARD 5: ASSIGNED PLOTS */}
-              <View style={styles.profCard}>
-                <Text style={styles.profSectionHeader}>ASSIGNED PLOTS</Text>
-                <View style={{ gap: 8 }}>
-                  {profileData.assignedPlots.map(plot => (
-                    <View key={plot.id} style={styles.plotSubCard}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                        <View style={styles.plotTagPill}><Text style={{ color: '#064e3b', fontWeight: '800', fontSize: 11 }}>{plot.id}</Text></View>
-                        <View>
-                          <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{plot.crop}</Text>
-                          <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{plot.area}</Text>
+                <View style={{ padding: 16, gap: 14 }}>
+                  {/* CARD 1: MAIN PROFILE CARD */}
+                  <View style={styles.profCard}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                      <View style={styles.avatarCircle}>
+                        <Text style={{ fontSize: 24, fontWeight: '900', color: '#1e293b' }}>{profileData.name.charAt(0)}</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 17, fontWeight: '800', color: '#0f172a' }}>{profileData.name}</Text>
+                        <Text style={{ fontSize: 12, color: '#475569', fontWeight: '600', marginVertical: 2 }}>{profileData.subtitle}</Text>
+                        <View style={{ backgroundColor: '#15803d', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10, alignSelf: 'flex-start' }}>
+                          <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{profileData.pgsBadge}</Text>
                         </View>
                       </View>
-                      <View style={styles.plotStatusPill}>
-                        <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>{plot.status}</Text>
+                    </View>
+                  </View>
+
+                  {/* CARD 2: CONTACT */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>CONTACT</Text>
+                    <View style={{ gap: 12 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📞</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>MOBILE</Text>
+                          <Text style={styles.profFieldValue}>{profileData.mobile}</Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>✉️</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>EMAIL</Text>
+                          <Text style={styles.profFieldValue}>{profileData.email}</Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🪪</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>MEMBER ID</Text>
+                          <Text style={styles.profFieldValue}>{profileData.memberId}</Text>
+                        </View>
                       </View>
                     </View>
-                  ))}
-                </View>
-              </View>
+                  </View>
 
-              {/* CARD 6: LIVESTOCK */}
-              <View style={styles.profCard}>
-                <Text style={styles.profSectionHeader}>LIVESTOCK</Text>
-                <View style={{ gap: 8 }}>
-                  {profileData.livestock.map(l => (
-                    <View key={l.id} style={styles.plotSubCard}>
-                      <Text style={{ fontWeight: '800', fontSize: 12, color: '#0f172a', marginRight: 12 }}>{l.id}</Text>
-                      <View>
-                        <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{l.title}</Text>
-                        <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{l.count}</Text>
+                  {/* CARD 3: FARM LOCATION */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>FARM LOCATION</Text>
+                    <View style={{ gap: 12 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📍</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>BARANGAY</Text>
+                          <Text style={styles.profFieldValue}>{profileData.barangay}</Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🧭</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>COORDINATES</Text>
+                          <Text style={styles.profFieldValue}>{profileData.coordinates}</Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🌱</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>TOTAL AREA</Text>
+                          <Text style={styles.profFieldValue}>{profileData.totalArea}</Text>
+                        </View>
                       </View>
                     </View>
-                  ))}
-                </View>
-              </View>
+                  </View>
 
-              {/* ACTIONS */}
-              <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
-                <TouchableOpacity onPress={() => { setTempProfile(profileData); setShowProfileModal(true); }} style={[styles.submitBtn, { flex: 1, backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: '#0c3619', marginTop: 0 }]}>
-                  <Text style={{ color: '#0c3619', fontWeight: '800', fontSize: 13 }}>⚙️ Settings</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsLoggedIn(false)} style={[styles.submitBtn, { flex: 1, backgroundColor: '#fef2f2', borderWidth: 1.5, borderColor: '#fca5a5', marginTop: 0 }]}>
-                  <Text style={{ color: '#dc2626', fontWeight: '800', fontSize: 13 }}>🚪 Logout</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                  {/* CARD 4: COOPERATIVE */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>COOPERATIVE</Text>
+                    <View style={{ gap: 12 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>👥</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>COOP</Text>
+                          <Text style={styles.profFieldValue}>{profileData.coop}</Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🛡️</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>STANDING</Text>
+                          <Text style={styles.profFieldValue}>{profileData.standing}</Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📅</Text></View>
+                        <View>
+                          <Text style={styles.profFieldLabel}>DUES PAID UNTIL</Text>
+                          <Text style={styles.profFieldValue}>{profileData.duesPaidUntil}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* CARD 5: ASSIGNED PLOTS */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>ASSIGNED PLOTS</Text>
+                    <View style={{ gap: 8 }}>
+                      {profileData.assignedPlots.map(plot => (
+                        <View key={plot.id} style={styles.plotSubCard}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                            <View style={styles.plotTagPill}><Text style={{ color: '#064e3b', fontWeight: '800', fontSize: 11 }}>{plot.id}</Text></View>
+                            <View>
+                              <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{plot.crop}</Text>
+                              <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{plot.area}</Text>
+                            </View>
+                          </View>
+                          <View style={styles.plotStatusPill}>
+                            <Text style={{ fontSize: 11, fontWeight: '800', color: '#0f172a' }}>{plot.status}</Text>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  {/* CARD 6: LIVESTOCK */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>LIVESTOCK</Text>
+                    <View style={{ gap: 8 }}>
+                      {profileData.livestock.map(l => (
+                        <View key={l.id} style={styles.plotSubCard}>
+                          <Text style={{ fontWeight: '800', fontSize: 12, color: '#0f172a', marginRight: 12 }}>{l.id}</Text>
+                          <View>
+                            <Text style={{ fontWeight: '800', fontSize: 14, color: '#0f172a' }}>{l.title}</Text>
+                            <Text style={{ fontSize: 11, color: '#475569', fontWeight: '600' }}>{l.count}</Text>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  {/* ACTION BUTTONS */}
+                  <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+                    <TouchableOpacity onPress={() => setProfileSubView('settings')} style={[styles.submitBtn, { flex: 1, backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: '#0c3619', marginTop: 0 }]}>
+                      <Text style={{ color: '#0c3619', fontWeight: '800', fontSize: 13 }}>⚙️ App Settings</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { setTempProfile(profileData); setShowProfileModal(true); }} style={[styles.submitBtn, { flex: 1, backgroundColor: '#0c3619', marginTop: 0 }]}>
+                      <Text style={{ color: '#ffffff', fontWeight: '800', fontSize: 13 }}>✏️ Edit Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </>
+            ) : (
+              /* ===== VIEW B: SETTINGS SCREEN (MATCHING SCREENSHOTS EXACTLY) ===== */
+              <>
+                {/* Header */}
+                <View style={{ backgroundColor: '#0c3619', paddingHorizontal: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <TouchableOpacity onPress={() => setProfileSubView('profile')} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: 'rgba(255,255,255,0.18)', justifyContent: 'center', alignItems: 'center' }}>
+                      <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800' }}>←</Text>
+                    </TouchableOpacity>
+                    <View>
+                      <Text style={{ fontSize: 18, fontWeight: '800', color: '#ffffff' }}>Settings</Text>
+                      <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600' }}>Mga kagustuhan sa app</Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={{ padding: 16, gap: 14 }}>
+                  {/* NOTIFICATIONS */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>NOTIFICATIONS</Text>
+                    <View style={{ gap: 14 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🔔</Text></View>
+                          <View>
+                            <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Push notifications</Text>
+                            <Text style={{ fontSize: 11, color: '#64748b', fontWeight: '600' }}>Task, weather and alerts</Text>
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => setSettingsData(prev => ({ ...prev, pushNotifications: !prev.pushNotifications }))}
+                          style={{ width: 44, height: 24, borderRadius: 12, backgroundColor: settingsData.pushNotifications ? '#0c3619' : '#e2e8f0', justifyContent: 'center', alignItems: settingsData.pushNotifications ? 'flex-end' : 'flex-start', padding: 2 }}
+                        >
+                          <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#ffffff' }} />
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📱</Text></View>
+                          <View>
+                            <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>SMS reminders</Text>
+                            <Text style={{ fontSize: 11, color: '#64748b', fontWeight: '600' }}>Kapag walang internet</Text>
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => setSettingsData(prev => ({ ...prev, smsReminders: !prev.smsReminders }))}
+                          style={{ width: 44, height: 24, borderRadius: 12, backgroundColor: settingsData.smsReminders ? '#0c3619' : '#e2e8f0', justifyContent: 'center', alignItems: settingsData.smsReminders ? 'flex-end' : 'flex-start', padding: 2 }}
+                        >
+                          <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#ffffff' }} />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* PREFERENCES */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>PREFERENCES</Text>
+                    <View style={{ gap: 14 }}>
+                      <TouchableOpacity
+                        onPress={() => setSettingsData(prev => ({ ...prev, language: prev.language === 'Tagalog' ? 'English' : 'Tagalog' }))}
+                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+                      >
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🌐</Text></View>
+                          <View>
+                            <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Language</Text>
+                            <Text style={{ fontSize: 11, color: '#64748b', fontWeight: '600' }}>Tap to change</Text>
+                          </View>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                          <Text style={{ fontSize: 14, fontWeight: '800', color: '#0c3619' }}>{settingsData.language}</Text>
+                          <Text style={{ fontSize: 16, color: '#64748b' }}>›</Text>
+                        </View>
+                      </TouchableOpacity>
+
+                      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🌙</Text></View>
+                          <View>
+                            <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Dark mode</Text>
+                            <Text style={{ fontSize: 11, color: '#64748b', fontWeight: '600' }}>Mas madaling basahin sa gabi</Text>
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => setSettingsData(prev => ({ ...prev, darkMode: !prev.darkMode }))}
+                          style={{ width: 44, height: 24, borderRadius: 12, backgroundColor: settingsData.darkMode ? '#0c3619' : '#e2e8f0', justifyContent: 'center', alignItems: settingsData.darkMode ? 'flex-end' : 'flex-start', padding: 2 }}
+                        >
+                          <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#ffffff' }} />
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>📶</Text></View>
+                          <View>
+                            <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Offline mode</Text>
+                            <Text style={{ fontSize: 11, color: '#64748b', fontWeight: '600' }}>I-save ang logs kapag walang signal</Text>
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => setSettingsData(prev => ({ ...prev, offlineMode: !prev.offlineMode }))}
+                          style={{ width: 44, height: 24, borderRadius: 12, backgroundColor: settingsData.offlineMode ? '#0c3619' : '#e2e8f0', justifyContent: 'center', alignItems: settingsData.offlineMode ? 'flex-end' : 'flex-start', padding: 2 }}
+                        >
+                          <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#ffffff' }} />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* ACCOUNT & SECURITY */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>ACCOUNT & SECURITY</Text>
+                    <View style={{ gap: 14 }}>
+                      <TouchableOpacity onPress={() => Alert.alert('Change Password', 'Password update link sent to your registered email.')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🔒</Text></View>
+                          <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Change password</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: '#64748b' }}>›</Text>
+                      </TouchableOpacity>
+
+                      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+
+                      <TouchableOpacity onPress={() => Alert.alert('Privacy & Data', 'MARIKHA encrypts all local logs before syncing to cloud.')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🛡️</Text></View>
+                          <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Privacy & data</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: '#64748b' }}>›</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* SUPPORT */}
+                  <View style={styles.profCard}>
+                    <Text style={styles.profSectionHeader}>SUPPORT</Text>
+                    <View style={{ gap: 14 }}>
+                      <TouchableOpacity onPress={() => Alert.alert('Help Center', 'Cooperative Helpline: +63 2 8888 7777\nSupport Email: support@farmer.ph')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>❓</Text></View>
+                          <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>Help center</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: '#64748b' }}>›</Text>
+                      </TouchableOpacity>
+
+                      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+
+                      <TouchableOpacity onPress={() => Alert.alert('About MARIKHA', 'MARIKHA Farmer App v1.0.0\nBuilt for organic farmers in Marikina & Quezon.')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <View style={styles.profIconBox}><Text style={{ fontSize: 16 }}>🛡️</Text></View>
+                          <View>
+                            <Text style={{ fontSize: 14, fontWeight: '800', color: '#0f172a' }}>About MARIKHA</Text>
+                            <Text style={{ fontSize: 11, color: '#64748b', fontWeight: '600' }}>v1.0.0</Text>
+                          </View>
+                        </View>
+                        <Text style={{ fontSize: 16, color: '#64748b' }}>›</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* RED LOG OUT BUTTON */}
+                  <TouchableOpacity
+                    onPress={() => setIsLoggedIn(false)}
+                    style={{ backgroundColor: '#dc2626', paddingVertical: 16, borderRadius: 28, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 10 }}
+                  >
+                    <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: '800' }}>↳</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: '800' }}>Log out</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
         )}
       </ScrollView>
