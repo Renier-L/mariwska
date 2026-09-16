@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   StyleSheet, 
   Text, 
@@ -6,7 +7,7 @@ import {
   TouchableOpacity, 
   TextInput, 
   ScrollView, 
-  SafeAreaView, 
+   
   StatusBar, 
   Alert, 
   Modal, 
@@ -571,7 +572,7 @@ export default function App() {
         fetchAnnouncements();
       }
     };
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('storage', handleStorageChange);
     }
 
@@ -597,7 +598,7 @@ export default function App() {
 
     return () => {
       clearInterval(interval);
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && typeof window.removeEventListener === 'function') {
         window.removeEventListener('storage', handleStorageChange);
       }
       supabase.removeChannel(channel);
@@ -611,7 +612,7 @@ export default function App() {
       
       // Also check localStorage for local web broadcast push
       let localPush = null;
-      if (typeof localStorage !== 'undefined') {
+      if (typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function') {
         try {
           const raw = localStorage.getItem('marikha_live_push');
           if (raw) localPush = JSON.parse(raw);
