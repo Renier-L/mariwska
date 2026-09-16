@@ -556,27 +556,37 @@ export default function App() {
     }, 1000);
   };
 
-  // Instant (< 1s) Sub-second Announcement Realtime Sync Engine
+  // Instant Realtime Web-to-Mobile Sync Engine with Zero-Lag Auto Pop-Up
   useEffect(() => {
     fetchAnnouncements();
 
-    // 1-second ultra-fast polling backup for sub-second web-to-mobile popups
+    // 1-second fast polling backup
     const interval = setInterval(() => {
       fetchAnnouncements();
     }, 1000);
 
-    // Supabase WebSocket Realtime Channel
+    // Cross-tab / LocalStorage Instant Listener (Web Simulator & Expo Web)
+    const handleStorageChange = (e) => {
+      if (e.key === 'marikha_live_push' || e.key === 'marikha_announcements_list') {
+        fetchAnnouncements();
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange);
+    }
+
+    // Supabase Realtime WebSocket Channel
     const channel = supabase
       .channel('announcements-mobile-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, payload => {
         if (payload.new) {
           const newAnn = {
-            id: payload.new.id,
+            id: String(payload.new.id),
             title: payload.new.title || 'Cooperative Broadcast',
             content: payload.new.content || payload.new.title || 'Official Announcement',
             author: payload.new.author || 'Liza Cruz (Admin)'
           };
-          setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
+          setAnnouncements(prev => [newAnn, ...prev.filter(a => String(a.id) !== String(newAnn.id))]);
           setActivePushNotice(newAnn);
           lastSeenAnnIdRef.current = newAnn.id;
           setLastSeenAnnId(newAnn.id);
@@ -587,24 +597,54 @@ export default function App() {
 
     return () => {
       clearInterval(interval);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', handleStorageChange);
+      }
       supabase.removeChannel(channel);
     };
   }, []);
 
   const fetchAnnouncements = async () => {
     try {
-      const { data } = await supabase.from('announcements').select('*').order('id', { ascending: false });
-      if (data && data.length > 0) {
-        setAnnouncements(data);
+      // Query Supabase for announcements
+      const { data } = await supabase.from('announcements').select('*');
+      
+      // Also check localStorage for local web broadcast push
+      let localPush = null;
+      if (typeof localStorage !== 'undefined') {
+        try {
+          const raw = localStorage.getItem('marikha_live_push');
+          if (raw) localPush = JSON.parse(raw);
+        } catch(e) {}
+      }
+
+      let combined = Array.isArray(data) ? [...data] : [];
+      if (localPush) {
+        combined = [localPush, ...combined.filter(a => String(a.id) !== String(localPush.id))];
+      }
+
+      if (combined.length > 0) {
+        // Smart numeric & timestamp sort to ensure newest announcement is ALWAYS at index 0!
+        combined.sort((a, b) => {
+          const tA = new Date(a.created_at || a.date || a.startDate || a._t || 0).getTime();
+          const tB = new Date(b.created_at || b.date || b.startDate || b._t || 0).getTime();
+          if (tA && tB && tA !== tB) return tB - tA;
+          return String(b.id).localeCompare(String(a.id), undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        setAnnouncements(combined);
+
+        const latestItem = combined[0];
         const latest = {
-          id: data[0].id,
-          title: data[0].title || 'Cooperative Broadcast',
-          content: data[0].content || data[0].title || 'Official Announcement',
-          author: data[0].author || 'Liza Cruz (Admin)'
+          id: String(latestItem.id),
+          title: latestItem.title || 'Cooperative Broadcast',
+          content: latestItem.content || latestItem.title || 'Official Announcement',
+          author: latestItem.author || 'Liza Cruz (Admin)'
         };
+
         setActivePushNotice(latest);
 
-        // Instant auto-popup trigger using ref to avoid stale closures
+        // Auto-popup popup modal INSTANTLY whenever latest announcement changes or arrives!
         if (lastSeenAnnIdRef.current !== latest.id) {
           lastSeenAnnIdRef.current = latest.id;
           setLastSeenAnnId(latest.id);
@@ -919,7 +959,7 @@ export default function App() {
               <Text style={{ fontSize: 11, color: '#86efac', fontWeight: '800', textTransform: 'uppercase' }}>MAGANDANG ARAW,</Text>
               <Text style={{ fontSize: 22, fontWeight: '900', color: '#ffffff', marginTop: 1 }}>{currentUser.name} 👋</Text>
               <Text style={{ fontSize: 11, color: '#a7f3d0', fontWeight: '600', marginTop: 4 }}>
-                📅 Tuesday, July 21  ·  📍 Antipolo - Rizal
+                {`📅 ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}  ·  📍 Antipolo - Rizal`}
               </Text>
 
               {/* Live Weather & Temperature Telemetry Cards (HOMEPAGE ONLY) */}
