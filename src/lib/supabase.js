@@ -4,5 +4,5 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://macnchksowbney
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ns5pSHjV7CdRXKtJ1sKaPA_nnT44knN';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: { persistSession: false }
+ auth: { persistSession: false }
 });
