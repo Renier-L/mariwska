@@ -28,15 +28,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
  portalTitle = 'Super Admin Portal';
  navItems = [
  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
- { id: 'member-records', label: 'Member Records', icon: Users },
- { id: 'activity-monitoring', label: 'Activity Monitoring', icon: Activity },
- { id: 'scheduling', label: 'Cooperative Scheduling', icon: CalendarDays },
- { id: 'announcements', label: 'Announcements Push', icon: Megaphone },
- { id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
- { id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
- { id: 'analytics', label: 'Analytics & Intelligence', icon: BarChart3 },
- { id: 'decision-support', label: 'Decision Support Engine', icon: BrainCircuit },
- { id: 'reports', label: 'Reports & Compliance', icon: FileText },
+ { id: 'crop-monitoring', label: 'Crop Monitoring Module', icon: Sprout },
+ { id: 'livestock-monitoring', label: 'Livestock Monitoring Module', icon: Binary },
+ { id: 'activity-monitoring', label: 'Activity Monitoring Module', icon: Activity },
+ { id: 'scheduling', label: 'Scheduling Module', icon: CalendarDays },
+ { id: 'reports', label: 'Reports', icon: FileText },
+ { id: 'analytics', label: 'Agricultural Analytics Module', icon: BarChart3 },
+ { id: 'decision-support', label: 'Decision Support Module', icon: BrainCircuit },
  ];
  } else if (currentRole === 'admin') {
  portalTitle = 'Administrator Console';
