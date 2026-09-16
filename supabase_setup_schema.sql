@@ -86,7 +86,7 @@ CREATE TABLE task_validations (
 
 -- Insert Real Mobile Activity Submissions
 INSERT INTO task_validations (farmer, plot, activity, notes, gps, photo_url, status) VALUES
-('Rei Lopez', 'P-007', 'Organic Pest Spray', 'Applied neem oil extract on Tomato plot P-007', '14.586° N · 121.176° E', 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60', 'Pending'),
+('Rei Lopez', 'P-007', 'Organic Pest Spray', 'Applied neem oil extract on Tomato plot P-007', '14.586° N · 121.176° E', 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80', 'Pending'),
 ('Mang Juan Dela Cruz', 'P-021', 'Irrigation & Weeding', 'Completed morning drip line inspection', '14.590° N · 121.180° E', 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=600&auto=format&fit=crop&q=60', 'Validated'),
 ('Glenda Bautista', 'P-034', 'Fertilizer Application', 'Applied vermicompost to Okra rows', '14.582° N · 121.170° E', 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=600&auto=format&fit=crop&q=60', 'Pending');
 

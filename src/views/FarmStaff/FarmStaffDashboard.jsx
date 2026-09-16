@@ -399,7 +399,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  if (!valObj) return null;
  const act = (valObj?.activity || valObj?.taskType || '').toLowerCase();
 
- const sprayFallback = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=800&q=80';
+ const sprayFallback = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
  const waterFallback = 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80';
  const harvestFallback = 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=800&q=80';
  const weedFallback = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80';
@@ -1110,32 +1110,48 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </div>
 
  {/* Preventive Suggestions & Apply Button */}
- <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', padding: '14px', borderRadius: '10px', fontSize: '0.78rem' }}>
- <strong style={{ color: '#15803d', display: 'block', marginBottom: '6px', fontSize: '0.82rem', fontWeight: '800' }}>
- PREVENTIVE SUGGESTIONS & ACTION PLAN
- </strong>
- <ul style={{ paddingLeft: '18px', color: '#0f172a', display: 'flex', flexDirection: 'column', gap: '4px', margin: 0, fontWeight: '600' }}>
- <li>Push targeted reminders to top-3 highest-risk farmers via mobile app.</li>
- <li>Schedule pre-emptive on-site visit for cluster B within 7 days.</li>
- <li>Re-run RF risk pass after next sync window (05:00 daily).</li>
- </ul>
+	<div style={{ background: preventivePlanApplied ? '#ecfdf5' : '#f0fdf4', border: `1.5px solid ${preventivePlanApplied ? '#34d399' : '#86efac'}`, padding: '14px', borderRadius: '10px', fontSize: '0.78rem' }}>
+	<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+		<strong style={{ color: '#15803d', fontSize: '0.82rem', fontWeight: '800' }}>
+		PREVENTIVE SUGGESTIONS & ACTION PLAN
+		</strong>
+		{preventivePlanApplied && (
+		<span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#15803d', background: '#dcfce7', border: '1px solid #86efac', padding: '2px 8px', borderRadius: '12px' }}>
+			✓ ACTIVE IN CLOUD
+		</span>
+		)}
+	</div>
 
- <button
- onClick={handleApplyPreventivePlan}
- className="btn-primary"
- style={{
- width: '100%',
- justify: 'center',
- marginTop: '12px',
- fontSize: '0.82rem',
- padding: '10px',
- fontWeight: '800',
- background: preventivePlanApplied ? '#16a34a' : '#11592c'
- }}
- >
- {preventivePlanApplied ? ' Preventive Plan Active & Synced to Cloud' : 'Apply Preventive Plan'}
- </button>
- </div>
+	{preventivePlanApplied ? (
+		<div style={{ background: '#ffffff', borderRadius: '8px', padding: '10px', border: '1px solid #a7f3d0', marginBottom: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+		<div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#047857' }}>✓ Active Mitigation Protocols Deployed:</div>
+		<div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '600' }}>• Push notifications dispatched to top-3 highest risk farmers via mobile.</div>
+		<div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '600' }}>• Pre-emptive field audit visit scheduled for Cluster B.</div>
+		<div style={{ fontSize: '0.72rem', color: '#0f172a', fontWeight: '600' }}>• Farm Vulnerability Score reduced live from {rawVulnScore} to {Math.max(12, rawVulnScore - 26)}.</div>
+		</div>
+	) : (
+		<ul style={{ paddingLeft: '18px', color: '#0f172a', display: 'flex', flexDirection: 'column', gap: '4px', margin: '0 0 10px 0', fontWeight: '600' }}>
+		<li>Push targeted reminders to top-3 highest-risk farmers via mobile app.</li>
+		<li>Schedule pre-emptive on-site visit for cluster B within 7 days.</li>
+		<li>Re-run RF risk pass after next sync window (05:00 daily).</li>
+		</ul>
+	)}
+
+	<button
+		onClick={handleApplyPreventivePlan}
+		className="btn-primary"
+		style={{
+		width: '100%',
+		justifyContent: 'center',
+		fontSize: '0.82rem',
+		padding: '10px',
+		fontWeight: '800',
+		background: preventivePlanApplied ? '#16a34a' : '#11592c'
+		}}
+	>
+		{preventivePlanApplied ? '✓ Preventive Plan Active & Synced to Cloud (Click to Refresh)' : 'Apply Preventive Plan'}
+	</button>
+	</div>
  </div>
  </div>
  </div>
@@ -2486,7 +2502,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  src={previewModalUrl} 
  onError={() => {
  if (selectedValId) handleImgError(selectedValId);
- const sprayFallback = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=800&q=80';
+ const sprayFallback = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
  setPreviewModalUrl(sprayFallback);
  }}
  alt="Enlarged verification proof" 

@@ -209,7 +209,7 @@ export const AuthProvider = ({ children }) => {
  const rawUrl = newVal.photo_url || newVal.photoUrl;
  const validUrl = (typeof rawUrl === 'string' && rawUrl.trim().length > 10) 
  ? rawUrl 
- : 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
+ : 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
 
  const formatted = {
  id: String(newVal.id || Date.now()),
@@ -907,7 +907,7 @@ export const AuthProvider = ({ children }) => {
  const rawPhoto = newSub.photoUrl || newSub.photo_url;
  const validPhoto = (typeof rawPhoto === 'string' && rawPhoto.trim().length > 10 && !rawPhoto.includes('photo-1592417817098-8f3d6eb12735'))
  ? rawPhoto
- : 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80';
+ : 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
 
  const newEntry = {
  id: newId,

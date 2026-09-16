@@ -187,7 +187,7 @@ export default function App() {
       gps: '14.5861° N · 121.1764° E',
       time: '10 mins ago',
       status: 'Pending',
-      photo: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60'
+      photo: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80'
     },
     {
       id: 'log-100',
@@ -634,7 +634,7 @@ export default function App() {
     setIsSubmittingLog(true);
 
     const actText = `${activity} (${amount} ${logUnit})`;
-    const finalPhoto = photoUri || 'https://images.unsplash.com/photo-1592417817098-8f3d6eb12735?w=600&auto=format&fit=crop&q=60';
+    const finalPhoto = photoUri || 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
     const newLogItem = {
       id: `log-${Date.now()}`,
       farmer: currentUser.name || 'Mang Juan Dela Cruz',
@@ -2319,6 +2319,47 @@ export default function App() {
                 </TouchableOpacity>
               </View>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      
+      {/* ================= LIVE BROADCAST ANNOUNCEMENT POPUP MODAL ================= */}
+      <Modal visible={showNoticeModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { borderTopWidth: 5, borderTopColor: '#d97706' }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={{ fontSize: 20 }}>📢</Text>
+                <Text style={[styles.modalTitle, { color: '#b45309' }]}>LIVE COOPERATIVE BROADCAST</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowNoticeModal(false)}>
+                <Text style={{ fontSize: 18, color: '#64748b', fontWeight: '800' }}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {activePushNotice && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={{ fontSize: 11, color: '#059669', fontWeight: '800', textTransform: 'uppercase', marginBottom: 4 }}>
+                  From: {activePushNotice.author || 'Liza Cruz (Admin)'}
+                </Text>
+                <Text style={{ fontSize: 16, fontWeight: '900', color: '#0f172a', marginBottom: 8 }}>
+                  {activePushNotice.title || 'Official Announcement'}
+                </Text>
+                <View style={{ backgroundColor: '#fffbeb', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: '#fde68a' }}>
+                  <Text style={{ fontSize: 13, color: '#78350f', fontWeight: '600', lineHeight: 18 }}>
+                    "{activePushNotice.content || activePushNotice.title}"
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            <TouchableOpacity 
+              style={[styles.submitBtn, { backgroundColor: '#0c3619', marginTop: 0 }]} 
+              onPress={() => setShowNoticeModal(false)}
+            >
+              <Text style={styles.submitBtnText}>✓ Acknowledge & Close Broadcast</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

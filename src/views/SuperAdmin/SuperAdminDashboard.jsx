@@ -208,7 +208,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  activity: 'Fertilizer Application',
  amount: '35 Liters',
  note: 'Applied organic compost tea to crop plot',
- photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=400&q=80'
+ photoUrl: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80'
  });
 
  const handleAddActivitySubmit = async (e) => {
@@ -224,7 +224,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  activity: 'Fertilizer Application',
  amount: '35 Liters',
  note: 'Applied organic compost tea to crop plot',
- photoUrl: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=400&q=80'
+ photoUrl: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80'
  });
  };
 
@@ -235,10 +235,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  }
  const act = (item?.activity || item?.taskType || '').toLowerCase();
  if (act.includes('water')) return 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=400&q=80';
- if (act.includes('pest') || act.includes('spray')) return 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=400&q=80';
+ if (act.includes('pest') || act.includes('spray')) return 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
  if (act.includes('harvest')) return 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=400&q=80';
  if (act.includes('weed')) return 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=400&q=80';
- return 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=400&q=80';
+ return 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
  };
 
  const [scheduleCategory, setScheduleCategory] = useState('all');
@@ -1022,7 +1022,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  >
  <img 
  src={imgUrl} 
- onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=400&q=80'; }}
+ onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80'; }}
  alt="Proof" 
  style={{ width: '48px', height: '36px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #cbd5e1', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }} 
  />
@@ -3289,7 +3289,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid #cbd5e1', marginBottom: '16px', maxHeight: '280px' }}>
  <img 
  src={previewPhotoModal.resolvedUrl || getValidPhotoUrl(previewPhotoModal)} 
- onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb1475a?auto=format&fit=crop&w=600&q=80'; }}
+ onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80'; }}
  alt="Full Proof" 
  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
  />
