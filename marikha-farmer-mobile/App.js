@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -164,6 +164,7 @@ export default function App() {
   const [activePushNotice, setActivePushNotice] = useState(null);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
   const [lastSeenAnnId, setLastSeenAnnId] = useState(null);
+  const lastSeenAnnIdRef = useRef(null);
 
   // Log Activity form state with Realtime Task Logging Module
   const [logCategory, setLogCategory] = useState('crops'); // 'crops' or 'livestock'
@@ -555,26 +556,30 @@ export default function App() {
     }, 1000);
   };
 
-  // Supabase Realtime Listener & 4-second Polling for 100% Guaranteed Web-to-Mobile Sync
+  // Instant (< 1s) Sub-second Announcement Realtime Sync Engine
   useEffect(() => {
     fetchAnnouncements();
 
+    // 1-second ultra-fast polling backup for sub-second web-to-mobile popups
     const interval = setInterval(() => {
       fetchAnnouncements();
-    }, 4000);
+    }, 1000);
 
+    // Supabase WebSocket Realtime Channel
     const channel = supabase
       .channel('announcements-mobile-realtime')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, payload => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, payload => {
         if (payload.new) {
           const newAnn = {
             id: payload.new.id,
             title: payload.new.title || 'Cooperative Broadcast',
-            content: payload.new.content || '',
+            content: payload.new.content || payload.new.title || 'Official Announcement',
             author: payload.new.author || 'Liza Cruz (Admin)'
           };
           setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
           setActivePushNotice(newAnn);
+          lastSeenAnnIdRef.current = newAnn.id;
+          setLastSeenAnnId(newAnn.id);
           setShowNoticeModal(true);
         }
       })
@@ -599,8 +604,9 @@ export default function App() {
         };
         setActivePushNotice(latest);
 
-        // Auto-popup announcement modal for mobile user if new broadcast detected!
-        if (lastSeenAnnId !== latest.id) {
+        // Instant auto-popup trigger using ref to avoid stale closures
+        if (lastSeenAnnIdRef.current !== latest.id) {
+          lastSeenAnnIdRef.current = latest.id;
           setLastSeenAnnId(latest.id);
           setShowNoticeModal(true);
         }

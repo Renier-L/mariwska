@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert, Image, SafeAreaView, ActivityIndicator, Modal } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -564,7 +564,7 @@ export default function App() {
     // Subscribe to Supabase Realtime changes
     const subscription = supabase
       .channel('public:announcements')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, (payload) => {
         setLatestAnnouncement(payload.new);
         Alert.alert('📢 Broadcast Alert', payload.new.content || payload.new.title);
       })
