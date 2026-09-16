@@ -394,48 +394,51 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  }
  };
 
- // Helper to resolve valid photo URL or null fallback
- const getDisplayPhoto = (valObj) => {
- if (!valObj) return null;
- const act = (valObj?.activity || valObj?.taskType || '').toLowerCase();
+	// Helper to resolve valid photo URL or null fallback
+	const getDisplayPhoto = (valObj) => {
+	if (!valObj) return null;
 
- const sprayFallback = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
- const waterFallback = 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80';
- const harvestFallback = 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=800&q=80';
- const weedFallback = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80';
+	// 1. Highest Priority: Direct photo_url, photoUrl, or photo from real submission
+	let url = valObj.photo_url || valObj.photoUrl || valObj.photo;
+	const notes = valObj.farmerNote || valObj.notes || '';
 
- const defaultFallback = act.includes('water') ? waterFallback :
- (act.includes('pest') || act.includes('spray')) ? sprayFallback :
- act.includes('harvest') ? harvestFallback :
- act.includes('weed') ? weedFallback : sprayFallback;
+	if (!url || typeof url !== 'string' || (!url.startsWith('data:image') && !url.startsWith('http://') && !url.startsWith('https://'))) {
+		if (notes && notes.includes('[PHOTO_URL:')) {
+		const match = notes.match(/\[PHOTO_URL:([^\]]+)\]/);
+		if (match && match[1]) url = match[1];
+		} else if (notes && notes.includes('data:image')) {
+		const match = notes.match(/data:image\/[^\s\]"']+/);
+		if (match) url = match[0];
+		} else if (notes && (notes.includes('http://') || notes.includes('https://'))) {
+		const match = notes.match(/https?:\/\/[^\s\]"']+/);
+		if (match) url = match[0];
+		}
+	}
 
- if (valObj.id && failedImgMap[valObj.id]) {
- return defaultFallback;
- }
+	if (url && typeof url === 'string' && url.trim().length > 10) {
+		if (!valObj.id || !failedImgMap[valObj.id]) {
+		if (url.startsWith('data:image') || url.startsWith('http://') || url.startsWith('https://')) {
+			return url;
+		}
+		}
+	}
 
- let url = valObj.photoUrl || valObj.photo_url || valObj.photo;
- const notes = valObj.farmerNote || valObj.notes || '';
+	// 2. Fallback based on specific activity type
+	const act = (valObj?.activity || valObj?.taskType || '').toLowerCase();
+	const vermicompostFallback = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80';
+	const waterFallback = 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80';
+	const harvestFallback = 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=800&q=80';
+	const sprayFallback = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80';
+	const weedFallback = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80';
 
- if (!url || typeof url !== 'string' || (!url.startsWith('data:image') && !url.startsWith('http://') && !url.startsWith('https://'))) {
- if (notes && notes.includes('[PHOTO_URL:')) {
- const match = notes.match(/\[PHOTO_URL:([^\]]+)\]/);
- if (match && match[1]) url = match[1];
- } else if (notes && notes.includes('data:image')) {
- const match = notes.match(/data:image\/[^\s\]"']+/);
- if (match) url = match[0];
- } else if (notes && (notes.includes('http://') || notes.includes('https://'))) {
- const match = notes.match(/https?:\/\/[^\s\]"']+/);
- if (match) url = match[0];
- }
- }
+	if (act.includes('vermicompost') || act.includes('compost') || act.includes('fertilizer')) return vermicompostFallback;
+	if (act.includes('water')) return waterFallback;
+	if (act.includes('harvest')) return harvestFallback;
+	if (act.includes('pest') || act.includes('spray')) return sprayFallback;
+	if (act.includes('weed')) return weedFallback;
 
- if (url && typeof url === 'string' && url.trim().length > 10) {
- if (url.startsWith('data:image')) return url;
- if (url.startsWith('http://') || url.startsWith('https://')) return url;
- }
-
- return defaultFallback;
- };
+	return vermicompostFallback;
+	};
 
  // 1. Operations & Verification Dashboard
  const dynamicSafetyIndexData = React.useMemo(() => {

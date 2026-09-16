@@ -163,6 +163,7 @@ export default function App() {
   const [announcements, setAnnouncements] = useState([]);
   const [activePushNotice, setActivePushNotice] = useState(null);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [lastSeenAnnId, setLastSeenAnnId] = useState(null);
 
   // Log Activity form state with Realtime Task Logging Module
   const [logCategory, setLogCategory] = useState('crops'); // 'crops' or 'livestock'
@@ -597,6 +598,12 @@ export default function App() {
           author: data[0].author || 'Liza Cruz (Admin)'
         };
         setActivePushNotice(latest);
+
+        // Auto-popup announcement modal for mobile user if new broadcast detected!
+        if (lastSeenAnnId !== latest.id) {
+          setLastSeenAnnId(latest.id);
+          setShowNoticeModal(true);
+        }
       }
     } catch (e) {}
   };
