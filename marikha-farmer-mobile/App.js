@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { 
   StyleSheet, 
   Text, 
@@ -839,6 +839,7 @@ export default function App() {
   // ================= 0. FLASH / SPLASH SCREEN =================
   if (showSplash) {
     return (
+      <SafeAreaProvider>
       <SafeAreaView style={styles.splashContainer}>
         <StatusBar barStyle="light-content" backgroundColor="#0c3619" />
         <View style={styles.splashContent}>
@@ -861,6 +862,7 @@ export default function App() {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+      </SafeAreaProvider>
     );
   }
 
@@ -920,6 +922,7 @@ export default function App() {
 
   // ================= 2. MAIN FARMER DASHBOARD =================
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar barStyle="light-content" backgroundColor="#0c3619" />
 
@@ -2473,6 +2476,7 @@ export default function App() {
         </View>
       </Modal>
     </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
