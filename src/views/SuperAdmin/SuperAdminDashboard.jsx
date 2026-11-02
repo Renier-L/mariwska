@@ -2009,7 +2009,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 						</button>
 					</div>
 
-					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
+					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
 						{/* Microservice 1 */}
 						<div style={{ background: '#f8fafc', padding: '14px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
 							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -2098,7 +2098,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 				</div>
 
 				{/* Section: User Management Overview & Recent System Activities (Matching Image 4 & 5) */}
-				<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '22px' }}>
+				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '16px', marginBottom: '22px' }}>
 					{/* Left Column: User Management Overview */}
 					<div className="m-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
 						<div>
@@ -2210,13 +2210,13 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 							{/* 5 Activity Events Matching Image 4 & 5 */}
 							<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 								{/* Event 1 */}
-								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', gap: '12px' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
 											RM
 										</div>
-										<div>
-											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+										<div style={{ minWidth: 0, flex: 1 }}>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a', lineHeight: 1.25 }}>
 												Synchronized 6 field crop plot registries with Supabase Cloud
 											</div>
 											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
@@ -2224,19 +2224,19 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											</div>
 										</div>
 									</div>
-									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0 }}>
 										Success
 									</span>
 								</div>
 
 								{/* Event 2 */}
-								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', gap: '12px' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
 											LC
 										</div>
-										<div>
-											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+										<div style={{ minWidth: 0, flex: 1 }}>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a', lineHeight: 1.25 }}>
 												Published cooperative notice: Fertilizer Distribution Schedule
 											</div>
 											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
@@ -2244,19 +2244,19 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											</div>
 										</div>
 									</div>
-									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0 }}>
 										Broadcasted
 									</span>
 								</div>
 
 								{/* Event 3 */}
-								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', gap: '12px' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
 											RV
 										</div>
-										<div>
-											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+										<div style={{ minWidth: 0, flex: 1 }}>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a', lineHeight: 1.25 }}>
 												Verified mobile task log submission for Plot P-007 (Vermicompost)
 											</div>
 											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
@@ -2264,19 +2264,19 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											</div>
 										</div>
 									</div>
-									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0 }}>
 										Verified
 									</span>
 								</div>
 
 								{/* Event 4 */}
-								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', gap: '12px' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
 											SS
 										</div>
-										<div>
-											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+										<div style={{ minWidth: 0, flex: 1 }}>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a', lineHeight: 1.25 }}>
 												Ran batch inference: Random Forest v2.4 yield forecast
 											</div>
 											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
@@ -2284,19 +2284,19 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											</div>
 										</div>
 									</div>
-									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0 }}>
 										Success
 									</span>
 								</div>
 
 								{/* Event 5 */}
-								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', gap: '12px' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
 											SA
 										</div>
-										<div>
-											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+										<div style={{ minWidth: 0, flex: 1 }}>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a', lineHeight: 1.25 }}>
 												Super Admin authenticated session from Antipolo Gateway
 											</div>
 											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
@@ -2304,7 +2304,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											</div>
 										</div>
 									</div>
-									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800', flexShrink: 0 }}>
 										Authorized
 									</span>
 								</div>

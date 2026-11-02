@@ -70,14 +70,18 @@ const Header = () => {
  };
 
  return (
- <header style={{
- display: 'flex',
- alignItems: 'center',
- justifyContent: 'space-between',
- padding: '24px 40px 0px 40px',
- background: 'transparent',
- fontSize: '0.85rem'
- }}>
+	<header style={{
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		padding: '20px 32px 0px 32px',
+		maxWidth: '1600px',
+		width: '100%',
+		margin: '0 auto',
+		boxSizing: 'border-box',
+		background: 'transparent',
+		fontSize: '0.85rem'
+	}}>
  {/* Left Tenant Info matching screenshots */}
  <div>
  				<h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, margin: 0 }}>

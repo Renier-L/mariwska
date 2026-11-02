@@ -117,48 +117,49 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 	}
 
 	return (
-		<aside className="sidebar-nav" style={{ width: '240px', minWidth: '240px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-			<div>
-				{/* Brand Header */}
-				<div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '22px', paddingLeft: '4px' }}>
-					<div style={{
-						width: '32px',
-						height: '32px',
-						borderRadius: '50%',
-						background: 'rgba(255, 255, 255, 0.12)',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						fontSize: '1rem'
-					}}>
-						🌿
-					</div>
-					<div>
-						<h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', lineHeight: 1.1, margin: 0 }}>
-							MARIKHA
-						</h2>
-						<div style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: '600' }}>
-							{portalTitle}
-						</div>
+		<aside className="sidebar-nav">
+			{/* Fixed Brand Header */}
+			<div style={{ flexShrink: 0, paddingBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+				<div style={{
+					width: '32px',
+					height: '32px',
+					borderRadius: '50%',
+					background: 'rgba(255, 255, 255, 0.12)',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					fontSize: '1rem',
+					flexShrink: 0
+				}}>
+					🌿
+				</div>
+				<div>
+					<h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', lineHeight: 1.1, margin: 0 }}>
+						MARIKHA
+					</h2>
+					<div style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: '600' }}>
+						{portalTitle}
 					</div>
 				</div>
+			</div>
 
-				{/* Categorized Navigation */}
-				<nav style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+			{/* Scrollable Categorized Navigation (Always Stays Inside Dark Green Sidebar) */}
+			<nav className="sidebar-scroll-container">
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 					{categories.map((cat, cIdx) => (
 						<div key={cIdx}>
 							<div style={{
-								fontSize: '0.65rem',
+								fontSize: '0.64rem',
 								fontWeight: '800',
 								color: '#6ee7b7',
 								letterSpacing: '0.6px',
 								textTransform: 'uppercase',
-								marginBottom: '6px',
+								marginBottom: '4px',
 								paddingLeft: '10px'
 							}}>
 								{cat.category}
 							</div>
-							<div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+							<div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
 								{cat.items.map((item) => {
 									const Icon = item.icon;
 									// Distinct, accurate active check without accidental multi-active highlights
@@ -185,9 +186,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 												display: 'flex',
 												alignItems: 'center',
 												gap: '10px',
-												padding: '8px 12px',
+												padding: '7px 10px',
 												borderRadius: '8px',
-												fontSize: '0.8rem',
+												fontSize: '0.78rem',
 												fontWeight: isActive ? '800' : '500',
 												color: isActive ? '#ffffff' : '#d1fae5',
 												background: isActive ? '#175429' : 'transparent',
@@ -198,7 +199,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 												whiteSpace: 'nowrap'
 											}}
 										>
-											<Icon size={16} color={isActive ? '#86efac' : '#a7f3d0'} />
+											<Icon size={15} color={isActive ? '#86efac' : '#a7f3d0'} />
 											{item.label}
 										</button>
 									);
@@ -206,11 +207,11 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 							</div>
 						</div>
 					))}
-				</nav>
-			</div>
+				</div>
+			</nav>
 
-			{/* Bottom Sign Out */}
-			<div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '14px', marginTop: '16px' }}>
+			{/* Pinned Bottom Sign Out */}
+			<div style={{ flexShrink: 0, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '10px' }}>
 				<button
 					onClick={() => loginAsRole('login')}
 					style={{
@@ -220,7 +221,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 						padding: '8px 12px',
 						borderRadius: '8px',
 						color: '#a7f3d0',
-						fontSize: '0.82rem',
+						fontSize: '0.8rem',
 						fontWeight: '600',
 						background: 'rgba(255,255,255,0.06)',
 						border: '1px solid rgba(255,255,255,0.1)',
@@ -229,7 +230,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 						transition: 'all 0.15s ease'
 					}}
 				>
-					<LogOut size={15} />
+					<LogOut size={14} />
 					Sign out
 				</button>
 			</div>

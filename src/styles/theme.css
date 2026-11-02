@@ -42,42 +42,72 @@ input:focus, textarea:focus, select:focus {
 /* App Layout Container */
 .app-container {
   display: flex;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   background-color: #eef4ed;
+  overflow-x: hidden;
+  position: relative;
 }
 
 /* Sidebar styling matching original screenshots */
 .sidebar-nav {
   width: 250px;
+  min-width: 250px;
   background-color: #0c3619; /* Dark forest green */
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 24px 16px;
+  padding: 18px 14px;
   height: 100vh;
+  max-height: 100vh;
   position: sticky;
   top: 0;
   flex-shrink: 0;
   z-index: 50;
+  box-sizing: border-box;
+}
+
+.sidebar-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+  margin-right: -2px;
+}
+
+.sidebar-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.sidebar-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 /* Main Content Area */
 .main-viewport {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-color: #eef4ed;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .content-inner {
-  padding: 24px 40px 40px 40px;
+  padding: 24px 32px 40px 32px;
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Cards */
