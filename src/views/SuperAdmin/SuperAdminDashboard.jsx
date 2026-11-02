@@ -49,6 +49,7 @@ import {
 } from 'recharts';
 import jsPDF from 'jspdf';
 import { generateOfficialReportPDF } from '../../utils/pdfGenerator';
+import CropMonitoringModule from './CropMonitoringModule';
 
 // Overview Dashboard Data
 const overviewTrendData = [
@@ -2342,7 +2343,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					<div>
 						<h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
 							<Activity size={24} color="#16a34a" />
-							System Monitoring & Infrastructure Health
+							System & Infrastructure Health
 						</h1>
 						<p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
 							Live connection status of Supabase, authentication services, FastAPI backend, Random Forest prediction services, and Weather API
@@ -2669,217 +2670,23 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 	};
 
 
-	// 2. Crop Production & Live Farmer Submissions Monitoring
- const renderCropMonitoring = () => {
- const filteredCrops = (crops || []).filter(c => {
- const stageMatch = cropStageFilter === 'all' || (c.growthStage || '').toLowerCase().includes(cropStageFilter.toLowerCase());
- const q = cropSearchQuery.trim().toLowerCase();
- const searchMatch = !q || [
- c.variety,
- c.plot,
- c.growthStage,
- c.fertilizer,
- c.irrigation,
- c.yield
- ].some(f => f && String(f).toLowerCase().includes(q));
- return stageMatch && searchMatch;
- });
+		// 2. Crop Monitoring & Management (Comprehensive Super Admin Module)
+	const renderCropMonitoring = () => {
+		return (
+			<CropMonitoringModule
+				crops={crops}
+				validations={validations}
+				users={users}
+				addCrop={addCrop}
+				updateCrop={updateCrop}
+				deleteCrop={deleteCrop}
+				handleValidationAction={handleValidationAction}
+				setActiveTab={setActiveTab}
+			/>
+		);
+	};
 
- return (
- <div>
- <div style={{ marginBottom: '20px' }}>
- <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
- Crop Production & Live Mobile Submissions
- </h1>
- <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
- Real-time field registry synchronized live with Farmer Mobile App & Supabase
- </p>
- </div>
-
- <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
- <button
- onClick={() => setActiveTab && setActiveTab('crop-monitoring')}
- className={`tab-capsule-btn ${activeTab === 'crop-monitoring' ? 'active' : ''}`}
- >
- Crop Production Directory
- </button>
- <button
- onClick={() => setActiveTab && setActiveTab('livestock-monitoring')}
- className={`tab-capsule-btn ${activeTab === 'livestock-monitoring' ? 'active' : ''}`}
- >
- Livestock Operational Registry
- </button>
- </div>
-
- <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
- <div className="m-card">
- <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>TOTAL ACTIVE CROPS</div>
- <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#11592c', marginTop: '4px' }}>{crops.length} Plots</div>
- </div>
- <div className="m-card">
- <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>FARMER SUBMISSIONS</div>
- <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>{validations ? validations.length : 0} Logs</div>
- </div>
- <div className="m-card">
- <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>HARVEST READY</div>
- <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#16a34a', marginTop: '4px' }}>{totalHarvestYield} kg</div>
- </div>
- <div className="m-card">
- <div style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '700' }}>AVG YIELD PER HECTARE</div>
- <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0284c7', marginTop: '4px' }}>{avgYieldPerHectare}</div>
- </div>
- </div>
-
- {/* Filter & Search Bar */}
- <div className="m-card" style={{ padding: '14px 16px', marginBottom: '16px' }}>
- <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
- <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
- <Filter size={16} color="#6b7280" />
- <select
- value={cropStageFilter}
- onChange={e => setCropStageFilter(e.target.value)}
- style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.8rem', background: '#fff', fontWeight: '600', color: '#374151' }}
- >
- <option value="all">All Growth Stages</option>
- <option value="vegetative">Vegetative</option>
- <option value="flowering">Flowering</option>
- <option value="fruiting">Fruiting</option>
- <option value="harvest">Harvest Ready</option>
- </select>
- </div>
-
- <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
- <Search size={15} color="#94a3b8" style={{ position: 'absolute', left: '10px' }} />
- <input
- type="text"
- placeholder="Search crop variety, plot, fertilizer..."
- value={cropSearchQuery}
- onChange={e => setCropSearchQuery(e.target.value)}
- style={{ padding: '8px 28px 8px 32px', borderRadius: '8px', border: '1.5px solid #11592c', fontSize: '0.8rem', width: '260px', outline: 'none' }}
- />
- {cropSearchQuery && (
- <button
- onClick={() => setCropSearchQuery('')}
- style={{ position: 'absolute', right: '8px', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontWeight: '800', fontSize: '0.85rem' }}
- >
- 
- </button>
- )}
- </div>
- </div>
- </div>
-
- <div className="m-card" style={{ padding: '0', overflow: 'hidden', marginBottom: '24px' }}>
- <div style={{ padding: '16px', background: '#fafafa', borderBottom: '1px solid #e5e7eb', fontWeight: '800', fontSize: '0.95rem', color: '#11592c', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <span> Active Field Plots Registry</span>
- <span style={{ fontSize: '0.75rem', background: '#e4f0e6', color: '#11592c', padding: '4px 10px', borderRadius: '12px', fontWeight: '700' }}>
- Showing {filteredCrops.length} of {crops.length} Plots
- </span>
- </div>
- <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
- <thead>
- <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Crop Variety</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Growth Stage</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Fertilizer Application</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Irrigation</th>
- <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Historical Yield</th>
- </tr>
- </thead>
- <tbody>
- {filteredCrops.map((c) => (
- <tr key={c.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
- <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{c.variety}</td>
- <td style={{ padding: '14px 16px' }}>
- <span style={{
- background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#334155'
- }}>
- {c.plot}
- </span>
- </td>
- <td style={{ padding: '14px 16px' }}>
- <span className={`pill pill-${c.growthStage.toLowerCase()}`}>
- {c.growthStage}
- </span>
- </td>
- <td style={{ padding: '14px 16px', color: '#374151' }}>{c.fertilizer}</td>
- <td style={{ padding: '14px 16px', color: '#374151' }}>{c.irrigation}</td>
- <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: '700', color: '#11592c' }}>{c.yield}</td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
-
- <div className="m-card" style={{ padding: '0', overflow: 'hidden' }}>
- <div style={{ padding: '16px', background: '#f0fdf4', borderBottom: '1px solid #bbf7d0', fontWeight: '800', fontSize: '0.95rem', color: '#15803d', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <span> Live Farmer Mobile Logs & Photo Proofs</span>
- <span style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#166534', padding: '4px 10px', borderRadius: '12px' }}>
- Supabase Sync Active
- </span>
- </div>
- <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
- <thead>
- <tr style={{ background: '#fafafa', borderBottom: '1px solid #e5e7eb', color: '#4b5563', fontSize: '0.78rem', textAlign: 'left' }}>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Farmer Name</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Plot</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Activity</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Photo Proof</th>
- <th style={{ padding: '14px 16px', fontWeight: '700' }}>Notes</th>
- <th style={{ padding: '14px 16px', fontWeight: '700', textAlign: 'right' }}>Status</th>
- </tr>
- </thead>
- <tbody>
- {validations && validations.map((v) => (
- <tr key={v.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
- <td style={{ padding: '14px 16px', fontWeight: '700', color: '#111827' }}>{v.farmer}</td>
- <td style={{ padding: '14px 16px' }}>
- <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem' }}>
- {v.plot}
- </span>
- </td>
- <td style={{ padding: '14px 16px', color: '#15803d', fontWeight: '600' }}>{v.activity}</td>
- <td style={{ padding: '14px 16px' }}>
- {v.photo_url ? (
- <img src={v.photo_url} alt="Proof" style={{ width: '48px', height: '36px', borderRadius: '6px', objectFit: 'cover', border: '1px solid #cbd5e1' }} />
- ) : (
- <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>No Photo</span>
- )}
- </td>
- <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '0.8rem' }}>{v.notes}</td>
- <td style={{ padding: '14px 16px', textAlign: 'right' }}>
- {v.status === 'Pending' ? (
- <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
- <button 
- onClick={() => handleValidationAction(v.id, 'Validated')}
- style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '5px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer' }}
- >
- Validate
- </button>
- <button 
- onClick={() => handleValidationAction(v.id, 'Rejected')}
- style={{ background: '#dc2626', color: '#fff', border: 'none', padding: '5px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer' }}
- >
- Reject
- </button>
- </div>
- ) : (
- <span className={`pill ${v.status === 'Validated' ? 'pill-compliant' : 'pill-critical'}`}>
- {v.status}
- </span>
- )}
- </td>
- </tr>
- ))}
- </tbody>
- </table>
- </div>
- </div>
- );
- };
-
- // 3. Livestock Operational Registry
+	// 3. Livestock Operational Registry
  const renderLivestockMonitoring = () => {
  const filteredLivestock = (livestock || []).filter(l => {
  const healthMatch = livestockHealthFilter === 'all' || (l.healthStatus || '').toLowerCase().includes(livestockHealthFilter.toLowerCase());

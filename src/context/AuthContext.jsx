@@ -55,15 +55,53 @@ export const AuthProvider = ({ children }) => {
  });
 
  const [crops, setCrops] = useState(() => {
- try {
- const saved = localStorage.getItem('marikha_crops_list');
- if (saved) {
- const parsed = JSON.parse(saved);
- if (Array.isArray(parsed) && parsed.length > 0) return parsed;
- }
- } catch (e) {}
- return initialCrops;
- });
+		const enrich = (item, idx) => {
+			if (!item) return item;
+			const farmers = ['Renier Lopez', 'Mang Juan Dela Cruz', 'Elena Velasco'];
+			const farmer = item.farmer || farmers[idx % farmers.length];
+			const cropType = item.cropType || (String(item.variety || '').includes('Tomato') ? 'Tomato' : String(item.variety || '').includes('Eggplant') ? 'Eggplant' : String(item.variety || '').includes('Okra') ? 'Okra' : 'Squash');
+			const variety = item.variety || (cropType + ' Standard');
+			const plot = item.plot ? (String(item.plot).startsWith('Plot') ? item.plot : ('Plot ' + item.plot)) : ('Plot P-00' + (idx + 1));
+			const plantingDate = item.plantingDate || (idx % 2 === 0 ? '2026-06-15' : '2026-07-01');
+			const cultivatedArea = item.cultivatedArea || (350 + (idx * 50));
+			const plannedPlantingCount = item.plannedPlantingCount || (400 + (idx * 50));
+			const actualPlantedCount = item.actualPlantedCount || (plannedPlantingCount - (idx * 10 + 5));
+			const stage = item.growthStage || 'Vegetative';
+			const predictedYield = item.predictedYield || (item.yield && !isNaN(parseInt(item.yield)) ? parseInt(item.yield) + 15 : 350);
+			const actualYield = item.actualYield !== undefined ? item.actualYield : (item.yield && !isNaN(parseInt(item.yield)) ? parseInt(item.yield) : 0);
+
+			return {
+				...item,
+				farmer,
+				farmerId: item.farmerId || (farmer === 'Renier Lopez' ? '4' : farmer === 'Mang Juan Dela Cruz' ? '5' : '3'),
+				cropType,
+				variety,
+				plot,
+				plantingDate,
+				cultivatedArea,
+				areaUnit: item.areaUnit || 'sq.m',
+				plannedPlantingCount,
+				actualPlantedCount,
+				growthStage: stage,
+				confirmedGrowthStage: item.confirmedGrowthStage || stage,
+				cropStatus: (stage === 'Harvest' || stage === 'Harvesting') ? 'Harvest Ready' : (item.cropStatus || 'Active'),
+				predictedYield,
+				actualYield,
+				yield: item.yield || ((actualYield > 0 ? actualYield : predictedYield) + ' kg')
+			};
+		};
+
+		try {
+			const saved = localStorage.getItem('marikha_crops_list');
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				if (Array.isArray(parsed) && parsed.length > 0) {
+					return parsed.map((c, i) => enrich(c, i));
+				}
+			}
+		} catch (e) {}
+		return initialCrops.map((c, i) => enrich(c, i));
+	});
 
  const [livestock, setLivestock] = useState(() => {
  try {
@@ -961,37 +999,56 @@ export const AuthProvider = ({ children }) => {
  };
 
  const addCrop = async (newCrop) => {
- const cropObj = {
- id: String(Date.now()),
- variety: newCrop.variety,
- plot: newCrop.plot || `P-${Math.floor(100 + Math.random() * 900)}`,
- growthStage: newCrop.growthStage || 'Vegetative',
- fertilizer: newCrop.fertilizer || 'Organic Compost',
- irrigation: newCrop.irrigation || 'Drip System',
- yield: newCrop.yield || '350 kg'
- };
- setCrops(prev => {
- const next = [cropObj, ...prev];
- try { localStorage.setItem('marikha_crops_list', JSON.stringify(next)); } catch (e) {}
- return next;
- });
- if (broadcastChannel) {
- broadcastChannel.postMessage({ type: 'CROP_ADDED', payload: cropObj });
- }
+		const planned = Number(newCrop.plannedPlantingCount) || 500;
+		const actual = Number(newCrop.actualPlantedCount) || planned;
+		const cropObj = {
+			id: String(Date.now()),
+			farmer: newCrop.farmer || 'Renier Lopez',
+			farmerId: newCrop.farmerId || '4',
+			cropType: newCrop.cropType || 'Tomato',
+			variety: newCrop.variety || ((newCrop.cropType || 'Tomato') + ' (Standard)'),
+			plot: newCrop.plot ? (String(newCrop.plot).startsWith('Plot') ? newCrop.plot : ('Plot ' + newCrop.plot)) : ('Plot P-' + Math.floor(100 + Math.random() * 900)),
+			plantingDate: newCrop.plantingDate || new Date().toISOString().split('T')[0],
+			cultivatedArea: Number(newCrop.cultivatedArea) || 500,
+			areaUnit: newCrop.areaUnit || 'sq.m',
+			plannedPlantingCount: planned,
+			actualPlantedCount: actual,
+			growthStage: newCrop.growthStage || 'Germination',
+			confirmedGrowthStage: newCrop.confirmedGrowthStage || newCrop.growthStage || 'Germination',
+			cropStatus: newCrop.cropStatus || 'Active',
+			fertilizer: newCrop.fertilizer || 'Organic Compost - 10kg',
+			irrigation: newCrop.irrigation || 'Drip System',
+			predictedYield: Number(newCrop.predictedYield) || 0,
+			actualYield: Number(newCrop.actualYield) || 0,
+			yield: newCrop.yield || '—'
+		};
+		setCrops(prev => {
+			const next = [cropObj, ...prev];
+			try { localStorage.setItem('marikha_crops_list', JSON.stringify(next)); } catch (e) {}
+			return next;
+		});
+		if (broadcastChannel) {
+			broadcastChannel.postMessage({ type: 'CROP_ADDED', payload: cropObj });
+		}
 
- try {
- await supabase.from('crops').insert([{
- variety: cropObj.variety,
- plot: cropObj.plot,
- growth_stage: cropObj.growthStage,
- fertilizer: cropObj.fertilizer,
- irrigation: cropObj.irrigation,
- yield: cropObj.yield
- }]);
- } catch (e) {
- console.log('Supabase crop insert error:', e);
- }
- };
+		try {
+			await supabase.from('crops').insert([{
+				variety: cropObj.variety,
+				plot: cropObj.plot,
+				growth_stage: cropObj.growthStage,
+				fertilizer: cropObj.fertilizer,
+				irrigation: cropObj.irrigation,
+				yield: cropObj.yield,
+				farmer_name: cropObj.farmer,
+				planting_date: cropObj.plantingDate,
+				cultivated_area: cropObj.cultivatedArea,
+				planned_count: cropObj.plannedPlantingCount,
+				actual_count: cropObj.actualPlantedCount
+			}]);
+		} catch (e) {
+			console.log('Supabase crop insert error:', e);
+		}
+	};
 
  const updateCrop = async (cropId, updatedFields) => {
  setCrops(prev => {
