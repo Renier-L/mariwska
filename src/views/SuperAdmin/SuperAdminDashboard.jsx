@@ -138,8 +138,6 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  const [previewPhotoModal, setPreviewPhotoModal] = useState(null);
  const [trendSeason, setTrendSeason] = useState('2026');
   const [showProductivityTooltip, setShowProductivityTooltip] = useState(false);
-  const [systemPingLoading, setSystemPingLoading] = useState(false);
-  const [lastPingTimestamp, setLastPingTimestamp] = useState('Just now');
   const [auditSearchQuery, setAuditSearchQuery] = useState('');
   const [auditFilterType, setAuditFilterType] = useState('all');
  const [resetCycleNotice, setResetCycleNotice] = useState(false);
@@ -1609,17 +1607,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 							<span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16a34a' }}></span>
 							System Live · Cloud Synced
 						</span>
-						<button
-							onClick={() => setActiveTab && setActiveTab('system-monitoring')}
-							style={{
-								display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1.5px solid #cbd5e1',
-								padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', color: '#0f172a',
-								cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.15s ease'
-							}}
-							title="View Full Infrastructure & System Monitoring"
-						>
-							<Activity size={14} color="#16a34a" /> System Health
-						</button>
+
 					</div>
 				</div>
 
@@ -1684,7 +1672,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
 					{/* Card 4: SYSTEM & OPERATIONAL ALERTS */}
 					<div 
-						onClick={() => setActiveTab && setActiveTab('system-monitoring')} 
+						onClick={() => setActiveTab && setActiveTab('audit-logs')} 
 						className="m-card" 
 						style={{ cursor: 'pointer', padding: '18px 20px', transition: 'all 0.15s ease' }}
 						title="Click to inspect active infrastructure and field warnings"
@@ -2000,7 +1988,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 						</div>
 
 						<button
-							onClick={() => setActiveTab && setActiveTab('system-monitoring')}
+							onClick={() => setActiveTab && setActiveTab('audit-logs')}
 							style={{
 								background: '#ffffff', border: '1px solid #cbd5e1', padding: '6px 14px', borderRadius: '8px',
 								fontSize: '0.75rem', fontWeight: '700', color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
@@ -2317,247 +2305,6 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 		);
 	};
 
-
-	// 1.5. Dedicated System Monitoring View (Super Admin Diagnostic Suite)
-	const renderSystemMonitoring = () => {
-		const handleRunDiagnosticPing = () => {
-			setSystemPingLoading(true);
-			setTimeout(() => {
-				setSystemPingLoading(false);
-				const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-				setLastPingTimestamp(`Just now (${nowStr})`);
-				alert(` System Diagnostic Health Ping Completed Live!
-
-1. Supabase PostgreSQL: 38ms (Healthy)
-2. Auth0 / Supabase JWT: 100% Operational
-3. FastAPI Random Forest ML Service: 52ms (Scikit-Learn v2.4 Active)
-4. Weather Telemetry API: 200 OK
-5. WebSocket Channels: Connected (Broadcasting Live)`);
-			}, 600);
-		};
-
-		return (
-			<div>
-				{/* Title & Action Bar */}
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-					<div>
-						<h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-							<Activity size={24} color="#16a34a" />
-							System & Infrastructure Health
-						</h1>
-						<p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
-							Live connection status of Supabase, authentication services, FastAPI backend, Random Forest prediction services, and Weather API
-						</p>
-					</div>
-
-					<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-						<button
-							onClick={handleRunDiagnosticPing}
-							disabled={systemPingLoading}
-							className="btn-primary"
-							style={{ padding: '8px 16px', fontSize: '0.78rem', fontWeight: '800', gap: '6px' }}
-						>
-							<RefreshCw size={14} className={systemPingLoading ? 'spin' : ''} />
-							{systemPingLoading ? 'Running Diagnostic Ping...' : 'Run Instant Health Ping Check'}
-						</button>
-					</div>
-				</div>
-
-				{/* 5 Core Infrastructure Microservice Cards */}
-				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
-					{/* Microservice 1: Supabase Database */}
-					<div className="m-card" style={{ padding: '18px' }}>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
-									<Database size={20} />
-								</div>
-								<div>
-									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Supabase PostgreSQL</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Cloud Database & Storage</span>
-								</div>
-							</div>
-							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
-								● Operational
-							</span>
-						</div>
-						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Response Latency:</span><strong>38ms (Optimal)</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Connection Pool:</span><strong>4 / 20 Active</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Realtime WebSocket:</span><strong style={{ color: '#16a34a' }}>Connected</strong></div>
-						</div>
-					</div>
-
-					{/* Microservice 2: Authentication Services */}
-					<div className="m-card" style={{ padding: '18px' }}>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
-									<Lock size={20} />
-								</div>
-								<div>
-									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Authentication Engine</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>JWT Session Encryption</span>
-								</div>
-							</div>
-							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
-								● Operational
-							</span>
-						</div>
-						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Active User Tokens:</span><strong>12 Verified Tokens</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Encryption:</span><strong>AES-256-GCM / RS256</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Token Expiry Window:</span><strong>7 Days Rolling</strong></div>
-						</div>
-					</div>
-
-					{/* Microservice 3: FastAPI Backend & ML */}
-					<div className="m-card" style={{ padding: '18px' }}>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
-									<Cpu size={20} />
-								</div>
-								<div>
-									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>FastAPI & ML Predictor</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Random Forest Inference Engine</span>
-								</div>
-							</div>
-							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
-								● Operational
-							</span>
-						</div>
-						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Model Status:</span><strong>v2.4 Loaded (.joblib)</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Inference Latency:</span><strong>52ms</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Harvest Accuracy (MAE):</span><strong>193.7 kg (94.1%)</strong></div>
-						</div>
-					</div>
-
-					{/* Microservice 4: Weather API */}
-					<div className="m-card" style={{ padding: '18px' }}>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284c7' }}>
-									<Wifi size={20} />
-								</div>
-								<div>
-									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Weather Telemetry API</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>DOST-PAGASA & OpenWeather</span>
-								</div>
-							</div>
-							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
-								● Operational
-							</span>
-						</div>
-						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Geographic Cluster:</span><strong>Antipolo, Rizal</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Sync Polling Cycle:</span><strong>Every 15 mins (Live)</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>API Status:</span><strong style={{ color: '#16a34a' }}>200 OK</strong></div>
-						</div>
-					</div>
-
-					{/* Microservice 5: Mobile Geotagging & Media Storage */}
-					<div className="m-card" style={{ padding: '18px' }}>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7e22ce' }}>
-									<Server size={20} />
-								</div>
-								<div>
-									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Mobile Media Storage</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Photo Proof & Geotags</span>
-								</div>
-							</div>
-							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
-								● Operational
-							</span>
-						</div>
-						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Bucket Availability:</span><strong>99.98%</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Media Compression:</span><strong>WebP / JPEG 80%</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>GPS Precision:</span><strong>± 3.2 meters</strong></div>
-						</div>
-					</div>
-
-					{/* Microservice 6: Realtime WebSocket Broadcast */}
-					<div className="m-card" style={{ padding: '18px' }}>
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
-									<Radio size={20} />
-								</div>
-								<div>
-									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Push Notification Gateway</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Cross-Device Push Broadcast</span>
-								</div>
-							</div>
-							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
-								● Operational
-							</span>
-						</div>
-						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Broadcast Channel:</span><strong>marikha_system_broadcast</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Queued Messages:</span><strong>0 (Instant delivery)</strong></div>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Last Event:</span><strong>{lastPingTimestamp}</strong></div>
-						</div>
-					</div>
-				</div>
-
-				{/* Detailed Health Telemetry Log Table */}
-				<div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
-					<div style={{ padding: '14px 18px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-						<div>
-							<h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-								Live Technical Telemetry & Uptime Log
-							</h3>
-							<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-								Continuous automated service health probes (Last full audit: {lastPingTimestamp})
-							</span>
-						</div>
-						<span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#15803d', background: '#dcfce7', padding: '3px 8px', borderRadius: '6px' }}>
-							99.98% System Uptime
-						</span>
-					</div>
-
-					<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-						<thead>
-							<tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e2e8f0', color: '#475569', fontSize: '0.74rem', textAlign: 'left' }}>
-								<th style={{ padding: '10px 14px', fontWeight: '800' }}>SERVICE / ENDPOINT</th>
-								<th style={{ padding: '10px 14px', fontWeight: '800' }}>ARCHITECTURE LAYER</th>
-								<th style={{ padding: '10px 14px', fontWeight: '800' }}>HEALTH STATUS</th>
-								<th style={{ padding: '10px 14px', fontWeight: '800' }}>LATENCY</th>
-								<th style={{ padding: '10px 14px', fontWeight: '800' }}>UPTIME (30D)</th>
-								<th style={{ padding: '10px 14px', fontWeight: '800', textAlign: 'right' }}>LAST CHECK</th>
-							</tr>
-						</thead>
-						<tbody>
-							{[
-								{ name: 'Supabase PostgreSQL Cloud DB', layer: 'Persistence Layer', status: 'Operational', cls: 'pill-compliant', latency: '38ms', uptime: '99.99%', check: '12s ago' },
-								{ name: 'Supabase GoTrue Auth Service', layer: 'Identity & Tokens', status: 'Operational', cls: 'pill-compliant', latency: '42ms', uptime: '100.0%', check: '15s ago' },
-								{ name: 'FastAPI Python ML Server', layer: 'Inference Backend', status: 'Operational', cls: 'pill-compliant', latency: '52ms', uptime: '99.95%', check: '30s ago' },
-								{ name: 'Weather Telemetry REST API', layer: 'External Integrations', status: 'Operational', cls: 'pill-compliant', latency: '120ms', uptime: '99.90%', check: '2m ago' },
-								{ name: 'Supabase Realtime WebSockets', layer: 'Messaging & Push', status: 'Operational', cls: 'pill-compliant', latency: '24ms', uptime: '99.99%', check: 'Live' },
-							].map((r, i) => (
-								<tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
-									<td style={{ padding: '12px 14px' }}>
-										<strong style={{ color: '#0f172a' }}>{r.name}</strong>
-									</td>
-									<td style={{ padding: '12px 14px', color: '#64748b' }}>{r.layer}</td>
-									<td style={{ padding: '12px 14px' }}>
-										<span className={`pill ${r.cls}`}>{r.status}</span>
-									</td>
-									<td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '700', color: '#15803d' }}>{r.latency}</td>
-									<td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.uptime}</td>
-									<td style={{ padding: '12px 14px', textAlign: 'right', color: '#64748b' }}>{r.check}</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		);
-	};
 
 	// 1.6. Dedicated Audit Logs View (Immutable Forensic Trail)
 	const renderAuditLogs = () => {
@@ -4304,7 +4051,6 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  );
 
  	let currentView = renderOverviewDashboard();
-	if (activeTab === 'system-monitoring') currentView = renderSystemMonitoring();
 	if (activeTab === 'audit-logs') currentView = renderAuditLogs();
 	if (activeTab === 'activity-monitoring') currentView = renderActivityMonitoring();
 	if (activeTab === 'scheduling') currentView = renderSchedulingModule();

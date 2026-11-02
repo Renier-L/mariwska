@@ -11,7 +11,7 @@ import { Bell, X, Megaphone, Loader2 } from 'lucide-react';
 import './styles/theme.css';
 
 const VALID_TABS = {
- super_admin: ['dashboard', 'system-monitoring', 'audit-logs', 'crop-monitoring', 'livestock-monitoring', 'activity-monitoring', 'scheduling', 'announcements', 'analytics', 'decision-support', 'reports', 'user-accounts', 'member-records', 'roles-permissions'],
+ super_admin: ['dashboard', 'audit-logs', 'crop-monitoring', 'livestock-monitoring', 'activity-monitoring', 'scheduling', 'announcements', 'analytics', 'decision-support', 'reports', 'user-accounts', 'member-records', 'roles-permissions'],
  admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
  farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'reports']
 };
@@ -24,7 +24,8 @@ const MainContent = () => {
  const [activeTab, setActiveTabState] = useState(() => {
  try {
  const savedTab = localStorage.getItem(`marikha_active_tab_${currentRole}`);
- const validList = VALID_TABS[currentRole] || [];
+ if (savedTab === 'system-monitoring') { localStorage.setItem(`marikha_active_tab_${currentRole}`, 'dashboard'); return 'dashboard'; }
+    const validList = VALID_TABS[currentRole] || [];
  if (savedTab && validList.includes(savedTab)) return savedTab;
  } catch (e) {}
  if (currentRole === 'super_admin') return 'dashboard';

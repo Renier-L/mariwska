@@ -14,7 +14,6 @@ import {
 	CheckSquare,
 	ShieldAlert,
 	Trees,
-	Activity,
 	CalendarDays,
 	UserCheck,
 	Settings
@@ -31,7 +30,6 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 			category: 'OVERVIEW & SYSTEM',
 			items: [
 				{ id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-				{ id: 'system-monitoring', label: 'System Health', icon: Activity },
 				{ id: 'audit-logs', label: 'Audit Logs', icon: ShieldAlert },
 			]
 		},
