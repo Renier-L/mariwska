@@ -46,7 +46,68 @@ export const initialAnnouncements = [
  }
 ];
 
-export const initialValidations = [];
+export const initialValidations = [
+  {
+    id: 'val-1',
+    farmer: 'Renier Lopez',
+    plot: 'Plot P-001',
+    taskType: 'Watering & Compost Tea Application (10L)',
+    activity: 'Watering & Compost Tea Application (10L)',
+    timestamp: 'Aug 2, 2026 · 06:30 AM',
+    urgency: 'Normal',
+    urgencyCls: 'pill-low',
+    location: '14.5862° N, 121.1764° E (Plot P-001)',
+    gps: '14.5862° N, 121.1764° E',
+    farmerNote: 'Applied 10L organic compost tea to Eggplant seedlings in Plot 1. Soil moisture optimal.',
+    notes: 'Applied 10L organic compost tea to Eggplant seedlings in Plot 1. Soil moisture optimal.',
+    photoUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80',
+    photo_url: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=800&q=80',
+    photoAttached: true,
+    status: 'Pending',
+    createdAt: '2026-08-02T06:30:00Z',
+    season: 'Wet Season 2026'
+  },
+  {
+    id: 'val-2',
+    farmer: 'Mang Juan Dela Cruz',
+    plot: 'Plot P-021',
+    taskType: 'Foliar Organic Spray Application (15L)',
+    activity: 'Foliar Organic Spray Application (15L)',
+    timestamp: 'Aug 3, 2026 · 07:15 AM',
+    urgency: 'High',
+    urgencyCls: 'pill-high',
+    location: '14.5870° N, 121.1770° E (Plot P-021)',
+    gps: '14.5870° N, 121.1770° E',
+    farmerNote: 'Sprayed neem extract on Sitaw vines to counter aphids. Needs verification for PGS organic compliance check.',
+    notes: 'Sprayed neem extract on Sitaw vines to counter aphids. Needs verification for PGS organic compliance check.',
+    photoUrl: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80',
+    photo_url: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80',
+    photoAttached: true,
+    status: 'Pending',
+    createdAt: '2026-08-03T07:15:00Z',
+    season: 'Wet Season 2026'
+  },
+  {
+    id: 'val-3',
+    farmer: 'Elena Velasco',
+    plot: 'Plot P-055',
+    taskType: 'Vermicompost Input & Soil Aeration',
+    activity: 'Vermicompost Input & Soil Aeration',
+    timestamp: 'Aug 4, 2026 · 08:00 AM',
+    urgency: 'Medium',
+    urgencyCls: 'pill-medium',
+    location: '14.5880° N, 121.1780° E (Plot P-055)',
+    gps: '14.5880° N, 121.1780° E',
+    farmerNote: 'Distributed 20kg organic vermicompost around Okra beds. Compost log updated.',
+    notes: 'Distributed 20kg organic vermicompost around Okra beds. Compost log updated.',
+    photoUrl: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80',
+    photo_url: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=800&q=80',
+    photoAttached: true,
+    status: 'Pending',
+    createdAt: '2026-08-04T08:00:00Z',
+    season: 'Wet Season 2026'
+  }
+];
 
 export const initialMLClassifications = [
  { crop: 'Tomato (Diamante)', plot: 'P-007', confidence: 0.94, yieldForecast: '412 kg', recommendedFertilizer: 'Vermicompost - 12kg', recommendedAction: 'Maintain daily 06:00 drip irrigation' },

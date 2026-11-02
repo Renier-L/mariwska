@@ -24,7 +24,8 @@ import {
  Eye,
  X,
  Sprout,
- Droplets
+ Droplets,
+  Users
 } from 'lucide-react';
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -156,6 +157,9 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  const [reportsTab, setReportsTab] = useState('productivity');
  const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
  const [previewModalUrl, setPreviewModalUrl] = useState(null);
+	const [farmerSearch, setFarmerSearch] = useState('');
+	const [cropStageFilterAdviser, setCropStageFilterAdviser] = useState('All');
+	const [failedImgMap, setFailedImgMap] = useState({});
 
  // Livestock Management Search & Filter State
  const [livestockSearchQuery, setLivestockSearchQuery] = useState('');
@@ -364,7 +368,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
  const handleApprove = () => {
  if (!selectedValidation) return;
- handleValidationAction(selectedValidation.id, 'approve', staffNote);
+ handleValidationAction(selectedValidation.id, 'Validated', staffNote);
  setStaffNote('');
  alert(` Task #${selectedValidation.id} approved & committed to cloud!`);
  };
@@ -386,7 +390,6 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  doc.save(`${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
  };
 
- const [failedImgMap, setFailedImgMap] = useState({});
 
  const handleImgError = (valId) => {
  if (valId) {
@@ -673,7 +676,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </p>
  </div>
  <div className="m-card" style={{ textAlign: 'center', padding: '40px 20px', background: '#f8fafc', border: '1.5px dashed #cbd5e1' }}>
- <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}></div>
+ <div style={{ marginBottom: '12px' }}><CheckCircle2 size={44} color="#16a34a" style={{ margin: '0 auto' }} /></div>
  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
  All Farmer Task Submissions Reviewed!
  </h3>
@@ -1381,7 +1384,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  <tbody>
  {filteredCrops.length === 0 ? (
  <tr>
- <td colSpan={7} style={{ textAlign: 'center', padding: '32px', color: '#64748b', fontSize: '0.85rem' }}>
+ <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: '#64748b', fontSize: '0.85rem' }}>
  No crop records found matching your selected criteria. Click "Register New Crop Plot Record" to add one live!
  </td>
  </tr>
@@ -1987,7 +1990,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </td>
  <td style={{ padding: '12px 14px' }}>
  <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>{animalText}</div>
- <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>{headCount} Animals / Birds</span>
+ <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>{headCount} Heads (Goats)</span>
  </td>
  <td style={{ padding: '12px 14px' }}>
  <span style={{
@@ -2357,8 +2360,6 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  // 6. Farm Staff Reports
  
 	// 4.5. FARMER & CROP LIFECYCLE SUPERVISION (Adviser Research Monitoring Form)
-	const [farmerSearch, setFarmerSearch] = useState('');
-	const [cropStageFilterAdviser, setCropStageFilterAdviser] = useState('All');
 
 	const renderFarmerManagement = () => {
 		// Data structured matching Adviser Form: Farmers, Assigned Crops, Stages, Next Prediction
@@ -2911,11 +2912,12 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  { id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
  { id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
  { id: 'crop-management', label: 'Crop Management', icon: Trees },
+ { id: 'farmer-management', label: 'Farmer Management', icon: Users },
  { id: 'livestock-management', label: 'Livestock Management', icon: Binary },
  { id: 'reports', label: 'Reports & Export', icon: FileText },
  ].map(tab => {
  const Icon = tab.icon;
- const isActive = activeTab === tab.id || (!['activity-validation', 'ml-audit', 'crop-management', 'livestock-management', 'reports'].includes(activeTab) && tab.id === 'operations-dashboard');
+ const isActive = activeTab === tab.id || (!['activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'reports'].includes(activeTab) && tab.id === 'operations-dashboard');
  return (
  <button
  key={tab.id}
@@ -2945,8 +2947,9 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  );
 
  const renderContainerWithModal = (content) => (
- <>
- {content}
+		<>
+			{renderTopNav()}
+			{content}
  {/* FULLSCREEN LIGHTBOX IMAGE MODAL */}
  {previewModalUrl && (
  <div 

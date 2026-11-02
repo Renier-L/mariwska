@@ -881,12 +881,13 @@ export const AuthProvider = ({ children }) => {
  };
 
  const handleValidationAction = async (id, action, notes) => {
- const targetStatus = action === 'Validated' ? 'Validated' : 'Rejected';
- setValidations(prev => {
- const next = prev.map(v => String(v.id) === String(id) ? { ...v, status: targetStatus } : v);
- try { localStorage.setItem('marikha_validations_list', JSON.stringify(next)); } catch (e) {}
- return next;
- });
+    const isApproval = action === 'Validated' || action === 'approve' || action === 'Approved';
+    const targetStatus = isApproval ? 'Validated' : 'Rejected';
+    setValidations(prev => {
+      const next = prev.map(v => String(v.id) === String(id) ? { ...v, status: targetStatus, staffNote: notes || v.staffNote || '', validatedAt: new Date().toISOString() } : v);
+      try { localStorage.setItem('marikha_validations_list', JSON.stringify(next)); } catch (e) {}
+      return next;
+    });
 
  if (broadcastChannel) {
  broadcastChannel.postMessage({ type: 'VALIDATION_UPDATED_PUSH', payload: { id, status: targetStatus } });
