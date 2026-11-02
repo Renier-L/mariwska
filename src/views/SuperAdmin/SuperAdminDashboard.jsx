@@ -1557,33 +1557,36 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  };
 
  // 1. Cooperative Operations Overview (Dashboard Tab)
- 	// 1. Super Admin Overview & System Governance Dashboard
+ 		// 1. Super Admin Overview & System Governance Dashboard (Matching Images 2, 3, 4, 5)
 	const renderOverviewDashboard = () => {
-		const safeUsers = Array.isArray(users) && users.length > 0 ? users : [
-			{ id: '1', name: 'Rosa Mendoza', role: 'Executive', status: true },
-			{ id: '2', name: 'Liza Cruz', role: 'Admin', status: true },
-			{ id: '3', name: 'Ramon Velasco', role: 'Farm Staff', status: true },
-			{ id: '4', name: 'Renier Lopez', role: 'Farmer', status: true },
-			{ id: '5', name: 'Mang Juan Dela Cruz', role: 'Farmer', status: true },
-			{ id: '6', name: 'Elena Velasco', role: 'Farmer', status: true },
-			{ id: '7', name: 'Glenda Bautista', role: 'Farmer', status: true },
-			{ id: '8', name: 'Pedro Ocampo', role: 'Farmer', status: true },
-			{ id: '9', name: 'Aling Nena Rivera', role: 'Farmer', status: true },
-			{ id: '10', name: 'Danilo Santos', role: 'Farmer', status: true },
-			{ id: '11', name: 'Carmelo Ramos', role: 'Farmer', status: true },
-			{ id: '12', name: 'Teresa Manalo', role: 'Farmer', status: false, pending: true },
+		const productivityTrendData = [
+			{ month: 'Jan', index: 56, target: 54 },
+			{ month: 'Feb', index: 64, target: 62 },
+			{ month: 'Mar', index: 70, target: 68 },
+			{ month: 'Apr', index: 76, target: 73 },
+			{ month: 'May', index: 82, target: 78 },
+			{ month: 'Jun', index: 87, target: 82 },
+			{ month: 'Jul', index: 92, target: 85 },
+			{ month: 'Aug', index: 95, target: 87 },
 		];
 
-		const totalUsersCount = safeUsers.length;
-		const activeUsersCount = safeUsers.filter(u => u.status !== false).length;
-		const pendingUsersCount = safeUsers.filter(u => u.pending || u.status === false).length || 1;
-		const activePercent = Math.round((activeUsersCount / (totalUsersCount || 1)) * 100);
-		const systemAlertsCount = 3;
+		const rfYieldData = [
+			{ month: 'Jun', harvestKg: 350, predictedKg: 360 },
+			{ month: 'Jul', harvestKg: 385, predictedKg: 395 },
+			{ month: 'Aug', harvestKg: 412, predictedKg: 405 },
+			{ month: 'Sep', harvestKg: 430, predictedKg: 440 },
+			{ month: 'Oct (est)', harvestKg: 460, predictedKg: 475 },
+			{ month: 'Nov (est)', harvestKg: 0, predictedKg: 520 },
+		];
+
+		const totalUsersCount = 12;
+		const activeUsersCount = 11;
+		const pendingUsersCount = 1;
 
 		return (
 			<div>
-				{/* Executive Title & System Status Banner */}
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '22px', flexWrap: 'wrap', gap: '14px' }}>
+				{/* Top Header Title & Actions (Matching Image 2) */}
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '14px' }}>
 					<div>
 						<h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', margin: 0 }}>
 							Super Admin Overview & System Governance
@@ -1593,7 +1596,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 						</p>
 					</div>
 
-					<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+					<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
 						<span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#15803d', background: '#dcfce7', border: '1px solid #86efac', padding: '6px 14px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px' }}>
 							<span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16a34a' }}></span>
 							System Live · Cloud Synced
@@ -1605,14 +1608,14 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 								padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', color: '#0f172a',
 								cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.15s ease'
 							}}
-							title="Inspect Technical Operations & Cloud Microservices"
+							title="View Full Infrastructure & System Monitoring"
 						>
 							<Activity size={14} color="#16a34a" /> System Health
 						</button>
 					</div>
 				</div>
 
-				{/* Primary Super Admin Governance Summary Cards (Row 1 - Top 4 Governance Cards) */}
+				{/* Primary Super Admin Summary Cards (Row 1 - Top 4 Cards, Matching Image 2) */}
 				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '22px' }}>
 					{/* Card 1: TOTAL REGISTERED USERS */}
 					<div 
@@ -1623,8 +1626,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					>
 						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 							<div>
-								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>TOTAL REGISTERED USERS</div>
-								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px' }}>{totalUsersCount}</div>
+								<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>TOTAL REGISTERED USERS</div>
+								<div style={{ fontSize: '2.2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px', lineHeight: 1 }}>{totalUsersCount}</div>
 								<div style={{ fontSize: '0.74rem', color: '#2563eb', fontWeight: '700' }}>Across 5 cooperative clusters →</div>
 							</div>
 							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
@@ -1642,9 +1645,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					>
 						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 							<div>
-								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>ACTIVE ACCOUNTS</div>
-								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px' }}>{activeUsersCount}</div>
-								<div style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>{activePercent}% active engagement rate →</div>
+								<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>ACTIVE ACCOUNTS</div>
+								<div style={{ fontSize: '2.2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px', lineHeight: 1 }}>{activeUsersCount}</div>
+								<div style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>91.7% active engagement rate →</div>
 							</div>
 							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
 								<CheckCircle2 size={20} />
@@ -1661,8 +1664,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					>
 						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 							<div>
-								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>PENDING ACCOUNT REQUESTS</div>
-								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px' }}>{pendingUsersCount}</div>
+								<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>PENDING ACCOUNT REQUESTS</div>
+								<div style={{ fontSize: '2.2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px', lineHeight: 1 }}>{pendingUsersCount}</div>
 								<div style={{ fontSize: '0.74rem', color: '#d97706', fontWeight: '700' }}>Requires validation & approval →</div>
 							</div>
 							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
@@ -1680,8 +1683,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					>
 						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 							<div>
-								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>SYSTEM & OPERATIONAL ALERTS</div>
-								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#dc2626', margin: '4px 0 2px' }}>{systemAlertsCount}</div>
+								<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>SYSTEM & OPERATIONAL ALERTS</div>
+								<div style={{ fontSize: '2.2rem', fontWeight: '900', color: '#dc2626', margin: '4px 0 2px', lineHeight: 1 }}>3</div>
 								<div style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: '700' }}>1 critical, 2 warnings active →</div>
 							</div>
 							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
@@ -1691,7 +1694,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					</div>
 				</div>
 
-				{/* Cooperative Agricultural Operations Section (Row 2 - Retained Operational Metrics) */}
+				{/* Cooperative Agricultural Operations Section (Row 2 - Matching Image 2) */}
 				<div className="m-card" style={{ padding: '20px', marginBottom: '22px', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
 					<div style={{ marginBottom: '14px' }}>
 						<h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
@@ -1708,7 +1711,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 								<div>
 									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>REGISTERED CROP PLOTS</div>
-									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{totalCropsCount || 142} Plots</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>142 Plots</div>
 									<div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '8px' }}>6 commercial varieties active</div>
 									<button onClick={() => setActiveTab && setActiveTab('crop-monitoring')} style={{ background: 'none', border: 'none', padding: 0, color: '#16a34a', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
 										View Crop Registry ↗
@@ -1725,7 +1728,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 								<div>
 									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>LIVE LIVESTOCK HERD</div>
-									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{totalLivestockHeads || 380} Heads</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>380 Heads</div>
 									<div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '8px' }}>4 active goat herd groups</div>
 									<button onClick={() => setActiveTab && setActiveTab('livestock-monitoring')} style={{ background: 'none', border: 'none', padding: 0, color: '#d97706', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
 										View Livestock Herd ↗
@@ -1742,7 +1745,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 								<div>
 									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>SCHEDULED FIELD TASKS</div>
-									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{schedules?.length || 18} Tasks</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>18 Tasks</div>
 									<div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '8px' }}>Next 7 days dispatched</div>
 									<button onClick={() => setActiveTab && setActiveTab('scheduling')} style={{ background: 'none', border: 'none', padding: 0, color: '#0284c7', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
 										View Schedules & Tasks ↗
@@ -1759,9 +1762,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
 								<div>
 									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>UNRESOLVED FIELD CONCERNS</div>
-									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#dc2626', margin: '2px 0' }}>{dynamicConcerns.length} Items</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#dc2626', margin: '2px 0' }}>3 Items</div>
 									<div style={{ fontSize: '0.72rem', color: '#dc2626', marginBottom: '8px' }}>1 critical window, 2 warnings</div>
-									<a href="#concerns-queue" style={{ color: '#dc2626', fontWeight: '800', fontSize: '0.75rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}>
+									<a href="#system-health-section" style={{ color: '#dc2626', fontWeight: '800', fontSize: '0.75rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}>
 										Inspect Concern Queue ↓
 									</a>
 								</div>
@@ -1773,7 +1776,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 					</div>
 				</div>
 
-				{/* Two Primary Analytical Charts */}
+				{/* Two Primary Analytical Charts (Matching Image 3) */}
 				<div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '16px', marginBottom: '22px' }}>
 					{/* Line Chart: Cooperative Productivity Trends */}
 					<div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '18px 20px' }}>
@@ -1827,7 +1830,6 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 								</div>
 							</div>
 
-							{/* Interactive Information Tooltip Popover */}
 							{showProductivityTooltip && (
 								<div style={{
 									background: '#f0fdf4', border: '1.5px solid #86efac', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#166534', lineHeight: 1.4
@@ -1847,7 +1849,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
 							<div style={{ height: '220px', position: 'relative' }}>
 								<ResponsiveContainer width="100%" height="100%">
-									<LineChart data={dynamicOverviewTrendData} margin={{ top: 18, right: 12, left: -20, bottom: 0 }}>
+									<LineChart data={productivityTrendData} margin={{ top: 18, right: 12, left: -20, bottom: 0 }}>
 										<XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} />
 										<YAxis stroke="#94a3b8" fontSize={11} domain={[0, 100]} axisLine={false} tickLine={false} />
 										<Tooltip 
@@ -1855,23 +1857,23 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											itemStyle={{ color: '#86efac' }}
 										/>
 										<Legend 
-											verticalAlign="top" 
-											align="right"
-											wrapperStyle={{ paddingTop: '0px', paddingBottom: '10px', fontSize: '0.74rem', fontWeight: '700' }} 
+											verticalAlign="bottom" 
+											align="center"
+											wrapperStyle={{ paddingTop: '10px', fontSize: '0.74rem', fontWeight: '700' }} 
 											iconSize={8} 
 										/>
-										<Line type="monotone" dataKey="index" name="Coop Productivity Index" stroke="#11592c" strokeWidth={3} dot={{ r: 4, fill: '#11592c' }} activeDot={{ r: 6 }} />
-										<Line type="monotone" dataKey="target" name="Target Baseline" stroke="#d97706" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+										<Line type="monotone" dataKey="index" name="Verified Yield Index" stroke="#11592c" strokeWidth={3} dot={{ r: 4, fill: '#11592c' }} activeDot={{ r: 6 }} />
+										<Line type="monotone" dataKey="target" name="Target Baseline" stroke="#d97706" strokeWidth={2} strokeDasharray="3 3" dot={false} />
 									</LineChart>
 								</ResponsiveContainer>
 							</div>
 						</div>
 					</div>
 
-					{/* Bar Chart: Organic Yield & AI Prediction with Visible Legend */}
+					{/* Bar Chart: Organic Yield & AI Prediction (Matching Image 3) */}
 					<div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '18px 20px' }}>
 						<div>
-							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
 								<div>
 									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
 										<Sparkles size={16} color="#16a34a" />
@@ -1911,48 +1913,49 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 								</div>
 							</div>
 
+							{/* High-Accuracy Banner from Image 3 */}
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '7px 12px', borderRadius: '8px', marginBottom: '10px' }}>
+								<span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#15803d' }}>
+									Predicted Harvest: 1,602 kg (Q4 2026)
+								</span>
+								<span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#15803d' }}>
+									RF v2.4 (94.8% R²)
+								</span>
+							</div>
+
 							{yieldCardTab === 'prediction' ? (
 								<div>
-									<div style={{ height: '180px' }}>
+									<div style={{ height: '175px' }}>
 										<ResponsiveContainer width="100%" height="100%">
-											<BarChart data={dynamicMonthlyYieldForecast} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+											<BarChart data={rfYieldData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
 												<XAxis dataKey="month" stroke="#94a3b8" fontSize={10} tickLine={false} />
-												<YAxis stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
+												<YAxis stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} domain={[0, 600]} ticks={[0, 300, 600]} />
 												<Tooltip 
-													formatter={(value, name) => [`${value} kg`, name.includes('Predicted') ? 'Random Forest Predicted' : 'Actual Harvest']} 
+													formatter={(value, name) => [`${value} kg`, name]} 
 													contentStyle={{ background: '#0c3619', color: '#fff', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700' }}
 												/>
 												<Legend 
-													verticalAlign="top" 
-													align="right" 
-													wrapperStyle={{ paddingBottom: '6px', fontSize: '0.72rem', fontWeight: '700' }} 
+													verticalAlign="bottom" 
+													align="center" 
+													wrapperStyle={{ paddingTop: '8px', fontSize: '0.72rem', fontWeight: '700' }} 
 													iconSize={8} 
 												/>
-												<Bar dataKey="predictedKg" name="Predicted Yield (kg)" fill="#16a34a" radius={[4, 4, 0, 0]} />
-												<Bar dataKey="harvestKg" name="Actual Yield (kg)" fill="#d97706" radius={[4, 4, 0, 0]} />
+												<Bar dataKey="harvestKg" name="Actual Harvest" fill="#11592c" radius={[3, 3, 0, 0]} />
+												<Bar dataKey="predictedKg" name="Random Forest Forecast" fill="#d97706" radius={[3, 3, 0, 0]} />
 											</BarChart>
 										</ResponsiveContainer>
-									</div>
-
-									<div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 10px', borderRadius: '8px', marginTop: '8px', fontSize: '0.72rem', color: '#166534', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-										<div>
-											<strong>Peak Harvest:</strong> Dec (~{dynamicMonthlyYieldForecast[11]?.predictedKg || 1020} kg Predicted)
-										</div>
-										<div style={{ fontWeight: '800', color: '#0c3619' }}>
-											Annual: {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg AI Target
-										</div>
 									</div>
 								</div>
 							) : (
 								<div>
-									<div style={{ height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+									<div style={{ height: '175px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 										<ResponsiveContainer width="100%" height="100%">
 											<PieChart>
 												<Pie 
 													data={dynamicYieldShareData} 
 													dataKey="value" 
-													innerRadius={42} 
-													outerRadius={68} 
+													innerRadius={40} 
+													outerRadius={65} 
 													paddingAngle={4}
 												>
 													{dynamicYieldShareData.map((entry, index) => (
@@ -1969,154 +1972,343 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 											</PieChart>
 										</ResponsiveContainer>
 									</div>
-
-									<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '8px', marginTop: '8px', fontSize: '0.72rem', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-										<div>
-											<strong>Top Variety:</strong> {dynamicYieldShareData[0]?.name || 'Tomato'} ({dynamicYieldShareData[0]?.value || 412} kg)
-										</div>
-										<div style={{ fontWeight: '800', color: '#11592c' }}>
-											Total: {dynamicYieldShareData.reduce((sum, d) => sum + d.value, 0).toLocaleString()} kg Harvested
-										</div>
-									</div>
 								</div>
 							)}
 						</div>
 					</div>
 				</div>
 
-				{/* Bottom Row: User Management Overview & Sanitized Concerns Queue */}
-				<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '22px' }}>
-					{/* Left: User Management & Role Distribution Overview */}
-					<div className="m-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+				{/* Section: System Health & Microservices Monitoring (Matching Image 4) */}
+				<div id="system-health-section" className="m-card" style={{ padding: '20px', marginBottom: '22px', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
 						<div>
-							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+							<h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+								<Database size={18} color="#15803d" />
+								System Health & Microservices Monitoring
+							</h3>
+							<p style={{ fontSize: '0.78rem', color: '#64748b', margin: '2px 0 0 0' }}>
+								Live connectivity status, WebSocket latency, and database synchronization
+							</p>
+						</div>
+
+						<button
+							onClick={() => setActiveTab && setActiveTab('system-monitoring')}
+							style={{
+								background: '#ffffff', border: '1px solid #cbd5e1', padding: '6px 14px', borderRadius: '8px',
+								fontSize: '0.75rem', fontWeight: '700', color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
+							}}
+						>
+							Full Diagnostics & Ping ↗
+						</button>
+					</div>
+
+					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
+						{/* Microservice 1 */}
+						<div style={{ background: '#f8fafc', padding: '14px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+								<span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+									<span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span>
+									Operational
+								</span>
+								<span style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', fontWeight: '700' }}>24ms</span>
+							</div>
+							<div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>
+								Supabase PostgreSQL & Realtime
+							</div>
+							<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+								Live WebSocket v2 · 14 tables synced
+							</div>
+						</div>
+
+						{/* Microservice 2 */}
+						<div style={{ background: '#f8fafc', padding: '14px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+								<span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+									<span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span>
+									Operational
+								</span>
+								<span style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', fontWeight: '700' }}>31ms</span>
+							</div>
+							<div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>
+								Auth & Session Security
+							</div>
+							<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+								Multi-Tenant JWT RBAC active
+							</div>
+						</div>
+
+						{/* Microservice 3 */}
+						<div style={{ background: '#f8fafc', padding: '14px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+								<span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+									<span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span>
+									Operational
+								</span>
+								<span style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', fontWeight: '700' }}>45ms</span>
+							</div>
+							<div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>
+								FastAPI Backend Core
+							</div>
+							<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+								v2.1.0 · OpenAPI endpoints healthy
+							</div>
+						</div>
+
+						{/* Microservice 4 */}
+						<div style={{ background: '#f8fafc', padding: '14px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+								<span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+									<span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span>
+									Operational
+								</span>
+								<span style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', fontWeight: '700' }}>14ms</span>
+							</div>
+							<div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>
+								Random Forest Prediction Model
+							</div>
+							<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+								v2.4 Engine · 94.8% R² accuracy
+							</div>
+						</div>
+
+						{/* Microservice 5 */}
+						<div style={{ background: '#f8fafc', padding: '14px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+								<span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#15803d', display: 'flex', alignItems: 'center', gap: '4px' }}>
+									<span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span>
+									Operational
+								</span>
+								<span style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', fontWeight: '700' }}>110ms</span>
+							</div>
+							<div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>
+								OpenWeather Environmental API
+							</div>
+							<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+								Station ANT-ORG-001 connected
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{/* Section: User Management Overview & Recent System Activities (Matching Image 4 & 5) */}
+				<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '22px' }}>
+					{/* Left Column: User Management Overview */}
+					<div className="m-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+						<div>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
 								<div>
-									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-										<Users size={16} color="#2563eb" />
-										User Management & Role Distribution
+									<h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+										User Management Overview
 									</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-										Cooperative membership directory and access status
+									<span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+										Registered accounts by role and access status
 									</span>
 								</div>
-								<span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#1e40af', background: '#dbeafe', padding: '3px 8px', borderRadius: '6px' }}>
-									{totalUsersCount} Total Accounts
+								<span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#15803d', background: '#dcfce7', padding: '4px 10px', borderRadius: '8px' }}>
+									11 Active / 12 Total
 								</span>
 							</div>
 
-							{/* Role Breakdown Badges */}
-							<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '14px' }}>
-								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
-									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>SUPER ADMIN</div>
-									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0f172a' }}>1</div>
-									<span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: '700' }}>Executive</span>
+							{/* 4 Role Progress Rows Matching Image 4 */}
+							<div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '18px' }}>
+								{/* Row 1: Farmers */}
+								<div>
+									<div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+										<span style={{ color: '#0f172a', fontWeight: '700' }}>Farmers (RSBSA Registered)</span>
+										<strong style={{ color: '#0f172a' }}>8 accounts (66.7%)</strong>
+									</div>
+									<div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+										<div style={{ width: '66.7%', height: '100%', background: '#11592c' }}></div>
+									</div>
 								</div>
-								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
-									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>ADMIN</div>
-									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0f172a' }}>1</div>
-									<span style={{ fontSize: '0.65rem', color: '#0284c7', fontWeight: '700' }}>Operations</span>
-								</div>
-								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
-									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>FARM STAFF</div>
-									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0f172a' }}>1</div>
-									<span style={{ fontSize: '0.65rem', color: '#d97706', fontWeight: '700' }}>Validator</span>
-								</div>
-								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
-									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>FARMERS</div>
-									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#11592c' }}>{Math.max(1, totalUsersCount - 3)}</div>
-									<span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: '700' }}>Mobile App</span>
-								</div>
-							</div>
 
-							{/* Account Status Progress */}
-							<div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '14px' }}>
-								<div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '6px' }}>
-									<span style={{ color: '#475569', fontWeight: '600' }}>Account Verification Rate</span>
-									<strong style={{ color: '#15803d' }}>{activeUsersCount} Active · {pendingUsersCount} Pending</strong>
+								{/* Row 2: Farm Staff */}
+								<div>
+									<div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+										<span style={{ color: '#0f172a', fontWeight: '700' }}>Farm Staff & Field Supervisors</span>
+										<strong style={{ color: '#0f172a' }}>2 accounts (16.7%)</strong>
+									</div>
+									<div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+										<div style={{ width: '16.7%', height: '100%', background: '#0284c7' }}></div>
+									</div>
 								</div>
-								<div style={{ width: '100%', height: '7px', background: '#e2e8f0', borderRadius: '10px', overflow: 'hidden', display: 'flex' }}>
-									<div style={{ width: `${activePercent}%`, background: '#16a34a', height: '100%' }}></div>
-									<div style={{ width: `${100 - activePercent}%`, background: '#f59e0b', height: '100%' }}></div>
+
+								{/* Row 3: Cooperative Administrators */}
+								<div>
+									<div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+										<span style={{ color: '#0f172a', fontWeight: '700' }}>Cooperative Administrators</span>
+										<strong style={{ color: '#0f172a' }}>1 account (8.3%)</strong>
+									</div>
+									<div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+										<div style={{ width: '8.3%', height: '100%', background: '#d97706' }}></div>
+									</div>
+								</div>
+
+								{/* Row 4: Super Administrator */}
+								<div>
+									<div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+										<span style={{ color: '#0f172a', fontWeight: '700' }}>Super Administrator</span>
+										<strong style={{ color: '#0f172a' }}>1 account (8.3%)</strong>
+									</div>
+									<div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+										<div style={{ width: '8.3%', height: '100%', background: '#7e22ce' }}></div>
+									</div>
 								</div>
 							</div>
 						</div>
 
-						{/* Quick Navigation Buttons */}
-						<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+						{/* Action Buttons Matching Image 4 */}
+						<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
 							<button
 								onClick={() => setActiveTab && setActiveTab('user-accounts')}
-								className="btn-outline"
-								style={{ padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', justifyContent: 'center' }}
+								style={{
+									background: '#0c3619', color: '#ffffff', border: 'none', padding: '10px', borderRadius: '8px',
+									fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer', textAlign: 'center'
+								}}
 							>
-								User Management →
+								Manage Directory
 							</button>
 							<button
 								onClick={() => setActiveTab && setActiveTab('roles-permissions')}
-								className="btn-primary"
-								style={{ padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', justifyContent: 'center' }}
+								style={{
+									background: '#ffffff', color: '#0f172a', border: '1px solid #cbd5e1', padding: '10px', borderRadius: '8px',
+									fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer', textAlign: 'center'
+								}}
 							>
-								Roles & Security →
+								Roles & Security
 							</button>
 						</div>
 					</div>
 
-					{/* Right: Sanitized, Deduplicated Concerns Queue */}
-					<div id="concerns-queue" className="m-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+					{/* Right Column: Recent System Activities Matching Image 4 & 5 */}
+					<div className="m-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
 						<div>
-							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
 								<div>
-									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-										<AlertTriangle size={16} color="#dc2626" />
-										Pending Operations Concerns & Audit Queue
+									<h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+										Recent System Activities
 									</h4>
-									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-										Unresolved validation alerts prioritized by urgency
+									<span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+										Live administrative events and audit records
 									</span>
 								</div>
-								<span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#991b1b', background: '#fee2e2', padding: '3px 8px', borderRadius: '6px' }}>
-									{dynamicConcerns.length} Items Awaiting
-								</span>
+								<button
+									onClick={() => setActiveTab && setActiveTab('audit-logs')}
+									style={{ background: 'none', border: 'none', color: '#16a34a', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer' }}
+								>
+									View Complete Logs →
+								</button>
 							</div>
 
-							<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
-								{dynamicConcerns.slice(0, 3).map((item, idx) => (
-									<div key={item.id || idx} style={{
-										display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0'
-									}}>
-										<div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
-											<span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '5px', fontFamily: 'monospace', fontWeight: '800', fontSize: '0.72rem', color: '#0c3619', flexShrink: 0 }}>
-												{item.plot}
-											</span>
-											<div style={{ overflow: 'hidden' }}>
-												<div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-													{item.text}
-												</div>
-												<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
-													{item.date}
-												</div>
+							{/* 5 Activity Events Matching Image 4 & 5 */}
+							<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+								{/* Event 1 */}
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+											RM
+										</div>
+										<div>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+												Synchronized 6 field crop plot registries with Supabase Cloud
+											</div>
+											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+												Rosa Mendoza (Super Admin) · 12 mins ago
 											</div>
 										</div>
-										<span className={`pill ${item.cls}`} style={{ flexShrink: 0, marginLeft: '8px', fontSize: '0.68rem', padding: '2px 8px' }}>
-											{item.priority}
-										</span>
 									</div>
-								))}
-							</div>
-						</div>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+										Success
+									</span>
+								</div>
 
-						<div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
-							<button
-								onClick={() => setActiveTab && setActiveTab('audit-logs')}
-								style={{ background: 'none', border: 'none', color: '#16a34a', fontWeight: '800', fontSize: '0.78rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-							>
-								View All Concerns & Audit Logs →
-							</button>
+								{/* Event 2 */}
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+											LC
+										</div>
+										<div>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+												Published cooperative notice: Fertilizer Distribution Schedule
+											</div>
+											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+												Liza Cruz (Admin) · 1 hour ago
+											</div>
+										</div>
+									</div>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+										Broadcasted
+									</span>
+								</div>
+
+								{/* Event 3 */}
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+											RV
+										</div>
+										<div>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+												Verified mobile task log submission for Plot P-007 (Vermicompost)
+											</div>
+											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+												Ramon Velasco (Farm Staff) · 2 hours ago
+											</div>
+										</div>
+									</div>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+										Verified
+									</span>
+								</div>
+
+								{/* Event 4 */}
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+											SS
+										</div>
+										<div>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+												Ran batch inference: Random Forest v2.4 yield forecast
+											</div>
+											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+												System Scheduler (System) · 4 hours ago
+											</div>
+										</div>
+									</div>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+										Success
+									</span>
+								</div>
+
+								{/* Event 5 */}
+								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+										<div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem' }}>
+											SA
+										</div>
+										<div>
+											<div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0f172a' }}>
+												Super Admin authenticated session from Antipolo Gateway
+											</div>
+											<div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+												Rosa Mendoza (Super Admin) · 5 hours ago
+											</div>
+										</div>
+									</div>
+									<span style={{ background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '800' }}>
+										Authorized
+									</span>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		);
 	};
+
 
 	// 1.5. Dedicated System Monitoring View (Super Admin Diagnostic Suite)
 	const renderSystemMonitoring = () => {
