@@ -11,7 +11,7 @@ import { Bell, X, Megaphone, Loader2 } from 'lucide-react';
 import './styles/theme.css';
 
 const VALID_TABS = {
- super_admin: ['dashboard', 'member-records', 'user-accounts', 'activity-monitoring', 'scheduling', 'announcements', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
+ super_admin: ['dashboard', 'system-monitoring', 'audit-logs', 'crop-monitoring', 'livestock-monitoring', 'activity-monitoring', 'scheduling', 'announcements', 'analytics', 'decision-support', 'reports', 'user-accounts', 'member-records', 'roles-permissions'],
  admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
  farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'reports']
 };
@@ -71,7 +71,7 @@ const MainContent = () => {
  <Header />
  <main className="content-inner">
  {currentRole === 'super_admin' && (
- (activeTab === 'member-records' || activeTab === 'user-accounts')
+ (activeTab === 'member-records' || activeTab === 'user-accounts' || activeTab === 'roles-permissions')
  ? <AdminConsole activeTab={activeTab} />
  : <SuperAdminDashboard activeTab={activeTab} setActiveTab={setActiveTab} />
  )}

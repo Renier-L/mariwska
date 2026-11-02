@@ -80,12 +80,12 @@ const Header = () => {
  }}>
  {/* Left Tenant Info matching screenshots */}
  <div>
- <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', lineHeight: 1.2 }}>
- {tenantInfo.name}
- </h4>
- <span style={{ fontSize: '0.75rem', color: '#6b7280', fontWeight: '500' }}>
- Tenant · {tenantInfo.id}
- </span>
+ 				<h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.2, margin: 0 }}>
+					Antipolo Organic Farming Cooperative
+				</h4>
+				<span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
+					Tenant · {tenantInfo.id || 'ANT-ORG-001'}
+				</span>
  </div>
 
  {/* Right User & Quick Actions info */}
@@ -118,22 +118,22 @@ const Header = () => {
  )}
 
 
- {/* Cloud sync · Live Badge */}
- <div style={{
- display: 'flex',
- alignItems: 'center',
- gap: '6px',
- fontSize: '0.75rem',
- color: '#15803d',
- background: '#dcfce7',
- padding: '6px 14px',
- borderRadius: '20px',
- fontWeight: '600',
- border: '1px solid #86efac'
- }}>
- <Cloud size={14} />
- {tenantInfo.status}
- </div>
+ 				{/* Cloud sync · Live Badge */}
+				<div style={{
+					display: 'flex',
+					alignItems: 'center',
+					gap: '6px',
+					fontSize: '0.74rem',
+					color: '#15803d',
+					background: '#dcfce7',
+					padding: '5px 12px',
+					borderRadius: '20px',
+					fontWeight: '700',
+					border: '1px solid #86efac'
+				}}>
+					<span style={{ display: 'inline-block', width: '7px', height: '7px', borderRadius: '50%', background: '#16a34a' }}></span>
+					Cloud Sync · Live
+				</div>
 
        {/* Role Architecture & Hierarchy Guide Button (Adviser Suggestion) */}
       <button
@@ -181,7 +181,7 @@ const Header = () => {
  {currentUser?.name || 'Ramon Bautista'} <Pencil size={11} color="#15803d" />
  </div>
  <div style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
- {currentUser?.role || 'Farm Staff'}
+ {currentRole === 'super_admin' ? 'Super Admin' : (currentRole === 'admin' ? 'Administrator' : (currentRole === 'farm_staff' ? 'Farm Staff' : (currentUser?.role || 'User')))}
  </div>
  </div>
  <div style={{

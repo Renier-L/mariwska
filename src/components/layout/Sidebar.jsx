@@ -1,154 +1,240 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
- LayoutDashboard, 
- Sprout, 
- Binary, 
- BarChart3, 
- BrainCircuit, 
- FileText, 
- LogOut, 
- Users, 
- ShieldCheck, 
- Megaphone,
- CheckSquare,
- ShieldAlert,
- Trees,
- Activity,
- CalendarDays
+	LayoutDashboard, 
+	Sprout, 
+	Binary, 
+	BarChart3, 
+	BrainCircuit, 
+	FileText, 
+	LogOut, 
+	Users, 
+	ShieldCheck, 
+	Megaphone,
+	CheckSquare,
+	ShieldAlert,
+	Trees,
+	Activity,
+	CalendarDays,
+	UserCheck,
+	Settings
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
- const { currentRole, loginAsRole } = useAuth();
+	const { currentRole, loginAsRole } = useAuth();
 
- let portalTitle = 'Super Admin Portal';
- let navItems = [];
+	let portalTitle = 'Super Admin Portal';
 
- if (currentRole === 'super_admin') {
- portalTitle = 'Super Admin Portal';
- navItems = [
- { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
- { id: 'crop-monitoring', label: 'Crop Monitoring Module', icon: Sprout },
- { id: 'livestock-monitoring', label: 'Livestock Monitoring Module', icon: Binary },
- { id: 'activity-monitoring', label: 'Activity Monitoring Module', icon: Activity },
- { id: 'scheduling', label: 'Scheduling Module', icon: CalendarDays },
- { id: 'reports', label: 'Reports', icon: FileText },
- { id: 'analytics', label: 'Agricultural Analytics Module', icon: BarChart3 },
- { id: 'decision-support', label: 'Decision Support Module', icon: BrainCircuit },
- ];
- } else if (currentRole === 'admin') {
- portalTitle = 'Administrator Console';
- navItems = [
- { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
- { id: 'member-records', label: 'Member Records Management Module', icon: Users },
- { id: 'roles-permissions', label: 'Roles & Security Matrix', icon: ShieldCheck },
- { id: 'announcements', label: 'Announcements Push', icon: Megaphone },
- { id: 'reports', label: 'Reports', icon: FileText },
- ];
- } else if (currentRole === 'farm_staff') {
- portalTitle = 'Farm Staff Validation';
- navItems = [
- { id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
- { id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
- { id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
- { id: 'crop-management', label: 'Crop Management', icon: Trees },
-      { id: 'farmer-management', label: 'Farmer Management', icon: Users },
- { id: 'livestock-management', label: 'Livestock Management', icon: Binary },
- { id: 'reports', label: 'Reports', icon: FileText },
- ];
- }
+	// Categorized Navigation for Super Admin matching media_1793632288847.png
+	const superAdminCategories = [
+		{
+			category: 'OVERVIEW & SYSTEM',
+			items: [
+				{ id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+				{ id: 'system-monitoring', label: 'System Monitoring', icon: Activity },
+				{ id: 'audit-logs', label: 'Audit Logs', icon: ShieldAlert },
+			]
+		},
+		{
+			category: 'FARM OPERATIONS',
+			items: [
+				{ id: 'crop-monitoring', label: 'Crop Monitoring', icon: Sprout },
+				{ id: 'livestock-monitoring', label: 'Livestock Monitoring', icon: Binary },
+				{ id: 'scheduling', label: 'Schedules & Tasks', icon: CalendarDays },
+			]
+		},
+		{
+			category: 'ANALYTICS & AI',
+			items: [
+				{ id: 'analytics', label: 'Analytics', icon: BarChart3 },
+				{ id: 'decision-support', label: 'Decision Support', icon: BrainCircuit },
+				{ id: 'reports', label: 'Reports & Export', icon: FileText },
+			]
+		},
+		{
+			category: 'ADMINISTRATION',
+			items: [
+				{ id: 'user-accounts', label: 'User Management', icon: Users },
+				{ id: 'roles-permissions', label: 'Roles & Security', icon: ShieldCheck },
+			]
+		},
+		{
+			category: 'ACCOUNT',
+			items: [
+				{ id: 'profile', label: 'My Profile', icon: UserCheck },
+				{ id: 'settings', label: 'Settings', icon: Settings },
+			]
+		}
+	];
 
- return (
- <aside className="sidebar-nav">
- <div>
- {/* Brand Header matching MARIKHA branding */}
- <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '28px', paddingLeft: '4px' }}>
- <div style={{
- width: '32px',
- height: '32px',
- borderRadius: '50%',
- background: 'rgba(255, 255, 255, 0.12)',
- display: 'flex',
- alignItems: 'center',
- justifyContent: 'center',
- fontSize: '1rem'
- }}>
- 
- </div>
- <div>
- <h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', lineHeight: 1.1 }}>
- MARIKHA
- </h2>
- <div style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: '500' }}>
- {portalTitle}
- </div>
- </div>
- </div>
+	// Categorized Navigation for Admin Console
+	const adminCategories = [
+		{
+			category: 'OPERATIONS & USERS',
+			items: [
+				{ id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
+				{ id: 'member-records', label: 'User Management', icon: Users },
+				{ id: 'roles-permissions', label: 'Roles & Security', icon: ShieldCheck },
+			]
+		},
+		{
+			category: 'BROADCAST & AUDIT',
+			items: [
+				{ id: 'announcements', label: 'Announcements Push', icon: Megaphone },
+				{ id: 'reports', label: 'Reports & Export', icon: FileText },
+			]
+		}
+	];
 
- {/* Navigation Items */}
- <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
- {navItems.map((item) => {
- const Icon = item.icon;
- const isActive = activeTab === item.id || 
- (item.id === 'user-accounts' && activeTab === 'member-records') || 
- (item.id === 'member-records' && activeTab === 'user-accounts') ||
- (item.id === 'crop-monitoring' && activeTab === 'livestock-monitoring') ||
- (item.id === 'livestock-monitoring' && activeTab === 'crop-monitoring') ||
- (item.id === 'analytics' && activeTab === 'decision-support') ||
- (item.id === 'decision-support' && activeTab === 'analytics');
- return (
- <button
- key={item.id}
- onClick={() => setActiveTab(item.id)}
- style={{
- display: 'flex',
- alignItems: 'center',
- gap: '12px',
- padding: '10px 14px',
- borderRadius: '10px',
- fontSize: '0.85rem',
- fontWeight: isActive ? '700' : '500',
- color: isActive ? '#ffffff' : '#a7f3d0',
- background: isActive ? '#175429' : 'transparent',
- border: isActive ? '1px solid #23733b' : '1px solid transparent',
- textAlign: 'left',
- transition: 'all 0.15s ease'
- }}
- >
- <Icon size={17} color={isActive ? '#ffffff' : '#a7f3d0'} />
- {item.label}
- </button>
- );
- })}
- </nav>
- </div>
+	// Categorized Navigation for Farm Staff
+	const farmStaffCategories = [
+		{
+			category: 'FIELD OPERATIONS',
+			items: [
+				{ id: 'operations-dashboard', label: 'Operations Overview', icon: LayoutDashboard },
+				{ id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
+				{ id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
+			]
+		},
+		{
+			category: 'FARM SUPERVISION',
+			items: [
+				{ id: 'crop-management', label: 'Crop Management', icon: Trees },
+				{ id: 'farmer-management', label: 'Farmer Management', icon: Users },
+				{ id: 'livestock-management', label: 'Livestock Management', icon: Binary },
+				{ id: 'reports', label: 'Reports & Export', icon: FileText },
+			]
+		}
+	];
 
- {/* Bottom Footer Section: Clean Sign Out Button */}
- <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '14px' }}>
- <button
- onClick={() => loginAsRole('login')}
- style={{
- display: 'flex',
- alignItems: 'center',
- gap: '10px',
- padding: '10px 14px',
- borderRadius: '10px',
- color: '#a7f3d0',
- fontSize: '0.85rem',
- fontWeight: '600',
- background: 'rgba(255,255,255,0.06)',
- border: '1px solid rgba(255,255,255,0.1)',
- width: '100%',
- cursor: 'pointer',
- transition: 'all 0.15s ease'
- }}
- >
- <LogOut size={16} />
- Sign out
- </button>
- </div>
- </aside>
- );
+	let categories = superAdminCategories;
+	if (currentRole === 'admin') {
+		portalTitle = 'Administrator Console';
+		categories = adminCategories;
+	} else if (currentRole === 'farm_staff') {
+		portalTitle = 'Farm Staff Validation';
+		categories = farmStaffCategories;
+	}
+
+	return (
+		<aside className="sidebar-nav" style={{ width: '240px', minWidth: '240px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+			<div>
+				{/* Brand Header */}
+				<div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '22px', paddingLeft: '4px' }}>
+					<div style={{
+						width: '32px',
+						height: '32px',
+						borderRadius: '50%',
+						background: 'rgba(255, 255, 255, 0.12)',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						fontSize: '1rem'
+					}}>
+						🌿
+					</div>
+					<div>
+						<h2 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', lineHeight: 1.1, margin: 0 }}>
+							MARIKHA
+						</h2>
+						<div style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: '600' }}>
+							{portalTitle}
+						</div>
+					</div>
+				</div>
+
+				{/* Categorized Navigation */}
+				<nav style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+					{categories.map((cat, cIdx) => (
+						<div key={cIdx}>
+							<div style={{
+								fontSize: '0.65rem',
+								fontWeight: '800',
+								color: '#6ee7b7',
+								letterSpacing: '0.6px',
+								textTransform: 'uppercase',
+								marginBottom: '6px',
+								paddingLeft: '10px'
+							}}>
+								{cat.category}
+							</div>
+							<div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+								{cat.items.map((item) => {
+									const Icon = item.icon;
+									// Distinct, accurate active check without accidental multi-active highlights
+									const isActive = activeTab === item.id || 
+										(item.id === 'user-accounts' && (activeTab === 'member-records' || activeTab === 'user-accounts')) ||
+										(item.id === 'member-records' && (activeTab === 'user-accounts' || activeTab === 'member-records')) ||
+										(item.id === 'dashboard' && !activeTab);
+
+									return (
+										<button
+											key={item.id}
+											onClick={() => {
+												if (item.id === 'profile') {
+													const profileBtn = document.querySelector('[title*="Edit My Profile"]');
+													if (profileBtn) profileBtn.click();
+												} else if (item.id === 'settings') {
+													const guideBtn = document.querySelector('[title*="System Architecture"]');
+													if (guideBtn) guideBtn.click();
+												} else {
+													setActiveTab(item.id);
+												}
+											}}
+											style={{
+												display: 'flex',
+												alignItems: 'center',
+												gap: '10px',
+												padding: '8px 12px',
+												borderRadius: '8px',
+												fontSize: '0.8rem',
+												fontWeight: isActive ? '800' : '500',
+												color: isActive ? '#ffffff' : '#d1fae5',
+												background: isActive ? '#175429' : 'transparent',
+												border: isActive ? '1px solid #23733b' : '1px solid transparent',
+												textAlign: 'left',
+												cursor: 'pointer',
+												transition: 'all 0.15s ease',
+												whiteSpace: 'nowrap'
+											}}
+										>
+											<Icon size={16} color={isActive ? '#86efac' : '#a7f3d0'} />
+											{item.label}
+										</button>
+									);
+								})}
+							</div>
+						</div>
+					))}
+				</nav>
+			</div>
+
+			{/* Bottom Sign Out */}
+			<div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '14px', marginTop: '16px' }}>
+				<button
+					onClick={() => loginAsRole('login')}
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: '10px',
+						padding: '8px 12px',
+						borderRadius: '8px',
+						color: '#a7f3d0',
+						fontSize: '0.82rem',
+						fontWeight: '600',
+						background: 'rgba(255,255,255,0.06)',
+						border: '1px solid rgba(255,255,255,0.1)',
+						width: '100%',
+						cursor: 'pointer',
+						transition: 'all 0.15s ease'
+					}}
+				>
+					<LogOut size={15} />
+					Sign out
+				</button>
+			</div>
+		</aside>
+	);
 };
 
 export default Sidebar;

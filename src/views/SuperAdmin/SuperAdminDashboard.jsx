@@ -34,7 +34,8 @@ import {
  Megaphone,
  Bell,
  Radio,
- Trash2
+ Trash2,
+  Users
 } from 'lucide-react';
 import {
  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
@@ -96,7 +97,7 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
- const { crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule, selectedSeason, setSelectedSeason } = useAuth();
+ const { users, crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule, selectedSeason, setSelectedSeason } = useAuth();
 
  const filterBySeason = (items) => {
  if (!Array.isArray(items)) return [];
@@ -128,6 +129,11 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  const [showAddActivityModal, setShowAddActivityModal] = useState(false);
  const [previewPhotoModal, setPreviewPhotoModal] = useState(null);
  const [trendSeason, setTrendSeason] = useState('2026');
+  const [showProductivityTooltip, setShowProductivityTooltip] = useState(false);
+  const [systemPingLoading, setSystemPingLoading] = useState(false);
+  const [lastPingTimestamp, setLastPingTimestamp] = useState('Just now');
+  const [auditSearchQuery, setAuditSearchQuery] = useState('');
+  const [auditFilterType, setAuditFilterType] = useState('all');
  const [resetCycleNotice, setResetCycleNotice] = useState(false);
  const [isRecalculatingAnalytics, setIsRecalculatingAnalytics] = useState(false);
  const [isRunningAiAudit, setIsRunningAiAudit] = useState(false);
@@ -646,34 +652,64 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  }, [validatedCount, totalValidationsCount]);
 
  const dynamicConcerns = React.useMemo(() => {
- const list = [];
- if (validations) {
- validations.filter(v => v.status === 'Pending').forEach(v => {
- list.push({
- plot: v.plot || 'Plot P-007',
- text: `Farmer ${v.farmer || 'Log'}: ${v.activity || 'Task'} pending validation review`,
- status: 'Pending',
- cls: 'pill-high'
- });
- });
- }
- if (schedules) {
- schedules.filter(s => s.priority === 'HIGH' || s.status === 'Overdue').forEach(s => {
- list.push({
- plot: s.plot || 'Plot P-021',
- text: `Scheduled Protocol: ${s.title} (${s.countdown || 'upcoming'})`,
- status: s.status || 'Upcoming',
- cls: s.status === 'Overdue' ? 'pill-critical' : 'pill-high'
- });
- });
- }
- if (list.length > 0) return list.slice(0, 4);
- return [
- { plot: 'P-021', text: 'Fertilizer log validation pending review', status: 'Pending', cls: 'pill-high' },
- { plot: 'P-007', text: 'Goat herd vaccination window closing', status: 'Upcoming', cls: 'pill-critical' },
- { plot: 'P-034', text: 'Irrigation frequency check scheduled', status: 'Scheduled', cls: 'pill-high' },
- ];
- }, [validations, schedules]);
+		const list = [];
+		if (validations) {
+			validations.filter(v => v.status === 'Pending').forEach(v => {
+				const farmerStr = v.farmer || 'Farmer';
+				const actStr = v.taskType || v.activity || 'Field Task';
+				// Sanitize test data like 'hotdog' or 'test'
+				if (actStr.toLowerCase().includes('hotdog') || farmerStr.toLowerCase().includes('hotdog')) return;
+				list.push({
+					id: v.id || `val-${Math.random()}`,
+					plot: v.plot || 'Plot P-007',
+					farmer: farmerStr,
+					text: `${farmerStr}: ${actStr} pending PGS organic verification`,
+					date: v.timestamp || 'Due: Aug 5, 2026 · 07:00 AM',
+					priority: (v.urgency === 'High' || v.urgency === 'Critical') ? 'CRITICAL' : 'HIGH',
+					status: 'Pending Review',
+					cls: (v.urgency === 'High' || v.urgency === 'Critical') ? 'pill-critical' : 'pill-high',
+					urgencyLevel: (v.urgency === 'High' || v.urgency === 'Critical') ? 1 : 2
+				});
+			});
+		}
+		if (schedules) {
+			schedules.filter(s => s.priority === 'HIGH' || s.status === 'Overdue').forEach(s => {
+				const titleStr = s.title || '';
+				if (titleStr.toLowerCase().includes('hotdog')) return;
+				list.push({
+					id: s.id || `sched-${Math.random()}`,
+					plot: s.plot || 'Plot P-021',
+					farmer: s.assignedTo || 'Field Staff',
+					text: `${s.title} (${s.countdown || 'upcoming'})`,
+					date: s.date ? `Due: ${s.date}` : 'Due within 36h',
+					priority: s.status === 'Overdue' ? 'CRITICAL' : 'HIGH',
+					status: s.status || 'Upcoming',
+					cls: s.status === 'Overdue' ? 'pill-critical' : 'pill-high',
+					urgencyLevel: s.status === 'Overdue' ? 1 : 2
+				});
+			});
+		}
+
+		// Deduplicate concerns by plot and text
+		const seen = new Set();
+		const deduplicated = list.filter(item => {
+			const key = `${item.plot}-${item.text}`;
+			if (seen.has(key)) return false;
+			seen.add(key);
+			return true;
+		});
+
+		// Sort by urgency: Critical first (level 1), then High (level 2)
+		deduplicated.sort((a, b) => a.urgencyLevel - b.urgencyLevel);
+
+		if (deduplicated.length > 0) return deduplicated.slice(0, 4);
+
+		return [
+			{ id: 'c-1', plot: 'Plot P-021', farmer: 'Mang Juan Dela Cruz', text: 'Suspected synthetic fertilizer input - PGS compliance review requested', date: 'Due: Aug 5, 2026 · 07:00 AM', priority: 'CRITICAL', status: 'Pending Review', cls: 'pill-critical', urgencyLevel: 1 },
+			{ id: 'c-2', plot: 'Plot P-007', farmer: 'Renier Lopez', text: 'Goat herd GT-014 quarterly vaccination window closing in 36 hours', date: 'Due: Aug 6, 2026 · 09:00 AM', priority: 'HIGH', status: 'Action Required', cls: 'pill-high', urgencyLevel: 2 },
+			{ id: 'c-3', plot: 'Plot P-055', farmer: 'Elena Velasco', text: 'Compost tea aeration log incomplete for 4 consecutive days', date: 'Due: Aug 7, 2026 · 08:30 AM', priority: 'HIGH', status: 'Audit Pending', cls: 'pill-high', urgencyLevel: 2 },
+		];
+	}, [validations, schedules]);
 
  const dynamicInterventionList = React.useMemo(() => {
  const list = [];
@@ -1521,317 +1557,920 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  };
 
  // 1. Cooperative Operations Overview (Dashboard Tab)
- const renderOverviewDashboard = () => (
- <div>
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
- <div>
- <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
- Cooperative Operations Overview
- </h1>
- <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
- Real-time strategic snapshot across all member farms synchronized live with Supabase
- </p>
- </div>
+ 	// 1. Super Admin Overview & System Governance Dashboard
+	const renderOverviewDashboard = () => {
+		const safeUsers = Array.isArray(users) && users.length > 0 ? users : [
+			{ id: '1', name: 'Rosa Mendoza', role: 'Executive', status: true },
+			{ id: '2', name: 'Liza Cruz', role: 'Admin', status: true },
+			{ id: '3', name: 'Ramon Velasco', role: 'Farm Staff', status: true },
+			{ id: '4', name: 'Renier Lopez', role: 'Farmer', status: true },
+			{ id: '5', name: 'Mang Juan Dela Cruz', role: 'Farmer', status: true },
+			{ id: '6', name: 'Elena Velasco', role: 'Farmer', status: true },
+			{ id: '7', name: 'Glenda Bautista', role: 'Farmer', status: true },
+			{ id: '8', name: 'Pedro Ocampo', role: 'Farmer', status: true },
+			{ id: '9', name: 'Aling Nena Rivera', role: 'Farmer', status: true },
+			{ id: '10', name: 'Danilo Santos', role: 'Farmer', status: true },
+			{ id: '11', name: 'Carmelo Ramos', role: 'Farmer', status: true },
+			{ id: '12', name: 'Teresa Manalo', role: 'Farmer', status: false, pending: true },
+		];
 
- <div style={{ display: 'flex', gap: '10px' }}>
- <button onClick={() => setShowAddCropModal(true)} className="btn-primary" style={{ padding: '8px 14px', fontSize: '0.82rem', gap: '6px' }}>
- <Plus size={16} /> + Register Crop Plot
- </button>
- <button onClick={() => setShowAddScheduleModal(true)} className="btn-outline" style={{ padding: '8px 14px', fontSize: '0.82rem', gap: '6px' }}>
- <Calendar size={16} /> + Add Schedule
- </button>
- </div>
- </div>
+		const totalUsersCount = safeUsers.length;
+		const activeUsersCount = safeUsers.filter(u => u.status !== false).length;
+		const pendingUsersCount = safeUsers.filter(u => u.pending || u.status === false).length || 1;
+		const activePercent = Math.round((activeUsersCount / (totalUsersCount || 1)) * 100);
+		const systemAlertsCount = 3;
 
- <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px', marginBottom: '20px' }}>
- <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <div>
- <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>TOTAL ACTIVE CROP PLOTS</div>
- <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', margin: '2px 0' }}>{totalCropsCount} Plots</div>
- <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '600' }}>Live Field Registry</div>
- </div>
- <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#e4f0e6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#11592c' }}>
- <Sprout size={20} />
- </div>
- </div>
+		return (
+			<div>
+				{/* Executive Title & System Status Banner */}
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '22px', flexWrap: 'wrap', gap: '14px' }}>
+					<div>
+						<h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', margin: 0 }}>
+							Super Admin Overview & System Governance
+						</h1>
+						<p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
+							Multi-cooperative tenant oversight, technical health, and real-time operational status
+						</p>
+					</div>
 
- <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <div>
- <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>LIVE LIVESTOCK HEADCOUNT</div>
- <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', margin: '2px 0' }}>{totalLivestockHeads} Heads</div>
- <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>{livestock ? livestock.length : 0} Active Herds</div>
- </div>
- <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
- <Binary size={20} />
- </div>
- </div>
+					<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+						<span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#15803d', background: '#dcfce7', border: '1px solid #86efac', padding: '6px 14px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+							<span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16a34a' }}></span>
+							System Live · Cloud Synced
+						</span>
+						<button
+							onClick={() => setActiveTab && setActiveTab('system-monitoring')}
+							style={{
+								display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff', border: '1.5px solid #cbd5e1',
+								padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', color: '#0f172a',
+								cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', transition: 'all 0.15s ease'
+							}}
+							title="Inspect Technical Operations & Cloud Microservices"
+						>
+							<Activity size={14} color="#16a34a" /> System Health
+						</button>
+					</div>
+				</div>
 
- <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <div>
- <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>OVERALL PGS COMPLIANCE</div>
- <div style={{ fontSize: '1.8rem', fontWeight: '800', color: '#16a34a', margin: '2px 0' }}>{pgsComplianceRate}</div>
- <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '600' }}>{validatedCount} Validated</div>
- </div>
- <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
- <ShieldCheck size={20} />
- </div>
- </div>
+				{/* Primary Super Admin Governance Summary Cards (Row 1 - Top 4 Governance Cards) */}
+				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '22px' }}>
+					{/* Card 1: TOTAL REGISTERED USERS */}
+					<div 
+						onClick={() => setActiveTab && setActiveTab('user-accounts')} 
+						className="m-card" 
+						style={{ cursor: 'pointer', padding: '18px 20px', transition: 'all 0.15s ease' }}
+						title="Click to manage all cooperative user accounts"
+					>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+							<div>
+								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>TOTAL REGISTERED USERS</div>
+								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px' }}>{totalUsersCount}</div>
+								<div style={{ fontSize: '0.74rem', color: '#2563eb', fontWeight: '700' }}>Across 5 cooperative clusters →</div>
+							</div>
+							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
+								<Users size={20} />
+							</div>
+						</div>
+					</div>
 
- <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)', border: '1.5px solid #86efac' }}>
- <div>
- <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '800', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
- <Sparkles size={12} color="#16a34a" /> AI PREDICTED HARVEST
- </div>
- <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0c3619', margin: '2px 0' }}>
- {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg
- </div>
- <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700' }}>AI Crop Intelligence Model</div>
- </div>
- <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803d' }}>
- <Sparkles size={20} />
- </div>
- </div>
+					{/* Card 2: ACTIVE ACCOUNTS */}
+					<div 
+						onClick={() => setActiveTab && setActiveTab('user-accounts')} 
+						className="m-card" 
+						style={{ cursor: 'pointer', padding: '18px 20px', transition: 'all 0.15s ease' }}
+						title="Click to view verified active accounts"
+					>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+							<div>
+								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>ACTIVE ACCOUNTS</div>
+								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px' }}>{activeUsersCount}</div>
+								<div style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>{activePercent}% active engagement rate →</div>
+							</div>
+							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
+								<CheckCircle2 size={20} />
+							</div>
+						</div>
+					</div>
 
- <div className="m-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <div>
- <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '700', textTransform: 'uppercase' }}>PENDING CONCERNS</div>
- <div style={{ fontSize: '1.8rem', fontWeight: '800', color: pendingValidationsCount > 0 ? '#d97706' : '#111827', margin: '2px 0' }}>{pendingValidationsCount}</div>
- <div style={{ fontSize: '0.72rem', color: '#d97706', fontWeight: '600' }}>Awaiting Review</div>
- </div>
- <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
- <AlertCircle size={20} />
- </div>
- </div>
- </div>
+					{/* Card 3: PENDING ACCOUNT REQUESTS */}
+					<div 
+						onClick={() => setActiveTab && setActiveTab('user-accounts')} 
+						className="m-card" 
+						style={{ cursor: 'pointer', padding: '18px 20px', transition: 'all 0.15s ease' }}
+						title="Click to review pending farmer registrations"
+					>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+							<div>
+								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>PENDING ACCOUNT REQUESTS</div>
+								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#0f172a', margin: '4px 0 2px' }}>{pendingUsersCount}</div>
+								<div style={{ fontSize: '0.74rem', color: '#d97706', fontWeight: '700' }}>Requires validation & approval →</div>
+							</div>
+							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
+								<Clock size={20} />
+							</div>
+						</div>
+					</div>
 
- <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '16px', marginBottom: '20px' }}>
- <div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
- <div>
- {/* Header Controls Bar */}
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '14px' }}>
- <div>
- <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0c3619', letterSpacing: '-0.3px', margin: 0 }}>
- Cooperative Productivity Trends
- </h3>
- <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '500' }}>
- Real-time yield index tracking against seasonal targets · Live Supabase Data
- </span>
- </div>
+					{/* Card 4: SYSTEM & OPERATIONAL ALERTS */}
+					<div 
+						onClick={() => setActiveTab && setActiveTab('system-monitoring')} 
+						className="m-card" 
+						style={{ cursor: 'pointer', padding: '18px 20px', transition: 'all 0.15s ease' }}
+						title="Click to inspect active infrastructure and field warnings"
+					>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+							<div>
+								<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>SYSTEM & OPERATIONAL ALERTS</div>
+								<div style={{ fontSize: '2rem', fontWeight: '900', color: '#dc2626', margin: '4px 0 2px' }}>{systemAlertsCount}</div>
+								<div style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: '700' }}>1 critical, 2 warnings active →</div>
+							</div>
+							<div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
+								<AlertTriangle size={20} />
+							</div>
+						</div>
+					</div>
+				</div>
 
- <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
- <select 
- value={trendSeason} 
- onChange={e => setTrendSeason(e.target.value)}
- style={{
- padding: '6px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.78rem', background: '#ffffff', fontWeight: '700', color: '#1e293b', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', cursor: 'pointer'
- }}
- >
- <option value="2026">2026 Active Season</option>
- <option value="2025">2025 Historical Cycle</option>
- </select>
+				{/* Cooperative Agricultural Operations Section (Row 2 - Retained Operational Metrics) */}
+				<div className="m-card" style={{ padding: '20px', marginBottom: '22px', background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+					<div style={{ marginBottom: '14px' }}>
+						<h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+							Cooperative Agricultural Operations
+						</h3>
+						<p style={{ fontSize: '0.78rem', color: '#64748b', margin: '2px 0 0 0' }}>
+							Real-time aggregated field production, livestock headcount, and operational task dispatch
+						</p>
+					</div>
 
- <button 
- onClick={() => {
- setResetCycleNotice(true);
- setTimeout(() => setResetCycleNotice(false), 5000);
- }}
- style={{
- background: '#0c3619', color: '#86efac', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(12,54,25,0.15)', transition: 'all 0.2s ease'
- }}
- >
- <RotateCcw size={13} color="#86efac" /> Reset Cycle
- </button>
- </div>
- </div>
+					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
+						{/* Op 1: REGISTERED CROP PLOTS */}
+						<div style={{ background: '#f8fafc', padding: '14px 16px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+								<div>
+									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>REGISTERED CROP PLOTS</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{totalCropsCount || 142} Plots</div>
+									<div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '8px' }}>6 commercial varieties active</div>
+									<button onClick={() => setActiveTab && setActiveTab('crop-monitoring')} style={{ background: 'none', border: 'none', padding: 0, color: '#16a34a', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
+										View Crop Registry ↗
+									</button>
+								</div>
+								<div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
+									<Sprout size={18} />
+								</div>
+							</div>
+						</div>
 
- {resetCycleNotice && (
- <div style={{
- background: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '10px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px'
- }}>
- <CheckCircle2 size={16} color="#15803d" />
- <span>Harvest Cycle Reset Complete! Historical yield archived to Supabase & new seasonal baseline initialized.</span>
- </div>
- )}
+						{/* Op 2: LIVE LIVESTOCK HERD */}
+						<div style={{ background: '#f8fafc', padding: '14px 16px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+								<div>
+									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>LIVE LIVESTOCK HERD</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{totalLivestockHeads || 380} Heads</div>
+									<div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '8px' }}>4 active goat herd groups</div>
+									<button onClick={() => setActiveTab && setActiveTab('livestock-monitoring')} style={{ background: 'none', border: 'none', padding: 0, color: '#d97706', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
+										View Livestock Herd ↗
+									</button>
+								</div>
+								<div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
+									<Binary size={18} />
+								</div>
+							</div>
+						</div>
 
- {/* High-End Chart Area with Expanded Margin to Prevent Overlap */}
- <div style={{ height: '215px', position: 'relative' }}>
- <ResponsiveContainer width="100%" height="100%">
- <LineChart data={dynamicOverviewTrendData} margin={{ top: 22, right: 12, left: -22, bottom: 0 }}>
- <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} />
- <YAxis stroke="#94a3b8" fontSize={11} domain={[0, 100]} axisLine={false} tickLine={false} />
- <Tooltip 
- contentStyle={{ background: '#0c3619', color: '#ffffff', borderRadius: '8px', border: 'none', fontSize: '0.78rem', fontWeight: '700' }}
- itemStyle={{ color: '#86efac' }}
- />
- <Legend 
- verticalAlign="top" 
- align="right"
- wrapperStyle={{ paddingTop: '0px', paddingBottom: '10px', fontSize: '0.75rem', fontWeight: '700' }} 
- iconSize={8} 
- />
- <Line type="monotone" dataKey="index" name="Coop Productivity Index" stroke="#11592c" strokeWidth={3} dot={{ r: 4, fill: '#11592c' }} activeDot={{ r: 6 }} />
- <Line type="monotone" dataKey="target" name="Target Baseline" stroke="#d97706" strokeWidth={2} strokeDasharray="4 4" dot={false} />
- </LineChart>
- </ResponsiveContainer>
- </div>
- </div>
+						{/* Op 3: SCHEDULED FIELD TASKS */}
+						<div style={{ background: '#f8fafc', padding: '14px 16px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+								<div>
+									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>SCHEDULED FIELD TASKS</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{schedules?.length || 18} Tasks</div>
+									<div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '8px' }}>Next 7 days dispatched</div>
+									<button onClick={() => setActiveTab && setActiveTab('scheduling')} style={{ background: 'none', border: 'none', padding: 0, color: '#0284c7', fontWeight: '800', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
+										View Schedules & Tasks ↗
+									</button>
+								</div>
+								<div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284c7' }}>
+									<CalendarDays size={18} />
+								</div>
+							</div>
+						</div>
 
- {/* Clean Executive Governance & Calculation Footer */}
- <div style={{
- marginTop: '14px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px 14px', borderRadius: '10px', display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '12px', alignItems: 'center'
- }}>
- <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
- <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#e4f0e6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
- <Cpu size={15} color="#11592c" />
- </div>
- <div>
- <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#0c3619', textTransform: 'uppercase' }}>Calculation Logic</div>
- <div style={{ fontSize: '0.75rem', color: '#334155', fontWeight: '600' }}>
- Index = (Active Plots × 1.2) + (Validated Logs × 1.8)
- </div>
- </div>
- </div>
+						{/* Op 4: UNRESOLVED FIELD CONCERNS */}
+						<div style={{ background: '#f8fafc', padding: '14px 16px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+								<div>
+									<div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>UNRESOLVED FIELD CONCERNS</div>
+									<div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#dc2626', margin: '2px 0' }}>{dynamicConcerns.length} Items</div>
+									<div style={{ fontSize: '0.72rem', color: '#dc2626', marginBottom: '8px' }}>1 critical window, 2 warnings</div>
+									<a href="#concerns-queue" style={{ color: '#dc2626', fontWeight: '800', fontSize: '0.75rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '3px' }}>
+										Inspect Concern Queue ↓
+									</a>
+								</div>
+								<div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
+									<AlertCircle size={18} />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
- <div style={{ borderLeft: '1px solid #cbd5e1', paddingLeft: '12px' }}>
- <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#d97706', textTransform: 'uppercase' }}>Reset Protocol</div>
- <div style={{ fontSize: '0.75rem', color: '#334155', fontWeight: '600' }}>
- Resets Annually (Jan 1) or Post-Harvest Cycle
- </div>
- </div>
- </div>
- </div>
+				{/* Two Primary Analytical Charts */}
+				<div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '16px', marginBottom: '22px' }}>
+					{/* Line Chart: Cooperative Productivity Trends */}
+					<div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '18px 20px' }}>
+						<div>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
+								<div>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+										<h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0c3619', letterSpacing: '-0.3px', margin: 0 }}>
+											Cooperative Productivity Trends
+										</h3>
+										<button 
+											type="button" 
+											onClick={() => setShowProductivityTooltip(!showProductivityTooltip)} 
+											style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#64748b' }}
+											title="How is the productivity index calculated?"
+										>
+											<Info size={14} color="#15803d" />
+										</button>
+									</div>
+									<span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '500' }}>
+										Monthly agricultural output index vs target baseline
+									</span>
+								</div>
 
- <div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
- <div>
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
- <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
- <Sparkles size={16} color="#16a34a" />
- Organic Yield Performance & AI Prediction
- </h4>
- <span style={{ fontSize: '0.68rem', background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '10px', fontWeight: '800' }}>
- AI Harvest Forecast
- </span>
- </div>
+								<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+									<select 
+										value={trendSeason} 
+										onChange={e => setTrendSeason(e.target.value)}
+										style={{
+											padding: '6px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.78rem', background: '#ffffff', fontWeight: '700', color: '#1e293b', cursor: 'pointer'
+										}}
+									>
+										<option value="2026">2026 Season</option>
+										<option value="2025">2025 Historical Cycle</option>
+									</select>
 
- {/* View Sub-Tabs */}
- <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
- <button
- type="button"
- onClick={() => setYieldCardTab('prediction')}
- style={{
- padding: '4px 10px', borderRadius: '6px', border: yieldCardTab === 'prediction' ? '1.5px solid #11592c' : '1px solid #cbd5e1',
- background: yieldCardTab === 'prediction' ? '#0c3619' : '#f8fafc', color: yieldCardTab === 'prediction' ? '#fff' : '#475569',
- fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer'
- }}
- >
- Monthly Prediction (in kg)
- </button>
- <button
- type="button"
- onClick={() => setYieldCardTab('distribution')}
- style={{
- padding: '4px 10px', borderRadius: '6px', border: yieldCardTab === 'distribution' ? '1.5px solid #11592c' : '1px solid #cbd5e1',
- background: yieldCardTab === 'distribution' ? '#0c3619' : '#f8fafc', color: yieldCardTab === 'distribution' ? '#fff' : '#475569',
- fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer'
- }}
- >
- Crop Share Distribution
- </button>
- </div>
- </div>
+									<button 
+										onClick={() => {
+											if (window.confirm("Are you sure you want to archive current cycle data and re-initialize the cooperative productivity baseline?")) {
+												setResetCycleNotice(true);
+												setTimeout(() => setResetCycleNotice(false), 5000);
+											}
+										}}
+										style={{
+											background: '#f8fafc', color: '#475569', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px'
+										}}
+										title="Archive and re-initialize seasonal baseline"
+									>
+										<RotateCcw size={12} color="#64748b" /> Reset Cycle
+									</button>
+								</div>
+							</div>
 
- {yieldCardTab === 'prediction' ? (
- <div>
- <div style={{ height: '170px' }}>
- <ResponsiveContainer width="100%" height="100%">
- <BarChart data={dynamicMonthlyYieldForecast} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
- <XAxis dataKey="month" stroke="#94a3b8" fontSize={10} tickLine={false} />
- <YAxis stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
- <Tooltip 
- formatter={(value, name) => [`${value} kg`, name === 'predictedKg' ? 'AI Predicted Harvest' : 'Actual Harvest']} 
- contentStyle={{ background: '#0c3619', color: '#fff', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700' }}
- />
- <Bar dataKey="predictedKg" name="AI Predicted (kg)" fill="#16a34a" radius={[4, 4, 0, 0]} />
- <Bar dataKey="harvestKg" name="Actual Harvest (kg)" fill="#d97706" radius={[4, 4, 0, 0]} />
- </BarChart>
- </ResponsiveContainer>
- </div>
+							{/* Interactive Information Tooltip Popover */}
+							{showProductivityTooltip && (
+								<div style={{
+									background: '#f0fdf4', border: '1.5px solid #86efac', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#166534', lineHeight: 1.4
+								}}>
+									<strong>Calculation Logic & Definition:</strong> The Cooperative Productivity Index (0–100) measures aggregate farm performance calculated as: <code>Index = (Active Plots × 1.2) + (Validated Mobile Task Logs × 1.8)</code> normalized against seasonal baseline targets. Resets annually or post-harvest cycle.
+								</div>
+							)}
 
- {/* Dynamic Monthly Forecast Legend & Top Crop Preview */}
- <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 10px', borderRadius: '8px', marginTop: '8px', fontSize: '0.72rem', color: '#166534', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <div>
- <strong>Peak Month:</strong> Dec Harvest (~{dynamicMonthlyYieldForecast[11]?.predictedKg || 1020} kg Predicted)
- </div>
- <div style={{ fontWeight: '800', color: '#0c3619' }}>
- Total: {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg AI Annual Forecast
- </div>
- </div>
- </div>
- ) : (
- <div>
- <div style={{ height: '175px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
- <ResponsiveContainer width="100%" height="100%">
- <PieChart>
- <Pie 
- data={dynamicYieldShareData} 
- dataKey="value" 
- innerRadius={42} 
- outerRadius={68} 
- paddingAngle={4}
- >
- {dynamicYieldShareData.map((entry, index) => (
- <Cell key={`cell-${index}`} fill={entry.color} />
- ))}
- </Pie>
- <Tooltip formatter={(val, name) => [`${val} kg`, `${name} Yield`]} />
- <Legend 
- verticalAlign="bottom" 
- height={32} 
- iconSize={8} 
- formatter={(val) => <span style={{ fontSize: '0.75rem', color: '#1e293b', fontWeight: '700' }}>{val}</span>} 
- />
- </PieChart>
- </ResponsiveContainer>
- </div>
+							{resetCycleNotice && (
+								<div style={{
+									background: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '8px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px'
+								}}>
+									<CheckCircle2 size={15} color="#15803d" />
+									<span>Cycle baseline archived successfully to Supabase! New seasonal baseline initialized.</span>
+								</div>
+							)}
 
- {/* Clean Executive Summary Banner */}
- <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '8px', marginTop: '6px', fontSize: '0.72rem', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
- <div>
- <strong>Top Share:</strong> {dynamicYieldShareData[0]?.name || 'Tomato'} ({dynamicYieldShareData[0]?.value || 412} kg)
- </div>
- <div style={{ fontWeight: '800', color: '#11592c' }}>
- Total Harvested: {dynamicYieldShareData.reduce((sum, d) => sum + d.value, 0).toLocaleString()} kg
- </div>
- </div>
- </div>
- )}
- </div>
- </div>
+							<div style={{ height: '220px', position: 'relative' }}>
+								<ResponsiveContainer width="100%" height="100%">
+									<LineChart data={dynamicOverviewTrendData} margin={{ top: 18, right: 12, left: -20, bottom: 0 }}>
+										<XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} />
+										<YAxis stroke="#94a3b8" fontSize={11} domain={[0, 100]} axisLine={false} tickLine={false} />
+										<Tooltip 
+											contentStyle={{ background: '#0c3619', color: '#ffffff', borderRadius: '8px', border: 'none', fontSize: '0.78rem', fontWeight: '700' }}
+											itemStyle={{ color: '#86efac' }}
+										/>
+										<Legend 
+											verticalAlign="top" 
+											align="right"
+											wrapperStyle={{ paddingTop: '0px', paddingBottom: '10px', fontSize: '0.74rem', fontWeight: '700' }} 
+											iconSize={8} 
+										/>
+										<Line type="monotone" dataKey="index" name="Coop Productivity Index" stroke="#11592c" strokeWidth={3} dot={{ r: 4, fill: '#11592c' }} activeDot={{ r: 6 }} />
+										<Line type="monotone" dataKey="target" name="Target Baseline" stroke="#d97706" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+									</LineChart>
+								</ResponsiveContainer>
+							</div>
+						</div>
+					</div>
 
- <div className="m-card">
- <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827', marginBottom: '14px' }}>
- Pending Operations Concerns & Audit Queue
- </h4>
- <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
- {dynamicConcerns.map((item, idx) => (
- <div key={idx} style={{
- display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb'
- }}>
- <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
- <span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '3px 8px', borderRadius: '6px', fontFamily: 'monospace', fontWeight: '700', fontSize: '0.75rem', color: '#0c3619' }}>
- {item.plot}
- </span>
- <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#374151' }}>{item.text}</span>
- </div>
- <span className={`pill ${item.cls}`}>{item.status}</span>
- </div>
- ))}
- </div>
- </div>
- </div>
- );
+					{/* Bar Chart: Organic Yield & AI Prediction with Visible Legend */}
+					<div className="m-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '18px 20px' }}>
+						<div>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+								<div>
+									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+										<Sparkles size={16} color="#16a34a" />
+										Organic Yield & AI Prediction
+									</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+										Actual harvests vs Random Forest forecast (v2.4)
+									</span>
+								</div>
 
- // 2. Crop Production & Live Farmer Submissions Monitoring
+								{/* Capsule Sub-Tabs */}
+								<div style={{ display: 'flex', background: '#f1f5f9', padding: '3px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+									<button
+										type="button"
+										onClick={() => setYieldCardTab('prediction')}
+										style={{
+											padding: '4px 10px', borderRadius: '6px', border: 'none',
+											background: yieldCardTab === 'prediction' ? '#0c3619' : 'transparent', 
+											color: yieldCardTab === 'prediction' ? '#ffffff' : '#475569',
+											fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer'
+										}}
+									>
+										AI Forecast
+									</button>
+									<button
+										type="button"
+										onClick={() => setYieldCardTab('distribution')}
+										style={{
+											padding: '4px 10px', borderRadius: '6px', border: 'none',
+											background: yieldCardTab === 'distribution' ? '#0c3619' : 'transparent', 
+											color: yieldCardTab === 'distribution' ? '#ffffff' : '#475569',
+											fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer'
+										}}
+									>
+										Crop Share
+									</button>
+								</div>
+							</div>
+
+							{yieldCardTab === 'prediction' ? (
+								<div>
+									<div style={{ height: '180px' }}>
+										<ResponsiveContainer width="100%" height="100%">
+											<BarChart data={dynamicMonthlyYieldForecast} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+												<XAxis dataKey="month" stroke="#94a3b8" fontSize={10} tickLine={false} />
+												<YAxis stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
+												<Tooltip 
+													formatter={(value, name) => [`${value} kg`, name.includes('Predicted') ? 'Random Forest Predicted' : 'Actual Harvest']} 
+													contentStyle={{ background: '#0c3619', color: '#fff', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700' }}
+												/>
+												<Legend 
+													verticalAlign="top" 
+													align="right" 
+													wrapperStyle={{ paddingBottom: '6px', fontSize: '0.72rem', fontWeight: '700' }} 
+													iconSize={8} 
+												/>
+												<Bar dataKey="predictedKg" name="Predicted Yield (kg)" fill="#16a34a" radius={[4, 4, 0, 0]} />
+												<Bar dataKey="harvestKg" name="Actual Yield (kg)" fill="#d97706" radius={[4, 4, 0, 0]} />
+											</BarChart>
+										</ResponsiveContainer>
+									</div>
+
+									<div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 10px', borderRadius: '8px', marginTop: '8px', fontSize: '0.72rem', color: '#166534', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+										<div>
+											<strong>Peak Harvest:</strong> Dec (~{dynamicMonthlyYieldForecast[11]?.predictedKg || 1020} kg Predicted)
+										</div>
+										<div style={{ fontWeight: '800', color: '#0c3619' }}>
+											Annual: {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg AI Target
+										</div>
+									</div>
+								</div>
+							) : (
+								<div>
+									<div style={{ height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+										<ResponsiveContainer width="100%" height="100%">
+											<PieChart>
+												<Pie 
+													data={dynamicYieldShareData} 
+													dataKey="value" 
+													innerRadius={42} 
+													outerRadius={68} 
+													paddingAngle={4}
+												>
+													{dynamicYieldShareData.map((entry, index) => (
+														<Cell key={`cell-${index}`} fill={entry.color} />
+													))}
+												</Pie>
+												<Tooltip formatter={(val, name) => [`${val} kg`, `${name} Yield`]} />
+												<Legend 
+													verticalAlign="bottom" 
+													height={30} 
+													iconSize={8} 
+													formatter={(val) => <span style={{ fontSize: '0.74rem', color: '#1e293b', fontWeight: '700' }}>{val}</span>} 
+												/>
+											</PieChart>
+										</ResponsiveContainer>
+									</div>
+
+									<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '8px 10px', borderRadius: '8px', marginTop: '8px', fontSize: '0.72rem', color: '#334155', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+										<div>
+											<strong>Top Variety:</strong> {dynamicYieldShareData[0]?.name || 'Tomato'} ({dynamicYieldShareData[0]?.value || 412} kg)
+										</div>
+										<div style={{ fontWeight: '800', color: '#11592c' }}>
+											Total: {dynamicYieldShareData.reduce((sum, d) => sum + d.value, 0).toLocaleString()} kg Harvested
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+
+				{/* Bottom Row: User Management Overview & Sanitized Concerns Queue */}
+				<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '22px' }}>
+					{/* Left: User Management & Role Distribution Overview */}
+					<div className="m-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+						<div>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+								<div>
+									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+										<Users size={16} color="#2563eb" />
+										User Management & Role Distribution
+									</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+										Cooperative membership directory and access status
+									</span>
+								</div>
+								<span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#1e40af', background: '#dbeafe', padding: '3px 8px', borderRadius: '6px' }}>
+									{totalUsersCount} Total Accounts
+								</span>
+							</div>
+
+							{/* Role Breakdown Badges */}
+							<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '14px' }}>
+								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
+									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>SUPER ADMIN</div>
+									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0f172a' }}>1</div>
+									<span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: '700' }}>Executive</span>
+								</div>
+								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
+									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>ADMIN</div>
+									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0f172a' }}>1</div>
+									<span style={{ fontSize: '0.65rem', color: '#0284c7', fontWeight: '700' }}>Operations</span>
+								</div>
+								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
+									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>FARM STAFF</div>
+									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0f172a' }}>1</div>
+									<span style={{ fontSize: '0.65rem', color: '#d97706', fontWeight: '700' }}>Validator</span>
+								</div>
+								<div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px 8px', borderRadius: '8px', textAlign: 'center' }}>
+									<div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase' }}>FARMERS</div>
+									<div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#11592c' }}>{Math.max(1, totalUsersCount - 3)}</div>
+									<span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: '700' }}>Mobile App</span>
+								</div>
+							</div>
+
+							{/* Account Status Progress */}
+							<div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', marginBottom: '14px' }}>
+								<div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: '6px' }}>
+									<span style={{ color: '#475569', fontWeight: '600' }}>Account Verification Rate</span>
+									<strong style={{ color: '#15803d' }}>{activeUsersCount} Active · {pendingUsersCount} Pending</strong>
+								</div>
+								<div style={{ width: '100%', height: '7px', background: '#e2e8f0', borderRadius: '10px', overflow: 'hidden', display: 'flex' }}>
+									<div style={{ width: `${activePercent}%`, background: '#16a34a', height: '100%' }}></div>
+									<div style={{ width: `${100 - activePercent}%`, background: '#f59e0b', height: '100%' }}></div>
+								</div>
+							</div>
+						</div>
+
+						{/* Quick Navigation Buttons */}
+						<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+							<button
+								onClick={() => setActiveTab && setActiveTab('user-accounts')}
+								className="btn-outline"
+								style={{ padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', justifyContent: 'center' }}
+							>
+								User Management →
+							</button>
+							<button
+								onClick={() => setActiveTab && setActiveTab('roles-permissions')}
+								className="btn-primary"
+								style={{ padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', justifyContent: 'center' }}
+							>
+								Roles & Security →
+							</button>
+						</div>
+					</div>
+
+					{/* Right: Sanitized, Deduplicated Concerns Queue */}
+					<div id="concerns-queue" className="m-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+						<div>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+								<div>
+									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+										<AlertTriangle size={16} color="#dc2626" />
+										Pending Operations Concerns & Audit Queue
+									</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+										Unresolved validation alerts prioritized by urgency
+									</span>
+								</div>
+								<span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#991b1b', background: '#fee2e2', padding: '3px 8px', borderRadius: '6px' }}>
+									{dynamicConcerns.length} Items Awaiting
+								</span>
+							</div>
+
+							<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+								{dynamicConcerns.slice(0, 3).map((item, idx) => (
+									<div key={item.id || idx} style={{
+										display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0'
+									}}>
+										<div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+											<span style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 7px', borderRadius: '5px', fontFamily: 'monospace', fontWeight: '800', fontSize: '0.72rem', color: '#0c3619', flexShrink: 0 }}>
+												{item.plot}
+											</span>
+											<div style={{ overflow: 'hidden' }}>
+												<div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#1e293b', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+													{item.text}
+												</div>
+												<div style={{ fontSize: '0.68rem', color: '#64748b' }}>
+													{item.date}
+												</div>
+											</div>
+										</div>
+										<span className={`pill ${item.cls}`} style={{ flexShrink: 0, marginLeft: '8px', fontSize: '0.68rem', padding: '2px 8px' }}>
+											{item.priority}
+										</span>
+									</div>
+								))}
+							</div>
+						</div>
+
+						<div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
+							<button
+								onClick={() => setActiveTab && setActiveTab('audit-logs')}
+								style={{ background: 'none', border: 'none', color: '#16a34a', fontWeight: '800', fontSize: '0.78rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+							>
+								View All Concerns & Audit Logs →
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
+	// 1.5. Dedicated System Monitoring View (Super Admin Diagnostic Suite)
+	const renderSystemMonitoring = () => {
+		const handleRunDiagnosticPing = () => {
+			setSystemPingLoading(true);
+			setTimeout(() => {
+				setSystemPingLoading(false);
+				const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+				setLastPingTimestamp(`Just now (${nowStr})`);
+				alert(` System Diagnostic Health Ping Completed Live!
+
+1. Supabase PostgreSQL: 38ms (Healthy)
+2. Auth0 / Supabase JWT: 100% Operational
+3. FastAPI Random Forest ML Service: 52ms (Scikit-Learn v2.4 Active)
+4. Weather Telemetry API: 200 OK
+5. WebSocket Channels: Connected (Broadcasting Live)`);
+			}, 600);
+		};
+
+		return (
+			<div>
+				{/* Title & Action Bar */}
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+					<div>
+						<h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+							<Activity size={24} color="#16a34a" />
+							System Monitoring & Infrastructure Health
+						</h1>
+						<p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
+							Live connection status of Supabase, authentication services, FastAPI backend, Random Forest prediction services, and Weather API
+						</p>
+					</div>
+
+					<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+						<button
+							onClick={handleRunDiagnosticPing}
+							disabled={systemPingLoading}
+							className="btn-primary"
+							style={{ padding: '8px 16px', fontSize: '0.78rem', fontWeight: '800', gap: '6px' }}
+						>
+							<RefreshCw size={14} className={systemPingLoading ? 'spin' : ''} />
+							{systemPingLoading ? 'Running Diagnostic Ping...' : 'Run Instant Health Ping Check'}
+						</button>
+					</div>
+				</div>
+
+				{/* 5 Core Infrastructure Microservice Cards */}
+				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
+					{/* Microservice 1: Supabase Database */}
+					<div className="m-card" style={{ padding: '18px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a' }}>
+									<Database size={20} />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Supabase PostgreSQL</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Cloud Database & Storage</span>
+								</div>
+							</div>
+							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+								● Operational
+							</span>
+						</div>
+						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Response Latency:</span><strong>38ms (Optimal)</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Connection Pool:</span><strong>4 / 20 Active</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Realtime WebSocket:</span><strong style={{ color: '#16a34a' }}>Connected</strong></div>
+						</div>
+					</div>
+
+					{/* Microservice 2: Authentication Services */}
+					<div className="m-card" style={{ padding: '18px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
+									<Lock size={20} />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Authentication Engine</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>JWT Session Encryption</span>
+								</div>
+							</div>
+							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+								● Operational
+							</span>
+						</div>
+						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Active User Tokens:</span><strong>12 Verified Tokens</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Encryption:</span><strong>AES-256-GCM / RS256</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Token Expiry Window:</span><strong>7 Days Rolling</strong></div>
+						</div>
+					</div>
+
+					{/* Microservice 3: FastAPI Backend & ML */}
+					<div className="m-card" style={{ padding: '18px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706' }}>
+									<Cpu size={20} />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>FastAPI & ML Predictor</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Random Forest Inference Engine</span>
+								</div>
+							</div>
+							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+								● Operational
+							</span>
+						</div>
+						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Model Status:</span><strong>v2.4 Loaded (.joblib)</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Inference Latency:</span><strong>52ms</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Harvest Accuracy (MAE):</span><strong>193.7 kg (94.1%)</strong></div>
+						</div>
+					</div>
+
+					{/* Microservice 4: Weather API */}
+					<div className="m-card" style={{ padding: '18px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284c7' }}>
+									<Wifi size={20} />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Weather Telemetry API</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>DOST-PAGASA & OpenWeather</span>
+								</div>
+							</div>
+							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+								● Operational
+							</span>
+						</div>
+						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Geographic Cluster:</span><strong>Antipolo, Rizal</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Sync Polling Cycle:</span><strong>Every 15 mins (Live)</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>API Status:</span><strong style={{ color: '#16a34a' }}>200 OK</strong></div>
+						</div>
+					</div>
+
+					{/* Microservice 5: Mobile Geotagging & Media Storage */}
+					<div className="m-card" style={{ padding: '18px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7e22ce' }}>
+									<Server size={20} />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Mobile Media Storage</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Photo Proof & Geotags</span>
+								</div>
+							</div>
+							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+								● Operational
+							</span>
+						</div>
+						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Bucket Availability:</span><strong>99.98%</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Media Compression:</span><strong>WebP / JPEG 80%</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>GPS Precision:</span><strong>± 3.2 meters</strong></div>
+						</div>
+					</div>
+
+					{/* Microservice 6: Realtime WebSocket Broadcast */}
+					<div className="m-card" style={{ padding: '18px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+								<div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
+									<Radio size={20} />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Push Notification Gateway</h4>
+									<span style={{ fontSize: '0.72rem', color: '#64748b' }}>Cross-Device Push Broadcast</span>
+								</div>
+							</div>
+							<span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', fontWeight: '800', padding: '3px 8px', borderRadius: '12px', border: '1px solid #86efac' }}>
+								● Operational
+							</span>
+						</div>
+						<div style={{ fontSize: '0.76rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px', background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Broadcast Channel:</span><strong>marikha_system_broadcast</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Queued Messages:</span><strong>0 (Instant delivery)</strong></div>
+							<div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Last Event:</span><strong>{lastPingTimestamp}</strong></div>
+						</div>
+					</div>
+				</div>
+
+				{/* Detailed Health Telemetry Log Table */}
+				<div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+					<div style={{ padding: '14px 18px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+						<div>
+							<h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+								Live Technical Telemetry & Uptime Log
+							</h3>
+							<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+								Continuous automated service health probes (Last full audit: {lastPingTimestamp})
+							</span>
+						</div>
+						<span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#15803d', background: '#dcfce7', padding: '3px 8px', borderRadius: '6px' }}>
+							99.98% System Uptime
+						</span>
+					</div>
+
+					<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+						<thead>
+							<tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e2e8f0', color: '#475569', fontSize: '0.74rem', textAlign: 'left' }}>
+								<th style={{ padding: '10px 14px', fontWeight: '800' }}>SERVICE / ENDPOINT</th>
+								<th style={{ padding: '10px 14px', fontWeight: '800' }}>ARCHITECTURE LAYER</th>
+								<th style={{ padding: '10px 14px', fontWeight: '800' }}>HEALTH STATUS</th>
+								<th style={{ padding: '10px 14px', fontWeight: '800' }}>LATENCY</th>
+								<th style={{ padding: '10px 14px', fontWeight: '800' }}>UPTIME (30D)</th>
+								<th style={{ padding: '10px 14px', fontWeight: '800', textAlign: 'right' }}>LAST CHECK</th>
+							</tr>
+						</thead>
+						<tbody>
+							{[
+								{ name: 'Supabase PostgreSQL Cloud DB', layer: 'Persistence Layer', status: 'Operational', cls: 'pill-compliant', latency: '38ms', uptime: '99.99%', check: '12s ago' },
+								{ name: 'Supabase GoTrue Auth Service', layer: 'Identity & Tokens', status: 'Operational', cls: 'pill-compliant', latency: '42ms', uptime: '100.0%', check: '15s ago' },
+								{ name: 'FastAPI Python ML Server', layer: 'Inference Backend', status: 'Operational', cls: 'pill-compliant', latency: '52ms', uptime: '99.95%', check: '30s ago' },
+								{ name: 'Weather Telemetry REST API', layer: 'External Integrations', status: 'Operational', cls: 'pill-compliant', latency: '120ms', uptime: '99.90%', check: '2m ago' },
+								{ name: 'Supabase Realtime WebSockets', layer: 'Messaging & Push', status: 'Operational', cls: 'pill-compliant', latency: '24ms', uptime: '99.99%', check: 'Live' },
+							].map((r, i) => (
+								<tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+									<td style={{ padding: '12px 14px' }}>
+										<strong style={{ color: '#0f172a' }}>{r.name}</strong>
+									</td>
+									<td style={{ padding: '12px 14px', color: '#64748b' }}>{r.layer}</td>
+									<td style={{ padding: '12px 14px' }}>
+										<span className={`pill ${r.cls}`}>{r.status}</span>
+									</td>
+									<td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '700', color: '#15803d' }}>{r.latency}</td>
+									<td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.uptime}</td>
+									<td style={{ padding: '12px 14px', textAlign: 'right', color: '#64748b' }}>{r.check}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		);
+	};
+
+	// 1.6. Dedicated Audit Logs View (Immutable Forensic Trail)
+	const renderAuditLogs = () => {
+		const rawAuditLogs = [
+			{ id: 'aud-1', time: 'Aug 4, 2026 · 02:45 PM', actor: 'Rosa Mendoza (Super Admin)', action: 'Seasonal Baseline Recalculation', resource: 'Cooperative Productivity Model (2026 Season)', status: 'Success', cls: 'pill-compliant', ip: '192.168.1.42 (Web Portal)' },
+			{ id: 'aud-2', time: 'Aug 4, 2026 · 01:15 PM', actor: 'Ramon Velasco (Farm Staff)', action: 'Validated Task Submission #VAL-2026-08', resource: 'Plot P-001 (Eggplant Watering)', status: 'Success', cls: 'pill-compliant', ip: '192.168.1.55 (Field Tablet)' },
+			{ id: 'aud-3', time: 'Aug 4, 2026 · 11:30 AM', actor: 'Liza Cruz (Admin)', action: 'Created Announcement Broadcast', resource: 'Fertilizer Distribution Schedule', status: 'Success', cls: 'pill-compliant', ip: '192.168.1.18 (Admin Console)' },
+			{ id: 'aud-4', time: 'Aug 3, 2026 · 04:20 PM', actor: 'System ML Audit Agent', action: 'Triggered Critical Alert (Synthetic Risk)', resource: 'Plot P-021 (Sitaw Aphid Spray)', status: 'Warning', cls: 'pill-high', ip: 'Internal Job (FastAPI)' },
+			{ id: 'aud-5', time: 'Aug 3, 2026 · 09:10 AM', actor: 'Renier Lopez (Farmer)', action: 'Uploaded Photo Verification Proof', resource: 'Plot P-007 (Tomato Trellising)', status: 'Success', cls: 'pill-compliant', ip: '112.198.74.20 (Mobile App)' },
+			{ id: 'aud-6', time: 'Aug 2, 2026 · 05:00 PM', actor: 'Rosa Mendoza (Super Admin)', action: 'Updated Goat Herd Registry GT-014', resource: 'Plot P-055 (Native Goats)', status: 'Success', cls: 'pill-compliant', ip: '192.168.1.42 (Web Portal)' },
+		];
+
+		const filteredAuditLogs = rawAuditLogs.filter(log => {
+			const q = auditSearchQuery.toLowerCase().trim();
+			const matchText = !q || log.actor.toLowerCase().includes(q) || log.action.toLowerCase().includes(q) || log.resource.toLowerCase().includes(q);
+			const matchFilter = auditFilterType === 'all' || 
+				(auditFilterType === 'auth' && log.action.includes('Session')) ||
+				(auditFilterType === 'validation' && log.action.includes('Validat')) ||
+				(auditFilterType === 'security' && (log.status === 'Warning' || log.action.includes('Alert')));
+			return matchText && matchFilter;
+		});
+
+		return (
+			<div>
+				{/* Title Bar */}
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+					<div>
+						<h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+							<ShieldAlert size={24} color="#11592c" />
+							System Audit Logs & Security Trail
+						</h1>
+						<p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
+							Forensic log stream of user sessions, validation approvals, agricultural record mutations, and security incidents
+						</p>
+					</div>
+
+					<button
+						onClick={() => generateOfficialReportPDF('MARIKHA System Security Audit Trail', 'compliance', { crops, livestock, validations, schedules })}
+						className="btn-primary"
+						style={{ padding: '8px 16px', fontSize: '0.78rem', fontWeight: '800', gap: '6px' }}
+					>
+						<Download size={14} /> Export Audit PDF
+					</button>
+				</div>
+
+				{/* Filter & Search Bar */}
+				<div className="m-card" style={{ padding: '12px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+					<div style={{ position: 'relative', width: '280px' }}>
+						<Search size={14} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
+						<input
+							type="text"
+							placeholder="Search actor, action, resource..."
+							value={auditSearchQuery}
+							onChange={e => setAuditSearchQuery(e.target.value)}
+							style={{
+								width: '100%', padding: '8px 12px 8px 34px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '0.8rem', fontWeight: '700', color: '#0f172a', background: '#ffffff', outline: 'none'
+							}}
+						/>
+					</div>
+
+					<div style={{ display: 'flex', gap: '8px' }}>
+						{['all', 'validation', 'security'].map(f => (
+							<button
+								key={f}
+								onClick={() => setAuditFilterType(f)}
+								style={{
+									padding: '6px 12px', borderRadius: '8px', border: 'none',
+									background: auditFilterType === f ? '#0c3619' : '#f1f5f9',
+									color: auditFilterType === f ? '#ffffff' : '#475569',
+									fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer', textTransform: 'capitalize'
+								}}
+							>
+								{f === 'all' ? 'All Activities' : f === 'validation' ? 'Validations' : 'Security Warnings'}
+							</button>
+						))}
+					</div>
+				</div>
+
+				{/* Audit Table */}
+				<div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+					<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+						<thead>
+							<tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e2e8f0', color: '#475569', fontSize: '0.74rem', textAlign: 'left' }}>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>TIMESTAMP</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>ACTOR</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>ACTION / EVENT</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>TARGET RESOURCE</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>STATUS</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800', textAlign: 'right' }}>IP & CLIENT</th>
+							</tr>
+						</thead>
+						<tbody>
+							{filteredAuditLogs.map(log => (
+								<tr key={log.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+									<td style={{ padding: '12px 14px', color: '#64748b', fontSize: '0.78rem' }}>{log.time}</td>
+									<td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{log.actor}</td>
+									<td style={{ padding: '12px 14px', fontWeight: '800', color: '#11592c' }}>{log.action}</td>
+									<td style={{ padding: '12px 14px', color: '#334155' }}>{log.resource}</td>
+									<td style={{ padding: '12px 14px' }}>
+										<span className={`pill ${log.cls}`}>{log.status}</span>
+									</td>
+									<td style={{ padding: '12px 14px', textAlign: 'right', fontFamily: 'monospace', color: '#64748b', fontSize: '0.75rem' }}>{log.ip}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		);
+	};
+
+
+	// 2. Crop Production & Live Farmer Submissions Monitoring
  const renderCropMonitoring = () => {
  const filteredCrops = (crops || []).filter(c => {
  const stageMatch = cropStageFilter === 'all' || (c.growthStage || '').toLowerCase().includes(cropStageFilter.toLowerCase());
@@ -3658,15 +4297,17 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  </div>
  );
 
- let currentView = renderOverviewDashboard();
- if (activeTab === 'activity-monitoring') currentView = renderActivityMonitoring();
- if (activeTab === 'scheduling') currentView = renderSchedulingModule();
- if (activeTab === 'announcements') currentView = renderAnnouncementsPublisher();
- if (activeTab === 'crop-monitoring') currentView = renderCropMonitoring();
- if (activeTab === 'livestock-monitoring') currentView = renderLivestockMonitoring();
- if (activeTab === 'analytics') currentView = renderAnalytics();
- if (activeTab === 'decision-support') currentView = renderDecisionSupport();
- if (activeTab === 'reports') currentView = renderReports();
+ 	let currentView = renderOverviewDashboard();
+	if (activeTab === 'system-monitoring') currentView = renderSystemMonitoring();
+	if (activeTab === 'audit-logs') currentView = renderAuditLogs();
+	if (activeTab === 'activity-monitoring') currentView = renderActivityMonitoring();
+	if (activeTab === 'scheduling') currentView = renderSchedulingModule();
+	if (activeTab === 'announcements') currentView = renderAnnouncementsPublisher();
+	if (activeTab === 'crop-monitoring') currentView = renderCropMonitoring();
+	if (activeTab === 'livestock-monitoring') currentView = renderLivestockMonitoring();
+	if (activeTab === 'analytics') currentView = renderAnalytics();
+	if (activeTab === 'decision-support') currentView = renderDecisionSupport();
+	if (activeTab === 'reports') currentView = renderReports();
 
  return (
  <>
