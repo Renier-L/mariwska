@@ -105,7 +105,7 @@ const forecastData = [
 ];
 
 const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
- const { users, crops, livestock, validations, handleValidationAction, addCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule, selectedSeason, setSelectedSeason } = useAuth();
+ const { users, crops, livestock, validations, handleValidationAction, addCrop, updateCrop, deleteCrop, addLivestock, publishAnnouncement, deleteAnnouncement, announcements, addFarmerSubmission, activePushValidation, dismissPushValidation, schedules, addSchedule, updateScheduleStatus, deleteSchedule, selectedSeason, setSelectedSeason } = useAuth();
 
  const filterBySeason = (items) => {
  if (!Array.isArray(items)) return [];
