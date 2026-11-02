@@ -139,29 +139,7 @@ const Header = () => {
 					Cloud Sync · Live
 				</div>
 
-       {/* Role Architecture & Hierarchy Guide Button (Adviser Suggestion) */}
-      <button
-        onClick={() => setShowRoleGuide(true)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          background: '#f8fafc',
-          border: '1.5px solid #cbd5e1',
-          padding: '6px 14px',
-          borderRadius: '20px',
-          fontSize: '0.75rem',
-          fontWeight: '700',
-          color: '#334155',
-          cursor: 'pointer',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          transition: 'all 0.15s ease'
-        }}
-        title="View System Architecture & Difference between Super Admin, Admin, and Farm Staff"
-      >
-        <HelpCircle size={14} color="#0284c7" />
-        Role Scope Guide
-      </button>
+       <button onClick={() => setShowRoleGuide(true)} style={{ display: "none" }} title="System Architecture" aria-hidden="true" />
 
       {/* User Profile Trigger Button */}
  <button
