@@ -466,7 +466,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  Operations & Verification Dashboard
  </h1>
  <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
- Field validation queue prioritized by operational urgency · Live Supabase Sync
+ Field validation queue prioritized by urgency · Live cloud sync
  </p>
  </div>
 
@@ -509,7 +509,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  key={t?.id || idx}
  onClick={() => {
  if (t?.id) setSelectedValId(t.id);
- if (setActiveTab) setActiveTab('validation');
+ if (setActiveTab) setActiveTab('activity-validation');
  }}
  style={{
  display: 'flex',
@@ -546,17 +546,85 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  <AlertTriangle size={16} /> Localized Critical Alerts
  </h4>
  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.75rem' }}>
- <div style={{ background: '#fef2f2', padding: '8px 10px', borderRadius: '6px', border: '1px solid #fecaca' }}>
- <strong style={{ color: '#991b1b' }}>P-021:</strong> Suspected synthetic input - PGS breach risk
- </div>
- <div style={{ background: '#fffbeb', padding: '8px 10px', borderRadius: '6px', border: '1px solid #fef3c7' }}>
- <strong style={{ color: '#92400e' }}>P-007:</strong> Goat vaccination window closes in 36h
- </div>
- <div style={{ background: '#fffbeb', padding: '8px 10px', borderRadius: '6px', border: '1px solid #fef3c7' }}>
- <strong style={{ color: '#92400e' }}>P-055:</strong> Compost log incomplete 4 days
- </div>
- </div>
- </div>
+					<div 
+						onClick={() => {
+							setFarmerSearchQuery('P-021');
+							if (setActiveTab) setActiveTab('activity-validation');
+						}}
+						title="Click to quickly jump to Activity Validation for Plot P-021"
+						style={{ 
+							background: '#fef2f2', 
+							padding: '10px 12px', 
+							borderRadius: '8px', 
+							border: '1.5px solid #fecaca', 
+							cursor: 'pointer',
+							display: 'flex', 
+							justifyContent: 'space-between', 
+							alignItems: 'center',
+							boxShadow: '0 1px 3px rgba(220, 38, 38, 0.08)'
+						}}
+					>
+						<div>
+							<strong style={{ color: '#991b1b' }}>P-021:</strong> Suspected synthetic input - PGS breach risk
+						</div>
+						<span style={{ fontSize: '0.7rem', background: '#dc2626', color: '#fff', padding: '3px 9px', borderRadius: '4px', fontWeight: '800' }}>
+							Review Task →
+						</span>
+					</div>
+
+					<div 
+						onClick={() => {
+							if (setActiveTab) setActiveTab('livestock-management');
+						}}
+						title="Click to quickly jump to Livestock Management herd records"
+						style={{ 
+							background: '#fffbeb', 
+							padding: '10px 12px', 
+							borderRadius: '8px', 
+							border: '1.5px solid #fef3c7', 
+							cursor: 'pointer',
+							display: 'flex', 
+							justifyContent: 'space-between', 
+							alignItems: 'center',
+							boxShadow: '0 1px 3px rgba(217, 119, 6, 0.08)'
+						}}
+					>
+						<div>
+							<strong style={{ color: '#92400e' }}>P-007:</strong> Goat vaccination window closes in 36h
+						</div>
+						<span style={{ fontSize: '0.7rem', background: '#d97706', color: '#fff', padding: '3px 9px', borderRadius: '4px', fontWeight: '800' }}>
+							View Herd →
+						</span>
+					</div>
+
+					<div 
+						onClick={() => {
+							setFarmerSearchQuery('P-055');
+							if (setActiveTab) setActiveTab('activity-validation');
+						}}
+						title="Click to inspect field logs for Plot P-055"
+						style={{ 
+							background: '#fffbeb', 
+							padding: '10px 12px', 
+							borderRadius: '8px', 
+							border: '1.5px solid #fef3c7', 
+							cursor: 'pointer',
+							display: 'flex', 
+							justifyContent: 'space-between', 
+							alignItems: 'center',
+							boxShadow: '0 1px 3px rgba(217, 119, 6, 0.08)'
+						}}
+					>
+						<div>
+							<strong style={{ color: '#92400e' }}>P-055:</strong> Compost log incomplete 4 days
+						</div>
+						<span style={{ fontSize: '0.7rem', background: '#d97706', color: '#fff', padding: '3px 9px', borderRadius: '4px', fontWeight: '800' }}>
+							Inspect Log →
+						</span>
+					</div>
+				</div>
+			</div>
+ 
 
  <div className="m-card">
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -960,7 +1028,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  setIsReRunningRF(false);
  const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
  setRfRunTimestamp(`Just now (${nowStr})`);
- alert(` Random Forest ML Model Pass Executed Live!\n\n100% of plot logs (${safeValidations.length} submissions), fertilizer inputs, and mobile GPS data evaluated against PGS organic compliance matrix.\nLast Pass: ${nowStr}`);
+ alert(` AI Compliance & Risk Assessment Pass Executed Live!\n\n100% of plot logs (${safeValidations.length} submissions), fertilizer inputs, and mobile GPS data evaluated against PGS organic compliance matrix.\nLast Pass: ${nowStr}`);
  }, 750);
  };
 
@@ -975,7 +1043,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </span>
  </h1>
  <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
- Random Forest compliance classification · operational risk scoring · live predictive analytics
+ Compliance classification · Operational risk scoring · Predictive analytics
  </p>
  </div>
 
@@ -1000,22 +1068,22 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  }}
  >
  <Sparkles size={15} color="#86efac" />
- {isReRunningRF ? 'Running RF Pass...' : 'Re-run RF Risk Pass '}
+ {isReRunningRF ? 'Running Assessment...' : 'Re-run Risk Assessment Pass '}
  </button>
  <div style={{
  background: '#0c3619', color: '#ffffff', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px'
  }}>
- RF Model · v2.4
+ AI Model · v2.4
  </div>
  </div>
  </div>
 
  <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '20px' }}>
- {/* Left Column: Random Forest Compliance Classifier */}
+ {/* Left Column: Organic Compliance Classifier */}
  <div className="m-card">
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
  <div>
- <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Random Forest Compliance Classifier</h4>
+ <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Organic Compliance Classifier</h4>
  <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>
  Fertilizer applications + PGS checklist evaluation · Last Run: {rfRunTimestamp}
  </span>
@@ -1089,7 +1157,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  {/* Feature Importance Bars calculated from live state */}
  <div style={{ marginBottom: '16px' }}>
  <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#475569', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
- RANDOM FOREST FEATURE IMPORTANCE
+ KEY RISK & COMPLIANCE FACTORS
  </div>
  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
  {[
@@ -1303,6 +1371,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  <th style={{ padding: '12px 14px', fontWeight: '700' }}>PLOT ID</th>
  <th style={{ padding: '12px 14px', fontWeight: '700' }}>CROP VARIETY</th>
  <th style={{ padding: '12px 14px', fontWeight: '700' }}>GROWTH STAGE & STEPPER</th>
+								<th style={{ padding: '12px 14px', fontWeight: '700', color: '#15803d' }}>PREDICTED HARVEST TIME</th>
  <th style={{ padding: '12px 14px', fontWeight: '700' }}>ORGANIC FERTILIZER INPUT</th>
  <th style={{ padding: '12px 14px', fontWeight: '700' }}>IRRIGATION SYSTEM</th>
  <th style={{ padding: '12px 14px', fontWeight: '700' }}>TARGET YIELD</th>
@@ -1360,8 +1429,17 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </button>
  </div>
  </td>
-
- <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+									<td style={{ padding: '12px 14px' }}>
+										<div style={{ display: 'flex', flexDirection: 'column' }}>
+											<span style={{ fontWeight: '800', color: '#111827', fontSize: '0.82rem' }}>
+												{c.predictedHarvestDate || (c.variety && c.variety.includes('Eggplant') ? 'Dec 20, 2024' : c.variety && c.variety.includes('Tomato') ? 'Nov 28, 2024' : 'Dec 15, 2024')}
+											</span>
+											<span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
+												{c.daysLeft || (c.variety && c.variety.includes('Eggplant') ? '48 days left' : '26 days left')}
+											</span>
+										</div>
+									</td>
+									<td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
  {c.fertilizer || 'Organic Compost Tea'}
  </td>
 
@@ -1921,10 +1999,30 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  {health}
  </span>
  </td>
- <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+									<td style={{ padding: '12px 14px' }}>
+										<div style={{ display: 'flex', flexDirection: 'column' }}>
+											<span style={{ fontWeight: '800', color: '#111827', fontSize: '0.82rem' }}>
+												{c.predictedHarvestDate || (c.variety && c.variety.includes('Eggplant') ? 'Dec 20, 2024' : c.variety && c.variety.includes('Tomato') ? 'Nov 28, 2024' : 'Dec 15, 2024')}
+											</span>
+											<span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
+												{c.daysLeft || (c.variety && c.variety.includes('Eggplant') ? '48 days left' : '26 days left')}
+											</span>
+										</div>
+									</td>
+									<td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
  {vax}
  </td>
- <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+									<td style={{ padding: '12px 14px' }}>
+										<div style={{ display: 'flex', flexDirection: 'column' }}>
+											<span style={{ fontWeight: '800', color: '#111827', fontSize: '0.82rem' }}>
+												{c.predictedHarvestDate || (c.variety && c.variety.includes('Eggplant') ? 'Dec 20, 2024' : c.variety && c.variety.includes('Tomato') ? 'Nov 28, 2024' : 'Dec 15, 2024')}
+											</span>
+											<span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
+												{c.daysLeft || (c.variety && c.variety.includes('Eggplant') ? '48 days left' : '26 days left')}
+											</span>
+										</div>
+									</td>
+									<td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
  {forage}
  </td>
  <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.82rem', fontWeight: '700', color: '#475569' }}>
@@ -2257,7 +2355,264 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  };
 
  // 6. Farm Staff Reports
- const renderReports = () => (
+ 
+	// 4.5. FARMER & CROP LIFECYCLE SUPERVISION (Adviser Research Monitoring Form)
+	const [farmerSearch, setFarmerSearch] = useState('');
+	const [cropStageFilterAdviser, setCropStageFilterAdviser] = useState('All');
+
+	const renderFarmerManagement = () => {
+		// Data structured matching Adviser Form: Farmers, Assigned Crops, Stages, Next Prediction
+		const farmerSupervisionData = [
+			{
+				id: 'f-1',
+				farmer: 'Farmer 1 · Renier Lopez',
+				initials: 'RL',
+				contact: '+63 917 555 0100',
+				plot: 'Plot 1 (Plot P-001)',
+				crops: ['Eggplant (Mistisa)', 'Sitaw', 'Okra'],
+				activeCrop: 'Eggplant (Mistisa)',
+				datePlanted: 'Aug 1, 2026',
+				currentStage: 'Germination',
+				stageNumber: 1,
+				predictedNextStage: 'Sept 1, 2026 (Vegetative)',
+				recentTask: 'Aug 2 · Watering Plot 1 & Plot 2 (10L)',
+				status: 'Active',
+				compliance: 'PGS Compliant 98%'
+			},
+			{
+				id: 'f-2',
+				farmer: 'Farmer 2 · Mang Juan Dela Cruz',
+				initials: 'JC',
+				contact: '+63 917 555 0105',
+				plot: 'Plot 2 (Plot P-002)',
+				crops: ['Sitaw (Yardlong)', 'Ampalaya'],
+				activeCrop: 'Sitaw (Yardlong)',
+				datePlanted: 'Jul 10, 2026',
+				currentStage: 'Flowering',
+				stageNumber: 3,
+				predictedNextStage: 'Aug 15, 2026 (Fruiting)',
+				recentTask: 'Aug 3 · Foliar Organic Spray',
+				status: 'Active',
+				compliance: 'PGS Compliant 96%'
+			},
+			{
+				id: 'f-3',
+				farmer: 'Farmer 3 · Elena Velasco',
+				initials: 'EV',
+				contact: '+63 917 555 0108',
+				plot: 'Plot 3 (Plot P-003)',
+				crops: ['Okra (Smooth Green)', 'Tomato'],
+				activeCrop: 'Okra (Smooth Green)',
+				datePlanted: 'Jun 20, 2026',
+				currentStage: 'Fruiting & Harvesting',
+				stageNumber: 4,
+				predictedNextStage: 'Aug 8, 2026 (Harvest Window)',
+				recentTask: 'Aug 4 · Harvest Batch #1 (45 kg)',
+				status: 'Active',
+				compliance: 'PGS Compliant 100%'
+			}
+		];
+
+		const filteredSupervision = farmerSupervisionData.filter(item => {
+			const q = (farmerSearch || '').toLowerCase().trim();
+			const matchText = !q || (
+				item.farmer.toLowerCase().includes(q) ||
+				item.plot.toLowerCase().includes(q) ||
+				item.activeCrop.toLowerCase().includes(q) ||
+				item.crops.some(c => c.toLowerCase().includes(q))
+			);
+			const matchStage = cropStageFilterAdviser === 'All' || item.currentStage.includes(cropStageFilterAdviser);
+			return matchText && matchStage;
+		});
+
+		return (
+			<div>
+				{/* Clean Executive Header */}
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+					<div>
+						<h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a', margin: 0, letterSpacing: '-0.4px' }}>
+							Farmer & Crop Lifecycle Supervision
+						</h1>
+						<p style={{ fontSize: '0.8rem', color: '#64748b', margin: '4px 0 0 0' }}>
+							Assigned farmers · Planted crop varieties · Predictive growth stage timeline
+						</p>
+					</div>
+					<div style={{ display: 'flex', gap: '8px' }}>
+						<span style={{ background: '#dcfce7', color: '#15803d', padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '800', border: '1px solid #86efac' }}>
+							{farmerSupervisionData.length} Farmers Supervised
+						</span>
+					</div>
+				</div>
+
+				{/* Summary KPI Cards - Crisp, compact, professional */}
+				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '18px' }}>
+					<div className="m-card" style={{ padding: '14px 18px' }}>
+						<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Supervised Farmers</div>
+						<div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: '2px 0' }}>{farmerSupervisionData.length}</div>
+						<span style={{ fontSize: '0.68rem', color: '#15803d', fontWeight: '700' }}>Active Field Operators</span>
+					</div>
+					<div className="m-card" style={{ padding: '14px 18px' }}>
+						<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Assigned Crops</div>
+						<div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#11592c', margin: '2px 0' }}>Eggplant · Sitaw · Okra</div>
+						<span style={{ fontSize: '0.68rem', color: '#15803d', fontWeight: '700' }}>3 Key Vegetables</span>
+					</div>
+					<div className="m-card" style={{ padding: '14px 18px' }}>
+						<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Growth Lifecycle</div>
+						<div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0284c7', margin: '2px 0' }}>4 Stages</div>
+						<span style={{ fontSize: '0.68rem', color: '#0284c7', fontWeight: '700' }}>Germination ➔ Harvest</span>
+					</div>
+					<div className="m-card" style={{ padding: '14px 18px' }}>
+						<div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', textTransform: 'uppercase' }}>Organic Standard</div>
+						<div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#15803d', margin: '2px 0' }}>100%</div>
+						<span style={{ fontSize: '0.68rem', color: '#15803d', fontWeight: '700' }}>PGS Certified Compliant</span>
+					</div>
+				</div>
+
+				{/* Controls Bar */}
+				<div className="m-card" style={{ padding: '12px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+					<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+						<div style={{ position: 'relative', width: '260px' }}>
+							<Search size={14} style={{ position: 'absolute', left: '12px', top: '10px', color: '#94a3b8' }} />
+							<input 
+								type="text" 
+								placeholder="Search farmer, crop, plot..."
+								value={farmerSearch}
+								onChange={(e) => setFarmerSearch(e.target.value)}
+								style={{
+									width: '100%',
+									padding: '8px 12px 8px 34px',
+									borderRadius: '8px',
+									border: '1.5px solid #cbd5e1',
+									fontSize: '0.8rem',
+									fontWeight: '700',
+									color: '#0f172a',
+									background: '#ffffff',
+									outline: 'none'
+								}}
+							/>
+						</div>
+						<select 
+							value={cropStageFilterAdviser} 
+							onChange={(e) => setCropStageFilterAdviser(e.target.value)}
+							style={{
+								padding: '8px 12px',
+								borderRadius: '8px',
+								border: '1.5px solid #11592c',
+								fontSize: '0.8rem',
+								fontWeight: '700',
+								color: '#0f172a',
+								background: '#ffffff',
+								cursor: 'pointer'
+							}}
+						>
+							<option value="All">All Stages</option>
+							<option value="Germination">Stage 1 · Germination</option>
+							<option value="Vegetative">Stage 2 · Vegetative</option>
+							<option value="Flowering">Stage 3 · Flowering</option>
+							<option value="Fruiting">Stage 4 · Fruiting & Harvest</option>
+						</select>
+					</div>
+				</div>
+
+				{/* EXACT TABLE FROM ADVISER FORM: List of Farmers | Crops Planted Per Farmer | Stages of Crop */}
+				<div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+					<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+						<thead>
+							<tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#475569', fontSize: '0.74rem', textAlign: 'left' }}>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>LIST OF FARMERS</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>CROPS PLANTED PER FARMER</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>FIELD PLOT</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>PLANTED DATE</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>STAGES OF CROP</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800', color: '#15803d' }}>NEXT LIFE STAGE PREDICTION</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800' }}>RECENT FIELD TASK</th>
+								<th style={{ padding: '12px 14px', fontWeight: '800', textAlign: 'right' }}>ACTION</th>
+							</tr>
+						</thead>
+						<tbody>
+							{filteredSupervision.map(f => (
+								<tr key={f.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+									<td style={{ padding: '12px 14px' }}>
+										<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+											<div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#11592c', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.72rem' }}>
+												{f.initials}
+											</div>
+											<div>
+												<strong style={{ color: '#0f172a', fontSize: '0.83rem' }}>{f.farmer}</strong>
+												<div style={{ fontSize: '0.68rem', color: '#64748b' }}>{f.contact}</div>
+											</div>
+										</div>
+									</td>
+									<td style={{ padding: '12px 14px' }}>
+										<div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+											{f.crops.map(c => (
+												<span key={c} style={{
+													fontSize: '0.7rem',
+													padding: '2px 7px',
+													borderRadius: '4px',
+													fontWeight: '700',
+													background: c.includes('Eggplant') ? '#f3e8ff' : '#f1f5f9',
+													color: c.includes('Eggplant') ? '#7e22ce' : '#334155'
+												}}>
+													{c}
+												</span>
+											))}
+										</div>
+									</td>
+									<td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c' }}>
+										{f.plot}
+									</td>
+									<td style={{ padding: '12px 14px', color: '#64748b', fontSize: '0.78rem' }}>
+										{f.datePlanted}
+									</td>
+									<td style={{ padding: '12px 14px' }}>
+										<span className={`pill ${
+											f.stageNumber === 1 ? 'pill-seedling' :
+											f.stageNumber === 2 ? 'pill-vegetative' :
+											f.stageNumber === 3 ? 'pill-flowering' : 'pill-harvest'
+										}`}>
+											Stage {f.stageNumber} · {f.currentStage}
+										</span>
+									</td>
+									<td style={{ padding: '12px 14px' }}>
+										<div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+											<Sparkles size={13} color="#15803d" />
+											<strong style={{ color: '#15803d', fontSize: '0.8rem' }}>{f.predictedNextStage}</strong>
+										</div>
+									</td>
+									<td style={{ padding: '12px 14px', fontSize: '0.76rem', color: '#334155' }}>
+										{f.recentTask}
+									</td>
+									<td style={{ padding: '12px 14px', textAlign: 'right' }}>
+										<button
+											onClick={() => {
+												setFarmerSearchQuery(f.farmer.split('·')[1]?.trim() || '');
+												if (setActiveTab) setActiveTab('activity-validation');
+											}}
+											style={{
+												background: '#f0fdf4',
+												border: '1.5px solid #86efac',
+												color: '#15803d',
+												padding: '4px 10px',
+												borderRadius: '6px',
+												fontWeight: '800',
+												fontSize: '0.72rem',
+												cursor: 'pointer'
+											}}
+										>
+											View Task Proofs →
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		);
+	};
+
+	const renderReports = () => (
  <div>
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
  <div>
@@ -2299,7 +2654,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </div>
 
  <div className="tab-capsule-container" style={{ marginBottom: '20px' }}>
- {['productivity', 'activity', 'compliance', 'documents'].map(t => (
+ {['yield-vs-prediction', 'crop-stages', 'productivity', 'activity', 'compliance', 'documents'].map(t => (
  <button
  key={t}
  onClick={() => setReportsTab(t)}
@@ -2311,7 +2666,119 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  ))}
  </div>
 
- {reportsTab === 'productivity' && (
+ 
+				{reportsTab === 'yield-vs-prediction' && (
+					<div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+						<div style={{ padding: '16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+							<div>
+								<h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+									Actual Harvest Yield vs AI Predictive Model Target Audit Report
+								</h3>
+								<p style={{ fontSize: '0.75rem', color: '#64748b', margin: '4px 0 0 0' }}>
+									Direct verification of harvested field output vs ML predictive horizon (MAE: 193.7 kg · 94% organic accuracy)
+								</p>
+							</div>
+							<button 
+								onClick={() => handleDownloadPDF('Actual Yield vs Prediction Audit Report')}
+								className="btn-primary" 
+								style={{ padding: '6px 14px', fontSize: '0.78rem' }}
+							>
+								<Download size={14} /> Export Report PDF
+							</button>
+						</div>
+						<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+							<thead>
+								<tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e5e7eb', color: '#4b5563', fontSize: '0.75rem', textAlign: 'left' }}>
+									<th style={{ padding: '12px 14px' }}>PLOT & CROP VARIETY</th>
+									<th style={{ padding: '12px 14px' }}>FARMER</th>
+									<th style={{ padding: '12px 14px' }}>PLANTED DATE</th>
+									<th style={{ padding: '12px 14px' }}>ACTUAL YIELD (KG)</th>
+									<th style={{ padding: '12px 14px' }}>PREDICTED YIELD (KG)</th>
+									<th style={{ padding: '12px 14px' }}>VARIANCE</th>
+									<th style={{ padding: '12px 14px', textAlign: 'right' }}>ACCURACY</th>
+								</tr>
+							</thead>
+							<tbody>
+								{[
+									{ plot: 'Plot P-021', crop: 'Eggplant (Mistisa)', farmer: 'Mang Juan Dela Cruz', planted: 'Sep 17, 2024', actual: '395 kg', predicted: '420 kg', diff: '-25 kg (-5.9%)', acc: '94.1%', badge: 'pill-compliant' },
+									{ plot: 'Plot P-007', crop: 'Tomato (Diamante)', farmer: 'Renier Lopez', planted: 'Jun 20, 2024', actual: '412 kg', predicted: '400 kg', diff: '+12 kg (+3.0%)', acc: '97.0%', badge: 'pill-compliant' },
+									{ plot: 'Plot P-034', crop: 'Okra (Smooth Green)', farmer: 'Glenda Bautista', planted: 'Jul 10, 2024', actual: '240 kg', predicted: '250 kg', diff: '-10 kg (-4.0%)', acc: '96.0%', badge: 'pill-compliant' },
+									{ plot: 'Plot P-055', crop: 'Squash (Kalabasa)', farmer: 'Pedro Ocampo', planted: 'Jul 18, 2024', actual: '158 kg', predicted: '170 kg', diff: '-12 kg (-7.0%)', acc: '93.0%', badge: 'pill-review' },
+								].map(r => (
+									<tr key={r.plot} style={{ borderBottom: '1px solid #f3f4f6' }}>
+										<td style={{ padding: '12px 14px' }}>
+											<strong style={{ color: '#11592c' }}>{r.plot}</strong>
+											<div style={{ color: '#111827', fontWeight: '700' }}>{r.crop}</div>
+										</td>
+										<td style={{ padding: '12px 14px', fontWeight: '700', color: '#334155' }}>{r.farmer}</td>
+										<td style={{ padding: '12px 14px', color: '#64748b' }}>{r.planted}</td>
+										<td style={{ padding: '12px 14px', fontWeight: '800', color: '#d97706' }}>{r.actual}</td>
+										<td style={{ padding: '12px 14px', fontWeight: '800', color: '#15803d' }}>{r.predicted}</td>
+										<td style={{ padding: '12px 14px', fontWeight: '700', color: '#475569' }}>{r.diff}</td>
+										<td style={{ padding: '12px 14px', textAlign: 'right' }}>
+											<span className={`pill ${r.badge}`}>{r.acc} Match</span>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				)}
+
+				{reportsTab === 'crop-stages' && (
+					<div className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+						<div style={{ padding: '16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+							<div>
+								<h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+									Crop Growth Stage Horizon & Harvest Countdown Report
+								</h3>
+								<p style={{ fontSize: '0.75rem', color: '#64748b', margin: '4px 0 0 0' }}>
+									Lifecycle stage duration tracking: Seedling ➔ Vegetative ➔ Fruiting ➔ Harvesting
+								</p>
+							</div>
+							<button 
+								onClick={() => handleDownloadPDF('Crop Stage Progression Report')}
+								className="btn-primary" 
+								style={{ padding: '6px 14px', fontSize: '0.78rem' }}
+							>
+								<Download size={14} /> Export Report PDF
+							</button>
+						</div>
+						<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+							<thead>
+								<tr style={{ background: '#fafafa', borderBottom: '1.5px solid #e5e7eb', color: '#4b5563', fontSize: '0.75rem', textAlign: 'left' }}>
+									<th style={{ padding: '12px 14px' }}>PLOT & CROP</th>
+									<th style={{ padding: '12px 14px' }}>CURRENT STAGE</th>
+									<th style={{ padding: '12px 14px' }}>PLANTED DATE</th>
+									<th style={{ padding: '12px 14px' }}>PREDICTED HARVEST</th>
+									<th style={{ padding: '12px 14px' }}>DAYS REMAINING</th>
+									<th style={{ padding: '12px 14px', textAlign: 'right' }}>STAGE STATUS</th>
+								</tr>
+							</thead>
+							<tbody>
+								{[
+									{ plot: 'Plot P-021', crop: 'Eggplant (Mistisa)', stage: 'Fruiting', planted: 'Sep 17, 2024', harvest: 'Dec 20, 2024', days: '48 days left', status: 'Optimal Vigor' },
+									{ plot: 'Plot P-007', crop: 'Tomato (Diamante)', stage: 'Flowering', planted: 'Jun 20, 2024', harvest: 'Nov 28, 2024', days: '26 days left', status: 'On Schedule' },
+									{ plot: 'Plot P-034', crop: 'Okra (Smooth Green)', stage: 'Harvesting', planted: 'Jul 10, 2024', harvest: 'Nov 10, 2024', days: 'Ready to Harvest', status: 'Ready' },
+									{ plot: 'Plot P-055', crop: 'Squash (Suprema)', stage: 'Vegetative', planted: 'Jul 18, 2024', harvest: 'Jan 15, 2025', days: '74 days left', status: 'Developing' },
+								].map(r => (
+									<tr key={r.plot} style={{ borderBottom: '1px solid #f3f4f6' }}>
+										<td style={{ padding: '12px 14px' }}>
+											<strong style={{ color: '#11592c' }}>{r.plot}</strong> - {r.crop}
+										</td>
+										<td style={{ padding: '12px 14px' }}><span className="pill pill-vegetative">{r.stage}</span></td>
+										<td style={{ padding: '12px 14px', color: '#64748b' }}>{r.planted}</td>
+										<td style={{ padding: '12px 14px', fontWeight: '800', color: '#15803d' }}>{r.harvest}</td>
+										<td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>{r.days}</td>
+										<td style={{ padding: '12px 14px', textAlign: 'right' }}><span className="pill pill-compliant">{r.status}</span></td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				)}
+
+				{reportsTab === 'productivity' && (
  <div className="m-card" style={{ padding: '0', overflow: 'hidden' }}>
  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
  <thead>
@@ -2520,6 +2987,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  if (activeTab === 'activity-validation') return renderContainerWithModal(renderValidationPanel());
  if (activeTab === 'ml-audit') return renderContainerWithModal(renderMLAudit());
  if (activeTab === 'crop-management') return renderContainerWithModal(renderCropManagement());
+	if (activeTab === 'farmer-management') return renderContainerWithModal(renderFarmerManagement());
  if (activeTab === 'livestock-management') return renderContainerWithModal(renderLivestockManagement());
  if (activeTab === 'reports') return renderContainerWithModal(renderReports());
  return renderContainerWithModal(renderOperations());

@@ -52,6 +52,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
  { id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
  { id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
  { id: 'crop-management', label: 'Crop Management', icon: Trees },
+      { id: 'farmer-management', label: 'Farmer Management', icon: Users },
  { id: 'livestock-management', label: 'Livestock Management', icon: Binary },
  { id: 'reports', label: 'Reports', icon: FileText },
  ];

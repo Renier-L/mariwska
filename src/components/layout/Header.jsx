@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Cloud, UserCheck, Pencil, X, Megaphone, Bell, Send } from 'lucide-react';
+import { Cloud, UserCheck, Pencil, X, Megaphone, Bell, Send, HelpCircle, ShieldCheck } from 'lucide-react';
 
 const Header = () => {
  const { tenantInfo, currentUser, currentRole, selectedSeason, setSelectedSeason, updateProfile, publishAnnouncement } = useAuth();
  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showRoleGuide, setShowRoleGuide] = useState(false);
  const [nameInput, setNameInput] = useState('');
  const [phoneInput, setPhoneInput] = useState('');
  const [passInput, setPassInput] = useState('');
@@ -134,7 +135,31 @@ const Header = () => {
  {tenantInfo.status}
  </div>
 
- {/* User Profile Trigger Button */}
+       {/* Role Architecture & Hierarchy Guide Button (Adviser Suggestion) */}
+      <button
+        onClick={() => setShowRoleGuide(true)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          background: '#f8fafc',
+          border: '1.5px solid #cbd5e1',
+          padding: '6px 14px',
+          borderRadius: '20px',
+          fontSize: '0.75rem',
+          fontWeight: '700',
+          color: '#334155',
+          cursor: 'pointer',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          transition: 'all 0.15s ease'
+        }}
+        title="View System Architecture & Difference between Super Admin, Admin, and Farm Staff"
+      >
+        <HelpCircle size={14} color="#0284c7" />
+        Role Scope Guide
+      </button>
+
+      {/* User Profile Trigger Button */}
  <button
  onClick={handleOpenModal}
  style={{
@@ -376,7 +401,159 @@ const Header = () => {
  </div>
  </div>
  )}
- </header>
+ 
+      {/* ROLE ARCHITECTURE & HIERARCHY MODAL (Adviser Question: Know the difference between Admin & Super Admin) */}
+      {showRoleGuide && (
+        <div 
+          onClick={() => setShowRoleGuide(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.65)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(4px)',
+            padding: '20px'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              maxWidth: '820px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '28px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+              position: 'relative'
+            }}
+          >
+            <button 
+              onClick={() => setShowRoleGuide(false)}
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                background: '#f1f5f9',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#64748b'
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <div style={{ background: '#dcfce7', padding: '8px', borderRadius: '10px', color: '#15803d' }}>
+                <ShieldCheck size={24} />
+              </div>
+              <div>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+                  System Architecture & Role Hierarchy
+                </h2>
+                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  Clear operational scope defining Super Administrator, Administrator, and Farm Staff
+                </span>
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '16px 0 20px 0' }} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+              {/* Card 1: Super Admin */}
+              <div style={{ background: '#f8fafc', border: '2px solid #86efac', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', fontWeight: '800', padding: '2px 8px', borderRadius: '12px' }}>
+                    TIER 1 (GLOBAL)
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#11592c', margin: '0 0 6px 0' }}>
+                  Super Administrator
+                </h3>
+                <p style={{ fontSize: '0.75rem', color: '#475569', marginBottom: '12px', lineHeight: 1.4 }}>
+                  Platform governance across multi-tenant organic cooperatives.
+                </p>
+                <div style={{ fontSize: '0.72rem', color: '#1e293b', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div> <strong>Multi-Tenant:</strong> Cross-cooperative platform administration</div>
+                  <div> <strong>Analytics:</strong> Global harvest output & trend forecasting</div>
+                  <div> <strong>Decision Support:</strong> AI predictive horizon & strategic policy</div>
+                  <div> <strong>Governance:</strong> System-wide audit trail logs & compliance export</div>
+                </div>
+              </div>
+
+              {/* Card 2: Administrator */}
+              <div style={{ background: '#f8fafc', border: '2px solid #93c5fd', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.7rem', background: '#dbeafe', color: '#1d4ed8', fontWeight: '800', padding: '2px 8px', borderRadius: '12px' }}>
+                    TIER 2 (COOP)
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#1e40af', margin: '0 0 6px 0' }}>
+                  Administrator
+                </h3>
+                <p style={{ fontSize: '0.75rem', color: '#475569', marginBottom: '12px', lineHeight: 1.4 }}>
+                  Local cooperative operations, member records & communication.
+                </p>
+                <div style={{ fontSize: '0.72rem', color: '#1e293b', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div> <strong>Member Directory:</strong> Farmer account registration & RSBSA ID</div>
+                  <div> <strong>Security Matrix:</strong> Role-based permissions configuration</div>
+                  <div> <strong>Broadcasts:</strong> Cooperative announcements & mobile push</div>
+                  <div> <strong>Sync Pipeline:</strong> Supabase cloud data flow monitoring</div>
+                </div>
+              </div>
+
+              {/* Card 3: Farm Staff */}
+              <div style={{ background: '#f8fafc', border: '2px solid #fde047', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.7rem', background: '#fef9c3', color: '#a16207', fontWeight: '800', padding: '2px 8px', borderRadius: '12px' }}>
+                    TIER 3 (FIELD)
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: '#854d0e', margin: '0 0 6px 0' }}>
+                  Farm Staff
+                </h3>
+                <p style={{ fontSize: '0.75rem', color: '#475569', marginBottom: '12px', lineHeight: 1.4 }}>
+                  Field verification, geotagged proof review & crop monitoring.
+                </p>
+                <div style={{ fontSize: '0.72rem', color: '#1e293b', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div> <strong>Activity Validation:</strong> Inspect photo proofs & GPS locations</div>
+                  <div> <strong>Crop Management:</strong> Plot stages & predicted harvest time</div>
+                  <div> <strong>Critical Alerts:</strong> Quick-link response to synthetic input risks</div>
+                  <div> <strong>Farmer Oversight:</strong> Assigned plot supervision & livestock logs</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '20px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: '600' }}>
+                 <strong>Adviser Alignment:</strong> Roles follow standard multi-tier organic cooperative hierarchy under Republic Act 11511 (Organic Agriculture Act).
+              </span>
+              <button 
+                onClick={() => setShowRoleGuide(false)}
+                className="btn-primary"
+                style={{ padding: '6px 14px', fontSize: '0.75rem' }}
+              >
+                Close Guide
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </header>
  );
 };
 

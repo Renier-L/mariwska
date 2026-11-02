@@ -159,7 +159,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  { id: 2, text: 'Schedule organic Foliar Nitrogen spray for Plot P-007 (Eggplant) to reverse 28% soil nutrient depletion', checked: true, priority: 'HIGH' },
  { id: 3, text: 'Initiate heat stress micro-shading protocol across Sector B plots for 22% temperature anomaly mitigation', checked: false, priority: 'MEDIUM' },
  { id: 4, text: 'Adjust Swine Herd Pen #2 feed formulation to +1.4 kg/wk daily gain target', checked: true, priority: 'MEDIUM' },
- { id: 5, text: 'Advance harvest window timing by 4 days for Plot P-034 based on Random Forest maturity prediction', checked: false, priority: 'HIGH' },
+ { id: 5, text: 'Advance harvest window timing by 4 days for Plot P-034 based on AI crop maturity prediction', checked: false, priority: 'HIGH' },
  { id: 6, text: 'Dispatch farm staff for mandatory geotag validation on Plot P-055 pending task submission', checked: false, priority: 'MEDIUM' }
  ]);
 
@@ -171,7 +171,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  setCommittedAlert(true);
  if (publishAnnouncement) {
  await publishAnnouncement({
- title: ' Random Forest AI Strategic Action Plan Committed',
+ title: ' AI Strategic Action Plan Committed',
  content: 'Super Admin committed live AI risk mitigation plan: Automated fertigation, Nitrogen spray boost, and advance harvest windows deployed.'
  });
  }
@@ -301,7 +301,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  return '';
  }
 
- // Generate random predictive variance per crop type (Random Forest Model Simulation)
+ // Generate random predictive variance per crop type (AI Crop Intelligence Model Simulation)
  let baseKg = 400;
  if (name.includes('tomato') || name.includes('kamatis')) baseKg = 460 + Math.floor(Math.random() * 50);
  else if (name.includes('eggplant') || name.includes('talong')) baseKg = 360 + Math.floor(Math.random() * 45);
@@ -707,7 +707,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  riskScore = 24;
  riskLabel = 'Low';
  cls = 'pill-compliant';
- reason = `Plot parameters within normal Random Forest prediction range`;
+ reason = `Plot parameters within normal AI model prediction range`;
  }
 
  list.push({
@@ -1585,7 +1585,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0c3619', margin: '2px 0' }}>
  {dynamicMonthlyYieldForecast.reduce((sum, m) => sum + m.predictedKg, 0).toLocaleString()} kg
  </div>
- <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700' }}>Random Forest Model</div>
+ <div style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700' }}>AI Crop Intelligence Model</div>
  </div>
  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#15803d' }}>
  <Sparkles size={20} />
@@ -1709,7 +1709,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  Organic Yield Performance & AI Prediction
  </h4>
  <span style={{ fontSize: '0.68rem', background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '10px', fontWeight: '800' }}>
- Random Forest Forecast
+ AI Harvest Forecast
  </span>
  </div>
 
@@ -2295,8 +2295,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <div className="m-card">
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
  <div>
- <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Live Harvest Output vs. AI Model Target</h4>
- <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>Actual yield output by registered crop variety vs Random Forest AI target</span>
+ <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#111827' }}>Actual Yield vs Prediction</h4>
+ <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>Actual harvest yield output (kg) vs AI model predicted target</span>
  </div>
  <span style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', fontWeight: '800', padding: '2px 8px', borderRadius: '10px' }}> Live Supabase Data</span>
  </div>
@@ -2305,10 +2305,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <BarChart data={dynamicHarvestPerformanceData}>
  <XAxis dataKey="crop" stroke="#94a3b8" fontSize={11} />
  <YAxis stroke="#94a3b8" fontSize={11} />
- <Tooltip formatter={(value, name) => [`${value} kg`, name === 'actualYield' ? 'Actual Harvest Yield' : 'AI Model Target']} />
+ <Tooltip formatter={(value, name) => [`${value} kg`, name === 'actualYield' ? 'Actual Yield' : 'Predicted Yield']} />
  <Legend verticalAlign="top" height={30} iconSize={8} />
- <Bar dataKey="actualYield" name="Actual Harvest (kg)" fill="#d97706" radius={[4, 4, 0, 0]} />
- <Bar dataKey="aiTarget" name="AI Model Target (kg)" fill="#16a34a" radius={[4, 4, 0, 0]} />
+ <Bar dataKey="actualYield" name="Actual Yield (kg)" fill="#d97706" radius={[4, 4, 0, 0]} />
+ <Bar dataKey="aiTarget" name="Predicted Yield (kg)" fill="#16a34a" radius={[4, 4, 0, 0]} />
  </BarChart>
  </ResponsiveContainer>
  </div>
@@ -2383,7 +2383,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  setIsRunningAiAudit(true);
  setTimeout(() => {
  setIsRunningAiAudit(false);
- setAiAuditNotice(` Random Forest AI Audit complete! Evaluated ${crops.length} crop plots, ${livestock.length} livestock herds, and ${validations.length} field logs with 96.4% prediction confidence.`);
+ setAiAuditNotice(` AI Crop & Risk Audit complete! Evaluated ${crops.length} crop plots, ${livestock.length} livestock herds, and ${validations.length} field logs with 96.4% prediction confidence.`);
  setTimeout(() => setAiAuditNotice(''), 6000);
  }, 1000);
  };
@@ -2435,10 +2435,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
  <div>
  <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
- AI Decision Support Engine & Random Forest Classifier
+ AI Decision Support & Predictive Yield Engine
  </h1>
  <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
- Machine Learning Random Forest risk classification model, feature importance weighting & live intervention recommendations
+ Machine Learning predictive risk model, feature importance weighting & live intervention recommendations
  </p>
  </div>
 
@@ -2489,7 +2489,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <div className="m-card">
  <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
  <div>
- <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Random Forest Predictive Yield Horizon</h4>
+ <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Predictive Yield Horizon</h4>
  <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>8-week predictive yield curve (Actual vs RF Model)</span>
  </div>
  <span style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#15803d', fontWeight: '800', padding: '2px 8px', borderRadius: '10px' }}>Confidence 96.4%</span>
@@ -2510,7 +2510,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  {/* Chart 2: Feature Importance Weights */}
  <div className="m-card">
  <div style={{ marginBottom: '12px' }}>
- <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Random Forest Feature Importance Weights</h4>
+ <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827' }}>Key Growth & Soil Influence Factors</h4>
  <span style={{ fontSize: '0.72rem', color: '#6b7280' }}>Gini impurity contribution ratio per environmental variable</span>
  </div>
  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -2604,9 +2604,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  <div>
  <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
  <CheckCircle2 size={18} color="#16a34a" />
- Random Forest AI System Recommendations & Action Plan
+ AI System Recommendations & Action Plan
  </h4>
- <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Executive operational checklist generated from Random Forest feature weights</span>
+ <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>Operational action plan generated from model feature weights</span>
  </div>
  <button onClick={handleCommitPlan} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
  Commit Recommendations to Supabase
@@ -3052,7 +3052,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  </div>
  <div>
  <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, color: '#0c3619' }}> Register Crop Plot & AI Yield Engine</h3>
- <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>Random Forest Algorithmic Harvest Prediction Active</span>
+ <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: '700' }}>AI Harvest Prediction Active</span>
  </div>
  </div>
 
@@ -3133,7 +3133,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  />
  <div style={{ fontSize: '0.72rem', color: '#166534', marginTop: '6px', fontWeight: '600' }}>
  {newCropForm.variety ? (
- ` Estimated harvest yield generated live by Random Forest algorithm for ${newCropForm.variety} (${newCropForm.growthStage} stage).`
+ ` Estimated harvest yield generated live by predictive model for ${newCropForm.variety} (${newCropForm.growthStage} stage).`
  ) : (
  ` Click Tomato, Eggplant, Okra, or Squash above to auto-calculate harvest yield prediction.`
  )}
@@ -3396,7 +3396,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  </div>
  <div>
  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#111827' }}>
- Random Forest AI Risk Analysis
+ AI Compliance & Risk Analysis
  </h3>
  <span style={{ fontSize: '0.78rem', color: '#11592c', fontWeight: '700' }}>
  {selectedInterventionModal.plot} · {selectedInterventionModal.name}
@@ -3438,7 +3438,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
  plot: selectedInterventionModal.plot,
  date: new Date().toISOString().split('T')[0],
  time: '09:00 AM',
- protocol: 'Random Forest AI Risk Mitigation Protocol',
+ protocol: 'AI Risk Mitigation Protocol',
  assignedTo: 'Regional Farm Staff',
  priority: 'HIGH'
  });

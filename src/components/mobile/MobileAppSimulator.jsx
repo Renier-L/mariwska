@@ -663,7 +663,134 @@ const MobileAppSimulator = () => {
  </div>
  </div>
 
- {/* Organic Certification Status Card */}
+ 
+					
+					{/* ADVISER CASE: Assigned Crops & Quick Daily Field Task */}
+					<div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '14px', marginTop: '12px' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+							<span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#111827' }}>MY PLANTED CROPS</span>
+							<span style={{ fontSize: '0.68rem', color: '#15803d', fontWeight: '700' }}>3 Crops Registered</span>
+						</div>
+						<div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+							<div style={{ flex: 1, background: '#f5f3ff', border: '1.5px solid #c084fc', padding: '8px 10px', borderRadius: '10px', textAlign: 'center' }}>
+								<span style={{ fontSize: '1.1rem' }}>🍆</span>
+								<div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#6b21a8' }}>Eggplant</div>
+								<div style={{ fontSize: '0.62rem', color: '#7e22ce' }}>Plot 1 (Aug 1)</div>
+							</div>
+							<div style={{ flex: 1, background: '#f0fdf4', border: '1.5px solid #86efac', padding: '8px 10px', borderRadius: '10px', textAlign: 'center' }}>
+								<span style={{ fontSize: '1.1rem' }}>🌱</span>
+								<div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#166534' }}>Sitaw</div>
+								<div style={{ fontSize: '0.62rem', color: '#15803d' }}>Plot 2 (Jul 10)</div>
+							</div>
+							<div style={{ flex: 1, background: '#ecfdf5', border: '1.5px solid #6ee7b7', padding: '8px 10px', borderRadius: '10px', textAlign: 'center' }}>
+								<span style={{ fontSize: '1.1rem' }}>🌿</span>
+								<div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#065f46' }}>Okra</div>
+								<div style={{ fontSize: '0.62rem', color: '#047857' }}>Plot 3 (Jun 20)</div>
+							</div>
+						</div>
+
+						{/* Daily Activity Logging Shortcut: Aug 2 - Watering Plot 1 & 2 */}
+						<div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+							<div>
+								<div style={{ fontSize: '0.75rem', fontWeight: '800', color: '#0f172a' }}>Today's Assigned Task</div>
+								<div style={{ fontSize: '0.68rem', color: '#64748b' }}>Aug 2 · Watering Plot 1 & Plot 2 (10L)</div>
+							</div>
+							<button 
+								onClick={() => {
+									setSelectedPlot('Plot 1 (Plot P-001)');
+									setActivity('Watering');
+									setInputAmount(10);
+									setActiveTab('log');
+								}}
+								style={{
+									background: '#11592c', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer'
+								}}
+							>
+								Log Task Now →
+							</button>
+						</div>
+					</div>
+
+
+{/* ADVISER RECOMMENDATION: Eggplant Lifecycle & Actual Yield vs Prediction Card */}
+					<div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #86efac', padding: '16px', marginTop: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+								<span style={{ fontSize: '1.4rem' }}>🍆</span>
+								<div>
+									<h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', margin: 0 }}>
+										Eggplant · Mistisa F1 (Plot P-021)
+									</h4>
+									<span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
+										Planted: Sep 17, 2024 (Day 1)
+									</span>
+								</div>
+							</div>
+							<span style={{ fontSize: '0.68rem', background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '12px', fontWeight: '800' }}>
+								Stage 4: Harvesting
+							</span>
+						</div>
+
+						{/* 4-Stage Stepper: Seedling -> Vegetative -> Fruiting -> Harvesting */}
+						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '12px 0 14px 0' }}>
+							{[
+								{ name: 'Germination', days: 'Planted Aug 1' },
+								{ name: 'Vegetative', days: 'Predict Sept 1' },
+								{ name: 'Flowering', days: 'Predict Oct 15' },
+								{ name: 'Fruiting & Harvest', days: 'Predict Dec 20' }
+							].map((stg, sIdx) => (
+								<div key={stg.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+									<div style={{
+										width: '24px', height: '24px', borderRadius: '50%',
+										background: '#15803d', color: '#ffffff',
+										fontSize: '0.65rem', fontWeight: '800',
+										display: 'flex', alignItems: 'center', justifyContent: 'center'
+									}}>
+										✓
+									</div>
+									<span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#15803d', marginTop: '4px' }}>
+										{stg.name}
+									</span>
+									<span style={{ fontSize: '0.58rem', color: '#64748b' }}>
+										{stg.days}
+									</span>
+								</div>
+							))}
+						</div>
+
+						{/* Actual Yield vs Prediction Comparison Card */}
+						<div style={{ background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '12px' }}>
+							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+								<span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase' }}>
+									Actual Yield vs Prediction
+								</span>
+								<span style={{ fontSize: '0.68rem', background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '8px', fontWeight: '800' }}>
+									94.0% Model Accuracy
+								</span>
+							</div>
+
+							<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+								<div style={{ background: '#ffffff', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #86efac' }}>
+									<div style={{ fontSize: '0.65rem', color: '#64748b' }}>Predicted Target</div>
+									<div style={{ fontSize: '1rem', fontWeight: '900', color: '#15803d' }}>420 kg</div>
+									<div style={{ fontSize: '0.65rem', color: '#15803d', fontWeight: '700' }}>Target: Dec 20, 2024</div>
+								</div>
+								<div style={{ background: '#ffffff', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #fdba74' }}>
+									<div style={{ fontSize: '0.65rem', color: '#64748b' }}>Actual Harvest Input</div>
+									<div style={{ fontSize: '1rem', fontWeight: '900', color: '#ea580c' }}>395 kg</div>
+									<div style={{ fontSize: '0.65rem', color: '#ea580c', fontWeight: '700' }}>Logged: Jan 15, 2025</div>
+								</div>
+							</div>
+
+							<div style={{ fontSize: '0.7rem', color: '#1e293b', background: '#ffffff', padding: '6px 10px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', border: '1px solid #e2e8f0' }}>
+								<span>Harvest Variance: <strong>-25 kg (-5.9%)</strong></span>
+								<span style={{ color: '#15803d', fontWeight: '800' }}>Passed Organic Standard</span>
+							</div>
+						</div>
+					</div>
+
+
+					{/* Organic Certification Status Card */}
  <div style={{ background: '#dcfce7', border: '1px solid #86efac', borderRadius: '14px', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
  <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: '#166534', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
  <ShieldCheck size={18} />
@@ -997,7 +1124,7 @@ const MobileAppSimulator = () => {
  <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '16px', marginBottom: '14px', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
  <span style={{ background: '#059669', color: '#fff', fontSize: '0.65rem', padding: '3px 8px', borderRadius: '4px', fontWeight: '800' }}>RF Classifier</span>
- <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>Random Forest</span>
+ <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>AI Crop Predictor</span>
  </div>
 
  <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '800', textTransform: 'uppercase' }}>RECOMMENDED CROP VARIETY</div>

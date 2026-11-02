@@ -1,0 +1,21 @@
+block_id,soil_type,soil_ph,drainage,data_source
+B001,Sandy loam,5.69,Good,synthetic
+B002,Loam,5.92,Poor,synthetic
+B003,Sandy loam,5.67,Good,synthetic
+B004,Sandy loam,5.65,Moderate,synthetic
+B005,Clay,5.55,Poor,synthetic
+B006,Clay,6.36,Poor,synthetic
+B007,Sandy loam,5.84,Good,synthetic
+B008,Sandy loam,6.43,Poor,synthetic
+B009,Loam,6.5,Poor,synthetic
+B010,Clay,6.69,Moderate,synthetic
+B011,Loam,5.76,Moderate,synthetic
+B012,Clay,5.66,Poor,synthetic
+B013,Loam,6.94,Good,synthetic
+B014,Loam,6.87,Good,synthetic
+B015,Loam,6.41,Moderate,synthetic
+B016,Clay,6.44,Good,synthetic
+B017,Sandy loam,7.01,Moderate,synthetic
+B018,Sandy loam,5.83,Poor,synthetic
+B019,Clay,6.62,Moderate,synthetic
+B020,Clay,6.95,Poor,synthetic

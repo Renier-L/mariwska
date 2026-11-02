@@ -13,7 +13,7 @@ import './styles/theme.css';
 const VALID_TABS = {
  super_admin: ['dashboard', 'member-records', 'user-accounts', 'activity-monitoring', 'scheduling', 'announcements', 'crop-monitoring', 'livestock-monitoring', 'analytics', 'decision-support', 'reports'],
  admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
- farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'livestock-management', 'reports']
+ farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'reports']
 };
 
 const MainContent = () => {

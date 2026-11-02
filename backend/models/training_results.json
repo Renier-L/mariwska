@@ -1,0 +1,123 @@
+{
+  "crop_recommendation": {
+    "data_type": "synthetic",
+    "train_rows": 1579,
+    "test_rows": 421,
+    "metric": "accuracy",
+    "value": 0.7007,
+    "predictor_columns": [
+      "crop",
+      "area_m2",
+      "soil_type",
+      "soil_ph",
+      "drainage",
+      "season",
+      "temp_c",
+      "rainfall_mm_month"
+    ],
+    "target": "planting_success"
+  },
+  "crop_yield": {
+    "data_type": "synthetic",
+    "train_rows": 1579,
+    "test_rows": 421,
+    "metric": "MAE (kg)",
+    "value": 193.7417,
+    "predictor_columns": [
+      "crop",
+      "area_m2",
+      "soil_type",
+      "soil_ph",
+      "drainage",
+      "season",
+      "temp_c",
+      "rainfall_mm_month"
+    ],
+    "target": "actual_yield_kg"
+  },
+  "crop_risk": {
+    "data_type": "synthetic",
+    "train_rows": 1579,
+    "test_rows": 421,
+    "metric": "accuracy",
+    "value": 0.7055,
+    "predictor_columns": [
+      "crop",
+      "area_m2",
+      "soil_type",
+      "soil_ph",
+      "drainage",
+      "season",
+      "temp_c",
+      "rainfall_mm_month"
+    ],
+    "target": "pest_incident_next_30d"
+  },
+  "crop_compliance": {
+    "data_type": "synthetic",
+    "train_rows": 1600,
+    "test_rows": 400,
+    "metric": "accuracy",
+    "value": 0.9475,
+    "predictor_columns": [
+      "crop",
+      "organic_input_verified",
+      "documentation_complete"
+    ],
+    "target": "inspection_noncompliant"
+  },
+  "crop_tasks": {
+    "data_type": "synthetic",
+    "train_rows": 1600,
+    "test_rows": 400,
+    "metric": "accuracy",
+    "value": 1.0,
+    "predictor_columns": [
+      "crop",
+      "days_until_due",
+      "pest_alert",
+      "soil_moisture_pct"
+    ],
+    "target": "priority"
+  },
+  "goat_health_risk": {
+    "data_type": "synthetic",
+    "train_rows": 808,
+    "test_rows": 192,
+    "metric": "accuracy",
+    "value": 0.7135,
+    "predictor_columns": [
+      "age_months",
+      "weight_kg",
+      "appetite",
+      "lethargy",
+      "diarrhea",
+      "body_temp_c"
+    ],
+    "target": "veterinary_attention_next_7d"
+  },
+  "goat_compliance": {
+    "data_type": "synthetic",
+    "train_rows": 808,
+    "test_rows": 192,
+    "metric": "accuracy",
+    "value": 0.9427,
+    "predictor_columns": [
+      "feed_source_verified",
+      "treatment_records_complete"
+    ],
+    "target": "inspection_noncompliant"
+  },
+  "goat_tasks": {
+    "data_type": "synthetic",
+    "train_rows": 808,
+    "test_rows": 192,
+    "metric": "accuracy",
+    "value": 1.0,
+    "predictor_columns": [
+      "days_until_due",
+      "health_alert"
+    ],
+    "target": "priority"
+  }
+}

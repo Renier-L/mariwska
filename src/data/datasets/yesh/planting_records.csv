@@ -1,0 +1,2001 @@
+planting_id,block_id,crop,area_m2,soil_type,soil_ph,drainage,season,temp_c,rainfall_mm_month,data_source
+P00001,B013,Tomato,266,Loam,6.94,Good,Wet,24.4,231.9,synthetic
+P00002,B008,Eggplant,755,Sandy loam,6.43,Poor,Dry,26.5,72.5,synthetic
+P00003,B011,Okra,680,Loam,5.76,Moderate,Wet,27.8,237.4,synthetic
+P00004,B008,Squash,697,Sandy loam,6.43,Poor,Wet,28.0,167.7,synthetic
+P00005,B005,Tomato,165,Clay,5.55,Poor,Dry,28.5,24.6,synthetic
+P00006,B018,Eggplant,400,Sandy loam,5.83,Poor,Wet,28.2,173.8,synthetic
+P00007,B004,Okra,303,Sandy loam,5.65,Moderate,Wet,29.3,170.1,synthetic
+P00008,B016,Squash,414,Clay,6.44,Good,Dry,29.4,89.6,synthetic
+P00009,B018,Tomato,662,Sandy loam,5.83,Poor,Dry,29.6,97.8,synthetic
+P00010,B010,Eggplant,548,Clay,6.69,Moderate,Wet,30.9,208.2,synthetic
+P00011,B019,Okra,160,Clay,6.62,Moderate,Dry,31.1,67.8,synthetic
+P00012,B007,Squash,690,Sandy loam,5.84,Good,Dry,27.3,0,synthetic
+P00013,B014,Tomato,789,Loam,6.87,Good,Wet,24.8,223.3,synthetic
+P00014,B007,Eggplant,287,Sandy loam,5.84,Good,Dry,26.9,60.0,synthetic
+P00015,B001,Okra,270,Sandy loam,5.69,Good,Dry,31.5,30.3,synthetic
+P00016,B015,Squash,669,Loam,6.41,Moderate,Wet,23.6,256.7,synthetic
+P00017,B002,Tomato,614,Loam,5.92,Poor,Wet,30.5,228.6,synthetic
+P00018,B013,Eggplant,692,Loam,6.94,Good,Dry,30.4,46.4,synthetic
+P00019,B011,Okra,760,Loam,5.76,Moderate,Dry,27.9,86.1,synthetic
+P00020,B003,Squash,457,Sandy loam,5.67,Good,Dry,26.9,64.2,synthetic
+P00021,B020,Tomato,779,Clay,6.95,Poor,Dry,26.7,20.8,synthetic
+P00022,B011,Eggplant,617,Loam,5.76,Moderate,Dry,26.5,0,synthetic
+P00023,B001,Okra,368,Sandy loam,5.69,Good,Wet,28.4,153.5,synthetic
+P00024,B018,Squash,251,Sandy loam,5.83,Poor,Dry,29.3,19.4,synthetic
+P00025,B008,Tomato,516,Sandy loam,6.43,Poor,Dry,26.4,105.8,synthetic
+P00026,B014,Eggplant,521,Loam,6.87,Good,Dry,30.0,147.1,synthetic
+P00027,B002,Okra,571,Loam,5.92,Poor,Wet,28.6,282.6,synthetic
+P00028,B009,Squash,756,Loam,6.5,Poor,Dry,29.6,58.3,synthetic
+P00029,B019,Tomato,453,Clay,6.62,Moderate,Wet,30.6,222.8,synthetic
+P00030,B009,Eggplant,651,Loam,6.5,Poor,Dry,28.0,62.8,synthetic
+P00031,B020,Okra,407,Clay,6.95,Poor,Wet,27.5,192.3,synthetic
+P00032,B013,Squash,661,Loam,6.94,Good,Dry,26.7,42.5,synthetic
+P00033,B015,Tomato,853,Loam,6.41,Moderate,Wet,26.9,167.3,synthetic
+P00034,B010,Eggplant,147,Clay,6.69,Moderate,Dry,28.4,43.8,synthetic
+P00035,B013,Okra,804,Loam,6.94,Good,Wet,27.1,223.3,synthetic
+P00036,B015,Squash,224,Loam,6.41,Moderate,Dry,23.8,33.5,synthetic
+P00037,B014,Tomato,586,Loam,6.87,Good,Wet,30.6,170.3,synthetic
+P00038,B009,Eggplant,378,Loam,6.5,Poor,Wet,29.5,225.4,synthetic
+P00039,B003,Okra,525,Sandy loam,5.67,Good,Wet,25.9,237.4,synthetic
+P00040,B016,Squash,499,Clay,6.44,Good,Dry,29.6,53.1,synthetic
+P00041,B016,Tomato,498,Clay,6.44,Good,Dry,27.7,110.6,synthetic
+P00042,B001,Eggplant,185,Sandy loam,5.69,Good,Wet,25.5,177.8,synthetic
+P00043,B011,Okra,870,Loam,5.76,Moderate,Wet,28.1,171.0,synthetic
+P00044,B008,Squash,872,Sandy loam,6.43,Poor,Dry,28.6,8.0,synthetic
+P00045,B019,Tomato,477,Clay,6.62,Moderate,Dry,26.5,71.7,synthetic
+P00046,B019,Eggplant,484,Clay,6.62,Moderate,Dry,30.4,42.4,synthetic
+P00047,B020,Okra,142,Clay,6.95,Poor,Dry,28.7,15.5,synthetic
+P00048,B016,Squash,570,Clay,6.44,Good,Dry,26.3,80.4,synthetic
+P00049,B015,Tomato,430,Loam,6.41,Moderate,Wet,29.2,162.4,synthetic
+P00050,B011,Eggplant,599,Loam,5.76,Moderate,Dry,26.2,66.3,synthetic
+P00051,B007,Okra,668,Sandy loam,5.84,Good,Dry,28.1,105.8,synthetic
+P00052,B008,Squash,695,Sandy loam,6.43,Poor,Wet,27.4,178.1,synthetic
+P00053,B010,Tomato,423,Clay,6.69,Moderate,Wet,28.4,273.5,synthetic
+P00054,B019,Eggplant,403,Clay,6.62,Moderate,Wet,31.8,200.8,synthetic
+P00055,B010,Okra,205,Clay,6.69,Moderate,Dry,25.8,14.0,synthetic
+P00056,B016,Squash,175,Clay,6.44,Good,Dry,28.9,28.6,synthetic
+P00057,B018,Tomato,331,Sandy loam,5.83,Poor,Wet,25.2,166.2,synthetic
+P00058,B019,Eggplant,881,Clay,6.62,Moderate,Dry,25.5,23.3,synthetic
+P00059,B001,Okra,398,Sandy loam,5.69,Good,Wet,25.4,226.4,synthetic
+P00060,B014,Squash,372,Loam,6.87,Good,Dry,25.2,49.0,synthetic
+P00061,B015,Tomato,512,Loam,6.41,Moderate,Dry,26.3,71.7,synthetic
+P00062,B020,Eggplant,790,Clay,6.95,Poor,Wet,29.4,214.7,synthetic
+P00063,B016,Okra,699,Clay,6.44,Good,Wet,29.1,197.3,synthetic
+P00064,B006,Squash,778,Clay,6.36,Poor,Wet,26.0,234.7,synthetic
+P00065,B013,Tomato,523,Loam,6.94,Good,Dry,26.6,23.2,synthetic
+P00066,B009,Eggplant,815,Loam,6.5,Poor,Dry,29.9,46.1,synthetic
+P00067,B001,Okra,216,Sandy loam,5.69,Good,Wet,33.2,278.9,synthetic
+P00068,B014,Squash,664,Loam,6.87,Good,Wet,29.5,206.3,synthetic
+P00069,B014,Tomato,102,Loam,6.87,Good,Wet,30.2,190.9,synthetic
+P00070,B012,Eggplant,566,Clay,5.66,Poor,Wet,25.6,193.9,synthetic
+P00071,B002,Okra,490,Loam,5.92,Poor,Wet,27.9,147.5,synthetic
+P00072,B004,Squash,115,Sandy loam,5.65,Moderate,Wet,31.6,261.5,synthetic
+P00073,B020,Tomato,790,Clay,6.95,Poor,Wet,25.7,146.8,synthetic
+P00074,B002,Eggplant,394,Loam,5.92,Poor,Dry,28.3,125.5,synthetic
+P00075,B015,Okra,147,Loam,6.41,Moderate,Dry,26.5,0,synthetic
+P00076,B006,Squash,734,Clay,6.36,Poor,Dry,31.6,103.5,synthetic
+P00077,B001,Tomato,261,Sandy loam,5.69,Good,Wet,30.4,175.0,synthetic
+P00078,B007,Eggplant,490,Sandy loam,5.84,Good,Wet,28.6,194.9,synthetic
+P00079,B019,Okra,393,Clay,6.62,Moderate,Dry,30.8,29.8,synthetic
+P00080,B004,Squash,693,Sandy loam,5.65,Moderate,Dry,27.2,105.2,synthetic
+P00081,B018,Tomato,268,Sandy loam,5.83,Poor,Wet,23.7,193.0,synthetic
+P00082,B015,Eggplant,792,Loam,6.41,Moderate,Dry,31.3,145.6,synthetic
+P00083,B001,Okra,788,Sandy loam,5.69,Good,Wet,25.9,200.0,synthetic
+P00084,B016,Squash,435,Clay,6.44,Good,Dry,24.5,0,synthetic
+P00085,B005,Tomato,604,Clay,5.55,Poor,Dry,29.6,53.7,synthetic
+P00086,B014,Eggplant,601,Loam,6.87,Good,Dry,30.2,26.5,synthetic
+P00087,B012,Okra,760,Clay,5.66,Poor,Dry,29.9,60.4,synthetic
+P00088,B007,Squash,228,Sandy loam,5.84,Good,Dry,29.7,76.3,synthetic
+P00089,B011,Tomato,383,Loam,5.76,Moderate,Dry,28.6,12.7,synthetic
+P00090,B005,Eggplant,702,Clay,5.55,Poor,Dry,25.8,119.8,synthetic
+P00091,B016,Okra,211,Clay,6.44,Good,Wet,28.4,162.7,synthetic
+P00092,B001,Squash,536,Sandy loam,5.69,Good,Dry,31.9,64.3,synthetic
+P00093,B003,Tomato,661,Sandy loam,5.67,Good,Dry,27.6,120.9,synthetic
+P00094,B004,Eggplant,523,Sandy loam,5.65,Moderate,Dry,24.2,100.6,synthetic
+P00095,B012,Okra,193,Clay,5.66,Poor,Dry,27.1,23.2,synthetic
+P00096,B019,Squash,781,Clay,6.62,Moderate,Wet,27.0,173.9,synthetic
+P00097,B004,Tomato,210,Sandy loam,5.65,Moderate,Dry,29.3,102.9,synthetic
+P00098,B020,Eggplant,880,Clay,6.95,Poor,Wet,29.6,215.8,synthetic
+P00099,B003,Okra,261,Sandy loam,5.67,Good,Dry,26.4,95.9,synthetic
+P00100,B006,Squash,777,Clay,6.36,Poor,Dry,27.3,36.7,synthetic
+P00101,B004,Tomato,639,Sandy loam,5.65,Moderate,Wet,26.8,161.7,synthetic
+P00102,B005,Eggplant,609,Clay,5.55,Poor,Wet,27.8,229.6,synthetic
+P00103,B003,Okra,119,Sandy loam,5.67,Good,Wet,28.4,201.0,synthetic
+P00104,B010,Squash,275,Clay,6.69,Moderate,Dry,23.7,123.5,synthetic
+P00105,B019,Tomato,417,Clay,6.62,Moderate,Wet,26.0,204.0,synthetic
+P00106,B007,Eggplant,760,Sandy loam,5.84,Good,Wet,25.0,291.1,synthetic
+P00107,B006,Okra,693,Clay,6.36,Poor,Wet,25.5,221.6,synthetic
+P00108,B005,Squash,410,Clay,5.55,Poor,Wet,30.0,228.0,synthetic
+P00109,B012,Tomato,192,Clay,5.66,Poor,Wet,31.5,247.1,synthetic
+P00110,B019,Eggplant,254,Clay,6.62,Moderate,Dry,27.0,105.9,synthetic
+P00111,B002,Okra,636,Loam,5.92,Poor,Dry,26.4,0,synthetic
+P00112,B011,Squash,495,Loam,5.76,Moderate,Dry,26.8,109.8,synthetic
+P00113,B012,Tomato,501,Clay,5.66,Poor,Wet,31.0,197.5,synthetic
+P00114,B017,Eggplant,470,Sandy loam,7.01,Moderate,Dry,26.7,31.7,synthetic
+P00115,B005,Okra,203,Clay,5.55,Poor,Dry,31.4,101.0,synthetic
+P00116,B020,Squash,809,Clay,6.95,Poor,Wet,28.7,230.8,synthetic
+P00117,B015,Tomato,339,Loam,6.41,Moderate,Wet,28.1,140.0,synthetic
+P00118,B015,Eggplant,528,Loam,6.41,Moderate,Wet,28.4,163.4,synthetic
+P00119,B012,Okra,227,Clay,5.66,Poor,Dry,27.4,18.2,synthetic
+P00120,B012,Squash,482,Clay,5.66,Poor,Dry,26.3,85.5,synthetic
+P00121,B005,Tomato,583,Clay,5.55,Poor,Dry,32.3,86.3,synthetic
+P00122,B009,Eggplant,844,Loam,6.5,Poor,Dry,29.3,21.6,synthetic
+P00123,B020,Okra,611,Clay,6.95,Poor,Wet,31.5,239.3,synthetic
+P00124,B020,Squash,780,Clay,6.95,Poor,Wet,28.1,251.5,synthetic
+P00125,B001,Tomato,496,Sandy loam,5.69,Good,Wet,28.4,201.5,synthetic
+P00126,B019,Eggplant,446,Clay,6.62,Moderate,Wet,29.2,237.7,synthetic
+P00127,B005,Okra,137,Clay,5.55,Poor,Dry,27.0,0,synthetic
+P00128,B016,Squash,392,Clay,6.44,Good,Wet,30.8,223.2,synthetic
+P00129,B013,Tomato,291,Loam,6.94,Good,Wet,29.6,185.7,synthetic
+P00130,B003,Eggplant,658,Sandy loam,5.67,Good,Wet,25.0,165.4,synthetic
+P00131,B006,Okra,461,Clay,6.36,Poor,Wet,27.6,219.5,synthetic
+P00132,B012,Squash,722,Clay,5.66,Poor,Dry,29.1,58.5,synthetic
+P00133,B019,Tomato,479,Clay,6.62,Moderate,Dry,25.6,28.0,synthetic
+P00134,B008,Eggplant,630,Sandy loam,6.43,Poor,Dry,29.3,69.2,synthetic
+P00135,B016,Okra,562,Clay,6.44,Good,Dry,30.8,119.5,synthetic
+P00136,B003,Squash,828,Sandy loam,5.67,Good,Wet,31.0,160.7,synthetic
+P00137,B008,Tomato,477,Sandy loam,6.43,Poor,Wet,30.5,218.4,synthetic
+P00138,B017,Eggplant,175,Sandy loam,7.01,Moderate,Wet,28.4,136.1,synthetic
+P00139,B019,Okra,614,Clay,6.62,Moderate,Dry,28.1,44.1,synthetic
+P00140,B012,Squash,750,Clay,5.66,Poor,Wet,28.9,185.0,synthetic
+P00141,B019,Tomato,719,Clay,6.62,Moderate,Dry,29.3,114.3,synthetic
+P00142,B007,Eggplant,742,Sandy loam,5.84,Good,Wet,27.6,203.3,synthetic
+P00143,B015,Okra,525,Loam,6.41,Moderate,Dry,27.6,43.3,synthetic
+P00144,B013,Squash,208,Loam,6.94,Good,Dry,28.2,17.0,synthetic
+P00145,B020,Tomato,263,Clay,6.95,Poor,Wet,28.0,290.1,synthetic
+P00146,B016,Eggplant,502,Clay,6.44,Good,Wet,27.1,210.3,synthetic
+P00147,B010,Okra,370,Clay,6.69,Moderate,Dry,29.2,30.2,synthetic
+P00148,B018,Squash,882,Sandy loam,5.83,Poor,Wet,30.1,231.1,synthetic
+P00149,B012,Tomato,247,Clay,5.66,Poor,Wet,26.2,196.4,synthetic
+P00150,B017,Eggplant,243,Sandy loam,7.01,Moderate,Wet,30.5,278.1,synthetic
+P00151,B017,Okra,117,Sandy loam,7.01,Moderate,Wet,27.6,177.4,synthetic
+P00152,B020,Squash,894,Clay,6.95,Poor,Wet,27.7,268.1,synthetic
+P00153,B005,Tomato,212,Clay,5.55,Poor,Dry,32.8,84.2,synthetic
+P00154,B002,Eggplant,778,Loam,5.92,Poor,Dry,25.5,59.0,synthetic
+P00155,B009,Okra,671,Loam,6.5,Poor,Wet,28.5,238.1,synthetic
+P00156,B011,Squash,838,Loam,5.76,Moderate,Wet,25.3,285.8,synthetic
+P00157,B010,Tomato,454,Clay,6.69,Moderate,Dry,27.3,126.5,synthetic
+P00158,B005,Eggplant,348,Clay,5.55,Poor,Dry,26.0,29.7,synthetic
+P00159,B004,Okra,261,Sandy loam,5.65,Moderate,Dry,30.5,66.6,synthetic
+P00160,B010,Squash,687,Clay,6.69,Moderate,Dry,28.7,55.5,synthetic
+P00161,B002,Tomato,866,Loam,5.92,Poor,Wet,28.3,185.0,synthetic
+P00162,B010,Eggplant,605,Clay,6.69,Moderate,Wet,30.5,206.6,synthetic
+P00163,B015,Okra,445,Loam,6.41,Moderate,Wet,27.9,203.4,synthetic
+P00164,B017,Squash,289,Sandy loam,7.01,Moderate,Wet,30.5,240.8,synthetic
+P00165,B011,Tomato,367,Loam,5.76,Moderate,Wet,25.7,184.2,synthetic
+P00166,B010,Eggplant,476,Clay,6.69,Moderate,Dry,24.9,0,synthetic
+P00167,B014,Okra,323,Loam,6.87,Good,Wet,28.2,138.1,synthetic
+P00168,B003,Squash,617,Sandy loam,5.67,Good,Dry,30.3,84.1,synthetic
+P00169,B003,Tomato,625,Sandy loam,5.67,Good,Wet,28.8,169.0,synthetic
+P00170,B009,Eggplant,146,Loam,6.5,Poor,Dry,27.9,12.5,synthetic
+P00171,B010,Okra,756,Clay,6.69,Moderate,Wet,28.5,229.5,synthetic
+P00172,B003,Squash,282,Sandy loam,5.67,Good,Dry,26.9,34.6,synthetic
+P00173,B018,Tomato,353,Sandy loam,5.83,Poor,Wet,24.4,195.2,synthetic
+P00174,B020,Eggplant,708,Clay,6.95,Poor,Dry,28.0,79.9,synthetic
+P00175,B008,Okra,243,Sandy loam,6.43,Poor,Dry,28.1,0,synthetic
+P00176,B008,Squash,633,Sandy loam,6.43,Poor,Wet,32.2,128.2,synthetic
+P00177,B018,Tomato,758,Sandy loam,5.83,Poor,Wet,29.8,220.7,synthetic
+P00178,B018,Eggplant,824,Sandy loam,5.83,Poor,Wet,28.1,238.5,synthetic
+P00179,B013,Okra,180,Loam,6.94,Good,Dry,27.9,100.8,synthetic
+P00180,B020,Squash,879,Clay,6.95,Poor,Dry,28.9,46.6,synthetic
+P00181,B007,Tomato,348,Sandy loam,5.84,Good,Dry,27.9,0,synthetic
+P00182,B015,Eggplant,609,Loam,6.41,Moderate,Wet,27.3,245.3,synthetic
+P00183,B011,Okra,859,Loam,5.76,Moderate,Wet,31.8,232.6,synthetic
+P00184,B011,Squash,611,Loam,5.76,Moderate,Dry,25.2,116.9,synthetic
+P00185,B015,Tomato,243,Loam,6.41,Moderate,Dry,27.8,27.9,synthetic
+P00186,B002,Eggplant,882,Loam,5.92,Poor,Dry,30.8,44.9,synthetic
+P00187,B015,Okra,731,Loam,6.41,Moderate,Wet,30.6,231.1,synthetic
+P00188,B009,Squash,790,Loam,6.5,Poor,Wet,31.6,217.9,synthetic
+P00189,B009,Tomato,482,Loam,6.5,Poor,Wet,27.8,250.0,synthetic
+P00190,B002,Eggplant,587,Loam,5.92,Poor,Dry,26.4,86.8,synthetic
+P00191,B019,Okra,335,Clay,6.62,Moderate,Dry,31.5,9.9,synthetic
+P00192,B018,Squash,116,Sandy loam,5.83,Poor,Dry,29.7,135.4,synthetic
+P00193,B006,Tomato,793,Clay,6.36,Poor,Dry,24.4,33.3,synthetic
+P00194,B002,Eggplant,448,Loam,5.92,Poor,Dry,24.5,94.4,synthetic
+P00195,B016,Okra,542,Clay,6.44,Good,Dry,25.1,139.9,synthetic
+P00196,B003,Squash,749,Sandy loam,5.67,Good,Wet,29.8,262.0,synthetic
+P00197,B004,Tomato,670,Sandy loam,5.65,Moderate,Dry,29.8,87.1,synthetic
+P00198,B013,Eggplant,186,Loam,6.94,Good,Dry,27.5,103.3,synthetic
+P00199,B006,Okra,249,Clay,6.36,Poor,Dry,27.8,96.4,synthetic
+P00200,B016,Squash,106,Clay,6.44,Good,Dry,27.0,70.6,synthetic
+P00201,B020,Tomato,811,Clay,6.95,Poor,Dry,27.2,116.7,synthetic
+P00202,B011,Eggplant,473,Loam,5.76,Moderate,Wet,27.3,279.0,synthetic
+P00203,B015,Okra,809,Loam,6.41,Moderate,Dry,26.5,77.5,synthetic
+P00204,B009,Squash,175,Loam,6.5,Poor,Dry,27.2,0,synthetic
+P00205,B002,Tomato,708,Loam,5.92,Poor,Wet,26.9,140.2,synthetic
+P00206,B019,Eggplant,540,Clay,6.62,Moderate,Wet,29.8,202.6,synthetic
+P00207,B015,Okra,702,Loam,6.41,Moderate,Wet,25.3,253.5,synthetic
+P00208,B005,Squash,311,Clay,5.55,Poor,Wet,27.2,250.8,synthetic
+P00209,B002,Tomato,211,Loam,5.92,Poor,Dry,29.8,70.2,synthetic
+P00210,B018,Eggplant,514,Sandy loam,5.83,Poor,Wet,29.4,202.5,synthetic
+P00211,B019,Okra,310,Clay,6.62,Moderate,Wet,25.6,250.2,synthetic
+P00212,B012,Squash,786,Clay,5.66,Poor,Wet,28.3,228.6,synthetic
+P00213,B012,Tomato,789,Clay,5.66,Poor,Wet,29.6,164.2,synthetic
+P00214,B010,Eggplant,623,Clay,6.69,Moderate,Dry,29.3,121.1,synthetic
+P00215,B018,Okra,422,Sandy loam,5.83,Poor,Dry,26.9,66.4,synthetic
+P00216,B016,Squash,554,Clay,6.44,Good,Wet,27.2,172.0,synthetic
+P00217,B018,Tomato,860,Sandy loam,5.83,Poor,Wet,29.1,248.5,synthetic
+P00218,B018,Eggplant,323,Sandy loam,5.83,Poor,Dry,28.1,21.9,synthetic
+P00219,B009,Okra,220,Loam,6.5,Poor,Wet,28.6,197.0,synthetic
+P00220,B006,Squash,160,Clay,6.36,Poor,Dry,28.8,0,synthetic
+P00221,B017,Tomato,521,Sandy loam,7.01,Moderate,Dry,30.2,115.1,synthetic
+P00222,B008,Eggplant,375,Sandy loam,6.43,Poor,Wet,25.4,213.5,synthetic
+P00223,B009,Okra,695,Loam,6.5,Poor,Wet,25.8,223.0,synthetic
+P00224,B003,Squash,316,Sandy loam,5.67,Good,Wet,28.4,251.5,synthetic
+P00225,B011,Tomato,570,Loam,5.76,Moderate,Dry,30.7,81.0,synthetic
+P00226,B010,Eggplant,195,Clay,6.69,Moderate,Dry,30.9,6.9,synthetic
+P00227,B014,Okra,588,Loam,6.87,Good,Dry,28.0,63.2,synthetic
+P00228,B014,Squash,191,Loam,6.87,Good,Dry,26.6,69.0,synthetic
+P00229,B005,Tomato,765,Clay,5.55,Poor,Dry,27.7,64.0,synthetic
+P00230,B003,Eggplant,847,Sandy loam,5.67,Good,Dry,28.7,80.8,synthetic
+P00231,B018,Okra,774,Sandy loam,5.83,Poor,Wet,28.6,149.8,synthetic
+P00232,B008,Squash,753,Sandy loam,6.43,Poor,Wet,26.9,229.5,synthetic
+P00233,B012,Tomato,888,Clay,5.66,Poor,Dry,28.4,0,synthetic
+P00234,B010,Eggplant,755,Clay,6.69,Moderate,Wet,26.2,228.7,synthetic
+P00235,B018,Okra,765,Sandy loam,5.83,Poor,Wet,25.8,246.0,synthetic
+P00236,B003,Squash,156,Sandy loam,5.67,Good,Wet,30.1,246.7,synthetic
+P00237,B006,Tomato,838,Clay,6.36,Poor,Wet,30.3,195.8,synthetic
+P00238,B014,Eggplant,690,Loam,6.87,Good,Wet,26.5,205.3,synthetic
+P00239,B004,Okra,145,Sandy loam,5.65,Moderate,Dry,28.3,112.3,synthetic
+P00240,B018,Squash,837,Sandy loam,5.83,Poor,Wet,28.2,239.8,synthetic
+P00241,B008,Tomato,576,Sandy loam,6.43,Poor,Dry,28.7,60.7,synthetic
+P00242,B010,Eggplant,477,Clay,6.69,Moderate,Wet,27.9,180.2,synthetic
+P00243,B001,Okra,751,Sandy loam,5.69,Good,Wet,30.5,217.5,synthetic
+P00244,B004,Squash,603,Sandy loam,5.65,Moderate,Dry,26.6,59.5,synthetic
+P00245,B014,Tomato,694,Loam,6.87,Good,Wet,24.8,227.1,synthetic
+P00246,B008,Eggplant,502,Sandy loam,6.43,Poor,Wet,27.9,244.7,synthetic
+P00247,B019,Okra,577,Clay,6.62,Moderate,Dry,28.7,84.9,synthetic
+P00248,B004,Squash,821,Sandy loam,5.65,Moderate,Dry,29.7,115.9,synthetic
+P00249,B013,Tomato,278,Loam,6.94,Good,Dry,27.3,37.1,synthetic
+P00250,B005,Eggplant,327,Clay,5.55,Poor,Dry,31.8,70.7,synthetic
+P00251,B003,Okra,761,Sandy loam,5.67,Good,Dry,29.3,64.5,synthetic
+P00252,B002,Squash,841,Loam,5.92,Poor,Dry,29.9,45.4,synthetic
+P00253,B009,Tomato,734,Loam,6.5,Poor,Wet,28.4,202.9,synthetic
+P00254,B014,Eggplant,355,Loam,6.87,Good,Dry,25.8,9.2,synthetic
+P00255,B012,Okra,426,Clay,5.66,Poor,Wet,27.0,226.3,synthetic
+P00256,B012,Squash,772,Clay,5.66,Poor,Dry,28.9,62.0,synthetic
+P00257,B012,Tomato,855,Clay,5.66,Poor,Dry,29.2,112.9,synthetic
+P00258,B016,Eggplant,157,Clay,6.44,Good,Wet,28.3,219.9,synthetic
+P00259,B006,Okra,821,Clay,6.36,Poor,Wet,29.1,218.3,synthetic
+P00260,B019,Squash,261,Clay,6.62,Moderate,Dry,27.1,95.2,synthetic
+P00261,B008,Tomato,401,Sandy loam,6.43,Poor,Dry,25.7,110.0,synthetic
+P00262,B006,Eggplant,326,Clay,6.36,Poor,Wet,32.6,160.1,synthetic
+P00263,B006,Okra,846,Clay,6.36,Poor,Dry,29.3,11.4,synthetic
+P00264,B001,Squash,270,Sandy loam,5.69,Good,Dry,25.6,107.7,synthetic
+P00265,B006,Tomato,401,Clay,6.36,Poor,Wet,31.5,244.6,synthetic
+P00266,B003,Eggplant,594,Sandy loam,5.67,Good,Wet,25.7,179.3,synthetic
+P00267,B011,Okra,667,Loam,5.76,Moderate,Dry,30.0,58.4,synthetic
+P00268,B019,Squash,537,Clay,6.62,Moderate,Wet,29.1,241.1,synthetic
+P00269,B010,Tomato,507,Clay,6.69,Moderate,Dry,27.0,68.3,synthetic
+P00270,B012,Eggplant,576,Clay,5.66,Poor,Dry,26.5,75.4,synthetic
+P00271,B012,Okra,666,Clay,5.66,Poor,Wet,30.6,200.2,synthetic
+P00272,B016,Squash,831,Clay,6.44,Good,Wet,31.8,251.1,synthetic
+P00273,B006,Tomato,229,Clay,6.36,Poor,Dry,31.6,52.3,synthetic
+P00274,B011,Eggplant,665,Loam,5.76,Moderate,Dry,30.2,91.5,synthetic
+P00275,B004,Okra,696,Sandy loam,5.65,Moderate,Wet,29.5,251.8,synthetic
+P00276,B012,Squash,685,Clay,5.66,Poor,Wet,27.7,268.1,synthetic
+P00277,B002,Tomato,343,Loam,5.92,Poor,Wet,29.4,187.0,synthetic
+P00278,B010,Eggplant,801,Clay,6.69,Moderate,Wet,30.2,144.0,synthetic
+P00279,B020,Okra,516,Clay,6.95,Poor,Dry,28.5,90.5,synthetic
+P00280,B010,Squash,682,Clay,6.69,Moderate,Wet,30.6,268.8,synthetic
+P00281,B012,Tomato,617,Clay,5.66,Poor,Dry,27.4,138.7,synthetic
+P00282,B016,Eggplant,364,Clay,6.44,Good,Wet,25.9,273.3,synthetic
+P00283,B008,Okra,519,Sandy loam,6.43,Poor,Dry,27.3,36.5,synthetic
+P00284,B020,Squash,412,Clay,6.95,Poor,Dry,28.4,119.0,synthetic
+P00285,B010,Tomato,778,Clay,6.69,Moderate,Wet,27.8,207.5,synthetic
+P00286,B016,Eggplant,432,Clay,6.44,Good,Dry,27.2,92.6,synthetic
+P00287,B002,Okra,838,Loam,5.92,Poor,Wet,26.4,158.9,synthetic
+P00288,B011,Squash,587,Loam,5.76,Moderate,Dry,26.9,12.5,synthetic
+P00289,B010,Tomato,842,Clay,6.69,Moderate,Dry,24.8,77.0,synthetic
+P00290,B012,Eggplant,439,Clay,5.66,Poor,Dry,27.9,30.8,synthetic
+P00291,B016,Okra,490,Clay,6.44,Good,Dry,24.0,64.8,synthetic
+P00292,B005,Squash,182,Clay,5.55,Poor,Wet,28.8,190.8,synthetic
+P00293,B006,Tomato,190,Clay,6.36,Poor,Dry,24.6,69.4,synthetic
+P00294,B018,Eggplant,429,Sandy loam,5.83,Poor,Dry,27.4,0,synthetic
+P00295,B010,Okra,413,Clay,6.69,Moderate,Dry,29.9,93.5,synthetic
+P00296,B011,Squash,450,Loam,5.76,Moderate,Wet,33.0,124.9,synthetic
+P00297,B008,Tomato,616,Sandy loam,6.43,Poor,Dry,28.1,73.2,synthetic
+P00298,B020,Eggplant,120,Clay,6.95,Poor,Dry,26.5,15.4,synthetic
+P00299,B007,Okra,778,Sandy loam,5.84,Good,Dry,27.1,120.9,synthetic
+P00300,B010,Squash,723,Clay,6.69,Moderate,Dry,28.5,19.2,synthetic
+P00301,B002,Tomato,592,Loam,5.92,Poor,Wet,30.6,177.4,synthetic
+P00302,B017,Eggplant,362,Sandy loam,7.01,Moderate,Dry,27.8,46.8,synthetic
+P00303,B002,Okra,536,Loam,5.92,Poor,Wet,26.1,256.3,synthetic
+P00304,B012,Squash,850,Clay,5.66,Poor,Wet,29.5,201.2,synthetic
+P00305,B014,Tomato,160,Loam,6.87,Good,Dry,30.3,105.3,synthetic
+P00306,B020,Eggplant,800,Clay,6.95,Poor,Wet,28.5,155.9,synthetic
+P00307,B002,Okra,821,Loam,5.92,Poor,Dry,27.9,99.7,synthetic
+P00308,B017,Squash,593,Sandy loam,7.01,Moderate,Dry,25.1,91.4,synthetic
+P00309,B001,Tomato,607,Sandy loam,5.69,Good,Dry,25.8,63.4,synthetic
+P00310,B013,Eggplant,554,Loam,6.94,Good,Wet,28.3,195.2,synthetic
+P00311,B004,Okra,100,Sandy loam,5.65,Moderate,Wet,25.8,236.7,synthetic
+P00312,B011,Squash,565,Loam,5.76,Moderate,Wet,29.7,144.4,synthetic
+P00313,B004,Tomato,748,Sandy loam,5.65,Moderate,Dry,29.9,65.5,synthetic
+P00314,B005,Eggplant,292,Clay,5.55,Poor,Wet,30.2,244.2,synthetic
+P00315,B014,Okra,702,Loam,6.87,Good,Dry,31.4,31.1,synthetic
+P00316,B017,Squash,699,Sandy loam,7.01,Moderate,Dry,26.0,51.0,synthetic
+P00317,B004,Tomato,429,Sandy loam,5.65,Moderate,Wet,26.5,164.4,synthetic
+P00318,B015,Eggplant,866,Loam,6.41,Moderate,Dry,29.8,106.5,synthetic
+P00319,B007,Okra,453,Sandy loam,5.84,Good,Dry,26.8,41.7,synthetic
+P00320,B004,Squash,783,Sandy loam,5.65,Moderate,Wet,25.6,189.8,synthetic
+P00321,B004,Tomato,157,Sandy loam,5.65,Moderate,Dry,27.5,74.0,synthetic
+P00322,B010,Eggplant,563,Clay,6.69,Moderate,Dry,28.0,54.8,synthetic
+P00323,B010,Okra,801,Clay,6.69,Moderate,Dry,29.8,47.3,synthetic
+P00324,B008,Squash,717,Sandy loam,6.43,Poor,Wet,28.1,159.7,synthetic
+P00325,B004,Tomato,370,Sandy loam,5.65,Moderate,Wet,29.6,218.2,synthetic
+P00326,B005,Eggplant,740,Clay,5.55,Poor,Wet,25.2,170.6,synthetic
+P00327,B017,Okra,617,Sandy loam,7.01,Moderate,Dry,30.3,52.1,synthetic
+P00328,B010,Squash,586,Clay,6.69,Moderate,Dry,30.6,47.9,synthetic
+P00329,B020,Tomato,428,Clay,6.95,Poor,Dry,30.9,49.5,synthetic
+P00330,B012,Eggplant,767,Clay,5.66,Poor,Wet,26.3,212.8,synthetic
+P00331,B007,Okra,206,Sandy loam,5.84,Good,Dry,29.4,33.5,synthetic
+P00332,B005,Squash,189,Clay,5.55,Poor,Dry,26.3,74.1,synthetic
+P00333,B013,Tomato,117,Loam,6.94,Good,Wet,26.5,178.9,synthetic
+P00334,B003,Eggplant,802,Sandy loam,5.67,Good,Wet,28.9,201.7,synthetic
+P00335,B016,Okra,500,Clay,6.44,Good,Dry,26.9,60.5,synthetic
+P00336,B001,Squash,710,Sandy loam,5.69,Good,Dry,28.1,67.8,synthetic
+P00337,B007,Tomato,245,Sandy loam,5.84,Good,Wet,31.2,166.3,synthetic
+P00338,B018,Eggplant,787,Sandy loam,5.83,Poor,Wet,27.5,197.7,synthetic
+P00339,B004,Okra,425,Sandy loam,5.65,Moderate,Wet,24.9,151.4,synthetic
+P00340,B011,Squash,326,Loam,5.76,Moderate,Wet,28.8,240.2,synthetic
+P00341,B015,Tomato,664,Loam,6.41,Moderate,Wet,26.9,236.5,synthetic
+P00342,B009,Eggplant,619,Loam,6.5,Poor,Dry,27.4,0,synthetic
+P00343,B009,Okra,501,Loam,6.5,Poor,Wet,27.4,191.3,synthetic
+P00344,B013,Squash,728,Loam,6.94,Good,Wet,25.1,209.2,synthetic
+P00345,B016,Tomato,337,Clay,6.44,Good,Wet,31.3,227.0,synthetic
+P00346,B002,Eggplant,820,Loam,5.92,Poor,Dry,29.8,60.7,synthetic
+P00347,B013,Okra,179,Loam,6.94,Good,Wet,26.1,253.6,synthetic
+P00348,B016,Squash,242,Clay,6.44,Good,Wet,28.2,207.0,synthetic
+P00349,B020,Tomato,438,Clay,6.95,Poor,Dry,26.9,29.9,synthetic
+P00350,B001,Eggplant,264,Sandy loam,5.69,Good,Dry,30.5,79.0,synthetic
+P00351,B013,Okra,390,Loam,6.94,Good,Dry,30.3,20.4,synthetic
+P00352,B020,Squash,286,Clay,6.95,Poor,Dry,29.0,0,synthetic
+P00353,B013,Tomato,635,Loam,6.94,Good,Wet,28.2,215.4,synthetic
+P00354,B018,Eggplant,717,Sandy loam,5.83,Poor,Dry,30.4,97.4,synthetic
+P00355,B002,Okra,887,Loam,5.92,Poor,Wet,28.5,281.4,synthetic
+P00356,B005,Squash,185,Clay,5.55,Poor,Wet,26.6,214.2,synthetic
+P00357,B019,Tomato,310,Clay,6.62,Moderate,Dry,26.1,60.2,synthetic
+P00358,B018,Eggplant,796,Sandy loam,5.83,Poor,Wet,25.5,188.2,synthetic
+P00359,B009,Okra,507,Loam,6.5,Poor,Wet,25.0,177.7,synthetic
+P00360,B004,Squash,663,Sandy loam,5.65,Moderate,Dry,24.5,61.3,synthetic
+P00361,B005,Tomato,165,Clay,5.55,Poor,Wet,29.9,190.8,synthetic
+P00362,B010,Eggplant,755,Clay,6.69,Moderate,Dry,31.5,40.2,synthetic
+P00363,B017,Okra,468,Sandy loam,7.01,Moderate,Dry,25.8,25.3,synthetic
+P00364,B019,Squash,170,Clay,6.62,Moderate,Dry,24.8,57.7,synthetic
+P00365,B008,Tomato,104,Sandy loam,6.43,Poor,Dry,26.0,76.4,synthetic
+P00366,B009,Eggplant,676,Loam,6.5,Poor,Wet,26.2,112.3,synthetic
+P00367,B016,Okra,325,Clay,6.44,Good,Dry,27.9,104.2,synthetic
+P00368,B008,Squash,450,Sandy loam,6.43,Poor,Wet,30.5,243.0,synthetic
+P00369,B016,Tomato,371,Clay,6.44,Good,Dry,28.1,94.6,synthetic
+P00370,B003,Eggplant,654,Sandy loam,5.67,Good,Wet,25.4,165.4,synthetic
+P00371,B016,Okra,386,Clay,6.44,Good,Dry,32.4,56.3,synthetic
+P00372,B017,Squash,278,Sandy loam,7.01,Moderate,Wet,25.6,247.7,synthetic
+P00373,B013,Tomato,365,Loam,6.94,Good,Dry,26.7,114.0,synthetic
+P00374,B014,Eggplant,561,Loam,6.87,Good,Wet,26.7,240.3,synthetic
+P00375,B018,Okra,856,Sandy loam,5.83,Poor,Wet,28.8,189.3,synthetic
+P00376,B011,Squash,681,Loam,5.76,Moderate,Wet,27.2,258.9,synthetic
+P00377,B015,Tomato,670,Loam,6.41,Moderate,Wet,27.9,247.7,synthetic
+P00378,B006,Eggplant,599,Clay,6.36,Poor,Wet,26.2,257.2,synthetic
+P00379,B011,Okra,173,Loam,5.76,Moderate,Wet,26.2,171.7,synthetic
+P00380,B009,Squash,865,Loam,6.5,Poor,Wet,28.9,117.2,synthetic
+P00381,B009,Tomato,197,Loam,6.5,Poor,Dry,28.5,104.0,synthetic
+P00382,B004,Eggplant,499,Sandy loam,5.65,Moderate,Wet,27.4,198.7,synthetic
+P00383,B001,Okra,433,Sandy loam,5.69,Good,Dry,25.9,0,synthetic
+P00384,B006,Squash,677,Clay,6.36,Poor,Wet,26.1,168.3,synthetic
+P00385,B010,Tomato,110,Clay,6.69,Moderate,Wet,27.0,222.2,synthetic
+P00386,B016,Eggplant,399,Clay,6.44,Good,Wet,30.1,212.4,synthetic
+P00387,B013,Okra,740,Loam,6.94,Good,Wet,28.1,226.0,synthetic
+P00388,B009,Squash,239,Loam,6.5,Poor,Wet,28.3,223.9,synthetic
+P00389,B001,Tomato,290,Sandy loam,5.69,Good,Dry,30.4,80.2,synthetic
+P00390,B001,Eggplant,610,Sandy loam,5.69,Good,Wet,28.4,250.9,synthetic
+P00391,B009,Okra,296,Loam,6.5,Poor,Wet,30.0,229.5,synthetic
+P00392,B008,Squash,196,Sandy loam,6.43,Poor,Dry,29.0,126.9,synthetic
+P00393,B002,Tomato,303,Loam,5.92,Poor,Dry,27.9,122.1,synthetic
+P00394,B009,Eggplant,143,Loam,6.5,Poor,Dry,26.8,83.2,synthetic
+P00395,B016,Okra,877,Clay,6.44,Good,Dry,27.3,31.5,synthetic
+P00396,B008,Squash,874,Sandy loam,6.43,Poor,Wet,31.5,201.9,synthetic
+P00397,B009,Tomato,401,Loam,6.5,Poor,Dry,25.9,69.0,synthetic
+P00398,B020,Eggplant,402,Clay,6.95,Poor,Dry,29.1,74.7,synthetic
+P00399,B001,Okra,838,Sandy loam,5.69,Good,Wet,28.2,180.8,synthetic
+P00400,B005,Squash,213,Clay,5.55,Poor,Wet,26.7,261.4,synthetic
+P00401,B007,Tomato,497,Sandy loam,5.84,Good,Dry,30.8,76.4,synthetic
+P00402,B001,Eggplant,181,Sandy loam,5.69,Good,Dry,25.4,0,synthetic
+P00403,B020,Okra,411,Clay,6.95,Poor,Wet,24.8,198.2,synthetic
+P00404,B007,Squash,671,Sandy loam,5.84,Good,Dry,23.6,23.6,synthetic
+P00405,B004,Tomato,616,Sandy loam,5.65,Moderate,Dry,28.7,16.2,synthetic
+P00406,B011,Eggplant,843,Loam,5.76,Moderate,Wet,25.6,239.6,synthetic
+P00407,B012,Okra,843,Clay,5.66,Poor,Wet,26.1,223.0,synthetic
+P00408,B011,Squash,382,Loam,5.76,Moderate,Dry,28.6,0,synthetic
+P00409,B005,Tomato,355,Clay,5.55,Poor,Dry,27.6,148.6,synthetic
+P00410,B016,Eggplant,819,Clay,6.44,Good,Dry,23.7,71.3,synthetic
+P00411,B003,Okra,544,Sandy loam,5.67,Good,Dry,29.6,48.0,synthetic
+P00412,B013,Squash,652,Loam,6.94,Good,Dry,27.8,75.9,synthetic
+P00413,B020,Tomato,503,Clay,6.95,Poor,Dry,28.3,97.6,synthetic
+P00414,B013,Eggplant,238,Loam,6.94,Good,Wet,28.2,189.1,synthetic
+P00415,B008,Okra,431,Sandy loam,6.43,Poor,Dry,31.1,95.1,synthetic
+P00416,B012,Squash,458,Clay,5.66,Poor,Dry,28.2,40.8,synthetic
+P00417,B007,Tomato,187,Sandy loam,5.84,Good,Wet,29.8,263.6,synthetic
+P00418,B004,Eggplant,314,Sandy loam,5.65,Moderate,Wet,27.6,212.6,synthetic
+P00419,B001,Okra,144,Sandy loam,5.69,Good,Wet,25.4,180.6,synthetic
+P00420,B003,Squash,775,Sandy loam,5.67,Good,Wet,26.4,160.1,synthetic
+P00421,B011,Tomato,290,Loam,5.76,Moderate,Wet,29.6,173.4,synthetic
+P00422,B011,Eggplant,455,Loam,5.76,Moderate,Wet,27.1,224.5,synthetic
+P00423,B013,Okra,330,Loam,6.94,Good,Dry,32.6,31.4,synthetic
+P00424,B014,Squash,419,Loam,6.87,Good,Dry,26.1,46.3,synthetic
+P00425,B005,Tomato,238,Clay,5.55,Poor,Wet,26.4,130.7,synthetic
+P00426,B003,Eggplant,249,Sandy loam,5.67,Good,Dry,29.5,135.1,synthetic
+P00427,B005,Okra,880,Clay,5.55,Poor,Dry,29.0,80.9,synthetic
+P00428,B012,Squash,614,Clay,5.66,Poor,Dry,27.1,22.9,synthetic
+P00429,B006,Tomato,115,Clay,6.36,Poor,Dry,28.3,105.5,synthetic
+P00430,B006,Eggplant,432,Clay,6.36,Poor,Wet,29.6,175.6,synthetic
+P00431,B011,Okra,708,Loam,5.76,Moderate,Wet,25.5,167.5,synthetic
+P00432,B008,Squash,496,Sandy loam,6.43,Poor,Wet,28.6,208.9,synthetic
+P00433,B015,Tomato,155,Loam,6.41,Moderate,Dry,25.6,90.8,synthetic
+P00434,B006,Eggplant,125,Clay,6.36,Poor,Dry,26.6,87.0,synthetic
+P00435,B006,Okra,749,Clay,6.36,Poor,Dry,30.6,98.9,synthetic
+P00436,B018,Squash,443,Sandy loam,5.83,Poor,Wet,29.2,216.7,synthetic
+P00437,B010,Tomato,234,Clay,6.69,Moderate,Wet,27.7,234.5,synthetic
+P00438,B001,Eggplant,587,Sandy loam,5.69,Good,Wet,28.2,263.2,synthetic
+P00439,B002,Okra,137,Loam,5.92,Poor,Dry,29.7,111.7,synthetic
+P00440,B004,Squash,391,Sandy loam,5.65,Moderate,Wet,29.2,209.1,synthetic
+P00441,B002,Tomato,488,Loam,5.92,Poor,Dry,28.2,29.9,synthetic
+P00442,B011,Eggplant,726,Loam,5.76,Moderate,Wet,25.0,200.5,synthetic
+P00443,B014,Okra,738,Loam,6.87,Good,Wet,27.8,262.2,synthetic
+P00444,B020,Squash,101,Clay,6.95,Poor,Dry,26.6,0,synthetic
+P00445,B014,Tomato,752,Loam,6.87,Good,Dry,26.7,109.3,synthetic
+P00446,B018,Eggplant,441,Sandy loam,5.83,Poor,Wet,28.1,190.4,synthetic
+P00447,B016,Okra,593,Clay,6.44,Good,Wet,28.8,154.9,synthetic
+P00448,B017,Squash,668,Sandy loam,7.01,Moderate,Wet,25.2,186.1,synthetic
+P00449,B001,Tomato,269,Sandy loam,5.69,Good,Wet,30.8,204.2,synthetic
+P00450,B009,Eggplant,480,Loam,6.5,Poor,Wet,31.5,252.5,synthetic
+P00451,B007,Okra,594,Sandy loam,5.84,Good,Dry,27.6,68.1,synthetic
+P00452,B004,Squash,496,Sandy loam,5.65,Moderate,Dry,28.2,75.5,synthetic
+P00453,B015,Tomato,863,Loam,6.41,Moderate,Dry,30.7,106.2,synthetic
+P00454,B011,Eggplant,261,Loam,5.76,Moderate,Wet,27.2,181.9,synthetic
+P00455,B011,Okra,390,Loam,5.76,Moderate,Wet,30.0,258.5,synthetic
+P00456,B002,Squash,501,Loam,5.92,Poor,Dry,27.4,76.3,synthetic
+P00457,B010,Tomato,786,Clay,6.69,Moderate,Wet,29.3,152.4,synthetic
+P00458,B004,Eggplant,884,Sandy loam,5.65,Moderate,Wet,26.9,263.4,synthetic
+P00459,B011,Okra,586,Loam,5.76,Moderate,Wet,27.5,212.9,synthetic
+P00460,B017,Squash,209,Sandy loam,7.01,Moderate,Dry,25.4,100.4,synthetic
+P00461,B020,Tomato,493,Clay,6.95,Poor,Dry,22.8,33.0,synthetic
+P00462,B008,Eggplant,828,Sandy loam,6.43,Poor,Dry,27.6,51.3,synthetic
+P00463,B006,Okra,211,Clay,6.36,Poor,Wet,28.7,205.8,synthetic
+P00464,B007,Squash,751,Sandy loam,5.84,Good,Dry,31.3,8.8,synthetic
+P00465,B007,Tomato,683,Sandy loam,5.84,Good,Dry,27.3,33.3,synthetic
+P00466,B020,Eggplant,163,Clay,6.95,Poor,Wet,30.3,146.0,synthetic
+P00467,B010,Okra,503,Clay,6.69,Moderate,Dry,28.3,127.0,synthetic
+P00468,B005,Squash,468,Clay,5.55,Poor,Dry,24.4,38.7,synthetic
+P00469,B005,Tomato,239,Clay,5.55,Poor,Wet,25.0,119.0,synthetic
+P00470,B020,Eggplant,560,Clay,6.95,Poor,Dry,26.0,76.9,synthetic
+P00471,B017,Okra,475,Sandy loam,7.01,Moderate,Wet,25.9,236.7,synthetic
+P00472,B005,Squash,724,Clay,5.55,Poor,Wet,27.2,213.5,synthetic
+P00473,B020,Tomato,111,Clay,6.95,Poor,Dry,30.0,36.8,synthetic
+P00474,B010,Eggplant,867,Clay,6.69,Moderate,Dry,32.4,84.9,synthetic
+P00475,B010,Okra,617,Clay,6.69,Moderate,Dry,27.8,81.2,synthetic
+P00476,B004,Squash,774,Sandy loam,5.65,Moderate,Dry,30.8,29.9,synthetic
+P00477,B002,Tomato,709,Loam,5.92,Poor,Wet,33.2,199.5,synthetic
+P00478,B007,Eggplant,218,Sandy loam,5.84,Good,Wet,29.5,220.5,synthetic
+P00479,B013,Okra,545,Loam,6.94,Good,Wet,27.8,259.0,synthetic
+P00480,B018,Squash,767,Sandy loam,5.83,Poor,Wet,30.0,198.4,synthetic
+P00481,B008,Tomato,284,Sandy loam,6.43,Poor,Dry,25.0,57.5,synthetic
+P00482,B015,Eggplant,297,Loam,6.41,Moderate,Wet,28.3,242.0,synthetic
+P00483,B004,Okra,772,Sandy loam,5.65,Moderate,Dry,28.7,48.4,synthetic
+P00484,B010,Squash,564,Clay,6.69,Moderate,Wet,27.6,196.6,synthetic
+P00485,B009,Tomato,161,Loam,6.5,Poor,Dry,26.7,89.2,synthetic
+P00486,B016,Eggplant,323,Clay,6.44,Good,Dry,30.1,118.8,synthetic
+P00487,B015,Okra,755,Loam,6.41,Moderate,Dry,28.9,51.3,synthetic
+P00488,B017,Squash,845,Sandy loam,7.01,Moderate,Wet,26.0,215.6,synthetic
+P00489,B019,Tomato,156,Clay,6.62,Moderate,Wet,27.1,239.4,synthetic
+P00490,B007,Eggplant,776,Sandy loam,5.84,Good,Dry,23.1,29.9,synthetic
+P00491,B007,Okra,707,Sandy loam,5.84,Good,Dry,28.4,67.0,synthetic
+P00492,B001,Squash,838,Sandy loam,5.69,Good,Dry,27.0,95.7,synthetic
+P00493,B005,Tomato,244,Clay,5.55,Poor,Dry,28.5,60.0,synthetic
+P00494,B001,Eggplant,199,Sandy loam,5.69,Good,Dry,25.1,0.8,synthetic
+P00495,B003,Okra,855,Sandy loam,5.67,Good,Dry,24.7,97.7,synthetic
+P00496,B002,Squash,244,Loam,5.92,Poor,Dry,27.5,82.4,synthetic
+P00497,B005,Tomato,485,Clay,5.55,Poor,Dry,28.7,10.3,synthetic
+P00498,B014,Eggplant,755,Loam,6.87,Good,Wet,27.5,184.6,synthetic
+P00499,B016,Okra,456,Clay,6.44,Good,Dry,25.6,14.9,synthetic
+P00500,B017,Squash,313,Sandy loam,7.01,Moderate,Dry,25.3,77.5,synthetic
+P00501,B002,Tomato,545,Loam,5.92,Poor,Dry,27.0,39.1,synthetic
+P00502,B006,Eggplant,218,Clay,6.36,Poor,Dry,28.5,20.1,synthetic
+P00503,B008,Okra,855,Sandy loam,6.43,Poor,Dry,27.6,81.1,synthetic
+P00504,B005,Squash,496,Clay,5.55,Poor,Dry,30.0,45.7,synthetic
+P00505,B002,Tomato,576,Loam,5.92,Poor,Dry,27.8,84.1,synthetic
+P00506,B019,Eggplant,600,Clay,6.62,Moderate,Dry,31.4,105.8,synthetic
+P00507,B008,Okra,705,Sandy loam,6.43,Poor,Wet,26.7,221.4,synthetic
+P00508,B002,Squash,813,Loam,5.92,Poor,Wet,25.8,201.1,synthetic
+P00509,B007,Tomato,192,Sandy loam,5.84,Good,Dry,27.1,88.0,synthetic
+P00510,B015,Eggplant,515,Loam,6.41,Moderate,Wet,28.6,129.3,synthetic
+P00511,B013,Okra,870,Loam,6.94,Good,Wet,26.4,203.5,synthetic
+P00512,B002,Squash,474,Loam,5.92,Poor,Wet,28.7,197.4,synthetic
+P00513,B005,Tomato,589,Clay,5.55,Poor,Wet,28.1,229.6,synthetic
+P00514,B011,Eggplant,533,Loam,5.76,Moderate,Wet,29.9,181.7,synthetic
+P00515,B018,Okra,789,Sandy loam,5.83,Poor,Wet,26.2,221.4,synthetic
+P00516,B006,Squash,268,Clay,6.36,Poor,Wet,28.8,205.8,synthetic
+P00517,B018,Tomato,855,Sandy loam,5.83,Poor,Dry,25.9,71.8,synthetic
+P00518,B014,Eggplant,597,Loam,6.87,Good,Wet,26.0,151.6,synthetic
+P00519,B006,Okra,395,Clay,6.36,Poor,Wet,28.3,248.2,synthetic
+P00520,B010,Squash,809,Clay,6.69,Moderate,Dry,31.8,52.2,synthetic
+P00521,B012,Tomato,781,Clay,5.66,Poor,Dry,28.9,125.2,synthetic
+P00522,B001,Eggplant,569,Sandy loam,5.69,Good,Wet,31.1,181.3,synthetic
+P00523,B016,Okra,687,Clay,6.44,Good,Wet,31.3,197.3,synthetic
+P00524,B005,Squash,325,Clay,5.55,Poor,Dry,27.3,102.9,synthetic
+P00525,B007,Tomato,793,Sandy loam,5.84,Good,Dry,31.4,104.0,synthetic
+P00526,B002,Eggplant,537,Loam,5.92,Poor,Wet,25.5,248.1,synthetic
+P00527,B015,Okra,845,Loam,6.41,Moderate,Wet,28.5,178.8,synthetic
+P00528,B007,Squash,443,Sandy loam,5.84,Good,Wet,24.0,222.8,synthetic
+P00529,B006,Tomato,240,Clay,6.36,Poor,Wet,27.2,145.0,synthetic
+P00530,B016,Eggplant,257,Clay,6.44,Good,Wet,28.6,279.9,synthetic
+P00531,B006,Okra,129,Clay,6.36,Poor,Wet,30.4,178.2,synthetic
+P00532,B019,Squash,587,Clay,6.62,Moderate,Wet,29.9,168.6,synthetic
+P00533,B019,Tomato,809,Clay,6.62,Moderate,Dry,29.4,100.3,synthetic
+P00534,B017,Eggplant,287,Sandy loam,7.01,Moderate,Dry,24.6,59.1,synthetic
+P00535,B009,Okra,247,Loam,6.5,Poor,Wet,30.2,239.8,synthetic
+P00536,B007,Squash,672,Sandy loam,5.84,Good,Dry,24.2,63.4,synthetic
+P00537,B014,Tomato,234,Loam,6.87,Good,Wet,28.9,200.0,synthetic
+P00538,B011,Eggplant,221,Loam,5.76,Moderate,Dry,27.9,55.6,synthetic
+P00539,B014,Okra,875,Loam,6.87,Good,Dry,31.0,97.4,synthetic
+P00540,B009,Squash,872,Loam,6.5,Poor,Dry,30.7,89.0,synthetic
+P00541,B001,Tomato,384,Sandy loam,5.69,Good,Dry,30.0,117.5,synthetic
+P00542,B019,Eggplant,114,Clay,6.62,Moderate,Dry,30.1,95.7,synthetic
+P00543,B007,Okra,550,Sandy loam,5.84,Good,Wet,26.2,249.7,synthetic
+P00544,B011,Squash,607,Loam,5.76,Moderate,Dry,25.6,75.3,synthetic
+P00545,B010,Tomato,554,Clay,6.69,Moderate,Wet,26.6,189.6,synthetic
+P00546,B012,Eggplant,788,Clay,5.66,Poor,Dry,31.0,69.8,synthetic
+P00547,B006,Okra,305,Clay,6.36,Poor,Dry,27.1,85.1,synthetic
+P00548,B013,Squash,514,Loam,6.94,Good,Wet,25.3,218.2,synthetic
+P00549,B008,Tomato,169,Sandy loam,6.43,Poor,Dry,31.2,77.2,synthetic
+P00550,B003,Eggplant,777,Sandy loam,5.67,Good,Wet,28.4,184.1,synthetic
+P00551,B014,Okra,485,Loam,6.87,Good,Dry,26.7,88.2,synthetic
+P00552,B016,Squash,599,Clay,6.44,Good,Wet,30.1,257.5,synthetic
+P00553,B018,Tomato,606,Sandy loam,5.83,Poor,Dry,26.0,63.3,synthetic
+P00554,B019,Eggplant,859,Clay,6.62,Moderate,Dry,29.3,92.6,synthetic
+P00555,B012,Okra,763,Clay,5.66,Poor,Dry,27.2,39.4,synthetic
+P00556,B002,Squash,627,Loam,5.92,Poor,Wet,26.9,174.9,synthetic
+P00557,B019,Tomato,791,Clay,6.62,Moderate,Dry,28.3,47.9,synthetic
+P00558,B014,Eggplant,177,Loam,6.87,Good,Dry,24.1,66.5,synthetic
+P00559,B019,Okra,680,Clay,6.62,Moderate,Dry,26.7,47.6,synthetic
+P00560,B010,Squash,524,Clay,6.69,Moderate,Wet,27.1,180.3,synthetic
+P00561,B006,Tomato,860,Clay,6.36,Poor,Wet,29.2,309.6,synthetic
+P00562,B017,Eggplant,254,Sandy loam,7.01,Moderate,Dry,27.3,82.0,synthetic
+P00563,B014,Okra,362,Loam,6.87,Good,Wet,29.3,158.4,synthetic
+P00564,B015,Squash,762,Loam,6.41,Moderate,Wet,26.0,194.3,synthetic
+P00565,B006,Tomato,120,Clay,6.36,Poor,Dry,30.2,54.6,synthetic
+P00566,B003,Eggplant,243,Sandy loam,5.67,Good,Wet,31.0,187.6,synthetic
+P00567,B009,Okra,225,Loam,6.5,Poor,Wet,29.1,190.4,synthetic
+P00568,B014,Squash,381,Loam,6.87,Good,Dry,28.8,84.5,synthetic
+P00569,B018,Tomato,384,Sandy loam,5.83,Poor,Wet,26.5,214.7,synthetic
+P00570,B002,Eggplant,754,Loam,5.92,Poor,Dry,28.0,104.4,synthetic
+P00571,B013,Okra,874,Loam,6.94,Good,Wet,26.5,299.1,synthetic
+P00572,B002,Squash,603,Loam,5.92,Poor,Wet,30.5,154.6,synthetic
+P00573,B009,Tomato,660,Loam,6.5,Poor,Dry,26.4,108.6,synthetic
+P00574,B005,Eggplant,421,Clay,5.55,Poor,Dry,25.7,97.9,synthetic
+P00575,B020,Okra,589,Clay,6.95,Poor,Wet,28.5,176.2,synthetic
+P00576,B003,Squash,486,Sandy loam,5.67,Good,Wet,26.7,239.6,synthetic
+P00577,B003,Tomato,272,Sandy loam,5.67,Good,Wet,29.0,268.9,synthetic
+P00578,B001,Eggplant,789,Sandy loam,5.69,Good,Wet,28.7,119.2,synthetic
+P00579,B013,Okra,320,Loam,6.94,Good,Dry,26.8,76.4,synthetic
+P00580,B010,Squash,354,Clay,6.69,Moderate,Wet,28.2,253.6,synthetic
+P00581,B007,Tomato,362,Sandy loam,5.84,Good,Wet,27.2,146.9,synthetic
+P00582,B001,Eggplant,504,Sandy loam,5.69,Good,Wet,26.0,208.9,synthetic
+P00583,B016,Okra,424,Clay,6.44,Good,Wet,28.8,195.2,synthetic
+P00584,B012,Squash,727,Clay,5.66,Poor,Wet,27.2,290.1,synthetic
+P00585,B005,Tomato,335,Clay,5.55,Poor,Wet,29.1,217.4,synthetic
+P00586,B015,Eggplant,568,Loam,6.41,Moderate,Wet,30.6,206.4,synthetic
+P00587,B006,Okra,676,Clay,6.36,Poor,Dry,28.0,0,synthetic
+P00588,B008,Squash,126,Sandy loam,6.43,Poor,Wet,26.1,135.1,synthetic
+P00589,B001,Tomato,591,Sandy loam,5.69,Good,Dry,25.0,80.5,synthetic
+P00590,B019,Eggplant,759,Clay,6.62,Moderate,Dry,28.2,77.3,synthetic
+P00591,B009,Okra,508,Loam,6.5,Poor,Dry,28.2,133.5,synthetic
+P00592,B004,Squash,417,Sandy loam,5.65,Moderate,Wet,25.9,212.4,synthetic
+P00593,B015,Tomato,533,Loam,6.41,Moderate,Wet,25.5,217.6,synthetic
+P00594,B017,Eggplant,763,Sandy loam,7.01,Moderate,Wet,31.0,200.0,synthetic
+P00595,B014,Okra,252,Loam,6.87,Good,Dry,29.9,39.9,synthetic
+P00596,B018,Squash,622,Sandy loam,5.83,Poor,Dry,30.1,41.2,synthetic
+P00597,B017,Tomato,283,Sandy loam,7.01,Moderate,Dry,30.2,103.6,synthetic
+P00598,B015,Eggplant,291,Loam,6.41,Moderate,Wet,25.6,285.2,synthetic
+P00599,B001,Okra,771,Sandy loam,5.69,Good,Dry,27.7,69.0,synthetic
+P00600,B013,Squash,295,Loam,6.94,Good,Wet,28.9,221.3,synthetic
+P00601,B014,Tomato,251,Loam,6.87,Good,Dry,30.9,100.3,synthetic
+P00602,B001,Eggplant,683,Sandy loam,5.69,Good,Wet,26.8,196.3,synthetic
+P00603,B016,Okra,625,Clay,6.44,Good,Wet,30.0,219.3,synthetic
+P00604,B017,Squash,165,Sandy loam,7.01,Moderate,Dry,26.5,81.4,synthetic
+P00605,B015,Tomato,296,Loam,6.41,Moderate,Wet,29.6,214.3,synthetic
+P00606,B005,Eggplant,526,Clay,5.55,Poor,Wet,27.7,170.8,synthetic
+P00607,B020,Okra,783,Clay,6.95,Poor,Dry,27.3,130.2,synthetic
+P00608,B008,Squash,467,Sandy loam,6.43,Poor,Dry,20.9,11.9,synthetic
+P00609,B014,Tomato,329,Loam,6.87,Good,Dry,27.3,51.3,synthetic
+P00610,B005,Eggplant,548,Clay,5.55,Poor,Dry,26.8,0,synthetic
+P00611,B018,Okra,220,Sandy loam,5.83,Poor,Dry,26.8,63.9,synthetic
+P00612,B004,Squash,241,Sandy loam,5.65,Moderate,Dry,26.9,36.2,synthetic
+P00613,B011,Tomato,481,Loam,5.76,Moderate,Wet,27.2,209.5,synthetic
+P00614,B008,Eggplant,519,Sandy loam,6.43,Poor,Dry,28.7,25.9,synthetic
+P00615,B017,Okra,890,Sandy loam,7.01,Moderate,Dry,29.5,82.7,synthetic
+P00616,B017,Squash,817,Sandy loam,7.01,Moderate,Wet,24.4,250.5,synthetic
+P00617,B013,Tomato,739,Loam,6.94,Good,Wet,25.4,144.3,synthetic
+P00618,B003,Eggplant,836,Sandy loam,5.67,Good,Dry,26.1,55.7,synthetic
+P00619,B017,Okra,128,Sandy loam,7.01,Moderate,Wet,28.1,186.4,synthetic
+P00620,B004,Squash,619,Sandy loam,5.65,Moderate,Dry,28.8,39.0,synthetic
+P00621,B015,Tomato,695,Loam,6.41,Moderate,Wet,31.6,202.3,synthetic
+P00622,B010,Eggplant,353,Clay,6.69,Moderate,Dry,27.5,17.8,synthetic
+P00623,B014,Okra,233,Loam,6.87,Good,Dry,29.8,88.0,synthetic
+P00624,B009,Squash,805,Loam,6.5,Poor,Wet,23.6,108.3,synthetic
+P00625,B015,Tomato,641,Loam,6.41,Moderate,Dry,30.4,55.4,synthetic
+P00626,B004,Eggplant,635,Sandy loam,5.65,Moderate,Dry,26.9,89.2,synthetic
+P00627,B005,Okra,390,Clay,5.55,Poor,Wet,32.0,235.5,synthetic
+P00628,B014,Squash,445,Loam,6.87,Good,Wet,25.7,187.1,synthetic
+P00629,B015,Tomato,191,Loam,6.41,Moderate,Wet,29.9,262.0,synthetic
+P00630,B015,Eggplant,824,Loam,6.41,Moderate,Wet,25.6,146.4,synthetic
+P00631,B007,Okra,868,Sandy loam,5.84,Good,Dry,30.3,52.1,synthetic
+P00632,B008,Squash,428,Sandy loam,6.43,Poor,Wet,30.1,235.1,synthetic
+P00633,B017,Tomato,201,Sandy loam,7.01,Moderate,Wet,27.4,221.8,synthetic
+P00634,B002,Eggplant,405,Loam,5.92,Poor,Wet,29.3,267.5,synthetic
+P00635,B002,Okra,342,Loam,5.92,Poor,Dry,28.2,118.8,synthetic
+P00636,B014,Squash,339,Loam,6.87,Good,Dry,26.0,69.1,synthetic
+P00637,B010,Tomato,612,Clay,6.69,Moderate,Wet,24.4,235.8,synthetic
+P00638,B002,Eggplant,735,Loam,5.92,Poor,Dry,30.0,0,synthetic
+P00639,B012,Okra,146,Clay,5.66,Poor,Dry,25.9,40.6,synthetic
+P00640,B018,Squash,616,Sandy loam,5.83,Poor,Wet,29.0,190.9,synthetic
+P00641,B009,Tomato,315,Loam,6.5,Poor,Dry,27.1,35.0,synthetic
+P00642,B001,Eggplant,813,Sandy loam,5.69,Good,Dry,27.0,28.5,synthetic
+P00643,B001,Okra,485,Sandy loam,5.69,Good,Wet,27.1,177.0,synthetic
+P00644,B015,Squash,326,Loam,6.41,Moderate,Wet,30.0,193.1,synthetic
+P00645,B008,Tomato,137,Sandy loam,6.43,Poor,Dry,33.2,52.0,synthetic
+P00646,B004,Eggplant,665,Sandy loam,5.65,Moderate,Wet,25.9,190.4,synthetic
+P00647,B003,Okra,333,Sandy loam,5.67,Good,Dry,27.8,116.9,synthetic
+P00648,B020,Squash,102,Clay,6.95,Poor,Wet,26.3,134.9,synthetic
+P00649,B004,Tomato,144,Sandy loam,5.65,Moderate,Wet,25.6,211.3,synthetic
+P00650,B007,Eggplant,125,Sandy loam,5.84,Good,Wet,30.3,235.6,synthetic
+P00651,B003,Okra,124,Sandy loam,5.67,Good,Dry,30.1,72.4,synthetic
+P00652,B002,Squash,174,Loam,5.92,Poor,Wet,26.5,206.4,synthetic
+P00653,B002,Tomato,166,Loam,5.92,Poor,Wet,26.5,281.5,synthetic
+P00654,B004,Eggplant,490,Sandy loam,5.65,Moderate,Dry,26.4,52.8,synthetic
+P00655,B015,Okra,447,Loam,6.41,Moderate,Wet,30.0,171.9,synthetic
+P00656,B001,Squash,686,Sandy loam,5.69,Good,Dry,24.8,22.7,synthetic
+P00657,B005,Tomato,546,Clay,5.55,Poor,Dry,29.6,77.8,synthetic
+P00658,B016,Eggplant,108,Clay,6.44,Good,Wet,26.7,189.9,synthetic
+P00659,B014,Okra,306,Loam,6.87,Good,Wet,28.4,235.2,synthetic
+P00660,B020,Squash,565,Clay,6.95,Poor,Wet,27.0,221.6,synthetic
+P00661,B008,Tomato,439,Sandy loam,6.43,Poor,Wet,27.5,111.7,synthetic
+P00662,B012,Eggplant,550,Clay,5.66,Poor,Dry,27.0,57.5,synthetic
+P00663,B006,Okra,447,Clay,6.36,Poor,Dry,30.4,23.0,synthetic
+P00664,B005,Squash,446,Clay,5.55,Poor,Wet,25.7,141.2,synthetic
+P00665,B003,Tomato,294,Sandy loam,5.67,Good,Dry,30.8,136.6,synthetic
+P00666,B018,Eggplant,154,Sandy loam,5.83,Poor,Wet,28.4,175.5,synthetic
+P00667,B003,Okra,271,Sandy loam,5.67,Good,Wet,28.7,156.6,synthetic
+P00668,B011,Squash,606,Loam,5.76,Moderate,Wet,25.7,202.7,synthetic
+P00669,B007,Tomato,413,Sandy loam,5.84,Good,Wet,29.3,179.6,synthetic
+P00670,B003,Eggplant,697,Sandy loam,5.67,Good,Wet,26.3,222.7,synthetic
+P00671,B011,Okra,339,Loam,5.76,Moderate,Wet,27.1,227.0,synthetic
+P00672,B009,Squash,139,Loam,6.5,Poor,Dry,28.6,73.9,synthetic
+P00673,B007,Tomato,857,Sandy loam,5.84,Good,Dry,31.3,64.3,synthetic
+P00674,B019,Eggplant,879,Clay,6.62,Moderate,Dry,25.6,73.4,synthetic
+P00675,B019,Okra,187,Clay,6.62,Moderate,Wet,27.6,166.2,synthetic
+P00676,B012,Squash,855,Clay,5.66,Poor,Dry,27.1,55.2,synthetic
+P00677,B018,Tomato,132,Sandy loam,5.83,Poor,Wet,27.8,217.7,synthetic
+P00678,B013,Eggplant,495,Loam,6.94,Good,Dry,28.7,60.4,synthetic
+P00679,B006,Okra,127,Clay,6.36,Poor,Dry,29.3,16.8,synthetic
+P00680,B003,Squash,275,Sandy loam,5.67,Good,Wet,30.3,227.1,synthetic
+P00681,B013,Tomato,542,Loam,6.94,Good,Dry,28.9,84.8,synthetic
+P00682,B015,Eggplant,556,Loam,6.41,Moderate,Wet,29.8,327.3,synthetic
+P00683,B019,Okra,567,Clay,6.62,Moderate,Dry,27.9,32.1,synthetic
+P00684,B014,Squash,542,Loam,6.87,Good,Dry,29.2,115.1,synthetic
+P00685,B006,Tomato,782,Clay,6.36,Poor,Wet,29.8,176.6,synthetic
+P00686,B004,Eggplant,884,Sandy loam,5.65,Moderate,Wet,28.8,218.7,synthetic
+P00687,B015,Okra,299,Loam,6.41,Moderate,Wet,26.9,243.6,synthetic
+P00688,B003,Squash,548,Sandy loam,5.67,Good,Dry,26.6,56.1,synthetic
+P00689,B010,Tomato,179,Clay,6.69,Moderate,Dry,26.1,56.4,synthetic
+P00690,B018,Eggplant,750,Sandy loam,5.83,Poor,Dry,27.4,69.5,synthetic
+P00691,B002,Okra,483,Loam,5.92,Poor,Wet,28.5,118.6,synthetic
+P00692,B003,Squash,780,Sandy loam,5.67,Good,Dry,28.9,60.4,synthetic
+P00693,B020,Tomato,538,Clay,6.95,Poor,Dry,29.8,48.9,synthetic
+P00694,B013,Eggplant,385,Loam,6.94,Good,Dry,27.3,68.8,synthetic
+P00695,B004,Okra,432,Sandy loam,5.65,Moderate,Dry,28.0,82.8,synthetic
+P00696,B016,Squash,699,Clay,6.44,Good,Dry,26.6,112.1,synthetic
+P00697,B001,Tomato,875,Sandy loam,5.69,Good,Dry,26.8,126.0,synthetic
+P00698,B002,Eggplant,554,Loam,5.92,Poor,Dry,30.4,40.0,synthetic
+P00699,B010,Okra,450,Clay,6.69,Moderate,Dry,28.4,129.4,synthetic
+P00700,B020,Squash,744,Clay,6.95,Poor,Wet,26.7,206.6,synthetic
+P00701,B005,Tomato,309,Clay,5.55,Poor,Dry,29.2,109.8,synthetic
+P00702,B006,Eggplant,750,Clay,6.36,Poor,Dry,27.1,114.5,synthetic
+P00703,B014,Okra,593,Loam,6.87,Good,Wet,28.2,136.1,synthetic
+P00704,B006,Squash,390,Clay,6.36,Poor,Wet,26.8,233.3,synthetic
+P00705,B001,Tomato,483,Sandy loam,5.69,Good,Dry,30.1,15.5,synthetic
+P00706,B014,Eggplant,679,Loam,6.87,Good,Dry,29.0,64.0,synthetic
+P00707,B016,Okra,534,Clay,6.44,Good,Wet,27.0,155.2,synthetic
+P00708,B005,Squash,250,Clay,5.55,Poor,Wet,24.2,150.9,synthetic
+P00709,B013,Tomato,182,Loam,6.94,Good,Wet,26.5,105.9,synthetic
+P00710,B018,Eggplant,870,Sandy loam,5.83,Poor,Wet,25.2,176.5,synthetic
+P00711,B009,Okra,415,Loam,6.5,Poor,Dry,29.8,47.8,synthetic
+P00712,B014,Squash,483,Loam,6.87,Good,Wet,27.9,185.7,synthetic
+P00713,B006,Tomato,877,Clay,6.36,Poor,Dry,29.2,74.2,synthetic
+P00714,B003,Eggplant,165,Sandy loam,5.67,Good,Wet,28.9,220.6,synthetic
+P00715,B001,Okra,107,Sandy loam,5.69,Good,Dry,30.0,92.8,synthetic
+P00716,B020,Squash,451,Clay,6.95,Poor,Wet,26.4,261.8,synthetic
+P00717,B011,Tomato,511,Loam,5.76,Moderate,Dry,32.0,66.6,synthetic
+P00718,B012,Eggplant,586,Clay,5.66,Poor,Wet,25.8,170.3,synthetic
+P00719,B002,Okra,596,Loam,5.92,Poor,Wet,27.4,183.8,synthetic
+P00720,B013,Squash,632,Loam,6.94,Good,Wet,25.5,170.6,synthetic
+P00721,B018,Tomato,218,Sandy loam,5.83,Poor,Wet,29.1,247.9,synthetic
+P00722,B001,Eggplant,492,Sandy loam,5.69,Good,Dry,29.6,49.7,synthetic
+P00723,B016,Okra,329,Clay,6.44,Good,Dry,28.5,30.5,synthetic
+P00724,B018,Squash,218,Sandy loam,5.83,Poor,Wet,28.5,183.4,synthetic
+P00725,B005,Tomato,101,Clay,5.55,Poor,Wet,30.5,195.1,synthetic
+P00726,B005,Eggplant,571,Clay,5.55,Poor,Dry,28.2,68.4,synthetic
+P00727,B005,Okra,805,Clay,5.55,Poor,Dry,26.6,45.0,synthetic
+P00728,B013,Squash,833,Loam,6.94,Good,Dry,29.8,60.7,synthetic
+P00729,B016,Tomato,263,Clay,6.44,Good,Wet,26.9,280.0,synthetic
+P00730,B017,Eggplant,817,Sandy loam,7.01,Moderate,Wet,27.1,298.7,synthetic
+P00731,B010,Okra,552,Clay,6.69,Moderate,Wet,26.5,166.7,synthetic
+P00732,B012,Squash,251,Clay,5.66,Poor,Dry,25.4,0,synthetic
+P00733,B006,Tomato,446,Clay,6.36,Poor,Dry,29.8,97.4,synthetic
+P00734,B016,Eggplant,768,Clay,6.44,Good,Wet,26.1,118.0,synthetic
+P00735,B009,Okra,184,Loam,6.5,Poor,Wet,27.3,225.0,synthetic
+P00736,B009,Squash,595,Loam,6.5,Poor,Dry,28.3,40.7,synthetic
+P00737,B006,Tomato,669,Clay,6.36,Poor,Wet,28.2,202.6,synthetic
+P00738,B007,Eggplant,284,Sandy loam,5.84,Good,Dry,29.1,114.0,synthetic
+P00739,B003,Okra,227,Sandy loam,5.67,Good,Wet,28.3,201.4,synthetic
+P00740,B017,Squash,690,Sandy loam,7.01,Moderate,Wet,26.8,173.5,synthetic
+P00741,B002,Tomato,320,Loam,5.92,Poor,Dry,29.1,70.1,synthetic
+P00742,B003,Eggplant,267,Sandy loam,5.67,Good,Wet,27.8,267.8,synthetic
+P00743,B003,Okra,297,Sandy loam,5.67,Good,Wet,31.1,208.2,synthetic
+P00744,B011,Squash,353,Loam,5.76,Moderate,Wet,24.3,281.1,synthetic
+P00745,B012,Tomato,331,Clay,5.66,Poor,Wet,28.2,187.8,synthetic
+P00746,B017,Eggplant,197,Sandy loam,7.01,Moderate,Wet,24.9,171.6,synthetic
+P00747,B011,Okra,794,Loam,5.76,Moderate,Wet,29.5,275.7,synthetic
+P00748,B001,Squash,681,Sandy loam,5.69,Good,Dry,27.4,46.4,synthetic
+P00749,B015,Tomato,579,Loam,6.41,Moderate,Dry,26.3,79.0,synthetic
+P00750,B010,Eggplant,749,Clay,6.69,Moderate,Wet,28.5,133.4,synthetic
+P00751,B018,Okra,534,Sandy loam,5.83,Poor,Wet,28.1,204.5,synthetic
+P00752,B004,Squash,863,Sandy loam,5.65,Moderate,Wet,29.3,212.3,synthetic
+P00753,B020,Tomato,790,Clay,6.95,Poor,Dry,24.0,0.4,synthetic
+P00754,B012,Eggplant,482,Clay,5.66,Poor,Dry,26.3,83.2,synthetic
+P00755,B016,Okra,746,Clay,6.44,Good,Wet,28.0,212.7,synthetic
+P00756,B020,Squash,571,Clay,6.95,Poor,Wet,28.2,211.5,synthetic
+P00757,B016,Tomato,257,Clay,6.44,Good,Dry,30.1,89.4,synthetic
+P00758,B012,Eggplant,649,Clay,5.66,Poor,Wet,25.2,273.5,synthetic
+P00759,B001,Okra,213,Sandy loam,5.69,Good,Wet,30.3,168.0,synthetic
+P00760,B009,Squash,798,Loam,6.5,Poor,Dry,25.8,89.1,synthetic
+P00761,B005,Tomato,229,Clay,5.55,Poor,Dry,31.4,46.4,synthetic
+P00762,B020,Eggplant,597,Clay,6.95,Poor,Dry,26.5,78.3,synthetic
+P00763,B009,Okra,585,Loam,6.5,Poor,Dry,26.9,28.4,synthetic
+P00764,B008,Squash,296,Sandy loam,6.43,Poor,Dry,28.4,73.3,synthetic
+P00765,B010,Tomato,162,Clay,6.69,Moderate,Dry,28.4,106.5,synthetic
+P00766,B008,Eggplant,100,Sandy loam,6.43,Poor,Wet,29.0,194.5,synthetic
+P00767,B016,Okra,785,Clay,6.44,Good,Wet,27.5,226.8,synthetic
+P00768,B020,Squash,698,Clay,6.95,Poor,Wet,28.1,242.1,synthetic
+P00769,B007,Tomato,659,Sandy loam,5.84,Good,Wet,28.7,202.9,synthetic
+P00770,B005,Eggplant,877,Clay,5.55,Poor,Dry,25.3,96.0,synthetic
+P00771,B016,Okra,122,Clay,6.44,Good,Wet,23.1,195.3,synthetic
+P00772,B013,Squash,176,Loam,6.94,Good,Wet,26.4,135.9,synthetic
+P00773,B006,Tomato,813,Clay,6.36,Poor,Dry,28.8,88.7,synthetic
+P00774,B008,Eggplant,275,Sandy loam,6.43,Poor,Wet,27.3,161.0,synthetic
+P00775,B002,Okra,218,Loam,5.92,Poor,Dry,29.4,63.2,synthetic
+P00776,B009,Squash,432,Loam,6.5,Poor,Dry,25.7,95.0,synthetic
+P00777,B009,Tomato,896,Loam,6.5,Poor,Dry,22.6,39.2,synthetic
+P00778,B007,Eggplant,695,Sandy loam,5.84,Good,Wet,28.3,241.1,synthetic
+P00779,B005,Okra,289,Clay,5.55,Poor,Wet,29.1,224.1,synthetic
+P00780,B006,Squash,246,Clay,6.36,Poor,Wet,27.5,186.2,synthetic
+P00781,B020,Tomato,113,Clay,6.95,Poor,Dry,27.7,70.7,synthetic
+P00782,B001,Eggplant,824,Sandy loam,5.69,Good,Dry,24.4,45.6,synthetic
+P00783,B008,Okra,656,Sandy loam,6.43,Poor,Dry,26.5,56.5,synthetic
+P00784,B005,Squash,537,Clay,5.55,Poor,Dry,28.4,60.4,synthetic
+P00785,B016,Tomato,388,Clay,6.44,Good,Dry,29.4,63.3,synthetic
+P00786,B006,Eggplant,795,Clay,6.36,Poor,Wet,25.3,199.7,synthetic
+P00787,B016,Okra,828,Clay,6.44,Good,Wet,31.3,180.1,synthetic
+P00788,B015,Squash,537,Loam,6.41,Moderate,Wet,28.4,192.0,synthetic
+P00789,B014,Tomato,751,Loam,6.87,Good,Wet,27.3,171.2,synthetic
+P00790,B018,Eggplant,493,Sandy loam,5.83,Poor,Wet,24.4,195.0,synthetic
+P00791,B008,Okra,117,Sandy loam,6.43,Poor,Wet,34.4,212.3,synthetic
+P00792,B010,Squash,531,Clay,6.69,Moderate,Wet,30.4,271.7,synthetic
+P00793,B014,Tomato,695,Loam,6.87,Good,Wet,28.9,216.3,synthetic
+P00794,B003,Eggplant,253,Sandy loam,5.67,Good,Dry,24.7,34.1,synthetic
+P00795,B015,Okra,757,Loam,6.41,Moderate,Dry,27.7,87.7,synthetic
+P00796,B018,Squash,826,Sandy loam,5.83,Poor,Wet,30.1,187.0,synthetic
+P00797,B013,Tomato,863,Loam,6.94,Good,Dry,28.2,90.0,synthetic
+P00798,B013,Eggplant,534,Loam,6.94,Good,Dry,29.8,78.0,synthetic
+P00799,B010,Okra,711,Clay,6.69,Moderate,Dry,27.3,61.2,synthetic
+P00800,B019,Squash,416,Clay,6.62,Moderate,Wet,29.7,219.8,synthetic
+P00801,B012,Tomato,517,Clay,5.66,Poor,Dry,27.7,47.7,synthetic
+P00802,B016,Eggplant,574,Clay,6.44,Good,Dry,27.7,87.2,synthetic
+P00803,B006,Okra,397,Clay,6.36,Poor,Wet,27.0,216.9,synthetic
+P00804,B005,Squash,884,Clay,5.55,Poor,Wet,28.3,214.0,synthetic
+P00805,B011,Tomato,386,Loam,5.76,Moderate,Dry,29.1,55.4,synthetic
+P00806,B015,Eggplant,599,Loam,6.41,Moderate,Dry,33.0,25.6,synthetic
+P00807,B020,Okra,618,Clay,6.95,Poor,Wet,25.9,253.2,synthetic
+P00808,B018,Squash,484,Sandy loam,5.83,Poor,Dry,28.5,80.6,synthetic
+P00809,B015,Tomato,576,Loam,6.41,Moderate,Wet,25.3,143.0,synthetic
+P00810,B003,Eggplant,317,Sandy loam,5.67,Good,Wet,26.5,255.5,synthetic
+P00811,B007,Okra,892,Sandy loam,5.84,Good,Wet,22.6,160.7,synthetic
+P00812,B001,Squash,185,Sandy loam,5.69,Good,Wet,27.6,266.4,synthetic
+P00813,B006,Tomato,450,Clay,6.36,Poor,Dry,31.6,112.3,synthetic
+P00814,B014,Eggplant,110,Loam,6.87,Good,Wet,30.2,182.9,synthetic
+P00815,B011,Okra,251,Loam,5.76,Moderate,Dry,29.3,100.9,synthetic
+P00816,B015,Squash,692,Loam,6.41,Moderate,Dry,26.1,22.3,synthetic
+P00817,B007,Tomato,795,Sandy loam,5.84,Good,Wet,28.3,235.2,synthetic
+P00818,B016,Eggplant,655,Clay,6.44,Good,Wet,26.4,229.1,synthetic
+P00819,B018,Okra,805,Sandy loam,5.83,Poor,Wet,25.2,262.3,synthetic
+P00820,B003,Squash,608,Sandy loam,5.67,Good,Dry,26.5,37.5,synthetic
+P00821,B010,Tomato,664,Clay,6.69,Moderate,Wet,28.8,277.3,synthetic
+P00822,B001,Eggplant,374,Sandy loam,5.69,Good,Wet,28.5,163.4,synthetic
+P00823,B014,Okra,483,Loam,6.87,Good,Dry,29.1,67.2,synthetic
+P00824,B008,Squash,152,Sandy loam,6.43,Poor,Wet,29.0,263.8,synthetic
+P00825,B006,Tomato,229,Clay,6.36,Poor,Wet,28.4,272.5,synthetic
+P00826,B006,Eggplant,547,Clay,6.36,Poor,Wet,28.3,227.0,synthetic
+P00827,B001,Okra,896,Sandy loam,5.69,Good,Dry,30.8,59.1,synthetic
+P00828,B009,Squash,742,Loam,6.5,Poor,Dry,27.3,157.4,synthetic
+P00829,B009,Tomato,470,Loam,6.5,Poor,Dry,29.9,90.7,synthetic
+P00830,B007,Eggplant,561,Sandy loam,5.84,Good,Wet,26.8,234.5,synthetic
+P00831,B004,Okra,728,Sandy loam,5.65,Moderate,Wet,30.3,208.2,synthetic
+P00832,B018,Squash,321,Sandy loam,5.83,Poor,Dry,24.6,57.4,synthetic
+P00833,B009,Tomato,456,Loam,6.5,Poor,Wet,23.1,221.4,synthetic
+P00834,B009,Eggplant,834,Loam,6.5,Poor,Dry,29.2,138.3,synthetic
+P00835,B016,Okra,865,Clay,6.44,Good,Wet,29.6,181.8,synthetic
+P00836,B003,Squash,623,Sandy loam,5.67,Good,Wet,28.3,219.1,synthetic
+P00837,B004,Tomato,290,Sandy loam,5.65,Moderate,Dry,28.8,25.5,synthetic
+P00838,B011,Eggplant,681,Loam,5.76,Moderate,Dry,27.7,37.9,synthetic
+P00839,B004,Okra,787,Sandy loam,5.65,Moderate,Wet,27.0,115.4,synthetic
+P00840,B007,Squash,381,Sandy loam,5.84,Good,Dry,28.8,20.6,synthetic
+P00841,B010,Tomato,104,Clay,6.69,Moderate,Dry,25.6,3.2,synthetic
+P00842,B001,Eggplant,525,Sandy loam,5.69,Good,Dry,24.3,79.2,synthetic
+P00843,B020,Okra,565,Clay,6.95,Poor,Dry,25.6,103.4,synthetic
+P00844,B001,Squash,804,Sandy loam,5.69,Good,Dry,29.4,86.7,synthetic
+P00845,B001,Tomato,213,Sandy loam,5.69,Good,Dry,27.8,135.0,synthetic
+P00846,B006,Eggplant,426,Clay,6.36,Poor,Dry,27.1,54.9,synthetic
+P00847,B017,Okra,387,Sandy loam,7.01,Moderate,Dry,25.4,37.3,synthetic
+P00848,B018,Squash,310,Sandy loam,5.83,Poor,Dry,26.2,10.1,synthetic
+P00849,B007,Tomato,704,Sandy loam,5.84,Good,Wet,29.1,226.7,synthetic
+P00850,B004,Eggplant,563,Sandy loam,5.65,Moderate,Dry,28.4,102.3,synthetic
+P00851,B019,Okra,862,Clay,6.62,Moderate,Dry,30.5,130.3,synthetic
+P00852,B012,Squash,462,Clay,5.66,Poor,Wet,29.9,244.2,synthetic
+P00853,B004,Tomato,532,Sandy loam,5.65,Moderate,Dry,26.1,12.8,synthetic
+P00854,B004,Eggplant,324,Sandy loam,5.65,Moderate,Dry,24.9,0,synthetic
+P00855,B020,Okra,851,Clay,6.95,Poor,Wet,27.3,221.6,synthetic
+P00856,B020,Squash,615,Clay,6.95,Poor,Wet,27.9,192.3,synthetic
+P00857,B006,Tomato,113,Clay,6.36,Poor,Dry,26.9,103.3,synthetic
+P00858,B020,Eggplant,600,Clay,6.95,Poor,Wet,30.6,199.9,synthetic
+P00859,B017,Okra,202,Sandy loam,7.01,Moderate,Dry,28.1,0,synthetic
+P00860,B012,Squash,827,Clay,5.66,Poor,Wet,29.9,213.2,synthetic
+P00861,B001,Tomato,775,Sandy loam,5.69,Good,Dry,31.9,54.5,synthetic
+P00862,B007,Eggplant,754,Sandy loam,5.84,Good,Dry,29.7,158.4,synthetic
+P00863,B009,Okra,527,Loam,6.5,Poor,Wet,29.5,184.2,synthetic
+P00864,B014,Squash,455,Loam,6.87,Good,Wet,24.8,181.1,synthetic
+P00865,B010,Tomato,401,Clay,6.69,Moderate,Dry,27.5,96.1,synthetic
+P00866,B014,Eggplant,357,Loam,6.87,Good,Wet,28.0,208.8,synthetic
+P00867,B005,Okra,397,Clay,5.55,Poor,Dry,23.9,102.1,synthetic
+P00868,B004,Squash,277,Sandy loam,5.65,Moderate,Wet,30.4,184.1,synthetic
+P00869,B005,Tomato,187,Clay,5.55,Poor,Wet,26.4,198.7,synthetic
+P00870,B004,Eggplant,615,Sandy loam,5.65,Moderate,Dry,25.0,54.8,synthetic
+P00871,B001,Okra,873,Sandy loam,5.69,Good,Dry,30.0,54.0,synthetic
+P00872,B019,Squash,228,Clay,6.62,Moderate,Wet,31.6,235.5,synthetic
+P00873,B004,Tomato,679,Sandy loam,5.65,Moderate,Wet,24.9,168.5,synthetic
+P00874,B007,Eggplant,239,Sandy loam,5.84,Good,Dry,23.2,25.2,synthetic
+P00875,B020,Okra,718,Clay,6.95,Poor,Dry,28.0,65.2,synthetic
+P00876,B013,Squash,595,Loam,6.94,Good,Dry,29.5,49.9,synthetic
+P00877,B020,Tomato,289,Clay,6.95,Poor,Dry,25.4,88.5,synthetic
+P00878,B016,Eggplant,702,Clay,6.44,Good,Wet,27.8,227.8,synthetic
+P00879,B005,Okra,498,Clay,5.55,Poor,Dry,27.8,84.8,synthetic
+P00880,B015,Squash,466,Loam,6.41,Moderate,Wet,27.0,321.6,synthetic
+P00881,B012,Tomato,243,Clay,5.66,Poor,Wet,24.2,229.9,synthetic
+P00882,B020,Eggplant,894,Clay,6.95,Poor,Dry,23.9,22.9,synthetic
+P00883,B003,Okra,337,Sandy loam,5.67,Good,Dry,31.2,77.0,synthetic
+P00884,B004,Squash,530,Sandy loam,5.65,Moderate,Dry,27.7,26.0,synthetic
+P00885,B020,Tomato,815,Clay,6.95,Poor,Dry,29.6,48.7,synthetic
+P00886,B010,Eggplant,641,Clay,6.69,Moderate,Dry,28.4,87.7,synthetic
+P00887,B005,Okra,659,Clay,5.55,Poor,Dry,26.7,96.6,synthetic
+P00888,B019,Squash,672,Clay,6.62,Moderate,Wet,26.1,209.8,synthetic
+P00889,B010,Tomato,715,Clay,6.69,Moderate,Dry,29.1,84.5,synthetic
+P00890,B003,Eggplant,689,Sandy loam,5.67,Good,Dry,28.8,61.9,synthetic
+P00891,B019,Okra,768,Clay,6.62,Moderate,Wet,33.3,165.3,synthetic
+P00892,B018,Squash,163,Sandy loam,5.83,Poor,Wet,30.6,182.9,synthetic
+P00893,B003,Tomato,182,Sandy loam,5.67,Good,Wet,25.8,178.1,synthetic
+P00894,B008,Eggplant,333,Sandy loam,6.43,Poor,Wet,26.5,224.2,synthetic
+P00895,B001,Okra,812,Sandy loam,5.69,Good,Wet,31.2,231.9,synthetic
+P00896,B012,Squash,343,Clay,5.66,Poor,Dry,25.5,139.6,synthetic
+P00897,B001,Tomato,229,Sandy loam,5.69,Good,Dry,28.3,50.2,synthetic
+P00898,B016,Eggplant,656,Clay,6.44,Good,Dry,27.6,51.7,synthetic
+P00899,B018,Okra,373,Sandy loam,5.83,Poor,Wet,29.0,188.0,synthetic
+P00900,B009,Squash,633,Loam,6.5,Poor,Dry,28.3,85.8,synthetic
+P00901,B008,Tomato,216,Sandy loam,6.43,Poor,Wet,26.7,174.4,synthetic
+P00902,B009,Eggplant,493,Loam,6.5,Poor,Wet,24.0,212.3,synthetic
+P00903,B002,Okra,872,Loam,5.92,Poor,Wet,32.1,176.3,synthetic
+P00904,B011,Squash,853,Loam,5.76,Moderate,Wet,30.3,157.8,synthetic
+P00905,B014,Tomato,863,Loam,6.87,Good,Wet,29.0,243.4,synthetic
+P00906,B008,Eggplant,730,Sandy loam,6.43,Poor,Wet,27.0,244.2,synthetic
+P00907,B010,Okra,554,Clay,6.69,Moderate,Wet,30.0,143.5,synthetic
+P00908,B002,Squash,421,Loam,5.92,Poor,Dry,27.5,119.2,synthetic
+P00909,B008,Tomato,150,Sandy loam,6.43,Poor,Dry,29.7,109.2,synthetic
+P00910,B018,Eggplant,365,Sandy loam,5.83,Poor,Dry,30.9,88.6,synthetic
+P00911,B012,Okra,623,Clay,5.66,Poor,Dry,29.9,85.3,synthetic
+P00912,B010,Squash,468,Clay,6.69,Moderate,Dry,30.7,73.4,synthetic
+P00913,B002,Tomato,126,Loam,5.92,Poor,Wet,32.0,172.6,synthetic
+P00914,B007,Eggplant,843,Sandy loam,5.84,Good,Wet,28.3,201.0,synthetic
+P00915,B019,Okra,640,Clay,6.62,Moderate,Wet,27.0,205.1,synthetic
+P00916,B008,Squash,470,Sandy loam,6.43,Poor,Wet,28.1,278.3,synthetic
+P00917,B003,Tomato,470,Sandy loam,5.67,Good,Wet,27.3,204.1,synthetic
+P00918,B018,Eggplant,698,Sandy loam,5.83,Poor,Dry,28.3,24.6,synthetic
+P00919,B017,Okra,891,Sandy loam,7.01,Moderate,Dry,25.5,39.0,synthetic
+P00920,B016,Squash,541,Clay,6.44,Good,Dry,28.4,72.5,synthetic
+P00921,B012,Tomato,829,Clay,5.66,Poor,Dry,25.9,94.4,synthetic
+P00922,B003,Eggplant,745,Sandy loam,5.67,Good,Wet,32.2,182.8,synthetic
+P00923,B003,Okra,478,Sandy loam,5.67,Good,Dry,30.1,32.3,synthetic
+P00924,B008,Squash,630,Sandy loam,6.43,Poor,Wet,27.4,210.5,synthetic
+P00925,B005,Tomato,848,Clay,5.55,Poor,Dry,29.3,5.0,synthetic
+P00926,B004,Eggplant,273,Sandy loam,5.65,Moderate,Wet,27.7,252.5,synthetic
+P00927,B007,Okra,652,Sandy loam,5.84,Good,Dry,32.3,79.8,synthetic
+P00928,B015,Squash,212,Loam,6.41,Moderate,Dry,28.8,35.8,synthetic
+P00929,B004,Tomato,327,Sandy loam,5.65,Moderate,Wet,29.1,147.7,synthetic
+P00930,B011,Eggplant,633,Loam,5.76,Moderate,Dry,23.8,102.7,synthetic
+P00931,B005,Okra,300,Clay,5.55,Poor,Wet,29.0,189.7,synthetic
+P00932,B017,Squash,671,Sandy loam,7.01,Moderate,Dry,28.7,65.3,synthetic
+P00933,B012,Tomato,407,Clay,5.66,Poor,Wet,23.1,191.1,synthetic
+P00934,B018,Eggplant,873,Sandy loam,5.83,Poor,Wet,27.6,237.0,synthetic
+P00935,B011,Okra,231,Loam,5.76,Moderate,Dry,26.8,98.0,synthetic
+P00936,B010,Squash,518,Clay,6.69,Moderate,Wet,23.8,206.0,synthetic
+P00937,B013,Tomato,845,Loam,6.94,Good,Wet,29.3,193.5,synthetic
+P00938,B007,Eggplant,437,Sandy loam,5.84,Good,Dry,30.6,47.3,synthetic
+P00939,B012,Okra,470,Clay,5.66,Poor,Dry,26.6,25.0,synthetic
+P00940,B012,Squash,354,Clay,5.66,Poor,Wet,25.8,236.3,synthetic
+P00941,B006,Tomato,890,Clay,6.36,Poor,Wet,27.5,237.4,synthetic
+P00942,B009,Eggplant,820,Loam,6.5,Poor,Dry,30.1,86.9,synthetic
+P00943,B019,Okra,419,Clay,6.62,Moderate,Wet,28.9,261.3,synthetic
+P00944,B019,Squash,327,Clay,6.62,Moderate,Wet,26.5,239.7,synthetic
+P00945,B013,Tomato,563,Loam,6.94,Good,Wet,28.3,146.9,synthetic
+P00946,B010,Eggplant,185,Clay,6.69,Moderate,Wet,29.7,254.3,synthetic
+P00947,B020,Okra,878,Clay,6.95,Poor,Wet,24.2,198.8,synthetic
+P00948,B011,Squash,314,Loam,5.76,Moderate,Wet,29.1,187.2,synthetic
+P00949,B016,Tomato,179,Clay,6.44,Good,Dry,29.9,45.0,synthetic
+P00950,B002,Eggplant,637,Loam,5.92,Poor,Wet,25.2,211.7,synthetic
+P00951,B009,Okra,765,Loam,6.5,Poor,Wet,26.6,184.5,synthetic
+P00952,B016,Squash,864,Clay,6.44,Good,Wet,28.4,244.7,synthetic
+P00953,B014,Tomato,105,Loam,6.87,Good,Dry,28.4,77.1,synthetic
+P00954,B020,Eggplant,331,Clay,6.95,Poor,Dry,30.6,88.2,synthetic
+P00955,B012,Okra,756,Clay,5.66,Poor,Wet,30.4,189.4,synthetic
+P00956,B005,Squash,706,Clay,5.55,Poor,Wet,26.3,270.2,synthetic
+P00957,B007,Tomato,246,Sandy loam,5.84,Good,Dry,30.5,41.3,synthetic
+P00958,B016,Eggplant,346,Clay,6.44,Good,Wet,26.9,273.9,synthetic
+P00959,B017,Okra,270,Sandy loam,7.01,Moderate,Dry,30.9,13.5,synthetic
+P00960,B004,Squash,474,Sandy loam,5.65,Moderate,Wet,27.3,189.5,synthetic
+P00961,B012,Tomato,300,Clay,5.66,Poor,Dry,34.0,11.5,synthetic
+P00962,B017,Eggplant,381,Sandy loam,7.01,Moderate,Dry,27.6,58.5,synthetic
+P00963,B016,Okra,763,Clay,6.44,Good,Wet,25.7,212.8,synthetic
+P00964,B005,Squash,157,Clay,5.55,Poor,Dry,24.6,102.4,synthetic
+P00965,B011,Tomato,700,Loam,5.76,Moderate,Wet,29.0,195.4,synthetic
+P00966,B003,Eggplant,846,Sandy loam,5.67,Good,Dry,29.1,23.0,synthetic
+P00967,B001,Okra,449,Sandy loam,5.69,Good,Wet,27.7,246.8,synthetic
+P00968,B006,Squash,885,Clay,6.36,Poor,Wet,23.6,153.7,synthetic
+P00969,B005,Tomato,282,Clay,5.55,Poor,Wet,31.0,230.6,synthetic
+P00970,B010,Eggplant,601,Clay,6.69,Moderate,Wet,27.5,180.3,synthetic
+P00971,B002,Okra,819,Loam,5.92,Poor,Wet,29.4,253.0,synthetic
+P00972,B009,Squash,323,Loam,6.5,Poor,Dry,26.6,62.7,synthetic
+P00973,B019,Tomato,702,Clay,6.62,Moderate,Wet,26.6,238.0,synthetic
+P00974,B011,Eggplant,266,Loam,5.76,Moderate,Dry,28.7,99.8,synthetic
+P00975,B013,Okra,482,Loam,6.94,Good,Wet,28.8,183.6,synthetic
+P00976,B014,Squash,510,Loam,6.87,Good,Wet,28.7,111.9,synthetic
+P00977,B007,Tomato,155,Sandy loam,5.84,Good,Dry,29.2,91.2,synthetic
+P00978,B001,Eggplant,414,Sandy loam,5.69,Good,Dry,28.4,88.4,synthetic
+P00979,B001,Okra,663,Sandy loam,5.69,Good,Wet,28.5,225.5,synthetic
+P00980,B004,Squash,236,Sandy loam,5.65,Moderate,Wet,30.3,259.0,synthetic
+P00981,B012,Tomato,127,Clay,5.66,Poor,Wet,25.4,117.1,synthetic
+P00982,B020,Eggplant,241,Clay,6.95,Poor,Wet,30.5,180.5,synthetic
+P00983,B005,Okra,592,Clay,5.55,Poor,Wet,26.9,265.6,synthetic
+P00984,B015,Squash,771,Loam,6.41,Moderate,Dry,26.2,118.4,synthetic
+P00985,B001,Tomato,532,Sandy loam,5.69,Good,Wet,26.3,161.0,synthetic
+P00986,B017,Eggplant,647,Sandy loam,7.01,Moderate,Wet,28.6,148.1,synthetic
+P00987,B005,Okra,704,Clay,5.55,Poor,Dry,25.6,144.7,synthetic
+P00988,B016,Squash,802,Clay,6.44,Good,Wet,25.2,272.2,synthetic
+P00989,B010,Tomato,404,Clay,6.69,Moderate,Wet,26.1,231.7,synthetic
+P00990,B003,Eggplant,605,Sandy loam,5.67,Good,Dry,28.8,80.9,synthetic
+P00991,B019,Okra,139,Clay,6.62,Moderate,Wet,29.7,219.0,synthetic
+P00992,B010,Squash,864,Clay,6.69,Moderate,Wet,27.0,224.9,synthetic
+P00993,B019,Tomato,652,Clay,6.62,Moderate,Wet,30.8,208.2,synthetic
+P00994,B009,Eggplant,719,Loam,6.5,Poor,Dry,27.5,123.8,synthetic
+P00995,B005,Okra,750,Clay,5.55,Poor,Wet,27.7,263.8,synthetic
+P00996,B019,Squash,498,Clay,6.62,Moderate,Wet,26.8,183.2,synthetic
+P00997,B016,Tomato,499,Clay,6.44,Good,Dry,26.8,60.1,synthetic
+P00998,B007,Eggplant,562,Sandy loam,5.84,Good,Wet,26.9,272.9,synthetic
+P00999,B001,Okra,340,Sandy loam,5.69,Good,Wet,25.8,193.9,synthetic
+P01000,B019,Squash,896,Clay,6.62,Moderate,Wet,28.5,231.2,synthetic
+P01001,B011,Tomato,803,Loam,5.76,Moderate,Wet,26.0,166.9,synthetic
+P01002,B016,Eggplant,260,Clay,6.44,Good,Wet,27.0,298.6,synthetic
+P01003,B004,Okra,528,Sandy loam,5.65,Moderate,Wet,26.2,189.9,synthetic
+P01004,B001,Squash,740,Sandy loam,5.69,Good,Wet,27.1,194.6,synthetic
+P01005,B007,Tomato,345,Sandy loam,5.84,Good,Dry,24.9,81.8,synthetic
+P01006,B019,Eggplant,554,Clay,6.62,Moderate,Wet,25.1,225.4,synthetic
+P01007,B006,Okra,107,Clay,6.36,Poor,Dry,23.0,89.1,synthetic
+P01008,B014,Squash,832,Loam,6.87,Good,Wet,29.8,176.8,synthetic
+P01009,B010,Tomato,140,Clay,6.69,Moderate,Wet,29.5,153.3,synthetic
+P01010,B005,Eggplant,214,Clay,5.55,Poor,Wet,28.1,157.4,synthetic
+P01011,B009,Okra,569,Loam,6.5,Poor,Dry,26.5,118.9,synthetic
+P01012,B015,Squash,879,Loam,6.41,Moderate,Wet,25.6,187.7,synthetic
+P01013,B019,Tomato,401,Clay,6.62,Moderate,Wet,25.9,216.7,synthetic
+P01014,B007,Eggplant,472,Sandy loam,5.84,Good,Wet,28.2,215.0,synthetic
+P01015,B005,Okra,596,Clay,5.55,Poor,Wet,26.1,204.3,synthetic
+P01016,B011,Squash,384,Loam,5.76,Moderate,Dry,27.5,91.6,synthetic
+P01017,B017,Tomato,133,Sandy loam,7.01,Moderate,Dry,27.9,27.0,synthetic
+P01018,B003,Eggplant,350,Sandy loam,5.67,Good,Dry,25.7,81.0,synthetic
+P01019,B006,Okra,384,Clay,6.36,Poor,Dry,29.6,60.9,synthetic
+P01020,B008,Squash,575,Sandy loam,6.43,Poor,Dry,25.7,37.9,synthetic
+P01021,B015,Tomato,703,Loam,6.41,Moderate,Dry,27.1,67.8,synthetic
+P01022,B019,Eggplant,516,Clay,6.62,Moderate,Wet,29.5,208.5,synthetic
+P01023,B009,Okra,615,Loam,6.5,Poor,Dry,26.4,115.6,synthetic
+P01024,B016,Squash,789,Clay,6.44,Good,Dry,29.5,126.0,synthetic
+P01025,B004,Tomato,427,Sandy loam,5.65,Moderate,Dry,28.5,111.0,synthetic
+P01026,B007,Eggplant,724,Sandy loam,5.84,Good,Wet,28.9,133.7,synthetic
+P01027,B008,Okra,410,Sandy loam,6.43,Poor,Wet,24.1,223.8,synthetic
+P01028,B019,Squash,513,Clay,6.62,Moderate,Wet,28.0,205.7,synthetic
+P01029,B007,Tomato,482,Sandy loam,5.84,Good,Dry,27.2,38.8,synthetic
+P01030,B020,Eggplant,348,Clay,6.95,Poor,Wet,28.6,195.1,synthetic
+P01031,B016,Okra,484,Clay,6.44,Good,Dry,27.5,118.7,synthetic
+P01032,B016,Squash,893,Clay,6.44,Good,Dry,28.6,54.3,synthetic
+P01033,B015,Tomato,776,Loam,6.41,Moderate,Dry,26.8,109.4,synthetic
+P01034,B012,Eggplant,428,Clay,5.66,Poor,Wet,28.0,182.2,synthetic
+P01035,B005,Okra,598,Clay,5.55,Poor,Dry,26.7,32.1,synthetic
+P01036,B011,Squash,168,Loam,5.76,Moderate,Wet,27.6,245.3,synthetic
+P01037,B003,Tomato,869,Sandy loam,5.67,Good,Wet,23.1,129.7,synthetic
+P01038,B003,Eggplant,640,Sandy loam,5.67,Good,Dry,26.9,35.8,synthetic
+P01039,B001,Okra,365,Sandy loam,5.69,Good,Dry,28.3,106.7,synthetic
+P01040,B019,Squash,415,Clay,6.62,Moderate,Dry,28.4,86.0,synthetic
+P01041,B003,Tomato,773,Sandy loam,5.67,Good,Wet,31.2,143.2,synthetic
+P01042,B005,Eggplant,126,Clay,5.55,Poor,Wet,31.5,278.0,synthetic
+P01043,B007,Okra,279,Sandy loam,5.84,Good,Wet,27.1,198.9,synthetic
+P01044,B011,Squash,619,Loam,5.76,Moderate,Wet,30.1,318.2,synthetic
+P01045,B013,Tomato,166,Loam,6.94,Good,Dry,25.0,141.4,synthetic
+P01046,B001,Eggplant,146,Sandy loam,5.69,Good,Wet,27.5,125.4,synthetic
+P01047,B002,Okra,857,Loam,5.92,Poor,Dry,26.9,49.4,synthetic
+P01048,B006,Squash,266,Clay,6.36,Poor,Wet,28.7,196.7,synthetic
+P01049,B001,Tomato,135,Sandy loam,5.69,Good,Dry,25.9,138.1,synthetic
+P01050,B006,Eggplant,328,Clay,6.36,Poor,Dry,29.5,86.8,synthetic
+P01051,B005,Okra,363,Clay,5.55,Poor,Dry,27.2,106.7,synthetic
+P01052,B019,Squash,246,Clay,6.62,Moderate,Dry,29.7,99.2,synthetic
+P01053,B006,Tomato,784,Clay,6.36,Poor,Wet,25.4,305.1,synthetic
+P01054,B019,Eggplant,747,Clay,6.62,Moderate,Dry,28.0,0,synthetic
+P01055,B006,Okra,595,Clay,6.36,Poor,Wet,26.9,256.8,synthetic
+P01056,B018,Squash,886,Sandy loam,5.83,Poor,Wet,29.2,231.8,synthetic
+P01057,B018,Tomato,450,Sandy loam,5.83,Poor,Wet,26.5,159.2,synthetic
+P01058,B004,Eggplant,223,Sandy loam,5.65,Moderate,Dry,31.7,53.3,synthetic
+P01059,B006,Okra,623,Clay,6.36,Poor,Wet,29.8,134.6,synthetic
+P01060,B020,Squash,148,Clay,6.95,Poor,Dry,25.7,46.1,synthetic
+P01061,B020,Tomato,255,Clay,6.95,Poor,Dry,29.8,9.4,synthetic
+P01062,B013,Eggplant,239,Loam,6.94,Good,Wet,29.8,182.2,synthetic
+P01063,B002,Okra,264,Loam,5.92,Poor,Wet,29.5,245.4,synthetic
+P01064,B013,Squash,331,Loam,6.94,Good,Dry,28.0,102.2,synthetic
+P01065,B007,Tomato,435,Sandy loam,5.84,Good,Wet,29.0,235.0,synthetic
+P01066,B015,Eggplant,724,Loam,6.41,Moderate,Wet,29.1,165.1,synthetic
+P01067,B009,Okra,272,Loam,6.5,Poor,Dry,26.5,34.8,synthetic
+P01068,B020,Squash,606,Clay,6.95,Poor,Wet,28.2,287.8,synthetic
+P01069,B009,Tomato,465,Loam,6.5,Poor,Wet,24.7,246.8,synthetic
+P01070,B009,Eggplant,599,Loam,6.5,Poor,Dry,31.7,63.7,synthetic
+P01071,B019,Okra,882,Clay,6.62,Moderate,Dry,27.1,55.9,synthetic
+P01072,B012,Squash,635,Clay,5.66,Poor,Wet,29.6,168.2,synthetic
+P01073,B019,Tomato,201,Clay,6.62,Moderate,Dry,32.8,79.6,synthetic
+P01074,B012,Eggplant,432,Clay,5.66,Poor,Dry,27.4,134.0,synthetic
+P01075,B011,Okra,276,Loam,5.76,Moderate,Wet,28.1,140.3,synthetic
+P01076,B011,Squash,754,Loam,5.76,Moderate,Wet,30.6,248.0,synthetic
+P01077,B012,Tomato,872,Clay,5.66,Poor,Wet,29.5,130.1,synthetic
+P01078,B018,Eggplant,303,Sandy loam,5.83,Poor,Dry,25.5,101.9,synthetic
+P01079,B012,Okra,853,Clay,5.66,Poor,Wet,29.3,239.3,synthetic
+P01080,B002,Squash,380,Loam,5.92,Poor,Dry,25.2,47.4,synthetic
+P01081,B005,Tomato,726,Clay,5.55,Poor,Dry,26.5,164.0,synthetic
+P01082,B019,Eggplant,472,Clay,6.62,Moderate,Wet,27.9,147.4,synthetic
+P01083,B005,Okra,352,Clay,5.55,Poor,Wet,31.7,119.7,synthetic
+P01084,B004,Squash,760,Sandy loam,5.65,Moderate,Dry,27.4,2.5,synthetic
+P01085,B016,Tomato,122,Clay,6.44,Good,Wet,34.1,262.3,synthetic
+P01086,B003,Eggplant,845,Sandy loam,5.67,Good,Wet,23.6,168.8,synthetic
+P01087,B015,Okra,438,Loam,6.41,Moderate,Wet,25.1,195.7,synthetic
+P01088,B001,Squash,222,Sandy loam,5.69,Good,Dry,27.6,28.4,synthetic
+P01089,B020,Tomato,606,Clay,6.95,Poor,Dry,28.3,56.6,synthetic
+P01090,B014,Eggplant,451,Loam,6.87,Good,Wet,27.6,189.4,synthetic
+P01091,B009,Okra,762,Loam,6.5,Poor,Wet,28.6,245.4,synthetic
+P01092,B018,Squash,101,Sandy loam,5.83,Poor,Dry,27.6,48.7,synthetic
+P01093,B003,Tomato,286,Sandy loam,5.67,Good,Dry,29.1,116.6,synthetic
+P01094,B015,Eggplant,555,Loam,6.41,Moderate,Dry,24.3,61.6,synthetic
+P01095,B004,Okra,271,Sandy loam,5.65,Moderate,Wet,26.9,161.2,synthetic
+P01096,B013,Squash,167,Loam,6.94,Good,Wet,30.8,189.5,synthetic
+P01097,B012,Tomato,775,Clay,5.66,Poor,Dry,31.9,19.9,synthetic
+P01098,B019,Eggplant,389,Clay,6.62,Moderate,Wet,28.1,152.6,synthetic
+P01099,B001,Okra,724,Sandy loam,5.69,Good,Wet,30.0,241.3,synthetic
+P01100,B002,Squash,701,Loam,5.92,Poor,Dry,29.6,53.8,synthetic
+P01101,B010,Tomato,153,Clay,6.69,Moderate,Wet,30.0,305.5,synthetic
+P01102,B002,Eggplant,326,Loam,5.92,Poor,Dry,32.0,121.9,synthetic
+P01103,B013,Okra,397,Loam,6.94,Good,Dry,28.8,53.3,synthetic
+P01104,B012,Squash,352,Clay,5.66,Poor,Wet,29.1,216.1,synthetic
+P01105,B007,Tomato,523,Sandy loam,5.84,Good,Wet,27.8,213.1,synthetic
+P01106,B002,Eggplant,172,Loam,5.92,Poor,Wet,30.1,254.3,synthetic
+P01107,B009,Okra,683,Loam,6.5,Poor,Wet,27.6,242.1,synthetic
+P01108,B007,Squash,590,Sandy loam,5.84,Good,Dry,27.5,63.8,synthetic
+P01109,B008,Tomato,246,Sandy loam,6.43,Poor,Wet,26.4,181.5,synthetic
+P01110,B002,Eggplant,356,Loam,5.92,Poor,Dry,29.7,53.4,synthetic
+P01111,B017,Okra,443,Sandy loam,7.01,Moderate,Dry,28.4,120.5,synthetic
+P01112,B018,Squash,158,Sandy loam,5.83,Poor,Dry,31.2,145.9,synthetic
+P01113,B012,Tomato,339,Clay,5.66,Poor,Dry,28.6,79.7,synthetic
+P01114,B002,Eggplant,587,Loam,5.92,Poor,Dry,31.7,74.2,synthetic
+P01115,B016,Okra,565,Clay,6.44,Good,Wet,24.7,308.3,synthetic
+P01116,B013,Squash,121,Loam,6.94,Good,Wet,29.4,184.1,synthetic
+P01117,B012,Tomato,527,Clay,5.66,Poor,Dry,30.0,50.1,synthetic
+P01118,B005,Eggplant,682,Clay,5.55,Poor,Dry,28.1,128.1,synthetic
+P01119,B012,Okra,211,Clay,5.66,Poor,Wet,28.3,231.5,synthetic
+P01120,B011,Squash,542,Loam,5.76,Moderate,Dry,25.5,0,synthetic
+P01121,B013,Tomato,351,Loam,6.94,Good,Dry,29.0,93.3,synthetic
+P01122,B004,Eggplant,154,Sandy loam,5.65,Moderate,Dry,28.2,67.7,synthetic
+P01123,B003,Okra,557,Sandy loam,5.67,Good,Wet,26.8,185.6,synthetic
+P01124,B014,Squash,262,Loam,6.87,Good,Dry,25.3,53.8,synthetic
+P01125,B005,Tomato,490,Clay,5.55,Poor,Wet,28.5,216.5,synthetic
+P01126,B015,Eggplant,680,Loam,6.41,Moderate,Dry,32.8,47.0,synthetic
+P01127,B013,Okra,784,Loam,6.94,Good,Dry,31.6,125.1,synthetic
+P01128,B001,Squash,358,Sandy loam,5.69,Good,Wet,29.9,208.0,synthetic
+P01129,B010,Tomato,141,Clay,6.69,Moderate,Wet,26.0,223.4,synthetic
+P01130,B020,Eggplant,489,Clay,6.95,Poor,Dry,28.0,57.2,synthetic
+P01131,B012,Okra,454,Clay,5.66,Poor,Wet,26.5,230.2,synthetic
+P01132,B017,Squash,880,Sandy loam,7.01,Moderate,Dry,29.0,68.0,synthetic
+P01133,B003,Tomato,449,Sandy loam,5.67,Good,Dry,27.5,0.6,synthetic
+P01134,B004,Eggplant,863,Sandy loam,5.65,Moderate,Dry,29.0,72.6,synthetic
+P01135,B007,Okra,740,Sandy loam,5.84,Good,Dry,27.6,26.3,synthetic
+P01136,B015,Squash,302,Loam,6.41,Moderate,Dry,27.2,64.2,synthetic
+P01137,B007,Tomato,333,Sandy loam,5.84,Good,Dry,30.0,10.3,synthetic
+P01138,B014,Eggplant,643,Loam,6.87,Good,Wet,29.5,151.8,synthetic
+P01139,B016,Okra,873,Clay,6.44,Good,Wet,28.6,201.9,synthetic
+P01140,B011,Squash,167,Loam,5.76,Moderate,Wet,27.1,158.3,synthetic
+P01141,B010,Tomato,294,Clay,6.69,Moderate,Wet,25.1,348.0,synthetic
+P01142,B015,Eggplant,868,Loam,6.41,Moderate,Wet,26.9,216.6,synthetic
+P01143,B013,Okra,777,Loam,6.94,Good,Wet,31.5,216.2,synthetic
+P01144,B009,Squash,262,Loam,6.5,Poor,Wet,28.8,254.4,synthetic
+P01145,B014,Tomato,781,Loam,6.87,Good,Wet,29.1,202.3,synthetic
+P01146,B008,Eggplant,113,Sandy loam,6.43,Poor,Wet,28.7,170.8,synthetic
+P01147,B020,Okra,482,Clay,6.95,Poor,Dry,26.2,58.2,synthetic
+P01148,B007,Squash,420,Sandy loam,5.84,Good,Wet,26.3,128.7,synthetic
+P01149,B007,Tomato,686,Sandy loam,5.84,Good,Dry,31.4,50.0,synthetic
+P01150,B001,Eggplant,868,Sandy loam,5.69,Good,Wet,27.1,208.8,synthetic
+P01151,B003,Okra,888,Sandy loam,5.67,Good,Wet,27.0,226.8,synthetic
+P01152,B011,Squash,249,Loam,5.76,Moderate,Wet,29.0,169.1,synthetic
+P01153,B020,Tomato,299,Clay,6.95,Poor,Dry,27.8,78.6,synthetic
+P01154,B010,Eggplant,129,Clay,6.69,Moderate,Wet,28.5,242.1,synthetic
+P01155,B018,Okra,210,Sandy loam,5.83,Poor,Dry,25.2,27.5,synthetic
+P01156,B011,Squash,665,Loam,5.76,Moderate,Dry,30.9,121.5,synthetic
+P01157,B013,Tomato,135,Loam,6.94,Good,Dry,26.2,132.4,synthetic
+P01158,B016,Eggplant,204,Clay,6.44,Good,Dry,29.0,55.3,synthetic
+P01159,B003,Okra,526,Sandy loam,5.67,Good,Wet,27.4,218.4,synthetic
+P01160,B004,Squash,799,Sandy loam,5.65,Moderate,Wet,28.1,223.5,synthetic
+P01161,B005,Tomato,874,Clay,5.55,Poor,Dry,26.2,64.9,synthetic
+P01162,B018,Eggplant,313,Sandy loam,5.83,Poor,Dry,30.6,78.3,synthetic
+P01163,B013,Okra,742,Loam,6.94,Good,Dry,28.1,69.0,synthetic
+P01164,B011,Squash,222,Loam,5.76,Moderate,Dry,27.3,92.5,synthetic
+P01165,B004,Tomato,310,Sandy loam,5.65,Moderate,Dry,27.3,77.3,synthetic
+P01166,B012,Eggplant,680,Clay,5.66,Poor,Wet,30.6,228.8,synthetic
+P01167,B011,Okra,837,Loam,5.76,Moderate,Dry,24.8,65.2,synthetic
+P01168,B008,Squash,131,Sandy loam,6.43,Poor,Dry,24.9,9.5,synthetic
+P01169,B004,Tomato,533,Sandy loam,5.65,Moderate,Dry,26.1,107.5,synthetic
+P01170,B010,Eggplant,309,Clay,6.69,Moderate,Dry,27.6,157.0,synthetic
+P01171,B004,Okra,693,Sandy loam,5.65,Moderate,Dry,27.7,21.5,synthetic
+P01172,B007,Squash,138,Sandy loam,5.84,Good,Dry,26.4,88.4,synthetic
+P01173,B010,Tomato,787,Clay,6.69,Moderate,Wet,28.5,240.2,synthetic
+P01174,B019,Eggplant,337,Clay,6.62,Moderate,Wet,25.1,187.4,synthetic
+P01175,B018,Okra,843,Sandy loam,5.83,Poor,Dry,25.0,126.6,synthetic
+P01176,B015,Squash,788,Loam,6.41,Moderate,Wet,28.1,187.5,synthetic
+P01177,B005,Tomato,561,Clay,5.55,Poor,Wet,30.6,183.8,synthetic
+P01178,B020,Eggplant,263,Clay,6.95,Poor,Wet,24.3,191.1,synthetic
+P01179,B014,Okra,632,Loam,6.87,Good,Dry,30.5,62.0,synthetic
+P01180,B016,Squash,482,Clay,6.44,Good,Dry,26.3,132.7,synthetic
+P01181,B004,Tomato,810,Sandy loam,5.65,Moderate,Dry,26.6,31.0,synthetic
+P01182,B005,Eggplant,873,Clay,5.55,Poor,Dry,27.4,32.8,synthetic
+P01183,B001,Okra,894,Sandy loam,5.69,Good,Wet,28.9,227.7,synthetic
+P01184,B011,Squash,734,Loam,5.76,Moderate,Wet,26.8,234.1,synthetic
+P01185,B011,Tomato,492,Loam,5.76,Moderate,Wet,31.0,222.0,synthetic
+P01186,B001,Eggplant,188,Sandy loam,5.69,Good,Wet,30.2,221.1,synthetic
+P01187,B013,Okra,135,Loam,6.94,Good,Wet,28.3,324.9,synthetic
+P01188,B005,Squash,614,Clay,5.55,Poor,Dry,30.0,47.9,synthetic
+P01189,B009,Tomato,562,Loam,6.5,Poor,Dry,27.3,20.9,synthetic
+P01190,B007,Eggplant,894,Sandy loam,5.84,Good,Wet,27.8,210.4,synthetic
+P01191,B019,Okra,817,Clay,6.62,Moderate,Wet,28.3,253.0,synthetic
+P01192,B016,Squash,825,Clay,6.44,Good,Wet,28.6,169.2,synthetic
+P01193,B018,Tomato,780,Sandy loam,5.83,Poor,Wet,28.8,217.0,synthetic
+P01194,B019,Eggplant,659,Clay,6.62,Moderate,Dry,26.9,27.6,synthetic
+P01195,B018,Okra,236,Sandy loam,5.83,Poor,Dry,28.1,87.4,synthetic
+P01196,B019,Squash,427,Clay,6.62,Moderate,Dry,26.8,134.0,synthetic
+P01197,B004,Tomato,654,Sandy loam,5.65,Moderate,Dry,25.8,101.7,synthetic
+P01198,B003,Eggplant,740,Sandy loam,5.67,Good,Dry,28.1,131.9,synthetic
+P01199,B013,Okra,482,Loam,6.94,Good,Dry,29.1,125.3,synthetic
+P01200,B014,Squash,609,Loam,6.87,Good,Dry,28.1,113.5,synthetic
+P01201,B002,Tomato,765,Loam,5.92,Poor,Wet,27.7,242.0,synthetic
+P01202,B017,Eggplant,804,Sandy loam,7.01,Moderate,Wet,24.9,263.1,synthetic
+P01203,B011,Okra,645,Loam,5.76,Moderate,Dry,26.0,0,synthetic
+P01204,B008,Squash,345,Sandy loam,6.43,Poor,Wet,29.6,194.3,synthetic
+P01205,B009,Tomato,727,Loam,6.5,Poor,Wet,27.4,187.4,synthetic
+P01206,B018,Eggplant,632,Sandy loam,5.83,Poor,Wet,28.6,252.8,synthetic
+P01207,B006,Okra,834,Clay,6.36,Poor,Wet,26.6,238.2,synthetic
+P01208,B013,Squash,360,Loam,6.94,Good,Wet,29.3,210.5,synthetic
+P01209,B007,Tomato,601,Sandy loam,5.84,Good,Wet,30.0,223.3,synthetic
+P01210,B002,Eggplant,374,Loam,5.92,Poor,Dry,27.6,114.7,synthetic
+P01211,B001,Okra,383,Sandy loam,5.69,Good,Dry,26.5,112.7,synthetic
+P01212,B008,Squash,880,Sandy loam,6.43,Poor,Dry,30.6,72.6,synthetic
+P01213,B019,Tomato,352,Clay,6.62,Moderate,Wet,28.4,190.8,synthetic
+P01214,B004,Eggplant,693,Sandy loam,5.65,Moderate,Dry,28.1,99.3,synthetic
+P01215,B015,Okra,729,Loam,6.41,Moderate,Dry,27.9,25.7,synthetic
+P01216,B011,Squash,497,Loam,5.76,Moderate,Wet,30.4,216.2,synthetic
+P01217,B006,Tomato,514,Clay,6.36,Poor,Wet,28.5,243.5,synthetic
+P01218,B003,Eggplant,685,Sandy loam,5.67,Good,Wet,27.9,201.8,synthetic
+P01219,B008,Okra,590,Sandy loam,6.43,Poor,Wet,23.4,311.7,synthetic
+P01220,B013,Squash,824,Loam,6.94,Good,Wet,29.4,218.6,synthetic
+P01221,B005,Tomato,290,Clay,5.55,Poor,Wet,29.3,243.3,synthetic
+P01222,B010,Eggplant,341,Clay,6.69,Moderate,Wet,32.0,179.7,synthetic
+P01223,B018,Okra,477,Sandy loam,5.83,Poor,Dry,28.5,15.1,synthetic
+P01224,B009,Squash,503,Loam,6.5,Poor,Dry,23.8,64.5,synthetic
+P01225,B015,Tomato,830,Loam,6.41,Moderate,Dry,25.0,82.6,synthetic
+P01226,B015,Eggplant,654,Loam,6.41,Moderate,Wet,27.1,174.0,synthetic
+P01227,B009,Okra,229,Loam,6.5,Poor,Wet,30.0,278.5,synthetic
+P01228,B013,Squash,598,Loam,6.94,Good,Wet,27.9,218.4,synthetic
+P01229,B010,Tomato,332,Clay,6.69,Moderate,Wet,28.0,217.3,synthetic
+P01230,B005,Eggplant,249,Clay,5.55,Poor,Wet,29.5,202.5,synthetic
+P01231,B003,Okra,588,Sandy loam,5.67,Good,Wet,26.5,247.9,synthetic
+P01232,B006,Squash,828,Clay,6.36,Poor,Dry,29.1,63.9,synthetic
+P01233,B011,Tomato,476,Loam,5.76,Moderate,Wet,27.0,239.2,synthetic
+P01234,B002,Eggplant,486,Loam,5.92,Poor,Dry,29.2,64.8,synthetic
+P01235,B003,Okra,145,Sandy loam,5.67,Good,Wet,27.8,237.8,synthetic
+P01236,B014,Squash,167,Loam,6.87,Good,Wet,29.4,208.3,synthetic
+P01237,B004,Tomato,450,Sandy loam,5.65,Moderate,Dry,26.2,1.1,synthetic
+P01238,B011,Eggplant,703,Loam,5.76,Moderate,Dry,26.1,0,synthetic
+P01239,B011,Okra,514,Loam,5.76,Moderate,Wet,24.8,210.5,synthetic
+P01240,B008,Squash,200,Sandy loam,6.43,Poor,Dry,26.9,70.1,synthetic
+P01241,B008,Tomato,778,Sandy loam,6.43,Poor,Dry,24.5,0,synthetic
+P01242,B016,Eggplant,415,Clay,6.44,Good,Dry,27.0,98.3,synthetic
+P01243,B010,Okra,263,Clay,6.69,Moderate,Dry,27.1,49.6,synthetic
+P01244,B005,Squash,814,Clay,5.55,Poor,Wet,27.1,210.8,synthetic
+P01245,B012,Tomato,438,Clay,5.66,Poor,Dry,32.1,86.2,synthetic
+P01246,B013,Eggplant,730,Loam,6.94,Good,Wet,30.1,243.6,synthetic
+P01247,B006,Okra,390,Clay,6.36,Poor,Dry,26.6,65.6,synthetic
+P01248,B010,Squash,528,Clay,6.69,Moderate,Wet,25.9,149.7,synthetic
+P01249,B005,Tomato,220,Clay,5.55,Poor,Dry,28.7,68.2,synthetic
+P01250,B019,Eggplant,225,Clay,6.62,Moderate,Dry,27.6,23.1,synthetic
+P01251,B016,Okra,453,Clay,6.44,Good,Dry,26.7,95.0,synthetic
+P01252,B013,Squash,863,Loam,6.94,Good,Wet,24.5,232.9,synthetic
+P01253,B009,Tomato,442,Loam,6.5,Poor,Wet,31.4,255.1,synthetic
+P01254,B014,Eggplant,828,Loam,6.87,Good,Dry,28.4,9.0,synthetic
+P01255,B007,Okra,854,Sandy loam,5.84,Good,Dry,26.5,115.9,synthetic
+P01256,B014,Squash,660,Loam,6.87,Good,Dry,24.9,82.8,synthetic
+P01257,B016,Tomato,723,Clay,6.44,Good,Wet,32.0,171.8,synthetic
+P01258,B008,Eggplant,334,Sandy loam,6.43,Poor,Wet,27.9,212.3,synthetic
+P01259,B018,Okra,850,Sandy loam,5.83,Poor,Wet,32.0,218.3,synthetic
+P01260,B018,Squash,498,Sandy loam,5.83,Poor,Wet,28.7,132.7,synthetic
+P01261,B008,Tomato,867,Sandy loam,6.43,Poor,Wet,29.0,212.7,synthetic
+P01262,B006,Eggplant,416,Clay,6.36,Poor,Wet,31.8,263.3,synthetic
+P01263,B008,Okra,376,Sandy loam,6.43,Poor,Dry,28.6,0,synthetic
+P01264,B015,Squash,185,Loam,6.41,Moderate,Dry,25.3,71.5,synthetic
+P01265,B020,Tomato,450,Clay,6.95,Poor,Dry,29.2,63.8,synthetic
+P01266,B013,Eggplant,512,Loam,6.94,Good,Wet,29.9,239.0,synthetic
+P01267,B016,Okra,303,Clay,6.44,Good,Wet,25.8,247.3,synthetic
+P01268,B011,Squash,422,Loam,5.76,Moderate,Wet,28.0,205.1,synthetic
+P01269,B016,Tomato,879,Clay,6.44,Good,Wet,25.6,193.3,synthetic
+P01270,B014,Eggplant,407,Loam,6.87,Good,Wet,28.9,214.6,synthetic
+P01271,B003,Okra,407,Sandy loam,5.67,Good,Wet,29.5,225.6,synthetic
+P01272,B020,Squash,370,Clay,6.95,Poor,Dry,27.4,78.6,synthetic
+P01273,B002,Tomato,872,Loam,5.92,Poor,Wet,26.7,272.7,synthetic
+P01274,B010,Eggplant,141,Clay,6.69,Moderate,Wet,29.6,234.0,synthetic
+P01275,B004,Okra,580,Sandy loam,5.65,Moderate,Dry,29.8,93.3,synthetic
+P01276,B011,Squash,817,Loam,5.76,Moderate,Dry,29.8,147.2,synthetic
+P01277,B008,Tomato,379,Sandy loam,6.43,Poor,Wet,30.4,211.6,synthetic
+P01278,B020,Eggplant,452,Clay,6.95,Poor,Wet,28.9,255.8,synthetic
+P01279,B014,Okra,217,Loam,6.87,Good,Wet,26.6,172.3,synthetic
+P01280,B008,Squash,355,Sandy loam,6.43,Poor,Dry,27.6,36.9,synthetic
+P01281,B007,Tomato,209,Sandy loam,5.84,Good,Dry,28.2,59.2,synthetic
+P01282,B014,Eggplant,554,Loam,6.87,Good,Wet,26.4,159.1,synthetic
+P01283,B016,Okra,358,Clay,6.44,Good,Wet,30.0,196.5,synthetic
+P01284,B014,Squash,386,Loam,6.87,Good,Dry,28.8,50.1,synthetic
+P01285,B010,Tomato,382,Clay,6.69,Moderate,Dry,25.1,84.1,synthetic
+P01286,B008,Eggplant,664,Sandy loam,6.43,Poor,Wet,23.6,287.8,synthetic
+P01287,B009,Okra,680,Loam,6.5,Poor,Wet,28.0,201.9,synthetic
+P01288,B006,Squash,120,Clay,6.36,Poor,Wet,28.2,209.5,synthetic
+P01289,B004,Tomato,812,Sandy loam,5.65,Moderate,Wet,27.6,168.6,synthetic
+P01290,B013,Eggplant,432,Loam,6.94,Good,Wet,25.0,150.7,synthetic
+P01291,B018,Okra,240,Sandy loam,5.83,Poor,Dry,27.7,47.7,synthetic
+P01292,B015,Squash,479,Loam,6.41,Moderate,Dry,28.3,92.3,synthetic
+P01293,B003,Tomato,195,Sandy loam,5.67,Good,Wet,30.4,184.6,synthetic
+P01294,B009,Eggplant,106,Loam,6.5,Poor,Dry,26.3,13.5,synthetic
+P01295,B019,Okra,465,Clay,6.62,Moderate,Wet,31.1,210.0,synthetic
+P01296,B007,Squash,146,Sandy loam,5.84,Good,Dry,28.6,38.7,synthetic
+P01297,B008,Tomato,841,Sandy loam,6.43,Poor,Dry,31.2,77.6,synthetic
+P01298,B006,Eggplant,135,Clay,6.36,Poor,Wet,27.1,227.0,synthetic
+P01299,B005,Okra,270,Clay,5.55,Poor,Wet,29.1,228.2,synthetic
+P01300,B015,Squash,776,Loam,6.41,Moderate,Dry,29.3,17.7,synthetic
+P01301,B009,Tomato,120,Loam,6.5,Poor,Dry,31.2,33.0,synthetic
+P01302,B005,Eggplant,215,Clay,5.55,Poor,Dry,28.4,126.6,synthetic
+P01303,B006,Okra,151,Clay,6.36,Poor,Dry,28.4,36.7,synthetic
+P01304,B018,Squash,239,Sandy loam,5.83,Poor,Dry,27.9,100.9,synthetic
+P01305,B003,Tomato,838,Sandy loam,5.67,Good,Dry,27.5,54.1,synthetic
+P01306,B001,Eggplant,893,Sandy loam,5.69,Good,Dry,28.3,0,synthetic
+P01307,B003,Okra,549,Sandy loam,5.67,Good,Dry,24.4,73.7,synthetic
+P01308,B005,Squash,616,Clay,5.55,Poor,Wet,26.9,265.1,synthetic
+P01309,B016,Tomato,178,Clay,6.44,Good,Wet,23.6,214.9,synthetic
+P01310,B002,Eggplant,150,Loam,5.92,Poor,Wet,27.4,212.5,synthetic
+P01311,B009,Okra,341,Loam,6.5,Poor,Dry,25.9,93.9,synthetic
+P01312,B019,Squash,140,Clay,6.62,Moderate,Wet,27.7,159.7,synthetic
+P01313,B001,Tomato,148,Sandy loam,5.69,Good,Dry,28.5,75.1,synthetic
+P01314,B009,Eggplant,660,Loam,6.5,Poor,Wet,30.8,196.5,synthetic
+P01315,B017,Okra,789,Sandy loam,7.01,Moderate,Dry,26.8,82.6,synthetic
+P01316,B014,Squash,529,Loam,6.87,Good,Wet,28.8,235.0,synthetic
+P01317,B009,Tomato,499,Loam,6.5,Poor,Dry,27.4,67.7,synthetic
+P01318,B002,Eggplant,791,Loam,5.92,Poor,Dry,26.8,81.5,synthetic
+P01319,B016,Okra,397,Clay,6.44,Good,Wet,26.7,276.3,synthetic
+P01320,B008,Squash,842,Sandy loam,6.43,Poor,Dry,28.8,36.9,synthetic
+P01321,B002,Tomato,313,Loam,5.92,Poor,Wet,28.3,298.9,synthetic
+P01322,B013,Eggplant,192,Loam,6.94,Good,Dry,29.3,0,synthetic
+P01323,B020,Okra,795,Clay,6.95,Poor,Dry,28.0,82.5,synthetic
+P01324,B003,Squash,617,Sandy loam,5.67,Good,Dry,30.4,37.9,synthetic
+P01325,B017,Tomato,127,Sandy loam,7.01,Moderate,Dry,29.3,66.7,synthetic
+P01326,B001,Eggplant,752,Sandy loam,5.69,Good,Dry,27.3,31.6,synthetic
+P01327,B020,Okra,454,Clay,6.95,Poor,Dry,25.9,99.5,synthetic
+P01328,B004,Squash,588,Sandy loam,5.65,Moderate,Wet,28.3,249.8,synthetic
+P01329,B020,Tomato,443,Clay,6.95,Poor,Dry,30.0,84.5,synthetic
+P01330,B005,Eggplant,475,Clay,5.55,Poor,Wet,28.6,205.7,synthetic
+P01331,B017,Okra,899,Sandy loam,7.01,Moderate,Dry,28.8,79.0,synthetic
+P01332,B013,Squash,495,Loam,6.94,Good,Dry,29.4,3.3,synthetic
+P01333,B009,Tomato,621,Loam,6.5,Poor,Wet,25.7,268.1,synthetic
+P01334,B020,Eggplant,397,Clay,6.95,Poor,Dry,31.8,57.4,synthetic
+P01335,B011,Okra,663,Loam,5.76,Moderate,Wet,28.3,289.5,synthetic
+P01336,B002,Squash,810,Loam,5.92,Poor,Dry,26.9,27.0,synthetic
+P01337,B019,Tomato,563,Clay,6.62,Moderate,Dry,30.9,39.8,synthetic
+P01338,B020,Eggplant,665,Clay,6.95,Poor,Wet,30.0,167.3,synthetic
+P01339,B003,Okra,693,Sandy loam,5.67,Good,Wet,30.1,265.3,synthetic
+P01340,B010,Squash,210,Clay,6.69,Moderate,Dry,32.0,40.7,synthetic
+P01341,B019,Tomato,671,Clay,6.62,Moderate,Dry,25.4,99.0,synthetic
+P01342,B007,Eggplant,333,Sandy loam,5.84,Good,Wet,22.0,161.1,synthetic
+P01343,B005,Okra,103,Clay,5.55,Poor,Dry,30.9,0,synthetic
+P01344,B011,Squash,250,Loam,5.76,Moderate,Dry,24.3,41.3,synthetic
+P01345,B013,Tomato,321,Loam,6.94,Good,Wet,26.4,256.7,synthetic
+P01346,B017,Eggplant,868,Sandy loam,7.01,Moderate,Wet,22.9,161.3,synthetic
+P01347,B017,Okra,130,Sandy loam,7.01,Moderate,Wet,27.6,201.8,synthetic
+P01348,B020,Squash,156,Clay,6.95,Poor,Wet,29.7,188.2,synthetic
+P01349,B001,Tomato,157,Sandy loam,5.69,Good,Dry,29.8,51.9,synthetic
+P01350,B006,Eggplant,757,Clay,6.36,Poor,Dry,31.4,0,synthetic
+P01351,B015,Okra,159,Loam,6.41,Moderate,Wet,26.4,186.8,synthetic
+P01352,B012,Squash,603,Clay,5.66,Poor,Dry,27.2,59.0,synthetic
+P01353,B009,Tomato,646,Loam,6.5,Poor,Dry,26.1,94.3,synthetic
+P01354,B012,Eggplant,510,Clay,5.66,Poor,Dry,29.3,150.1,synthetic
+P01355,B003,Okra,868,Sandy loam,5.67,Good,Dry,29.0,65.1,synthetic
+P01356,B013,Squash,783,Loam,6.94,Good,Dry,28.8,105.6,synthetic
+P01357,B002,Tomato,144,Loam,5.92,Poor,Dry,29.1,39.8,synthetic
+P01358,B013,Eggplant,574,Loam,6.94,Good,Wet,23.5,190.5,synthetic
+P01359,B016,Okra,631,Clay,6.44,Good,Dry,29.0,80.7,synthetic
+P01360,B008,Squash,652,Sandy loam,6.43,Poor,Wet,29.0,188.4,synthetic
+P01361,B019,Tomato,819,Clay,6.62,Moderate,Wet,28.4,207.8,synthetic
+P01362,B013,Eggplant,898,Loam,6.94,Good,Wet,28.2,250.6,synthetic
+P01363,B006,Okra,790,Clay,6.36,Poor,Dry,28.3,101.6,synthetic
+P01364,B015,Squash,253,Loam,6.41,Moderate,Dry,27.2,27.4,synthetic
+P01365,B015,Tomato,798,Loam,6.41,Moderate,Dry,25.7,47.5,synthetic
+P01366,B005,Eggplant,719,Clay,5.55,Poor,Dry,30.1,7.3,synthetic
+P01367,B017,Okra,720,Sandy loam,7.01,Moderate,Wet,27.0,183.0,synthetic
+P01368,B015,Squash,136,Loam,6.41,Moderate,Wet,31.2,194.4,synthetic
+P01369,B007,Tomato,381,Sandy loam,5.84,Good,Dry,30.7,74.1,synthetic
+P01370,B020,Eggplant,738,Clay,6.95,Poor,Wet,27.1,225.1,synthetic
+P01371,B017,Okra,758,Sandy loam,7.01,Moderate,Dry,24.7,67.5,synthetic
+P01372,B012,Squash,779,Clay,5.66,Poor,Dry,26.6,0,synthetic
+P01373,B019,Tomato,386,Clay,6.62,Moderate,Dry,29.0,69.0,synthetic
+P01374,B015,Eggplant,726,Loam,6.41,Moderate,Wet,28.6,245.2,synthetic
+P01375,B013,Okra,686,Loam,6.94,Good,Dry,28.9,45.4,synthetic
+P01376,B018,Squash,282,Sandy loam,5.83,Poor,Wet,27.2,118.6,synthetic
+P01377,B008,Tomato,478,Sandy loam,6.43,Poor,Wet,24.6,197.0,synthetic
+P01378,B001,Eggplant,672,Sandy loam,5.69,Good,Wet,23.0,198.1,synthetic
+P01379,B001,Okra,791,Sandy loam,5.69,Good,Dry,27.0,117.4,synthetic
+P01380,B007,Squash,138,Sandy loam,5.84,Good,Wet,26.6,194.4,synthetic
+P01381,B011,Tomato,474,Loam,5.76,Moderate,Dry,30.5,105.3,synthetic
+P01382,B015,Eggplant,372,Loam,6.41,Moderate,Wet,32.9,238.8,synthetic
+P01383,B002,Okra,641,Loam,5.92,Poor,Wet,28.9,245.3,synthetic
+P01384,B016,Squash,626,Clay,6.44,Good,Dry,27.9,85.9,synthetic
+P01385,B014,Tomato,697,Loam,6.87,Good,Dry,31.8,43.0,synthetic
+P01386,B016,Eggplant,785,Clay,6.44,Good,Wet,22.3,202.7,synthetic
+P01387,B020,Okra,729,Clay,6.95,Poor,Wet,28.5,228.9,synthetic
+P01388,B002,Squash,754,Loam,5.92,Poor,Dry,29.0,93.4,synthetic
+P01389,B011,Tomato,448,Loam,5.76,Moderate,Wet,28.2,211.8,synthetic
+P01390,B010,Eggplant,731,Clay,6.69,Moderate,Wet,27.5,257.3,synthetic
+P01391,B014,Okra,836,Loam,6.87,Good,Wet,30.8,168.1,synthetic
+P01392,B012,Squash,638,Clay,5.66,Poor,Wet,29.3,307.7,synthetic
+P01393,B003,Tomato,760,Sandy loam,5.67,Good,Dry,28.3,86.2,synthetic
+P01394,B008,Eggplant,834,Sandy loam,6.43,Poor,Wet,27.9,233.6,synthetic
+P01395,B015,Okra,591,Loam,6.41,Moderate,Dry,29.0,0,synthetic
+P01396,B005,Squash,623,Clay,5.55,Poor,Dry,26.7,114.4,synthetic
+P01397,B013,Tomato,550,Loam,6.94,Good,Dry,26.8,57.3,synthetic
+P01398,B019,Eggplant,433,Clay,6.62,Moderate,Dry,32.4,40.5,synthetic
+P01399,B014,Okra,755,Loam,6.87,Good,Wet,26.5,165.7,synthetic
+P01400,B007,Squash,527,Sandy loam,5.84,Good,Wet,26.4,198.2,synthetic
+P01401,B010,Tomato,367,Clay,6.69,Moderate,Dry,30.4,46.4,synthetic
+P01402,B015,Eggplant,550,Loam,6.41,Moderate,Wet,30.6,210.9,synthetic
+P01403,B007,Okra,241,Sandy loam,5.84,Good,Wet,27.0,138.8,synthetic
+P01404,B005,Squash,155,Clay,5.55,Poor,Wet,25.2,252.6,synthetic
+P01405,B017,Tomato,857,Sandy loam,7.01,Moderate,Wet,27.2,232.3,synthetic
+P01406,B002,Eggplant,409,Loam,5.92,Poor,Dry,28.5,95.8,synthetic
+P01407,B015,Okra,315,Loam,6.41,Moderate,Dry,25.7,131.5,synthetic
+P01408,B019,Squash,303,Clay,6.62,Moderate,Wet,27.5,194.9,synthetic
+P01409,B019,Tomato,803,Clay,6.62,Moderate,Wet,28.8,209.2,synthetic
+P01410,B004,Eggplant,817,Sandy loam,5.65,Moderate,Dry,30.2,132.1,synthetic
+P01411,B004,Okra,285,Sandy loam,5.65,Moderate,Dry,27.3,77.6,synthetic
+P01412,B015,Squash,847,Loam,6.41,Moderate,Dry,28.9,117.9,synthetic
+P01413,B015,Tomato,882,Loam,6.41,Moderate,Wet,28.2,191.6,synthetic
+P01414,B005,Eggplant,434,Clay,5.55,Poor,Wet,29.7,169.6,synthetic
+P01415,B012,Okra,167,Clay,5.66,Poor,Wet,27.3,134.7,synthetic
+P01416,B019,Squash,334,Clay,6.62,Moderate,Wet,29.5,148.0,synthetic
+P01417,B012,Tomato,317,Clay,5.66,Poor,Wet,26.4,295.1,synthetic
+P01418,B002,Eggplant,590,Loam,5.92,Poor,Wet,30.0,248.6,synthetic
+P01419,B014,Okra,333,Loam,6.87,Good,Wet,28.3,203.5,synthetic
+P01420,B001,Squash,133,Sandy loam,5.69,Good,Dry,26.8,0,synthetic
+P01421,B012,Tomato,166,Clay,5.66,Poor,Wet,29.3,188.6,synthetic
+P01422,B008,Eggplant,357,Sandy loam,6.43,Poor,Wet,27.1,212.4,synthetic
+P01423,B004,Okra,854,Sandy loam,5.65,Moderate,Dry,29.0,134.9,synthetic
+P01424,B006,Squash,629,Clay,6.36,Poor,Wet,25.5,204.9,synthetic
+P01425,B011,Tomato,143,Loam,5.76,Moderate,Dry,26.7,71.0,synthetic
+P01426,B012,Eggplant,510,Clay,5.66,Poor,Wet,26.7,211.3,synthetic
+P01427,B012,Okra,359,Clay,5.66,Poor,Wet,26.1,229.0,synthetic
+P01428,B020,Squash,550,Clay,6.95,Poor,Wet,30.0,270.7,synthetic
+P01429,B017,Tomato,586,Sandy loam,7.01,Moderate,Dry,29.5,10.8,synthetic
+P01430,B003,Eggplant,782,Sandy loam,5.67,Good,Dry,30.5,81.7,synthetic
+P01431,B018,Okra,816,Sandy loam,5.83,Poor,Dry,29.1,18.5,synthetic
+P01432,B011,Squash,613,Loam,5.76,Moderate,Dry,30.7,79.4,synthetic
+P01433,B016,Tomato,704,Clay,6.44,Good,Dry,27.2,43.7,synthetic
+P01434,B013,Eggplant,150,Loam,6.94,Good,Dry,29.4,102.0,synthetic
+P01435,B007,Okra,725,Sandy loam,5.84,Good,Wet,24.2,166.1,synthetic
+P01436,B001,Squash,653,Sandy loam,5.69,Good,Dry,25.6,74.8,synthetic
+P01437,B009,Tomato,658,Loam,6.5,Poor,Dry,30.5,0,synthetic
+P01438,B020,Eggplant,185,Clay,6.95,Poor,Wet,31.5,160.2,synthetic
+P01439,B001,Okra,366,Sandy loam,5.69,Good,Dry,32.5,48.1,synthetic
+P01440,B019,Squash,111,Clay,6.62,Moderate,Wet,29.9,203.4,synthetic
+P01441,B003,Tomato,187,Sandy loam,5.67,Good,Dry,29.1,32.2,synthetic
+P01442,B006,Eggplant,574,Clay,6.36,Poor,Wet,25.8,192.6,synthetic
+P01443,B009,Okra,220,Loam,6.5,Poor,Dry,26.8,49.7,synthetic
+P01444,B018,Squash,807,Sandy loam,5.83,Poor,Dry,28.7,94.3,synthetic
+P01445,B006,Tomato,531,Clay,6.36,Poor,Wet,25.3,145.9,synthetic
+P01446,B001,Eggplant,166,Sandy loam,5.69,Good,Wet,26.3,220.1,synthetic
+P01447,B014,Okra,614,Loam,6.87,Good,Wet,27.0,204.5,synthetic
+P01448,B008,Squash,364,Sandy loam,6.43,Poor,Dry,28.8,50.1,synthetic
+P01449,B001,Tomato,215,Sandy loam,5.69,Good,Dry,28.7,73.3,synthetic
+P01450,B007,Eggplant,836,Sandy loam,5.84,Good,Wet,29.1,227.4,synthetic
+P01451,B013,Okra,269,Loam,6.94,Good,Wet,28.6,149.0,synthetic
+P01452,B014,Squash,813,Loam,6.87,Good,Wet,25.6,144.2,synthetic
+P01453,B003,Tomato,686,Sandy loam,5.67,Good,Dry,27.2,13.9,synthetic
+P01454,B005,Eggplant,523,Clay,5.55,Poor,Dry,27.7,107.9,synthetic
+P01455,B009,Okra,354,Loam,6.5,Poor,Wet,26.1,176.8,synthetic
+P01456,B019,Squash,435,Clay,6.62,Moderate,Wet,26.5,135.6,synthetic
+P01457,B020,Tomato,589,Clay,6.95,Poor,Dry,30.8,87.0,synthetic
+P01458,B014,Eggplant,870,Loam,6.87,Good,Dry,28.4,118.3,synthetic
+P01459,B004,Okra,488,Sandy loam,5.65,Moderate,Wet,26.7,257.8,synthetic
+P01460,B017,Squash,485,Sandy loam,7.01,Moderate,Wet,28.7,240.1,synthetic
+P01461,B014,Tomato,265,Loam,6.87,Good,Dry,27.0,102.9,synthetic
+P01462,B011,Eggplant,415,Loam,5.76,Moderate,Dry,24.9,34.8,synthetic
+P01463,B008,Okra,490,Sandy loam,6.43,Poor,Wet,27.9,250.7,synthetic
+P01464,B013,Squash,154,Loam,6.94,Good,Wet,26.5,187.6,synthetic
+P01465,B014,Tomato,510,Loam,6.87,Good,Wet,27.2,167.4,synthetic
+P01466,B003,Eggplant,357,Sandy loam,5.67,Good,Wet,31.3,168.4,synthetic
+P01467,B004,Okra,592,Sandy loam,5.65,Moderate,Wet,23.2,150.0,synthetic
+P01468,B001,Squash,518,Sandy loam,5.69,Good,Wet,21.9,252.6,synthetic
+P01469,B002,Tomato,877,Loam,5.92,Poor,Dry,26.6,59.8,synthetic
+P01470,B002,Eggplant,750,Loam,5.92,Poor,Wet,22.9,174.0,synthetic
+P01471,B017,Okra,870,Sandy loam,7.01,Moderate,Wet,29.4,183.8,synthetic
+P01472,B011,Squash,178,Loam,5.76,Moderate,Dry,30.6,8.6,synthetic
+P01473,B020,Tomato,186,Clay,6.95,Poor,Wet,26.8,159.3,synthetic
+P01474,B016,Eggplant,668,Clay,6.44,Good,Dry,31.9,80.4,synthetic
+P01475,B003,Okra,361,Sandy loam,5.67,Good,Wet,31.6,192.4,synthetic
+P01476,B018,Squash,438,Sandy loam,5.83,Poor,Dry,27.6,149.2,synthetic
+P01477,B017,Tomato,585,Sandy loam,7.01,Moderate,Dry,27.6,25.8,synthetic
+P01478,B009,Eggplant,315,Loam,6.5,Poor,Wet,24.6,242.9,synthetic
+P01479,B004,Okra,843,Sandy loam,5.65,Moderate,Dry,26.2,19.9,synthetic
+P01480,B009,Squash,535,Loam,6.5,Poor,Wet,28.9,161.1,synthetic
+P01481,B016,Tomato,560,Clay,6.44,Good,Dry,28.5,49.0,synthetic
+P01482,B009,Eggplant,670,Loam,6.5,Poor,Dry,27.5,151.2,synthetic
+P01483,B004,Okra,260,Sandy loam,5.65,Moderate,Wet,32.4,226.9,synthetic
+P01484,B006,Squash,115,Clay,6.36,Poor,Dry,30.7,115.8,synthetic
+P01485,B013,Tomato,746,Loam,6.94,Good,Dry,28.5,67.8,synthetic
+P01486,B018,Eggplant,492,Sandy loam,5.83,Poor,Dry,28.5,41.4,synthetic
+P01487,B003,Okra,869,Sandy loam,5.67,Good,Dry,28.4,33.7,synthetic
+P01488,B004,Squash,117,Sandy loam,5.65,Moderate,Dry,31.3,66.5,synthetic
+P01489,B019,Tomato,120,Clay,6.62,Moderate,Wet,27.3,216.0,synthetic
+P01490,B013,Eggplant,192,Loam,6.94,Good,Wet,27.7,226.2,synthetic
+P01491,B013,Okra,635,Loam,6.94,Good,Wet,28.3,165.4,synthetic
+P01492,B018,Squash,678,Sandy loam,5.83,Poor,Dry,25.7,109.6,synthetic
+P01493,B018,Tomato,776,Sandy loam,5.83,Poor,Dry,21.6,87.4,synthetic
+P01494,B012,Eggplant,486,Clay,5.66,Poor,Wet,29.4,166.9,synthetic
+P01495,B015,Okra,180,Loam,6.41,Moderate,Dry,26.8,88.2,synthetic
+P01496,B012,Squash,220,Clay,5.66,Poor,Wet,22.7,203.0,synthetic
+P01497,B020,Tomato,789,Clay,6.95,Poor,Dry,28.2,47.4,synthetic
+P01498,B014,Eggplant,588,Loam,6.87,Good,Wet,28.5,229.8,synthetic
+P01499,B009,Okra,797,Loam,6.5,Poor,Dry,30.0,96.2,synthetic
+P01500,B019,Squash,608,Clay,6.62,Moderate,Dry,30.8,122.6,synthetic
+P01501,B011,Tomato,275,Loam,5.76,Moderate,Wet,27.9,223.0,synthetic
+P01502,B009,Eggplant,767,Loam,6.5,Poor,Dry,30.2,81.5,synthetic
+P01503,B005,Okra,655,Clay,5.55,Poor,Wet,32.3,251.9,synthetic
+P01504,B003,Squash,725,Sandy loam,5.67,Good,Dry,23.2,16.1,synthetic
+P01505,B002,Tomato,551,Loam,5.92,Poor,Wet,28.5,283.0,synthetic
+P01506,B001,Eggplant,817,Sandy loam,5.69,Good,Dry,29.5,56.8,synthetic
+P01507,B010,Okra,681,Clay,6.69,Moderate,Dry,28.4,44.5,synthetic
+P01508,B009,Squash,850,Loam,6.5,Poor,Wet,28.2,168.9,synthetic
+P01509,B003,Tomato,172,Sandy loam,5.67,Good,Dry,30.6,27.8,synthetic
+P01510,B006,Eggplant,845,Clay,6.36,Poor,Dry,26.4,71.6,synthetic
+P01511,B017,Okra,658,Sandy loam,7.01,Moderate,Dry,26.7,82.8,synthetic
+P01512,B010,Squash,425,Clay,6.69,Moderate,Dry,23.0,34.4,synthetic
+P01513,B002,Tomato,554,Loam,5.92,Poor,Wet,26.9,247.5,synthetic
+P01514,B013,Eggplant,109,Loam,6.94,Good,Dry,28.3,89.4,synthetic
+P01515,B001,Okra,185,Sandy loam,5.69,Good,Dry,28.7,53.3,synthetic
+P01516,B005,Squash,555,Clay,5.55,Poor,Wet,29.1,151.3,synthetic
+P01517,B008,Tomato,815,Sandy loam,6.43,Poor,Wet,29.9,125.4,synthetic
+P01518,B002,Eggplant,816,Loam,5.92,Poor,Dry,29.1,99.8,synthetic
+P01519,B019,Okra,447,Clay,6.62,Moderate,Wet,24.1,240.9,synthetic
+P01520,B005,Squash,462,Clay,5.55,Poor,Wet,27.5,202.8,synthetic
+P01521,B002,Tomato,793,Loam,5.92,Poor,Dry,29.6,61.4,synthetic
+P01522,B001,Eggplant,319,Sandy loam,5.69,Good,Wet,25.3,286.9,synthetic
+P01523,B020,Okra,444,Clay,6.95,Poor,Dry,33.9,31.3,synthetic
+P01524,B012,Squash,172,Clay,5.66,Poor,Wet,29.1,240.1,synthetic
+P01525,B018,Tomato,549,Sandy loam,5.83,Poor,Dry,29.8,82.7,synthetic
+P01526,B007,Eggplant,694,Sandy loam,5.84,Good,Dry,26.5,50.9,synthetic
+P01527,B006,Okra,748,Clay,6.36,Poor,Wet,27.3,234.7,synthetic
+P01528,B010,Squash,696,Clay,6.69,Moderate,Dry,26.5,72.7,synthetic
+P01529,B010,Tomato,854,Clay,6.69,Moderate,Wet,28.5,198.0,synthetic
+P01530,B018,Eggplant,255,Sandy loam,5.83,Poor,Wet,26.5,208.0,synthetic
+P01531,B010,Okra,567,Clay,6.69,Moderate,Wet,32.4,186.2,synthetic
+P01532,B003,Squash,533,Sandy loam,5.67,Good,Dry,25.8,35.3,synthetic
+P01533,B001,Tomato,291,Sandy loam,5.69,Good,Dry,26.2,74.8,synthetic
+P01534,B004,Eggplant,331,Sandy loam,5.65,Moderate,Dry,29.2,0,synthetic
+P01535,B003,Okra,227,Sandy loam,5.67,Good,Wet,30.0,183.1,synthetic
+P01536,B004,Squash,663,Sandy loam,5.65,Moderate,Wet,28.5,247.4,synthetic
+P01537,B004,Tomato,151,Sandy loam,5.65,Moderate,Wet,27.4,205.8,synthetic
+P01538,B003,Eggplant,695,Sandy loam,5.67,Good,Wet,27.1,195.4,synthetic
+P01539,B017,Okra,266,Sandy loam,7.01,Moderate,Dry,29.6,123.3,synthetic
+P01540,B005,Squash,385,Clay,5.55,Poor,Dry,28.8,71.3,synthetic
+P01541,B003,Tomato,691,Sandy loam,5.67,Good,Wet,32.9,193.7,synthetic
+P01542,B002,Eggplant,831,Loam,5.92,Poor,Dry,29.6,60.7,synthetic
+P01543,B004,Okra,895,Sandy loam,5.65,Moderate,Dry,27.1,83.8,synthetic
+P01544,B012,Squash,570,Clay,5.66,Poor,Dry,30.0,47.9,synthetic
+P01545,B006,Tomato,802,Clay,6.36,Poor,Dry,24.4,106.9,synthetic
+P01546,B007,Eggplant,353,Sandy loam,5.84,Good,Dry,28.5,61.7,synthetic
+P01547,B019,Okra,221,Clay,6.62,Moderate,Dry,28.4,39.4,synthetic
+P01548,B015,Squash,256,Loam,6.41,Moderate,Dry,25.7,106.6,synthetic
+P01549,B010,Tomato,301,Clay,6.69,Moderate,Dry,26.0,80.4,synthetic
+P01550,B020,Eggplant,272,Clay,6.95,Poor,Wet,28.6,232.5,synthetic
+P01551,B005,Okra,428,Clay,5.55,Poor,Wet,30.4,191.5,synthetic
+P01552,B020,Squash,251,Clay,6.95,Poor,Dry,27.7,0,synthetic
+P01553,B009,Tomato,345,Loam,6.5,Poor,Dry,28.6,99.7,synthetic
+P01554,B002,Eggplant,366,Loam,5.92,Poor,Wet,26.6,204.4,synthetic
+P01555,B017,Okra,836,Sandy loam,7.01,Moderate,Wet,26.4,231.6,synthetic
+P01556,B016,Squash,829,Clay,6.44,Good,Wet,28.6,171.2,synthetic
+P01557,B008,Tomato,377,Sandy loam,6.43,Poor,Wet,26.4,242.8,synthetic
+P01558,B005,Eggplant,122,Clay,5.55,Poor,Dry,28.7,94.4,synthetic
+P01559,B003,Okra,246,Sandy loam,5.67,Good,Wet,28.8,247.1,synthetic
+P01560,B008,Squash,239,Sandy loam,6.43,Poor,Dry,22.6,97.6,synthetic
+P01561,B002,Tomato,353,Loam,5.92,Poor,Wet,26.5,167.0,synthetic
+P01562,B002,Eggplant,888,Loam,5.92,Poor,Wet,26.7,198.5,synthetic
+P01563,B016,Okra,223,Clay,6.44,Good,Wet,29.0,199.3,synthetic
+P01564,B009,Squash,571,Loam,6.5,Poor,Dry,24.0,100.6,synthetic
+P01565,B006,Tomato,449,Clay,6.36,Poor,Dry,27.3,26.6,synthetic
+P01566,B013,Eggplant,103,Loam,6.94,Good,Wet,26.9,224.6,synthetic
+P01567,B005,Okra,476,Clay,5.55,Poor,Wet,28.7,204.1,synthetic
+P01568,B005,Squash,778,Clay,5.55,Poor,Dry,27.4,97.7,synthetic
+P01569,B007,Tomato,188,Sandy loam,5.84,Good,Wet,25.2,199.8,synthetic
+P01570,B005,Eggplant,715,Clay,5.55,Poor,Wet,29.4,267.1,synthetic
+P01571,B020,Okra,799,Clay,6.95,Poor,Wet,29.8,139.9,synthetic
+P01572,B020,Squash,278,Clay,6.95,Poor,Dry,30.1,31.3,synthetic
+P01573,B008,Tomato,619,Sandy loam,6.43,Poor,Dry,28.3,106.7,synthetic
+P01574,B013,Eggplant,617,Loam,6.94,Good,Wet,28.2,190.3,synthetic
+P01575,B013,Okra,666,Loam,6.94,Good,Dry,25.6,126.3,synthetic
+P01576,B014,Squash,512,Loam,6.87,Good,Wet,26.5,203.4,synthetic
+P01577,B005,Tomato,749,Clay,5.55,Poor,Dry,30.1,41.9,synthetic
+P01578,B006,Eggplant,158,Clay,6.36,Poor,Dry,27.8,27.8,synthetic
+P01579,B016,Okra,644,Clay,6.44,Good,Dry,30.6,88.5,synthetic
+P01580,B011,Squash,890,Loam,5.76,Moderate,Dry,31.0,0,synthetic
+P01581,B002,Tomato,837,Loam,5.92,Poor,Wet,27.3,185.3,synthetic
+P01582,B011,Eggplant,741,Loam,5.76,Moderate,Wet,24.7,180.0,synthetic
+P01583,B011,Okra,786,Loam,5.76,Moderate,Wet,27.6,261.5,synthetic
+P01584,B012,Squash,240,Clay,5.66,Poor,Dry,31.4,91.6,synthetic
+P01585,B004,Tomato,414,Sandy loam,5.65,Moderate,Dry,27.9,47.8,synthetic
+P01586,B019,Eggplant,635,Clay,6.62,Moderate,Wet,25.9,238.8,synthetic
+P01587,B005,Okra,128,Clay,5.55,Poor,Wet,26.3,161.0,synthetic
+P01588,B014,Squash,312,Loam,6.87,Good,Wet,28.2,266.8,synthetic
+P01589,B013,Tomato,624,Loam,6.94,Good,Wet,27.8,219.3,synthetic
+P01590,B004,Eggplant,457,Sandy loam,5.65,Moderate,Dry,27.7,72.0,synthetic
+P01591,B001,Okra,674,Sandy loam,5.69,Good,Dry,30.1,65.3,synthetic
+P01592,B019,Squash,191,Clay,6.62,Moderate,Wet,31.7,171.5,synthetic
+P01593,B001,Tomato,325,Sandy loam,5.69,Good,Wet,28.1,244.8,synthetic
+P01594,B003,Eggplant,466,Sandy loam,5.67,Good,Dry,29.9,30.3,synthetic
+P01595,B001,Okra,641,Sandy loam,5.69,Good,Dry,27.3,79.2,synthetic
+P01596,B017,Squash,388,Sandy loam,7.01,Moderate,Wet,26.6,186.1,synthetic
+P01597,B010,Tomato,412,Clay,6.69,Moderate,Wet,28.8,140.9,synthetic
+P01598,B009,Eggplant,376,Loam,6.5,Poor,Wet,27.4,261.1,synthetic
+P01599,B005,Okra,530,Clay,5.55,Poor,Dry,29.7,75.5,synthetic
+P01600,B017,Squash,108,Sandy loam,7.01,Moderate,Wet,28.9,223.7,synthetic
+P01601,B002,Tomato,631,Loam,5.92,Poor,Wet,26.0,285.9,synthetic
+P01602,B005,Eggplant,384,Clay,5.55,Poor,Dry,28.0,76.8,synthetic
+P01603,B001,Okra,209,Sandy loam,5.69,Good,Dry,31.3,15.9,synthetic
+P01604,B007,Squash,582,Sandy loam,5.84,Good,Wet,25.6,182.2,synthetic
+P01605,B012,Tomato,506,Clay,5.66,Poor,Wet,29.2,267.3,synthetic
+P01606,B006,Eggplant,786,Clay,6.36,Poor,Dry,28.6,44.4,synthetic
+P01607,B007,Okra,561,Sandy loam,5.84,Good,Dry,29.4,68.4,synthetic
+P01608,B001,Squash,766,Sandy loam,5.69,Good,Dry,23.9,37.3,synthetic
+P01609,B003,Tomato,576,Sandy loam,5.67,Good,Wet,26.5,222.4,synthetic
+P01610,B012,Eggplant,724,Clay,5.66,Poor,Dry,29.9,127.9,synthetic
+P01611,B007,Okra,738,Sandy loam,5.84,Good,Dry,32.3,160.2,synthetic
+P01612,B007,Squash,359,Sandy loam,5.84,Good,Dry,28.2,92.9,synthetic
+P01613,B015,Tomato,724,Loam,6.41,Moderate,Wet,29.4,245.5,synthetic
+P01614,B007,Eggplant,336,Sandy loam,5.84,Good,Dry,31.8,105.8,synthetic
+P01615,B005,Okra,169,Clay,5.55,Poor,Dry,29.2,89.0,synthetic
+P01616,B006,Squash,159,Clay,6.36,Poor,Dry,26.9,144.6,synthetic
+P01617,B004,Tomato,428,Sandy loam,5.65,Moderate,Wet,26.1,162.2,synthetic
+P01618,B013,Eggplant,551,Loam,6.94,Good,Wet,27.1,187.9,synthetic
+P01619,B020,Okra,804,Clay,6.95,Poor,Dry,28.9,14.8,synthetic
+P01620,B016,Squash,887,Clay,6.44,Good,Dry,26.5,33.6,synthetic
+P01621,B002,Tomato,666,Loam,5.92,Poor,Dry,26.1,0,synthetic
+P01622,B016,Eggplant,330,Clay,6.44,Good,Wet,26.8,142.9,synthetic
+P01623,B020,Okra,212,Clay,6.95,Poor,Wet,27.6,125.0,synthetic
+P01624,B008,Squash,396,Sandy loam,6.43,Poor,Wet,28.2,217.6,synthetic
+P01625,B007,Tomato,652,Sandy loam,5.84,Good,Dry,28.0,62.8,synthetic
+P01626,B017,Eggplant,438,Sandy loam,7.01,Moderate,Wet,25.4,207.2,synthetic
+P01627,B017,Okra,420,Sandy loam,7.01,Moderate,Wet,31.1,239.6,synthetic
+P01628,B006,Squash,563,Clay,6.36,Poor,Wet,26.6,226.2,synthetic
+P01629,B014,Tomato,185,Loam,6.87,Good,Dry,29.4,40.6,synthetic
+P01630,B019,Eggplant,887,Clay,6.62,Moderate,Wet,29.3,233.7,synthetic
+P01631,B008,Okra,257,Sandy loam,6.43,Poor,Wet,28.1,269.4,synthetic
+P01632,B014,Squash,738,Loam,6.87,Good,Wet,30.6,237.1,synthetic
+P01633,B018,Tomato,329,Sandy loam,5.83,Poor,Dry,30.5,79.1,synthetic
+P01634,B003,Eggplant,215,Sandy loam,5.67,Good,Wet,28.0,162.1,synthetic
+P01635,B001,Okra,434,Sandy loam,5.69,Good,Dry,28.1,45.8,synthetic
+P01636,B002,Squash,609,Loam,5.92,Poor,Wet,30.0,292.5,synthetic
+P01637,B013,Tomato,418,Loam,6.94,Good,Wet,29.9,196.5,synthetic
+P01638,B020,Eggplant,248,Clay,6.95,Poor,Dry,27.5,23.2,synthetic
+P01639,B018,Okra,850,Sandy loam,5.83,Poor,Dry,28.3,46.2,synthetic
+P01640,B016,Squash,702,Clay,6.44,Good,Wet,29.9,265.5,synthetic
+P01641,B007,Tomato,324,Sandy loam,5.84,Good,Dry,28.0,57.0,synthetic
+P01642,B001,Eggplant,652,Sandy loam,5.69,Good,Wet,31.1,184.1,synthetic
+P01643,B006,Okra,340,Clay,6.36,Poor,Wet,28.1,259.1,synthetic
+P01644,B019,Squash,814,Clay,6.62,Moderate,Dry,29.9,79.8,synthetic
+P01645,B017,Tomato,308,Sandy loam,7.01,Moderate,Wet,26.1,136.6,synthetic
+P01646,B013,Eggplant,544,Loam,6.94,Good,Dry,27.2,76.3,synthetic
+P01647,B007,Okra,789,Sandy loam,5.84,Good,Dry,27.8,42.5,synthetic
+P01648,B017,Squash,853,Sandy loam,7.01,Moderate,Wet,25.8,293.9,synthetic
+P01649,B014,Tomato,750,Loam,6.87,Good,Wet,28.6,188.5,synthetic
+P01650,B020,Eggplant,519,Clay,6.95,Poor,Dry,25.9,73.9,synthetic
+P01651,B008,Okra,852,Sandy loam,6.43,Poor,Wet,26.6,248.0,synthetic
+P01652,B018,Squash,462,Sandy loam,5.83,Poor,Wet,28.2,155.2,synthetic
+P01653,B011,Tomato,545,Loam,5.76,Moderate,Wet,28.3,241.5,synthetic
+P01654,B015,Eggplant,732,Loam,6.41,Moderate,Wet,27.2,194.1,synthetic
+P01655,B016,Okra,709,Clay,6.44,Good,Dry,25.7,45.6,synthetic
+P01656,B013,Squash,722,Loam,6.94,Good,Wet,30.1,231.7,synthetic
+P01657,B011,Tomato,646,Loam,5.76,Moderate,Dry,25.9,96.4,synthetic
+P01658,B020,Eggplant,503,Clay,6.95,Poor,Dry,26.7,23.9,synthetic
+P01659,B002,Okra,162,Loam,5.92,Poor,Wet,25.9,239.8,synthetic
+P01660,B001,Squash,437,Sandy loam,5.69,Good,Dry,30.6,13.9,synthetic
+P01661,B004,Tomato,114,Sandy loam,5.65,Moderate,Wet,24.5,250.4,synthetic
+P01662,B013,Eggplant,897,Loam,6.94,Good,Wet,31.4,260.0,synthetic
+P01663,B019,Okra,780,Clay,6.62,Moderate,Dry,30.5,0,synthetic
+P01664,B004,Squash,135,Sandy loam,5.65,Moderate,Wet,30.2,279.8,synthetic
+P01665,B009,Tomato,234,Loam,6.5,Poor,Wet,26.3,309.6,synthetic
+P01666,B012,Eggplant,245,Clay,5.66,Poor,Dry,27.8,75.7,synthetic
+P01667,B005,Okra,288,Clay,5.55,Poor,Wet,31.1,181.8,synthetic
+P01668,B015,Squash,498,Loam,6.41,Moderate,Dry,27.9,99.2,synthetic
+P01669,B006,Tomato,647,Clay,6.36,Poor,Dry,30.1,4.8,synthetic
+P01670,B006,Eggplant,230,Clay,6.36,Poor,Dry,29.5,65.6,synthetic
+P01671,B005,Okra,377,Clay,5.55,Poor,Wet,25.9,211.4,synthetic
+P01672,B018,Squash,412,Sandy loam,5.83,Poor,Wet,29.3,256.6,synthetic
+P01673,B016,Tomato,156,Clay,6.44,Good,Wet,26.4,181.1,synthetic
+P01674,B015,Eggplant,883,Loam,6.41,Moderate,Wet,27.2,252.3,synthetic
+P01675,B004,Okra,819,Sandy loam,5.65,Moderate,Wet,29.9,245.9,synthetic
+P01676,B016,Squash,322,Clay,6.44,Good,Dry,28.2,85.3,synthetic
+P01677,B014,Tomato,279,Loam,6.87,Good,Dry,25.6,61.1,synthetic
+P01678,B010,Eggplant,420,Clay,6.69,Moderate,Wet,29.2,265.6,synthetic
+P01679,B016,Okra,209,Clay,6.44,Good,Dry,30.1,95.7,synthetic
+P01680,B015,Squash,507,Loam,6.41,Moderate,Wet,30.4,188.3,synthetic
+P01681,B013,Tomato,153,Loam,6.94,Good,Wet,27.7,296.7,synthetic
+P01682,B011,Eggplant,339,Loam,5.76,Moderate,Wet,28.1,217.3,synthetic
+P01683,B017,Okra,401,Sandy loam,7.01,Moderate,Wet,29.0,196.2,synthetic
+P01684,B019,Squash,479,Clay,6.62,Moderate,Wet,25.6,229.5,synthetic
+P01685,B017,Tomato,246,Sandy loam,7.01,Moderate,Dry,28.4,54.1,synthetic
+P01686,B005,Eggplant,723,Clay,5.55,Poor,Wet,26.7,205.4,synthetic
+P01687,B010,Okra,372,Clay,6.69,Moderate,Wet,31.3,177.0,synthetic
+P01688,B003,Squash,314,Sandy loam,5.67,Good,Dry,27.6,8.6,synthetic
+P01689,B020,Tomato,444,Clay,6.95,Poor,Wet,28.4,195.9,synthetic
+P01690,B004,Eggplant,423,Sandy loam,5.65,Moderate,Wet,27.4,212.5,synthetic
+P01691,B003,Okra,121,Sandy loam,5.67,Good,Wet,27.9,160.3,synthetic
+P01692,B013,Squash,689,Loam,6.94,Good,Dry,28.0,44.6,synthetic
+P01693,B005,Tomato,536,Clay,5.55,Poor,Wet,27.1,234.2,synthetic
+P01694,B004,Eggplant,238,Sandy loam,5.65,Moderate,Dry,27.9,78.9,synthetic
+P01695,B016,Okra,550,Clay,6.44,Good,Dry,26.5,92.9,synthetic
+P01696,B008,Squash,657,Sandy loam,6.43,Poor,Dry,27.2,11.1,synthetic
+P01697,B008,Tomato,484,Sandy loam,6.43,Poor,Dry,25.7,0.5,synthetic
+P01698,B013,Eggplant,345,Loam,6.94,Good,Dry,26.0,0.5,synthetic
+P01699,B014,Okra,281,Loam,6.87,Good,Dry,27.2,90.3,synthetic
+P01700,B002,Squash,431,Loam,5.92,Poor,Dry,25.8,21.7,synthetic
+P01701,B012,Tomato,659,Clay,5.66,Poor,Dry,30.9,78.9,synthetic
+P01702,B005,Eggplant,377,Clay,5.55,Poor,Dry,27.9,95.9,synthetic
+P01703,B019,Okra,811,Clay,6.62,Moderate,Dry,26.2,84.9,synthetic
+P01704,B006,Squash,883,Clay,6.36,Poor,Wet,30.2,192.0,synthetic
+P01705,B018,Tomato,564,Sandy loam,5.83,Poor,Wet,29.5,245.0,synthetic
+P01706,B004,Eggplant,894,Sandy loam,5.65,Moderate,Wet,30.0,147.2,synthetic
+P01707,B016,Okra,865,Clay,6.44,Good,Dry,25.9,52.0,synthetic
+P01708,B001,Squash,719,Sandy loam,5.69,Good,Wet,30.6,245.5,synthetic
+P01709,B001,Tomato,457,Sandy loam,5.69,Good,Dry,26.1,53.8,synthetic
+P01710,B003,Eggplant,572,Sandy loam,5.67,Good,Dry,27.7,28.0,synthetic
+P01711,B004,Okra,899,Sandy loam,5.65,Moderate,Dry,29.0,97.5,synthetic
+P01712,B005,Squash,576,Clay,5.55,Poor,Dry,28.0,14.9,synthetic
+P01713,B007,Tomato,607,Sandy loam,5.84,Good,Dry,28.4,79.5,synthetic
+P01714,B006,Eggplant,736,Clay,6.36,Poor,Wet,30.0,239.0,synthetic
+P01715,B016,Okra,811,Clay,6.44,Good,Dry,29.2,97.6,synthetic
+P01716,B013,Squash,469,Loam,6.94,Good,Wet,27.9,195.0,synthetic
+P01717,B001,Tomato,441,Sandy loam,5.69,Good,Dry,29.2,81.9,synthetic
+P01718,B007,Eggplant,195,Sandy loam,5.84,Good,Dry,27.3,44.8,synthetic
+P01719,B016,Okra,359,Clay,6.44,Good,Dry,28.2,73.3,synthetic
+P01720,B019,Squash,170,Clay,6.62,Moderate,Dry,22.0,28.3,synthetic
+P01721,B010,Tomato,234,Clay,6.69,Moderate,Wet,30.9,137.6,synthetic
+P01722,B003,Eggplant,780,Sandy loam,5.67,Good,Dry,32.2,39.9,synthetic
+P01723,B013,Okra,756,Loam,6.94,Good,Dry,28.3,89.5,synthetic
+P01724,B020,Squash,793,Clay,6.95,Poor,Wet,27.9,201.3,synthetic
+P01725,B002,Tomato,213,Loam,5.92,Poor,Dry,30.1,97.3,synthetic
+P01726,B013,Eggplant,523,Loam,6.94,Good,Wet,27.6,138.4,synthetic
+P01727,B013,Okra,375,Loam,6.94,Good,Dry,30.0,39.2,synthetic
+P01728,B019,Squash,734,Clay,6.62,Moderate,Dry,25.9,44.7,synthetic
+P01729,B007,Tomato,230,Sandy loam,5.84,Good,Wet,25.5,169.4,synthetic
+P01730,B015,Eggplant,687,Loam,6.41,Moderate,Dry,27.0,64.5,synthetic
+P01731,B003,Okra,802,Sandy loam,5.67,Good,Dry,29.0,126.2,synthetic
+P01732,B002,Squash,354,Loam,5.92,Poor,Dry,30.4,70.5,synthetic
+P01733,B001,Tomato,102,Sandy loam,5.69,Good,Dry,28.7,78.9,synthetic
+P01734,B008,Eggplant,567,Sandy loam,6.43,Poor,Dry,27.5,40.3,synthetic
+P01735,B013,Okra,407,Loam,6.94,Good,Dry,24.9,48.1,synthetic
+P01736,B008,Squash,703,Sandy loam,6.43,Poor,Dry,32.3,93.2,synthetic
+P01737,B015,Tomato,187,Loam,6.41,Moderate,Dry,30.2,44.1,synthetic
+P01738,B019,Eggplant,751,Clay,6.62,Moderate,Wet,28.2,216.2,synthetic
+P01739,B014,Okra,688,Loam,6.87,Good,Wet,29.7,216.6,synthetic
+P01740,B004,Squash,759,Sandy loam,5.65,Moderate,Dry,26.5,55.2,synthetic
+P01741,B005,Tomato,885,Clay,5.55,Poor,Dry,25.3,60.5,synthetic
+P01742,B003,Eggplant,239,Sandy loam,5.67,Good,Wet,27.9,245.3,synthetic
+P01743,B015,Okra,734,Loam,6.41,Moderate,Dry,28.9,65.9,synthetic
+P01744,B014,Squash,435,Loam,6.87,Good,Dry,25.6,14.3,synthetic
+P01745,B008,Tomato,155,Sandy loam,6.43,Poor,Dry,27.8,105.8,synthetic
+P01746,B007,Eggplant,742,Sandy loam,5.84,Good,Dry,22.5,14.7,synthetic
+P01747,B001,Okra,432,Sandy loam,5.69,Good,Wet,27.8,167.4,synthetic
+P01748,B010,Squash,529,Clay,6.69,Moderate,Dry,32.4,0,synthetic
+P01749,B011,Tomato,861,Loam,5.76,Moderate,Dry,30.3,67.0,synthetic
+P01750,B012,Eggplant,647,Clay,5.66,Poor,Wet,34.5,285.1,synthetic
+P01751,B013,Okra,528,Loam,6.94,Good,Wet,30.4,206.1,synthetic
+P01752,B009,Squash,552,Loam,6.5,Poor,Dry,30.7,49.9,synthetic
+P01753,B016,Tomato,692,Clay,6.44,Good,Wet,29.4,158.3,synthetic
+P01754,B019,Eggplant,228,Clay,6.62,Moderate,Wet,33.4,205.5,synthetic
+P01755,B018,Okra,444,Sandy loam,5.83,Poor,Dry,29.1,57.6,synthetic
+P01756,B019,Squash,807,Clay,6.62,Moderate,Dry,30.0,69.4,synthetic
+P01757,B007,Tomato,102,Sandy loam,5.84,Good,Dry,25.8,56.3,synthetic
+P01758,B017,Eggplant,383,Sandy loam,7.01,Moderate,Dry,27.6,16.6,synthetic
+P01759,B012,Okra,286,Clay,5.66,Poor,Dry,30.6,0,synthetic
+P01760,B008,Squash,418,Sandy loam,6.43,Poor,Dry,29.5,92.5,synthetic
+P01761,B017,Tomato,267,Sandy loam,7.01,Moderate,Wet,28.7,214.5,synthetic
+P01762,B003,Eggplant,113,Sandy loam,5.67,Good,Dry,28.2,55.4,synthetic
+P01763,B004,Okra,146,Sandy loam,5.65,Moderate,Wet,28.2,159.3,synthetic
+P01764,B017,Squash,751,Sandy loam,7.01,Moderate,Wet,30.4,243.5,synthetic
+P01765,B008,Tomato,123,Sandy loam,6.43,Poor,Wet,24.9,198.2,synthetic
+P01766,B015,Eggplant,525,Loam,6.41,Moderate,Dry,27.5,21.1,synthetic
+P01767,B005,Okra,702,Clay,5.55,Poor,Dry,26.2,0,synthetic
+P01768,B008,Squash,208,Sandy loam,6.43,Poor,Dry,26.0,78.5,synthetic
+P01769,B012,Tomato,132,Clay,5.66,Poor,Wet,22.8,232.8,synthetic
+P01770,B013,Eggplant,500,Loam,6.94,Good,Dry,30.0,128.5,synthetic
+P01771,B009,Okra,553,Loam,6.5,Poor,Wet,27.8,203.1,synthetic
+P01772,B005,Squash,516,Clay,5.55,Poor,Dry,26.6,123.7,synthetic
+P01773,B017,Tomato,316,Sandy loam,7.01,Moderate,Wet,28.9,195.4,synthetic
+P01774,B017,Eggplant,209,Sandy loam,7.01,Moderate,Dry,28.1,70.6,synthetic
+P01775,B005,Okra,587,Clay,5.55,Poor,Dry,27.5,76.3,synthetic
+P01776,B008,Squash,195,Sandy loam,6.43,Poor,Wet,28.3,260.2,synthetic
+P01777,B016,Tomato,583,Clay,6.44,Good,Wet,28.6,193.9,synthetic
+P01778,B016,Eggplant,706,Clay,6.44,Good,Wet,28.4,189.9,synthetic
+P01779,B020,Okra,119,Clay,6.95,Poor,Wet,29.7,265.2,synthetic
+P01780,B015,Squash,204,Loam,6.41,Moderate,Dry,28.7,68.3,synthetic
+P01781,B016,Tomato,321,Clay,6.44,Good,Dry,24.8,72.6,synthetic
+P01782,B003,Eggplant,570,Sandy loam,5.67,Good,Wet,26.2,209.3,synthetic
+P01783,B017,Okra,290,Sandy loam,7.01,Moderate,Wet,32.2,200.1,synthetic
+P01784,B015,Squash,169,Loam,6.41,Moderate,Wet,27.5,189.6,synthetic
+P01785,B014,Tomato,641,Loam,6.87,Good,Dry,27.3,81.1,synthetic
+P01786,B017,Eggplant,158,Sandy loam,7.01,Moderate,Wet,26.8,194.2,synthetic
+P01787,B020,Okra,860,Clay,6.95,Poor,Dry,25.4,73.5,synthetic
+P01788,B011,Squash,612,Loam,5.76,Moderate,Wet,24.9,230.1,synthetic
+P01789,B019,Tomato,365,Clay,6.62,Moderate,Dry,28.2,134.6,synthetic
+P01790,B006,Eggplant,758,Clay,6.36,Poor,Dry,27.7,41.1,synthetic
+P01791,B014,Okra,268,Loam,6.87,Good,Dry,28.9,61.3,synthetic
+P01792,B013,Squash,206,Loam,6.94,Good,Dry,29.2,70.0,synthetic
+P01793,B006,Tomato,662,Clay,6.36,Poor,Wet,33.7,206.3,synthetic
+P01794,B002,Eggplant,561,Loam,5.92,Poor,Wet,24.1,186.9,synthetic
+P01795,B002,Okra,398,Loam,5.92,Poor,Wet,26.1,122.5,synthetic
+P01796,B019,Squash,551,Clay,6.62,Moderate,Dry,30.4,1.3,synthetic
+P01797,B013,Tomato,458,Loam,6.94,Good,Wet,27.9,233.3,synthetic
+P01798,B005,Eggplant,605,Clay,5.55,Poor,Wet,26.1,92.6,synthetic
+P01799,B002,Okra,539,Loam,5.92,Poor,Wet,30.5,201.9,synthetic
+P01800,B015,Squash,310,Loam,6.41,Moderate,Dry,26.4,53.9,synthetic
+P01801,B017,Tomato,866,Sandy loam,7.01,Moderate,Wet,28.0,212.8,synthetic
+P01802,B019,Eggplant,890,Clay,6.62,Moderate,Dry,27.0,51.5,synthetic
+P01803,B009,Okra,698,Loam,6.5,Poor,Wet,23.7,186.8,synthetic
+P01804,B008,Squash,483,Sandy loam,6.43,Poor,Wet,29.1,219.5,synthetic
+P01805,B010,Tomato,134,Clay,6.69,Moderate,Wet,28.9,151.9,synthetic
+P01806,B020,Eggplant,266,Clay,6.95,Poor,Dry,28.0,35.0,synthetic
+P01807,B001,Okra,760,Sandy loam,5.69,Good,Wet,25.0,184.2,synthetic
+P01808,B015,Squash,726,Loam,6.41,Moderate,Wet,28.0,170.0,synthetic
+P01809,B015,Tomato,167,Loam,6.41,Moderate,Wet,26.6,193.1,synthetic
+P01810,B020,Eggplant,557,Clay,6.95,Poor,Dry,26.9,52.0,synthetic
+P01811,B016,Okra,744,Clay,6.44,Good,Wet,30.3,273.7,synthetic
+P01812,B015,Squash,262,Loam,6.41,Moderate,Dry,30.6,73.6,synthetic
+P01813,B006,Tomato,439,Clay,6.36,Poor,Dry,30.8,88.6,synthetic
+P01814,B010,Eggplant,552,Clay,6.69,Moderate,Dry,27.7,54.0,synthetic
+P01815,B009,Okra,658,Loam,6.5,Poor,Dry,28.5,79.5,synthetic
+P01816,B019,Squash,409,Clay,6.62,Moderate,Dry,27.5,0,synthetic
+P01817,B007,Tomato,671,Sandy loam,5.84,Good,Dry,28.1,11.7,synthetic
+P01818,B014,Eggplant,751,Loam,6.87,Good,Wet,30.3,227.1,synthetic
+P01819,B011,Okra,514,Loam,5.76,Moderate,Wet,27.4,165.8,synthetic
+P01820,B012,Squash,752,Clay,5.66,Poor,Wet,31.5,173.4,synthetic
+P01821,B006,Tomato,287,Clay,6.36,Poor,Wet,28.9,211.0,synthetic
+P01822,B006,Eggplant,284,Clay,6.36,Poor,Wet,29.3,272.7,synthetic
+P01823,B010,Okra,720,Clay,6.69,Moderate,Dry,25.1,25.8,synthetic
+P01824,B001,Squash,153,Sandy loam,5.69,Good,Wet,31.7,168.7,synthetic
+P01825,B001,Tomato,878,Sandy loam,5.69,Good,Dry,27.5,56.6,synthetic
+P01826,B010,Eggplant,327,Clay,6.69,Moderate,Wet,32.1,264.3,synthetic
+P01827,B011,Okra,801,Loam,5.76,Moderate,Wet,27.8,229.0,synthetic
+P01828,B012,Squash,574,Clay,5.66,Poor,Dry,29.8,68.3,synthetic
+P01829,B004,Tomato,520,Sandy loam,5.65,Moderate,Dry,32.1,56.1,synthetic
+P01830,B005,Eggplant,382,Clay,5.55,Poor,Dry,27.6,26.2,synthetic
+P01831,B017,Okra,870,Sandy loam,7.01,Moderate,Wet,25.9,216.1,synthetic
+P01832,B009,Squash,448,Loam,6.5,Poor,Wet,28.8,167.8,synthetic
+P01833,B006,Tomato,272,Clay,6.36,Poor,Wet,27.8,199.0,synthetic
+P01834,B008,Eggplant,301,Sandy loam,6.43,Poor,Wet,26.0,267.6,synthetic
+P01835,B018,Okra,879,Sandy loam,5.83,Poor,Wet,27.9,171.0,synthetic
+P01836,B009,Squash,103,Loam,6.5,Poor,Dry,24.8,0,synthetic
+P01837,B006,Tomato,428,Clay,6.36,Poor,Dry,26.7,85.5,synthetic
+P01838,B003,Eggplant,600,Sandy loam,5.67,Good,Wet,27.7,198.7,synthetic
+P01839,B009,Okra,484,Loam,6.5,Poor,Dry,26.1,75.7,synthetic
+P01840,B005,Squash,900,Clay,5.55,Poor,Wet,28.1,169.3,synthetic
+P01841,B002,Tomato,270,Loam,5.92,Poor,Dry,23.7,91.6,synthetic
+P01842,B001,Eggplant,870,Sandy loam,5.69,Good,Wet,29.9,204.4,synthetic
+P01843,B019,Okra,760,Clay,6.62,Moderate,Dry,28.5,104.0,synthetic
+P01844,B005,Squash,586,Clay,5.55,Poor,Dry,27.8,23.4,synthetic
+P01845,B017,Tomato,437,Sandy loam,7.01,Moderate,Wet,26.9,251.5,synthetic
+P01846,B010,Eggplant,615,Clay,6.69,Moderate,Dry,27.0,6.9,synthetic
+P01847,B001,Okra,220,Sandy loam,5.69,Good,Wet,27.0,200.6,synthetic
+P01848,B018,Squash,516,Sandy loam,5.83,Poor,Wet,27.1,170.5,synthetic
+P01849,B016,Tomato,281,Clay,6.44,Good,Dry,30.5,46.7,synthetic
+P01850,B016,Eggplant,430,Clay,6.44,Good,Dry,26.1,49.2,synthetic
+P01851,B018,Okra,368,Sandy loam,5.83,Poor,Wet,28.8,179.2,synthetic
+P01852,B003,Squash,755,Sandy loam,5.67,Good,Dry,29.6,56.1,synthetic
+P01853,B001,Tomato,448,Sandy loam,5.69,Good,Wet,27.4,201.6,synthetic
+P01854,B008,Eggplant,155,Sandy loam,6.43,Poor,Wet,27.2,184.8,synthetic
+P01855,B004,Okra,105,Sandy loam,5.65,Moderate,Wet,24.1,224.1,synthetic
+P01856,B019,Squash,358,Clay,6.62,Moderate,Dry,30.3,100.0,synthetic
+P01857,B011,Tomato,147,Loam,5.76,Moderate,Dry,28.7,106.5,synthetic
+P01858,B002,Eggplant,132,Loam,5.92,Poor,Dry,30.8,75.9,synthetic
+P01859,B006,Okra,888,Clay,6.36,Poor,Wet,25.2,192.0,synthetic
+P01860,B015,Squash,447,Loam,6.41,Moderate,Dry,25.1,59.0,synthetic
+P01861,B001,Tomato,836,Sandy loam,5.69,Good,Wet,30.8,186.6,synthetic
+P01862,B001,Eggplant,345,Sandy loam,5.69,Good,Dry,24.2,50.5,synthetic
+P01863,B009,Okra,490,Loam,6.5,Poor,Wet,28.7,280.7,synthetic
+P01864,B006,Squash,777,Clay,6.36,Poor,Dry,27.9,31.7,synthetic
+P01865,B005,Tomato,287,Clay,5.55,Poor,Dry,26.5,72.8,synthetic
+P01866,B015,Eggplant,348,Loam,6.41,Moderate,Dry,30.3,114.4,synthetic
+P01867,B014,Okra,645,Loam,6.87,Good,Wet,27.2,209.9,synthetic
+P01868,B009,Squash,683,Loam,6.5,Poor,Dry,31.0,120.3,synthetic
+P01869,B007,Tomato,512,Sandy loam,5.84,Good,Dry,28.1,76.1,synthetic
+P01870,B012,Eggplant,782,Clay,5.66,Poor,Wet,25.9,191.2,synthetic
+P01871,B006,Okra,493,Clay,6.36,Poor,Wet,27.0,201.8,synthetic
+P01872,B020,Squash,851,Clay,6.95,Poor,Dry,25.2,30.7,synthetic
+P01873,B016,Tomato,899,Clay,6.44,Good,Wet,26.5,185.2,synthetic
+P01874,B020,Eggplant,640,Clay,6.95,Poor,Dry,29.1,80.1,synthetic
+P01875,B001,Okra,774,Sandy loam,5.69,Good,Dry,27.8,77.4,synthetic
+P01876,B008,Squash,677,Sandy loam,6.43,Poor,Dry,30.2,17.9,synthetic
+P01877,B018,Tomato,653,Sandy loam,5.83,Poor,Wet,29.8,249.6,synthetic
+P01878,B010,Eggplant,764,Clay,6.69,Moderate,Dry,25.5,157.8,synthetic
+P01879,B014,Okra,735,Loam,6.87,Good,Dry,26.9,43.4,synthetic
+P01880,B012,Squash,187,Clay,5.66,Poor,Wet,24.0,192.6,synthetic
+P01881,B017,Tomato,256,Sandy loam,7.01,Moderate,Wet,23.0,161.7,synthetic
+P01882,B010,Eggplant,425,Clay,6.69,Moderate,Wet,27.8,272.9,synthetic
+P01883,B001,Okra,757,Sandy loam,5.69,Good,Dry,25.7,66.1,synthetic
+P01884,B002,Squash,862,Loam,5.92,Poor,Dry,26.7,0,synthetic
+P01885,B002,Tomato,400,Loam,5.92,Poor,Dry,27.6,89.3,synthetic
+P01886,B016,Eggplant,647,Clay,6.44,Good,Wet,31.3,220.7,synthetic
+P01887,B014,Okra,173,Loam,6.87,Good,Wet,31.0,241.0,synthetic
+P01888,B008,Squash,180,Sandy loam,6.43,Poor,Dry,29.8,24.5,synthetic
+P01889,B017,Tomato,180,Sandy loam,7.01,Moderate,Dry,26.6,106.6,synthetic
+P01890,B012,Eggplant,507,Clay,5.66,Poor,Dry,27.2,53.0,synthetic
+P01891,B010,Okra,382,Clay,6.69,Moderate,Wet,28.8,197.5,synthetic
+P01892,B001,Squash,264,Sandy loam,5.69,Good,Dry,26.3,43.9,synthetic
+P01893,B001,Tomato,501,Sandy loam,5.69,Good,Wet,27.7,208.7,synthetic
+P01894,B007,Eggplant,304,Sandy loam,5.84,Good,Dry,26.9,99.8,synthetic
+P01895,B014,Okra,719,Loam,6.87,Good,Wet,31.1,226.9,synthetic
+P01896,B018,Squash,304,Sandy loam,5.83,Poor,Wet,28.5,197.9,synthetic
+P01897,B018,Tomato,508,Sandy loam,5.83,Poor,Wet,26.3,196.3,synthetic
+P01898,B005,Eggplant,581,Clay,5.55,Poor,Dry,26.9,114.9,synthetic
+P01899,B018,Okra,181,Sandy loam,5.83,Poor,Dry,31.7,23.4,synthetic
+P01900,B019,Squash,496,Clay,6.62,Moderate,Wet,24.9,243.7,synthetic
+P01901,B001,Tomato,867,Sandy loam,5.69,Good,Wet,28.0,216.6,synthetic
+P01902,B001,Eggplant,149,Sandy loam,5.69,Good,Dry,30.0,38.3,synthetic
+P01903,B012,Okra,756,Clay,5.66,Poor,Dry,29.7,100.7,synthetic
+P01904,B007,Squash,160,Sandy loam,5.84,Good,Dry,23.0,0,synthetic
+P01905,B006,Tomato,479,Clay,6.36,Poor,Dry,28.2,20.9,synthetic
+P01906,B002,Eggplant,574,Loam,5.92,Poor,Wet,31.8,231.3,synthetic
+P01907,B019,Okra,670,Clay,6.62,Moderate,Dry,29.6,73.9,synthetic
+P01908,B018,Squash,456,Sandy loam,5.83,Poor,Dry,27.5,12.3,synthetic
+P01909,B013,Tomato,802,Loam,6.94,Good,Dry,29.8,25.0,synthetic
+P01910,B008,Eggplant,242,Sandy loam,6.43,Poor,Wet,29.7,235.1,synthetic
+P01911,B001,Okra,164,Sandy loam,5.69,Good,Dry,29.2,132.8,synthetic
+P01912,B014,Squash,155,Loam,6.87,Good,Wet,28.6,177.5,synthetic
+P01913,B008,Tomato,157,Sandy loam,6.43,Poor,Wet,27.1,258.4,synthetic
+P01914,B015,Eggplant,686,Loam,6.41,Moderate,Dry,27.1,105.3,synthetic
+P01915,B010,Okra,497,Clay,6.69,Moderate,Wet,26.1,189.4,synthetic
+P01916,B013,Squash,890,Loam,6.94,Good,Dry,26.4,97.0,synthetic
+P01917,B018,Tomato,757,Sandy loam,5.83,Poor,Wet,28.0,214.4,synthetic
+P01918,B005,Eggplant,315,Clay,5.55,Poor,Wet,28.7,268.9,synthetic
+P01919,B006,Okra,571,Clay,6.36,Poor,Wet,31.9,176.1,synthetic
+P01920,B008,Squash,344,Sandy loam,6.43,Poor,Wet,27.6,199.9,synthetic
+P01921,B008,Tomato,317,Sandy loam,6.43,Poor,Dry,26.3,61.6,synthetic
+P01922,B016,Eggplant,436,Clay,6.44,Good,Wet,29.7,137.9,synthetic
+P01923,B007,Okra,502,Sandy loam,5.84,Good,Dry,28.1,67.5,synthetic
+P01924,B005,Squash,308,Clay,5.55,Poor,Wet,25.9,224.0,synthetic
+P01925,B010,Tomato,103,Clay,6.69,Moderate,Wet,31.5,222.7,synthetic
+P01926,B020,Eggplant,845,Clay,6.95,Poor,Wet,29.1,234.8,synthetic
+P01927,B001,Okra,618,Sandy loam,5.69,Good,Wet,24.7,221.3,synthetic
+P01928,B001,Squash,620,Sandy loam,5.69,Good,Dry,28.1,105.7,synthetic
+P01929,B014,Tomato,422,Loam,6.87,Good,Dry,27.6,107.7,synthetic
+P01930,B019,Eggplant,179,Clay,6.62,Moderate,Wet,29.5,164.8,synthetic
+P01931,B001,Okra,312,Sandy loam,5.69,Good,Wet,25.1,168.8,synthetic
+P01932,B019,Squash,203,Clay,6.62,Moderate,Wet,28.7,198.5,synthetic
+P01933,B011,Tomato,357,Loam,5.76,Moderate,Wet,26.3,196.1,synthetic
+P01934,B007,Eggplant,752,Sandy loam,5.84,Good,Wet,29.6,197.4,synthetic
+P01935,B017,Okra,561,Sandy loam,7.01,Moderate,Dry,28.9,53.6,synthetic
+P01936,B003,Squash,178,Sandy loam,5.67,Good,Wet,26.0,204.5,synthetic
+P01937,B019,Tomato,432,Clay,6.62,Moderate,Wet,25.4,252.2,synthetic
+P01938,B008,Eggplant,555,Sandy loam,6.43,Poor,Dry,30.4,2.9,synthetic
+P01939,B003,Okra,528,Sandy loam,5.67,Good,Wet,27.8,212.8,synthetic
+P01940,B016,Squash,467,Clay,6.44,Good,Wet,26.5,270.0,synthetic
+P01941,B001,Tomato,633,Sandy loam,5.69,Good,Dry,26.4,93.5,synthetic
+P01942,B014,Eggplant,257,Loam,6.87,Good,Wet,26.9,238.3,synthetic
+P01943,B010,Okra,306,Clay,6.69,Moderate,Dry,30.4,126.0,synthetic
+P01944,B016,Squash,351,Clay,6.44,Good,Dry,27.7,21.4,synthetic
+P01945,B014,Tomato,440,Loam,6.87,Good,Dry,29.7,128.3,synthetic
+P01946,B007,Eggplant,888,Sandy loam,5.84,Good,Wet,27.8,204.6,synthetic
+P01947,B005,Okra,375,Clay,5.55,Poor,Wet,27.4,229.7,synthetic
+P01948,B007,Squash,807,Sandy loam,5.84,Good,Wet,28.0,171.1,synthetic
+P01949,B019,Tomato,698,Clay,6.62,Moderate,Wet,26.1,134.9,synthetic
+P01950,B009,Eggplant,145,Loam,6.5,Poor,Dry,25.9,6.0,synthetic
+P01951,B020,Okra,257,Clay,6.95,Poor,Dry,24.2,80.1,synthetic
+P01952,B015,Squash,216,Loam,6.41,Moderate,Wet,24.1,146.5,synthetic
+P01953,B007,Tomato,232,Sandy loam,5.84,Good,Dry,24.6,64.6,synthetic
+P01954,B019,Eggplant,325,Clay,6.62,Moderate,Wet,29.6,258.6,synthetic
+P01955,B006,Okra,628,Clay,6.36,Poor,Wet,26.0,232.1,synthetic
+P01956,B003,Squash,882,Sandy loam,5.67,Good,Wet,31.1,250.1,synthetic
+P01957,B019,Tomato,123,Clay,6.62,Moderate,Wet,25.8,235.9,synthetic
+P01958,B004,Eggplant,127,Sandy loam,5.65,Moderate,Wet,24.6,141.8,synthetic
+P01959,B011,Okra,742,Loam,5.76,Moderate,Wet,30.2,164.6,synthetic
+P01960,B009,Squash,608,Loam,6.5,Poor,Dry,26.5,33.9,synthetic
+P01961,B015,Tomato,697,Loam,6.41,Moderate,Dry,27.3,68.4,synthetic
+P01962,B006,Eggplant,369,Clay,6.36,Poor,Wet,28.6,185.7,synthetic
+P01963,B013,Okra,797,Loam,6.94,Good,Dry,29.6,108.6,synthetic
+P01964,B003,Squash,652,Sandy loam,5.67,Good,Dry,29.5,107.8,synthetic
+P01965,B016,Tomato,878,Clay,6.44,Good,Dry,29.7,44.9,synthetic
+P01966,B005,Eggplant,336,Clay,5.55,Poor,Dry,25.9,100.5,synthetic
+P01967,B008,Okra,571,Sandy loam,6.43,Poor,Wet,30.2,222.8,synthetic
+P01968,B012,Squash,341,Clay,5.66,Poor,Wet,30.3,213.8,synthetic
+P01969,B002,Tomato,466,Loam,5.92,Poor,Wet,24.0,242.0,synthetic
+P01970,B009,Eggplant,650,Loam,6.5,Poor,Dry,25.9,170.0,synthetic
+P01971,B005,Okra,150,Clay,5.55,Poor,Dry,31.5,55.1,synthetic
+P01972,B020,Squash,548,Clay,6.95,Poor,Dry,27.9,12.2,synthetic
+P01973,B012,Tomato,584,Clay,5.66,Poor,Wet,26.4,207.6,synthetic
+P01974,B010,Eggplant,237,Clay,6.69,Moderate,Dry,29.3,76.4,synthetic
+P01975,B019,Okra,264,Clay,6.62,Moderate,Wet,25.9,256.7,synthetic
+P01976,B002,Squash,672,Loam,5.92,Poor,Dry,27.2,58.2,synthetic
+P01977,B010,Tomato,481,Clay,6.69,Moderate,Dry,23.5,153.2,synthetic
+P01978,B001,Eggplant,493,Sandy loam,5.69,Good,Wet,29.4,192.0,synthetic
+P01979,B018,Okra,598,Sandy loam,5.83,Poor,Wet,25.4,136.9,synthetic
+P01980,B001,Squash,780,Sandy loam,5.69,Good,Dry,28.6,55.4,synthetic
+P01981,B010,Tomato,159,Clay,6.69,Moderate,Wet,27.0,175.6,synthetic
+P01982,B005,Eggplant,752,Clay,5.55,Poor,Dry,26.4,57.6,synthetic
+P01983,B001,Okra,671,Sandy loam,5.69,Good,Wet,27.7,185.2,synthetic
+P01984,B014,Squash,864,Loam,6.87,Good,Dry,34.9,66.3,synthetic
+P01985,B005,Tomato,140,Clay,5.55,Poor,Dry,27.7,117.9,synthetic
+P01986,B020,Eggplant,729,Clay,6.95,Poor,Dry,31.3,109.4,synthetic
+P01987,B020,Okra,458,Clay,6.95,Poor,Dry,28.8,132.2,synthetic
+P01988,B002,Squash,869,Loam,5.92,Poor,Dry,26.6,55.8,synthetic
+P01989,B020,Tomato,754,Clay,6.95,Poor,Wet,25.9,263.0,synthetic
+P01990,B007,Eggplant,442,Sandy loam,5.84,Good,Wet,29.3,210.4,synthetic
+P01991,B009,Okra,648,Loam,6.5,Poor,Wet,26.7,213.0,synthetic
+P01992,B009,Squash,482,Loam,6.5,Poor,Wet,27.6,148.7,synthetic
+P01993,B017,Tomato,165,Sandy loam,7.01,Moderate,Wet,26.5,191.4,synthetic
+P01994,B014,Eggplant,815,Loam,6.87,Good,Wet,29.1,224.7,synthetic
+P01995,B003,Okra,194,Sandy loam,5.67,Good,Wet,28.2,226.2,synthetic
+P01996,B016,Squash,729,Clay,6.44,Good,Dry,27.1,59.5,synthetic
+P01997,B014,Tomato,692,Loam,6.87,Good,Dry,29.3,98.0,synthetic
+P01998,B001,Eggplant,155,Sandy loam,5.69,Good,Wet,29.3,215.3,synthetic
+P01999,B011,Okra,198,Loam,5.76,Moderate,Dry,29.6,122.2,synthetic
+P02000,B011,Squash,511,Loam,5.76,Moderate,Dry,33.7,78.7,synthetic
