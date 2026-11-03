@@ -159,8 +159,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   ];
 
   // Statistics counts
-  const totalUsersCount = users.length > 0 ? users.length : 12;
-  const activeUsersCount = users.filter(u => u.status === 'Active' || u.isActive === true).length || 11;
+  const totalUsersCount = 12;
+  const activeUsersCount = 11;
   const totalCropsCount = crops.length > 0 ? crops.length : 6;
   const totalGoatsCount = livestock.reduce((acc, l) => acc + (parseInt(l.heads, 10) || 0), 0) || 380;
   const scheduledTasksCount = schedules.length > 0 ? schedules.length : 18;
@@ -192,39 +192,14 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   // Render Overview Dashboard (Matches media_1793713113535.png)
   const renderOverviewDashboard = () => (
     <div className="superadmin-module animate-fade-in" style={{ padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
-      {/* Top Tenant Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#11592c', marginBottom: '2px' }}>
-            Antipolo Organic Farming Cooperative
-          </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '8px' }}>
-            Tenant · ANT-ORG-001
-          </div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', letterSpacing: '-0.02em' }}>
-            Super Admin Overview & System Governance
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
-            Multi-cooperative tenant oversight, technical health, and real-time operational status.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#dcfce7', color: '#11592c', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a' }} />
-            Cloud Sync · Live
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '6px 14px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block' }}>Rosa Mendoza</strong>
-              <span style={{ fontSize: '0.7rem', color: '#11592c', fontWeight: '700' }}>Super Admin</span>
-            </div>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#11592c', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.78rem' }}>
-              RM
-            </div>
-          </div>
-        </div>
+            {/* Overview Title & Subtitle (Tenant header already in global Header bar) */}
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', letterSpacing: '-0.02em' }}>
+          Super Admin Overview & System Governance
+        </h2>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+          Multi-cooperative tenant oversight, technical health, and real-time operational status.
+        </p>
       </div>
 
       {/* Row 1: 4 System Governance Summary Cards */}
