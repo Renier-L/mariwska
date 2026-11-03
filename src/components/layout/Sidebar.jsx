@@ -42,9 +42,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 			]
 		},
 		{
-			category: 'ANALYTICS & AI',
+			category: 'ANALYTICS & PREDICTIONS',
 			items: [
-				{ id: 'analytics', label: 'Analytics', icon: BarChart3 },
+				{ id: 'analytics', label: 'Agricultural Analytics', icon: BarChart3 },
 				{ id: 'decision-support', label: 'Decision Support', icon: BrainCircuit },
 				{ id: 'reports', label: 'Reports & Export', icon: FileText },
 			]

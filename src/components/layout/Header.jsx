@@ -471,7 +471,7 @@ const Header = () => {
                 <div style={{ fontSize: '0.72rem', color: '#1e293b', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <div> <strong>Multi-Tenant:</strong> Cross-cooperative platform administration</div>
                   <div> <strong>Analytics:</strong> Global harvest output & trend forecasting</div>
-                  <div> <strong>Decision Support:</strong> AI predictive horizon & strategic policy</div>
+                  <div> <strong>Decision Support:</strong> Random Forest predictive horizon & strategic policy</div>
                   <div> <strong>Governance:</strong> System-wide audit trail logs & compliance export</div>
                 </div>
               </div>
