@@ -1031,7 +1031,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  setIsReRunningRF(false);
  const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
  setRfRunTimestamp(`Just now (${nowStr})`);
- alert(` AI Compliance & Risk Assessment Pass Executed Live!\n\n100% of plot logs (${safeValidations.length} submissions), fertilizer inputs, and mobile GPS data evaluated against PGS organic compliance matrix.\nLast Pass: ${nowStr}`);
+ alert(` Random Forest Risk Assessment Pass Executed Live!\n\n100% of plot logs (${safeValidations.length} submissions), fertilizer inputs, and mobile GPS data evaluated against PGS organic compliance matrix.\nLast Pass: ${nowStr}`);
  }, 750);
  };
 
@@ -1076,7 +1076,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  <div style={{
  background: '#0c3619', color: '#ffffff', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px'
  }}>
- AI Model · v2.4
+ RF Model · v2.4
  </div>
  </div>
  </div>
@@ -2673,7 +2673,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 						<div style={{ padding: '16px 20px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 							<div>
 								<h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-									Actual Harvest Yield vs AI Predictive Model Target Audit Report
+									Actual Harvest Yield vs Random Forest Predictive Model Target Audit Report
 								</h3>
 								<p style={{ fontSize: '0.75rem', color: '#64748b', margin: '4px 0 0 0' }}>
 									Direct verification of harvested field output vs ML predictive horizon (MAE: 193.7 kg · 94% organic accuracy)

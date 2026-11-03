@@ -135,7 +135,7 @@ const MobileAppSimulator = () => {
 
  const fileInputRef = useRef(null);
 
- // AI Recommendation State (Real-time ML Data Pipeline)
+ // RF Recommendation State (Real-time ML Data Pipeline)
  const [season, setSeason] = useState('Tag-init (Dry)');
  const [location, setLocation] = useState('Block A · Cupang');
  const [soil, setSoil] = useState('Loam · moist');
@@ -659,7 +659,7 @@ const MobileAppSimulator = () => {
  <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
  <Sparkles size={18} color="#ffffff" />
  </div>
- <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>AI SMART RECOMMENDATION</div>
+ <div style={{ fontWeight: '800', fontSize: '0.85rem', lineHeight: 1.2 }}>SMART RF RECOMMENDATION</div>
  </div>
  </div>
 
@@ -1021,14 +1021,14 @@ const MobileAppSimulator = () => {
  </div>
  )}
 
- {/* ----- AI TAB ----- */}
+ {/* ----- RF TAB ----- */}
  {activeTab === 'ai' && (
  <div>
  <div style={{ background: '#059669', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
  <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none' }}><ArrowLeft size={18} /></button>
  <div>
  <h3 style={{ fontSize: '0.95rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
- <Sparkles size={15} color="#86efac" /> AI Recommendations
+ <Sparkles size={15} color="#86efac" /> Random Forest Recommendations
  </h3>
  <span style={{ fontSize: '0.7rem', color: '#a7f3d0' }}>Smart na payo para sa inyong sakahan</span>
  </div>
@@ -1124,7 +1124,7 @@ const MobileAppSimulator = () => {
  <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e5e7eb', padding: '16px', marginBottom: '14px', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
  <span style={{ background: '#059669', color: '#fff', fontSize: '0.65rem', padding: '3px 8px', borderRadius: '4px', fontWeight: '800' }}>RF Classifier</span>
- <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>AI Crop Predictor</span>
+ <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: '600' }}>RF Crop Predictor</span>
  </div>
 
  <div style={{ fontSize: '0.68rem', color: '#6b7280', fontWeight: '800', textTransform: 'uppercase' }}>RECOMMENDED CROP VARIETY</div>
@@ -1844,7 +1844,7 @@ const MobileAppSimulator = () => {
  <Calendar size={16} style={{ margin: '0 auto 2px' }} /> TASKS
  </div>
  <div onClick={() => setActiveTab('ai')} style={{ color: activeTab === 'ai' ? '#059669' : '#9ca3af', cursor: 'pointer' }}>
- <Sparkles size={16} style={{ margin: '0 auto 2px' }} /> AI
+ <Sparkles size={16} style={{ margin: '0 auto 2px' }} /> RF
  </div>
  <div onClick={() => setActiveTab('profile')} style={{ color: activeTab === 'profile' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
  <User size={16} style={{ margin: '0 auto 2px' }} /> PROFILE

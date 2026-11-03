@@ -15,7 +15,8 @@ import {
   Clock, 
   X, 
   ExternalLink,
-  Megaphone
+  Megaphone,
+  Binary
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -32,6 +33,7 @@ const DecisionSupportModule = () => {
   const [isRunningAudit, setIsRunningAudit] = useState(false);
   const [showBroadcastPush, setShowBroadcastPush] = useState(false);
   const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [activeEngineTab, setActiveEngineTab] = useState('decision_engine'); // 'analytics_intel' or 'decision_engine'
   const [filterRisk, setFilterRisk] = useState('All');
   const [searchFarm, setSearchFarm] = useState('');
   const [approvedPlans, setApprovedPlans] = useState({});
@@ -56,31 +58,43 @@ const DecisionSupportModule = () => {
     { name: 'Harvest Window Timing', weight: 16, color: '#2563eb' },
   ];
 
-  // Farms requiring attention
+  // Farms and Herds requiring attention (Exactly 1 Critical, 2 Warnings, matching the 3 active alerts)
   const farmsRequiringIntervention = [
     {
       plot: 'Plot P-007',
       crop: 'Tomato (Diamante Max)',
       issue: 'High nutrient demand phase · Soil Nitrogen deficiency risk 28%',
       riskScore: 76,
-      riskLevel: 'High',
-      farmer: 'Juan Dela Cruz'
+      riskLevel: 'Critical',
+      farmer: 'Juan Dela Cruz',
+      type: 'crop'
     },
     {
       plot: 'Plot P-021',
       crop: 'Eggplant (Mistisa)',
-      issue: 'Rainfall deficit index 34% · Monitor soil moisture sensor',
+      issue: 'Rainfall deficit index 34% · Soil moisture sensor indicates dry root zone',
       riskScore: 58,
-      riskLevel: 'Moderate',
-      farmer: 'Roberto Cruz'
+      riskLevel: 'Warning',
+      farmer: 'Roberto Cruz',
+      type: 'crop'
+    },
+    {
+      plot: 'Herd HRD-GT-002',
+      crop: 'Boer Goats (Pen Bravo)',
+      issue: 'Scheduled hoof trimming & routine deworming booster window closing in 48 hours',
+      riskScore: 54,
+      riskLevel: 'Warning',
+      farmer: 'Roberto Cruz',
+      type: 'livestock'
     },
     {
       plot: 'Plot P-094',
       crop: 'Okra (Smooth Green)',
-      issue: 'Routine pest pressure check · Neem barrier scheduled',
+      issue: 'Routine pest pressure check · Organic neem barrier active',
       riskScore: 24,
       riskLevel: 'Low',
-      farmer: 'Maria Santos'
+      farmer: 'Maria Santos',
+      type: 'crop'
     },
     {
       plot: 'Plot P-082',
@@ -88,7 +102,8 @@ const DecisionSupportModule = () => {
       issue: 'Optimal canopy shading · Moisture retention compliant',
       riskScore: 18,
       riskLevel: 'Optimal',
-      farmer: 'Elena Gomez'
+      farmer: 'Elena Gomez',
+      type: 'crop'
     }
   ];
 
@@ -128,7 +143,7 @@ const DecisionSupportModule = () => {
     setIsRunningAudit(true);
     setTimeout(() => {
       setIsRunningAudit(false);
-      alert('Live Risk Audit complete. 100 decision trees evaluated across 6 plots. Risk boundaries refreshed.');
+      alert('Live Risk Audit complete. 100 Random Forest decision trees evaluated across all 6 plots and 4 goat herds.');
     }, 700);
   };
 
@@ -137,7 +152,12 @@ const DecisionSupportModule = () => {
   };
 
   const filteredFarms = farmsRequiringIntervention.filter(f => {
-    const matchRisk = filterRisk === 'All' || f.riskLevel === filterRisk;
+    let matchRisk = true;
+    if (filterRisk === 'Critical') matchRisk = f.riskLevel === 'Critical';
+    else if (filterRisk === 'Warning') matchRisk = f.riskLevel === 'Warning';
+    else if (filterRisk === 'ActiveAlerts') matchRisk = f.riskLevel === 'Critical' || f.riskLevel === 'Warning';
+    else if (filterRisk === 'Low') matchRisk = f.riskLevel === 'Low' || f.riskLevel === 'Optimal';
+
     const matchSearch = f.plot.toLowerCase().includes(searchFarm.toLowerCase()) ||
                         f.crop.toLowerCase().includes(searchFarm.toLowerCase()) ||
                         f.farmer.toLowerCase().includes(searchFarm.toLowerCase());
@@ -146,7 +166,7 @@ const DecisionSupportModule = () => {
 
   return (
     <div className="superadmin-module animate-fade-in" style={{ padding: '24px', maxWidth: '1600px', margin: '0 auto', position: 'relative' }}>
-      {/* Toast Notification (matching media_1793713237949.png) */}
+      {/* Toast Notification (matching media_1793713237949.png Random Forest Action Plan) */}
       {showBroadcastPush && (
         <div style={{
           position: 'fixed', top: '80px', right: '24px', zIndex: 99999,
@@ -162,7 +182,7 @@ const DecisionSupportModule = () => {
               <div>
                 <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#c2410c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>LIVE BROADCAST PUSH</span>
                 <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                  RF Strategic Action Plan Committed
+                  Random Forest Action Plan Committed
                 </h4>
               </div>
             </div>
@@ -175,7 +195,7 @@ const DecisionSupportModule = () => {
           </div>
 
           <p style={{ fontSize: '0.78rem', color: '#475569', margin: '0 0 12px 0', lineHeight: 1.4 }}>
-            Super Admin committed live RF risk mitigation plan: Automated fertigation, Nitrogen spray boost, and advance harvest windows deployed.
+            Super Admin committed live Random Forest risk mitigation plan: Automated fertigation, Nitrogen spray boost, and advance harvest windows deployed.
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '10px' }}>
@@ -191,16 +211,16 @@ const DecisionSupportModule = () => {
       )}
 
       {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#dcfce7', color: '#11592c', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', marginBottom: '6px' }}>
             <BrainCircuit size={14} /> RF Classifier · 100 Trees · 94.2% Acc
           </div>
           <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', letterSpacing: '-0.02em' }}>
-            Random Forest Decision Support & Predictive Yield Engine
+            Decision Support & Predictive Yield Engine
           </h2>
           <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
-            Machine Learning predictive risk model, feature importance weighting & live intervention recommendations.
+            Random Forest predictive risk model, feature importance weighting & live intervention recommendations.
           </p>
         </div>
 
@@ -231,6 +251,40 @@ const DecisionSupportModule = () => {
         </div>
       </div>
 
+      {/* Sub-Tabs (Analytics & Intelligence vs Decision Support Engine) */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        <button
+          onClick={() => setActiveEngineTab('decision_engine')}
+          style={{
+            padding: '8px 18px',
+            fontSize: '0.82rem',
+            fontWeight: activeEngineTab === 'decision_engine' ? '700' : '600',
+            borderRadius: '8px',
+            border: activeEngineTab === 'decision_engine' ? '1px solid #11592c' : '1px solid #cbd5e1',
+            background: activeEngineTab === 'decision_engine' ? '#11592c' : '#ffffff',
+            color: activeEngineTab === 'decision_engine' ? '#ffffff' : '#475569',
+            cursor: 'pointer'
+          }}
+        >
+          Random Forest Decision Support Engine
+        </button>
+        <button
+          onClick={() => setActiveEngineTab('analytics_intel')}
+          style={{
+            padding: '8px 18px',
+            fontSize: '0.82rem',
+            fontWeight: activeEngineTab === 'analytics_intel' ? '700' : '600',
+            borderRadius: '8px',
+            border: activeEngineTab === 'analytics_intel' ? '1px solid #11592c' : '1px solid #cbd5e1',
+            background: activeEngineTab === 'analytics_intel' ? '#11592c' : '#ffffff',
+            color: activeEngineTab === 'analytics_intel' ? '#ffffff' : '#475569',
+            cursor: 'pointer'
+          }}
+        >
+          Analytics & Agronomic Intelligence
+        </button>
+      </div>
+
       {/* 4 Summary Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' }}>
         <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
@@ -242,20 +296,20 @@ const DecisionSupportModule = () => {
             <span style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: '700' }}>Plots</span>
           </div>
           <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
-            Under active ML risk surveillance
+            Under active Random Forest risk surveillance
           </span>
         </div>
 
         <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '16px 20px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Require Attention
+            Active Operational Alerts
           </span>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px' }}>
-            <span style={{ fontSize: '1.9rem', fontWeight: '800', color: '#d97706' }}>2</span>
-            <span style={{ fontSize: '0.8rem', color: '#d97706', fontWeight: '700' }}>Alerts</span>
+            <span style={{ fontSize: '1.9rem', fontWeight: '800', color: '#ef4444' }}>3</span>
+            <span style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: '700' }}>Alerts</span>
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#b45309', marginTop: '4px', display: 'block' }}>
-            Plot P-007 (Tomato) & Plot P-021 (Eggplant)
+          <span style={{ fontSize: '0.75rem', color: '#b91c1c', marginTop: '4px', display: 'block' }}>
+            1 critical window, 2 active warnings
           </span>
         </div>
 
@@ -286,7 +340,7 @@ const DecisionSupportModule = () => {
       </div>
 
       {/* 3-Column Diagnostic Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.2fr', gap: '20px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1.3fr', gap: '20px', marginBottom: '24px' }}>
         {/* Column 1: Predictive Yield Horizon */}
         <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
@@ -349,16 +403,18 @@ const DecisionSupportModule = () => {
           </div>
         </div>
 
-        {/* Column 3: Farms Requiring Attention */}
+        {/* Column 3: Farms & Herds Requiring Attention (Exactly 1 Critical, 2 Warnings) */}
         <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <AlertTriangle size={15} color="#d97706" />
               <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                Farms Requiring Attention
+                Farms Requiring Strategic RF Intervention
               </h4>
             </div>
-            <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Classified live by RF model risk score</span>
+            <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: '700' }}>
+              3 Active Alerts (1 Critical, 2 Warnings)
+            </span>
           </div>
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
@@ -367,11 +423,11 @@ const DecisionSupportModule = () => {
               onChange={(e) => setFilterRisk(e.target.value)}
               style={{ padding: '6px 10px', fontSize: '0.75rem', border: '1px solid #e2e8f0', borderRadius: '6px', background: '#fff' }}
             >
-              <option value="All">All Risk Levels</option>
-              <option value="High">High</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Low">Low</option>
-              <option value="Optimal">Optimal</option>
+              <option value="All">All Risk Levels (5)</option>
+              <option value="ActiveAlerts">Active Alerts (3: 1 Crit, 2 Warn)</option>
+              <option value="Critical">Critical Risk (1)</option>
+              <option value="Warning">Warning / Moderate (2)</option>
+              <option value="Low">Low / Optimal (2)</option>
             </select>
             <input 
               type="text" 
@@ -382,25 +438,39 @@ const DecisionSupportModule = () => {
             />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
-            {filteredFarms.map((farm) => (
-              <div key={farm.plot} style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', background: farm.riskLevel === 'High' ? '#fffbeb' : '#f8fafc' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3px' }}>
-                  <strong style={{ fontSize: '0.8rem', color: '#0f172a' }}>{farm.plot} · {farm.crop}</strong>
-                  <span style={{
-                    fontSize: '0.68rem',
-                    fontWeight: '700',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    background: farm.riskLevel === 'High' ? '#fee2e2' : farm.riskLevel === 'Moderate' ? '#fef3c7' : '#dcfce7',
-                    color: farm.riskLevel === 'High' ? '#b91c1c' : farm.riskLevel === 'Moderate' ? '#b45309' : '#15803d'
-                  }}>
-                    {farm.riskScore}% – {farm.riskLevel}
-                  </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
+            {filteredFarms.map((farm) => {
+              const isCrit = farm.riskLevel === 'Critical';
+              const isWarn = farm.riskLevel === 'Warning';
+              return (
+                <div 
+                  key={farm.plot} 
+                  style={{ 
+                    padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', 
+                    background: isCrit ? '#fff1f2' : isWarn ? '#fffbeb' : '#f8fafc',
+                    borderLeft: isCrit ? '3px solid #e11d48' : isWarn ? '3px solid #d97706' : '3px solid #16a34a'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {farm.type === 'livestock' ? <Binary size={13} color="#b45309" /> : null}
+                      <strong style={{ fontSize: '0.8rem', color: '#0f172a' }}>{farm.plot} · {farm.crop}</strong>
+                    </div>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      fontWeight: '700',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      background: isCrit ? '#fee2e2' : isWarn ? '#fef3c7' : '#dcfce7',
+                      color: isCrit ? '#b91c1c' : isWarn ? '#b45309' : '#15803d'
+                    }}>
+                      {farm.riskScore}% – {farm.riskLevel}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.72rem', color: '#475569', margin: 0 }}>{farm.issue}</p>
                 </div>
-                <p style={{ fontSize: '0.72rem', color: '#475569', margin: 0 }}>{farm.issue}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -416,7 +486,7 @@ const DecisionSupportModule = () => {
               </h3>
             </div>
             <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              Operational action plan generated from model feature weights
+              Operational action plan generated from Random Forest feature weights
             </span>
           </div>
 
@@ -505,7 +575,7 @@ const DecisionSupportModule = () => {
                 <strong>Broadcast Time:</strong> Just now · Real-time WebSocket push
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Notice Payload:</strong> 4 automated field mitigation dispatches synchronized to Supabase table <code>operational_tasks</code>. Assigned farmers will receive push notifications on the MARIKHA mobile client.
+                <strong>Notice Payload:</strong> 4 automated Random Forest mitigation dispatches synchronized to Supabase table <code>operational_tasks</code>. Assigned farmers will receive push notifications on the MARIKHA mobile client.
               </p>
             </div>
 

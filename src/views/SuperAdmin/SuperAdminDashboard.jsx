@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { 
   Users, 
@@ -27,7 +27,9 @@ import {
   Check, 
   X, 
   ShieldCheck, 
-  Database 
+  Database,
+  ArrowDownCircle,
+  ExternalLink
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -62,7 +64,6 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     users = [], 
     crops = [], 
     livestock = [], 
-    validations = [], 
     schedules = [], 
     announcements = [], 
     addCrop, 
@@ -85,6 +86,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   // Overview internal state
   const [trendSeason, setTrendSeason] = useState('2026');
   const [chartToggle, setChartToggle] = useState('forecast'); // 'forecast' or 'share'
+  const [showAlertsModal, setShowAlertsModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementText, setAnnouncementText] = useState('');
@@ -119,6 +121,43 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     { name: 'Squash', value: 158, color: '#16a34a' },
   ];
 
+  // Exactly 3 Active Alerts (1 Critical, 2 Warnings)
+  const activeAlertsList = [
+    {
+      id: 'ALT-01',
+      level: 'Critical',
+      target: 'Plot P-007 · Tomato (Diamante Max)',
+      issue: 'High nutrient demand phase · Soil Nitrogen deficiency risk 28% & blossom drop alert',
+      responsible: 'Juan Dela Cruz (RSBSA-04-1234) · Sector A',
+      due: 'Immediate Action (Due within 24 hours)',
+      actionText: 'Dispatch Drip Fertigation',
+      type: 'crop',
+      riskScore: 76
+    },
+    {
+      id: 'ALT-02',
+      level: 'Warning',
+      target: 'Plot P-021 · Eggplant (Mistisa)',
+      issue: 'Rainfall deficit index 34% · Soil moisture sensor indicates dry root zone below 30%',
+      responsible: 'Roberto Cruz (RSBSA-04-5678) · Sector B',
+      due: 'Due within 48 hours',
+      actionText: 'Inspect Emitter Lines',
+      type: 'crop',
+      riskScore: 58
+    },
+    {
+      id: 'ALT-03',
+      level: 'Warning',
+      target: 'Herd HRD-GT-002 · Boer Goats (Pen Bravo)',
+      issue: 'Routine hoof trimming & deworming booster window closing in 48 hours',
+      responsible: 'Roberto Cruz (RSBSA-04-5678) · Pen Bravo',
+      due: 'Due Nov 10, 2026',
+      actionText: 'Schedule Vet Visit',
+      type: 'livestock',
+      riskScore: 54
+    }
+  ];
+
   // Statistics counts
   const totalUsersCount = users.length > 0 ? users.length : 12;
   const activeUsersCount = users.filter(u => u.status === 'Active' || u.isActive === true).length || 11;
@@ -141,6 +180,13 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     setAnnouncementTitle('');
     setAnnouncementText('');
     alert('Notice broadcast live across cooperative channels.');
+  };
+
+  const scrollToConcernQueue = () => {
+    const el = document.getElementById('concern-queue-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   // Render Overview Dashboard (Matches media_1793713113535.png)
@@ -237,12 +283,14 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </span>
         </div>
 
+        {/* Card 4: System Alerts -> Directs to Alerts Modal & Concern Queue */}
         <div 
-          onClick={() => setActiveTab && setActiveTab('decision-support')}
-          style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
+          onClick={() => setShowAlertsModal(true)}
+          style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #fed7aa', padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 2px 4px rgba(239,68,68,0.06)' }}
+          title="Click to inspect all 3 active alerts (1 critical, 2 warnings)"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               SYSTEM & OPERATIONAL ALERTS
             </span>
             <AlertTriangle size={16} color="#ef4444" />
@@ -250,7 +298,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           <div style={{ fontSize: '2.1rem', fontWeight: '800', color: '#ef4444', margin: '6px 0 2px 0' }}>
             3
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: '600' }}>
+          <span style={{ fontSize: '0.75rem', color: '#b91c1c', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
             1 critical, 2 warnings active →
           </span>
         </div>
@@ -340,18 +388,18 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
             </span>
           </div>
 
-          {/* Card 4: Unresolved Concerns */}
+          {/* Card 4: Unresolved Concerns -> Scrolls directly to concern queue section */}
           <div 
-            onClick={() => setActiveTab && setActiveTab('decision-support')}
-            style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', padding: '16px', cursor: 'pointer' }}
+            onClick={scrollToConcernQueue}
+            style={{ background: '#fef2f2', borderRadius: '10px', border: '1px solid #fecaca', padding: '16px', cursor: 'pointer' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>UNRESOLVED FIELD CONCERNS</span>
+                <span style={{ fontSize: '0.7rem', fontWeight: '700', color: '#b91c1c', textTransform: 'uppercase' }}>UNRESOLVED FIELD CONCERNS</span>
                 <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#b91c1c', margin: '4px 0 2px 0' }}>
                   3 Items
                 </div>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#991b1b', display: 'block', marginBottom: '8px' }}>
                   1 critical window, 2 warnings
                 </span>
               </div>
@@ -413,14 +461,14 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </div>
         </div>
 
-        {/* Right Chart: Organic Yield & Random Forest Prediction */}
+        {/* Right Chart: Organic Yield & Random Forest Prediction (Random Forest) */}
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sparkles size={16} color="#11592c" />
                 <h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                  Organic Yield & Machine Learning Prediction
+                  Organic Yield & Random Forest Prediction
                 </h4>
               </div>
               <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
@@ -437,7 +485,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                   color: chartToggle === 'forecast' ? '#ffffff' : '#64748b', cursor: 'pointer'
                 }}
               >
-                ML Forecast
+                RF Forecast
               </button>
               <button 
                 onClick={() => setChartToggle('share')}
@@ -490,7 +538,96 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Row 4: Live Cooperative Announcements Publisher */}
+      {/* Row 4: Dedicated Unresolved Field Concerns & Live Risk Queue Section (Shows ALL 3 Items: 1 Crit, 2 Warn) */}
+      <div id="concern-queue-section" style={{ background: '#ffffff', borderRadius: '14px', border: '2px solid #fed7aa', padding: '22px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertTriangle size={18} color="#dc2626" />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                Unresolved Field Concerns & Live Risk Queue
+              </h3>
+              <span style={{ background: '#fee2e2', color: '#b91c1c', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800' }}>
+                3 Active Items (1 Critical, 2 Warnings)
+              </span>
+            </div>
+            <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+              Real-time operational exceptions detected by sensors and Random Forest classification
+            </span>
+          </div>
+
+          <button 
+            onClick={() => setActiveTab && setActiveTab('decision-support')}
+            style={{ padding: '7px 14px', background: '#11592c', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            Launch Decision Support <ExternalLink size={14} />
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+          {activeAlertsList.map((alertItem) => {
+            const isCrit = alertItem.level === 'Critical';
+            return (
+              <div 
+                key={alertItem.id} 
+                style={{ 
+                  borderRadius: '10px', 
+                  border: isCrit ? '1.5px solid #f87171' : '1.5px solid #fcd34d', 
+                  background: isCrit ? '#fef2f2' : '#fffbeb', 
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {alertItem.type === 'livestock' ? <Binary size={14} color="#b45309" /> : <Sprout size={14} color="#15803d" />}
+                      <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>{alertItem.target}</strong>
+                    </div>
+                    <span style={{
+                      padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '800',
+                      background: isCrit ? '#fee2e2' : '#fef3c7',
+                      color: isCrit ? '#b91c1c' : '#b45309',
+                      border: isCrit ? '1px solid #fca5a5' : '1px solid #fde68a'
+                    }}>
+                      {alertItem.riskScore}% · {alertItem.level}
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: '0.8rem', color: '#334155', margin: '0 0 8px 0', lineHeight: 1.4 }}>
+                    {alertItem.issue}
+                  </p>
+
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '4px' }}>
+                    Responsible: <strong>{alertItem.responsible}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: isCrit ? '#b91c1c' : '#b45309', fontWeight: '700' }}>
+                    {alertItem.due}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '14px', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '10px' }}>
+                  <button 
+                    onClick={() => {
+                      alert(`Dispatched operational resolution for ${alertItem.target}: "${alertItem.actionText}".`);
+                    }}
+                    style={{
+                      padding: '6px 12px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700',
+                      background: isCrit ? '#dc2626' : '#d97706', color: '#ffffff', border: 'none', cursor: 'pointer'
+                    }}
+                  >
+                    {alertItem.actionText}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Row 5: Live Cooperative Announcements Publisher */}
       <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
           <Megaphone size={18} color="#11592c" />
@@ -547,6 +684,77 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           ))}
         </div>
       </div>
+
+      {/* Modal: Active System Alerts (Shows all 3 items: 1 Crit, 2 Warn) */}
+      {showAlertsModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '16px' }}>
+          <div style={{ background: '#ffffff', borderRadius: '16px', maxWidth: '600px', width: '100%', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={20} color="#dc2626" />
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                    Active System & Operational Alerts
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    1 critical action window, 2 active operational warnings
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setShowAlertsModal(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              {activeAlertsList.map((a) => {
+                const isCrit = a.level === 'Critical';
+                return (
+                  <div key={a.id} style={{ padding: '12px 14px', borderRadius: '8px', border: isCrit ? '1.5px solid #fca5a5' : '1.5px solid #fde68a', background: isCrit ? '#fef2f2' : '#fffbeb' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <strong style={{ fontSize: '0.84rem', color: '#0f172a' }}>{a.target}</strong>
+                      <span style={{ padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: '800', background: isCrit ? '#fee2e2' : '#fef3c7', color: isCrit ? '#b91c1c' : '#b45309' }}>
+                        {a.riskScore}% · {a.level}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.78rem', color: '#475569', margin: '0 0 6px 0' }}>{a.issue}</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', color: '#64748b' }}>{a.responsible}</span>
+                      <button 
+                        onClick={() => {
+                          alert(`Action dispatched: ${a.actionText}`);
+                          setShowAlertsModal(false);
+                        }}
+                        style={{ padding: '4px 10px', fontSize: '0.72rem', fontWeight: '700', borderRadius: '4px', background: isCrit ? '#dc2626' : '#d97706', color: '#fff', border: 'none', cursor: 'pointer' }}
+                      >
+                        {a.actionText}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+              <button 
+                onClick={() => {
+                  setShowAlertsModal(false);
+                  setActiveTab && setActiveTab('decision-support');
+                }}
+                style={{ background: '#11592c', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                Open Full Decision Support Engine <ExternalLink size={14} />
+              </button>
+              <button 
+                onClick={() => setShowAlertsModal(false)}
+                style={{ background: '#f1f5f9', color: '#475569', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
