@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
 	Sprout, 
 	CheckCircle2, 
@@ -21,7 +21,7 @@ import {
 	Archive, 
 	Check 
 } from 'lucide-react';
-import { predictCropYield } from '../../utils/randomForestEngine';
+import { predictCropYield, loadCropYieldModel } from '../../utils/randomForestEngine';
 
 // 1. Defined Crop Development Reference Data for the 4 Supported MARIKHA Organic Crops
 export const CROP_GROWTH_PROFILES = {
@@ -154,6 +154,12 @@ const CropMonitoringModule = ({
 	const [editingCrop, setEditingCrop] = useState(null);
 	const [selectedActivityDetails, setSelectedActivityDetails] = useState(null);
 	const [previewPhotoUrl, setPreviewPhotoUrl] = useState(null);
+
+	// Pre-warm: start loading the 4 MB RF model chunk on mount so it is
+	// cached before the user clicks the prediction button.
+	useEffect(() => {
+		loadCropYieldModel().catch(() => {}); // fire-and-forget
+	}, []);
 
 	// RF Prediction Generation Simulation State
 	const [isGeneratingPrediction, setIsGeneratingPrediction] = useState(false);
