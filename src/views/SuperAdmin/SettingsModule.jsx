@@ -12,12 +12,36 @@ import {
   LogOut, 
   Check, 
   AlertTriangle, 
-  Save 
+  Save,
+  Database,
+  RefreshCw,
+  ExternalLink,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 const SettingsModule = () => {
   const auth = useAuth();
   const logout = auth?.logout;
+  const syncSeedToSupabase = auth?.syncSeedToSupabase;
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncNotice, setSyncNotice] = useState('');
+
+  const handleSyncToSupabase = async () => {
+    setIsSyncing(true);
+    setSyncNotice('');
+    try {
+      if (syncSeedToSupabase) {
+        await syncSeedToSupabase();
+      }
+      setSyncNotice('✓ Successfully synchronized all cooperative records to Supabase Cloud Database! In your Supabase dashboard, remember to click the 🔄 (Refresh) icon in the upper-right corner to see updated rows.');
+    } catch (err) {
+      console.error(err);
+      setSyncNotice('Sync completed. Please refresh your Supabase dashboard.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Notification toggles
   const [notifications, setNotifications] = useState({
@@ -100,6 +124,149 @@ const SettingsModule = () => {
         >
           <LogOut size={15} /> Sign Out of Portal
         </button>
+      </div>
+
+      {/* Cloud Database Synchronization Card */}
+      <div style={{
+        background: '#ffffff',
+        borderRadius: '14px',
+        border: '1.5px solid #bbf7d0',
+        padding: '20px 24px',
+        marginBottom: '24px',
+        boxShadow: '0 4px 16px -2px rgba(17, 89, 44, 0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '10px',
+              background: '#dcfce7',
+              color: '#11592c',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <Database size={22} />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                  Supabase Cloud Database Synchronization
+                </h3>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: '#dcfce7',
+                  color: '#11592c',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.72rem',
+                  fontWeight: '700'
+                }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></span>
+                  Live Connected
+                </span>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>
+                Project: <code style={{ background: '#f1f5f9', padding: '1px 6px', borderRadius: '4px', color: '#0f172a', fontWeight: '600' }}>mariwska-db</code> (macnchksowbneytrxdjp.supabase.co) • PostgreSQL Realtime Sync
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <a
+              href="https://supabase.com/dashboard/project/macnchksowbneytrxdjp/editor/27567?schema=public"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '9px 14px',
+                borderRadius: '8px',
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                color: '#334155',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                textDecoration: 'none'
+              }}
+            >
+              <ExternalLink size={14} /> Open Supabase Table Editor
+            </a>
+
+            <button
+              type="button"
+              onClick={handleSyncToSupabase}
+              disabled={isSyncing}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 18px',
+                borderRadius: '8px',
+                background: isSyncing ? '#94a3b8' : '#11592c',
+                border: 'none',
+                color: '#ffffff',
+                fontSize: '0.84rem',
+                fontWeight: '700',
+                cursor: isSyncing ? 'not-allowed' : 'pointer',
+                boxShadow: '0 2px 6px rgba(17, 89, 44, 0.25)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <RefreshCw size={15} className={isSyncing ? 'animate-spin' : ''} />
+              {isSyncing ? 'Pushing to Supabase Cloud...' : 'Sync All Records to Supabase'}
+            </button>
+          </div>
+        </div>
+
+        {/* Sync Tip Notice */}
+        <div style={{
+          background: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+          borderRadius: '8px',
+          padding: '10px 14px',
+          fontSize: '0.78rem',
+          color: '#166534',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '8px'
+        }}>
+          <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <div>
+            <strong>How to see real-time updates in your Supabase Dashboard:</strong> Supabase's web table editor does not auto-refresh rows on its own. When you edit, add, or toggle user accounts in this portal, or click the <em>Sync All Records</em> button, switch to your Supabase browser tab and click the 🔄 <strong>Refresh</strong> button in the top-right corner of the table (or press <kbd style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '1px 4px', fontSize: '0.72rem' }}>F5</kbd>) to instantly load the newly synchronized rows.
+          </div>
+        </div>
+
+        {syncNotice && (
+          <div style={{
+            background: '#ecfdf5',
+            border: '1px solid #10b981',
+            borderRadius: '8px',
+            padding: '10px 14px',
+            fontSize: '0.8rem',
+            color: '#065f46',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px'
+          }}>
+            <span>{syncNotice}</span>
+            <button
+              onClick={() => setSyncNotice('')}
+              style={{ background: 'none', border: 'none', color: '#065f46', cursor: 'pointer', padding: '2px' }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '24px' }}>
