@@ -94,7 +94,11 @@ const MobileAppSimulator = () => {
  darkMode: false,
  offlineMode: true
  });
- const [activeSettingsDialog, setActiveSettingsDialog] = useState(null); // 'password' | 'privacy' | 'help' | 'about'
+ const [activeSettingsDialog, setActiveSettingsDialog] = useState(null); // 'password' | 'privacy' | 'help' | 'about' | 'logout' | 'contact' | 'farm' | 'coop' | 'plot' | 'livestock'
+  const [pinCurrent, setPinCurrent] = useState('');
+  const [pinNew, setPinNew] = useState('');
+  const [pinSuccessAlert, setPinSuccessAlert] = useState(false);
+  const [cacheClearSuccess, setCacheClearSuccess] = useState(false); // 'password' | 'privacy' | 'help' | 'about'
 
  const [tempProfile, setTempProfile] = useState(profileData);
  const [profileSaveSuccess, setProfileSaveSuccess] = useState(false);
@@ -109,8 +113,92 @@ const MobileAppSimulator = () => {
  }, 1000);
  };
 
- // Completed tasks state
- const [completedTasks, setCompletedTasks] = useState({});
+ // Translation helper for English ⇄ Tagalog across simulator
+ const isTl = settingsData.language === 'Tagalog';
+ const t = (en, tl) => (isTl ? (tl || en) : en);
+
+ // Completed tasks state & Dynamic Task Prioritization
+ const [tasks, setTasks] = useState([
+ { id: 't1', title: 'Apply compost - Plot P-021', status: 'OVERDUE', time: '● YESTERDAY', desc: 'Missed scheduled cycle - re-do today', border: '#ef4444', badgeBg: '#fee2e2', badgeColor: '#dc2626', urgency: 'OVERDUE', plot: 'Plot P-021' },
+ { id: 't2', title: 'Water Plot P-007 (Tomato)', status: 'URGENT', time: '● 06:00 TODAY', desc: 'Heat advisory - double the morning ratio', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706', urgency: 'URGENT', plot: 'Plot P-007' },
+ { id: 't3', title: 'Feed Goat Herd GT-014', status: 'URGENT', time: '● 07:00 TODAY', desc: 'Morning ration + 5kg forage', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706', urgency: 'URGENT', plot: 'Barn Shed 2' },
+ { id: 't4', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Pods 7-9cm length ready', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b', urgency: 'NORMAL', plot: 'Plot P-034' },
+ { id: 't5', title: 'Water Plot P-002', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Evening ration - 80L drip', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b', urgency: 'NORMAL', plot: 'Plot P-002' }
+ ]);
+ const [completedTasks, setCompletedTasks] = useState({ t5: true });
+ const [taskFilter, setTaskFilter] = useState('ALL');
+ const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+ const [newTaskTitle, setNewTaskTitle] = useState('Morning Drip Irrigation · Plot P-007');
+ const [newTaskPlot, setNewTaskPlot] = useState('Plot P-007');
+ const [newTaskUrgency, setNewTaskUrgency] = useState('URGENT');
+ const [newTaskCategory, setNewTaskCategory] = useState('Irrigation');
+ const [newTaskDesc, setNewTaskDesc] = useState('Inspect drip emitters and apply 15L organic foliar cycle.');
+ const [selectedPlotDetail, setSelectedPlotDetail] = useState(null);
+
+ const TASK_TEMPLATES = [
+ { title: '💧 Morning Drip Irrigation', plot: 'Plot P-007', urgency: 'URGENT', category: 'Irrigation', desc: 'Inspect drip emitters and apply 15L organic foliar cycle.' },
+ { title: '🌿 Bed Weeding & Cultivation', plot: 'Plot P-021', urgency: 'NORMAL', category: 'Crop Care', desc: 'Remove surface weeds around eggplant root zones.' },
+ { title: '🧪 Organic Neem Spray Application', plot: 'Plot P-007', urgency: 'URGENT', category: 'Pest Control', desc: 'Apply organic neem leaf repellent against fruit borers.' },
+ { title: '🌱 Vermicompost Soil Top-Dressing', plot: 'Plot P-014', urgency: 'NORMAL', category: 'Fertilizer', desc: 'Spread 15kg certified organic vermicompost per bed.' },
+ { title: '🐐 Feed Goat Herd & Clean Pens', plot: 'Barn Shed 2', urgency: 'URGENT', category: 'Livestock', desc: 'Deliver 25kg cut napier grass and check water troughs.' },
+ { title: '🍅 Harvest Ripe Produce (PGS Spec)', plot: 'Plot P-034', urgency: 'NORMAL', category: 'Harvest', desc: 'Harvest Grade A organic crops for cooperative packhouse.' }
+ ];
+
+ const handleCreateNewTask = (e) => {
+ if (e && e.preventDefault) e.preventDefault();
+ const finalTitle = newTaskTitle.trim() || `${newTaskCategory || 'Field Task'} · ${newTaskPlot || 'Plot P-007'}`;
+ const newTaskObj = {
+ id: `task-${Date.now()}`,
+ title: finalTitle,
+ status: newTaskUrgency,
+ time: '● 08:00 TODAY',
+ desc: newTaskDesc || `Scheduled for ${newTaskPlot}`,
+ border: newTaskUrgency === 'OVERDUE' ? '#ef4444' : (newTaskUrgency === 'URGENT' ? '#f59e0b' : '#cbd5e1'),
+ badgeBg: newTaskUrgency === 'OVERDUE' ? '#fee2e2' : (newTaskUrgency === 'URGENT' ? '#fef3c7' : '#f1f5f9'),
+ badgeColor: newTaskUrgency === 'OVERDUE' ? '#dc2626' : (newTaskUrgency === 'URGENT' ? '#d97706' : '#64748b'),
+ urgency: newTaskUrgency,
+ plot: newTaskPlot
+ };
+ setTasks(prev => [newTaskObj, ...prev]);
+ setShowAddTaskModal(false);
+ setNewTaskTitle('Morning Drip Irrigation · Plot P-007');
+ setNewTaskDesc('');
+ };
+
+ const handleApplyRFRecommendation = () => {
+ const rfTask1 = {
+ id: `task-rf1-${Date.now()}`,
+ title: `💧 RF Irrigation: ${aiResult.crop}`,
+ status: 'URGENT',
+ time: '● 06:00 TODAY',
+ desc: aiResult.irrigationRec || 'Drip fertigation ratio calibrated by RF Model.',
+ border: '#f59e0b',
+ badgeBg: '#fef3c7',
+ badgeColor: '#d97706',
+ urgency: 'URGENT',
+ plot: 'Plot P-007'
+ };
+ const rfTask2 = {
+ id: `task-rf2-${Date.now()}`,
+ title: `🌱 RF Soil Prep & Fertigation: ${aiResult.crop}`,
+ status: 'URGENT',
+ time: '● 08:30 TODAY',
+ desc: aiResult.fertilizerRec || 'Organic vermicompost + bio-fertilizer application.',
+ border: '#f59e0b',
+ badgeBg: '#fef3c7',
+ badgeColor: '#d97706',
+ urgency: 'URGENT',
+ plot: 'Plot P-007'
+ };
+
+ setTasks(prev => [rfTask1, rfTask2, ...prev]);
+ setActiveTab('tasks');
+ alert(
+ isTl 
+ ? `Nailapat ang ${aiResult.crop} sa Plot P-007!\nNalikha ang 2 bagong priority tasks sa checklist para sa bukid.`
+ : `Successfully applied ${aiResult.crop} recommendation to Plot P-007!\nCreated 2 high-priority tasks in your Smart Task checklist.`
+ );
+ };
 
  // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT
  useEffect(() => {
@@ -389,6 +477,12 @@ const MobileAppSimulator = () => {
 
  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
  <button
+ onClick={() => setSettingsData(prev => ({ ...prev, language: prev.language === 'Tagalog' ? 'English' : 'Tagalog' }))}
+ style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', padding: '5px 10px', borderRadius: '8px', fontSize: '0.74rem', fontWeight: '800', cursor: 'pointer' }}
+ >
+ {settingsData.language === 'Tagalog' ? '🇵🇭 Tagalog' : '🇺🇸 English'}
+ </button>
+ <button
  onClick={() => { setMobileScreen('splash'); setMobileAuth(false); }}
  style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.72rem' }}
  >
@@ -578,6 +672,21 @@ const MobileAppSimulator = () => {
 
  {/* Header Notification Bell & Exit Buttons */}
  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+ <button
+ onClick={() => setSettingsData(prev => ({ ...prev, language: prev.language === 'Tagalog' ? 'English' : 'Tagalog' }))}
+ style={{
+ background: 'rgba(255,255,255,0.18)',
+ color: '#ffffff',
+ border: '1px solid rgba(255,255,255,0.25)',
+ padding: '5px 9px',
+ borderRadius: '12px',
+ fontSize: '0.68rem',
+ fontWeight: '800',
+ cursor: 'pointer'
+ }}
+ >
+ {settingsData.language === 'Tagalog' ? '🇵🇭 TL' : '🇺🇸 EN'}
+ </button>
  <button
  onClick={() => { setShowNotificationModal(false); setShowHistoryModal(true); }}
  style={{
@@ -1263,6 +1372,28 @@ const MobileAppSimulator = () => {
  {aiResult.harvestWindow}
  </div>
  </div>
+
+ <button
+ onClick={handleApplyRFRecommendation}
+ style={{
+ width: '100%',
+ backgroundColor: '#059669',
+ color: '#ffffff',
+ border: 'none',
+ borderRadius: '10px',
+ padding: '12px',
+ fontWeight: '800',
+ fontSize: '0.82rem',
+ cursor: 'pointer',
+ marginTop: '12px',
+ display: 'flex',
+ alignItems: 'center',
+ justifyContent: 'center',
+ gap: '6px'
+ }}
+ >
+ 🚀 {t('Apply Recommendation to Field Plot', 'Ilapat ang Rekomendasyon sa Sakahan')}
+ </button>
  </div>
  </div>
  </div>
@@ -1271,23 +1402,59 @@ const MobileAppSimulator = () => {
  {/* ----- TASKS TAB ----- */}
  {activeTab === 'tasks' && (
  <div>
- <div style={{ background: '#d97706', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+ <div style={{ background: '#d97706', color: '#ffffff', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+ <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
  <button onClick={() => setActiveTab('home')} style={{ color: '#fff', background: 'none', border: 'none', cursor: 'pointer' }}><ArrowLeft size={18} /></button>
  <div>
- <h3 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Today's Smart Tasks</h3>
- <span style={{ fontSize: '0.7rem', color: '#fef3c7' }}>Inayos para sa inyong sakahan</span>
+ <h3 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>📋 {t("Smart Task Prioritization", "Matalinong Pag-aayos ng Gawain")}</h3>
+ <span style={{ fontSize: '0.68rem', color: '#fef3c7' }}>{t("Organized by urgency & telemetry", "Inayos para sa inyong sakahan")}</span>
  </div>
+ </div>
+ <button
+ onClick={() => setShowAddTaskModal(true)}
+ style={{ background: '#0c3619', color: '#ffffff', border: 'none', padding: '6px 10px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+ >
+ ➕ {t('Add Task', 'Magdagdag')}
+ </button>
  </div>
 
- <div style={{ padding: '16px' }}>
- <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+ <div style={{ padding: '14px' }}>
+ {/* Filter Pills */}
+ <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
  {[
- { id: 't1', title: 'Apply compost - Plot P-021', status: 'OVERDUE', time: '● YESTERDAY', desc: 'Missed scheduled cycle - re-do today', border: '#ef4444', badgeBg: '#fee2e2', badgeColor: '#dc2626' },
- { id: 't2', title: 'Water Plot P-007', status: 'URGENT', time: '● 06:00 TODAY', desc: 'Heat advisory - double the morning ratio', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706' },
- { id: 't3', title: 'Feed Goat Herd GT-014', status: 'URGENT', time: '● 07:00 TODAY', desc: 'Morning ration + 5kg forage', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706' },
- { id: 't4', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Pods 7-9cm length ready', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b' },
- { id: 't5', title: 'Water Plot P-002', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Evening ration - 80L drip', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b' }
- ].map(t => {
+ { key: 'ALL', label: t('ALL', 'LAHAT') },
+ { key: 'URGENT', label: t('URGENT', 'APURADO') },
+ { key: 'OVERDUE', label: t('OVERDUE', 'LIPAS NA') },
+ { key: 'DONE', label: t('DONE', 'TAPOS NA') }
+ ].map(f => (
+ <button
+ key={f.key}
+ onClick={() => setTaskFilter(f.key)}
+ style={{
+ padding: '4px 8px',
+ borderRadius: '6px',
+ border: '1px solid #cbd5e1',
+ background: taskFilter === f.key ? '#d97706' : '#f1f5f9',
+ color: taskFilter === f.key ? '#ffffff' : '#475569',
+ fontSize: '0.68rem',
+ fontWeight: '800',
+ cursor: 'pointer'
+ }}
+ >
+ {f.label}
+ </button>
+ ))}
+ </div>
+
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+ {tasks
+ .filter(t => {
+ if (taskFilter === 'URGENT') return t.status === 'URGENT' || t.urgency === 'URGENT';
+ if (taskFilter === 'OVERDUE') return t.status === 'OVERDUE' || t.urgency === 'OVERDUE';
+ if (taskFilter === 'DONE') return completedTasks[t.id];
+ return true;
+ })
+ .map(t => {
  const isDone = completedTasks[t.id];
  return (
  <div
@@ -1305,11 +1472,11 @@ const MobileAppSimulator = () => {
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
  <span style={{ fontSize: '0.68rem', color: isDone ? '#16a34a' : t.border, fontWeight: '800' }}>{t.time}</span>
  <span style={{ background: isDone ? '#dcfce7' : t.badgeBg, color: isDone ? '#15803d' : t.badgeColor, fontSize: '0.65rem', padding: '2px 8px', borderRadius: '10px', fontWeight: '900' }}>
- {isDone ? 'COMPLETED ' : t.status}
+ {isDone ? (isTl ? 'TAPOS NA ✓' : 'COMPLETED ✓') : (isTl && t.status === 'OVERDUE' ? 'LIPAS NA' : (isTl && t.status === 'URGENT' ? 'APURADO' : t.status))}
  </span>
  </div>
  <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: isDone ? '#15803d' : '#111827', margin: '0 0 2px 0', textDecoration: isDone ? 'line-through' : 'none' }}>
- {t.title}
+ {isDone ? '✅ ' : '⬜ '}{t.title}
  </h4>
  <p style={{ fontSize: '0.72rem', color: '#6b7280', margin: 0 }}>{t.desc}</p>
  </div>
@@ -1886,19 +2053,19 @@ const MobileAppSimulator = () => {
  height: '54px', background: '#ffffff', borderTop: '1px solid #e5e7eb', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', alignItems: 'center', textAlign: 'center', fontSize: '0.65rem', fontWeight: '800', flexShrink: 0
  }}>
  <div onClick={() => setActiveTab('home')} style={{ color: activeTab === 'home' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
- <Home size={16} style={{ margin: '0 auto 2px' }} /> HOME
+ <Home size={16} style={{ margin: '0 auto 2px' }} /> {t('HOME', 'TAHANAN')}
  </div>
  <div onClick={() => setActiveTab('log')} style={{ color: activeTab === 'log' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
- <ClipboardList size={16} style={{ margin: '0 auto 2px' }} /> LOG
+ <ClipboardList size={16} style={{ margin: '0 auto 2px' }} /> {t('LOG', 'TALAAN')}
  </div>
  <div onClick={() => setActiveTab('tasks')} style={{ color: activeTab === 'tasks' ? '#3b2d22' : '#9ca3af', cursor: 'pointer' }}>
- <Calendar size={16} style={{ margin: '0 auto 2px' }} /> TASKS
+ <Calendar size={16} style={{ margin: '0 auto 2px' }} /> {t('TASKS', 'GAWAIN')}
  </div>
  <div onClick={() => setActiveTab('ai')} style={{ color: activeTab === 'ai' ? '#059669' : '#9ca3af', cursor: 'pointer' }}>
- <Sparkles size={16} style={{ margin: '0 auto 2px' }} /> RF
+ <Sparkles size={16} style={{ margin: '0 auto 2px' }} /> {t('RF', 'REKO')}
  </div>
  <div onClick={() => setActiveTab('profile')} style={{ color: activeTab === 'profile' ? '#0c3619' : '#9ca3af', cursor: 'pointer' }}>
- <User size={16} style={{ margin: '0 auto 2px' }} /> PROFILE
+ <User size={16} style={{ margin: '0 auto 2px' }} /> {t('PROFILE', 'PROFILE')}
  </div>
  </div>
 
@@ -2046,6 +2213,476 @@ const MobileAppSimulator = () => {
  >
  Close Directory
  </button>
+ </div>
+ </div>
+ )}
+
+
+ {/* Create Smart Task Modal with Template Chips */}
+ {showAddTaskModal && (
+ <div style={{
+ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+ background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 780
+ }}>
+ <div style={{ background: '#ffffff', borderRadius: '20px', padding: '18px', width: '100%', maxWidth: '340px', maxHeight: '560px', display: 'flex', flexDirection: 'column' }}>
+ <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+ <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+ <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+ <Calendar size={18} color="#d97706" />
+ </div>
+ <div>
+ <h3 style={{ fontSize: '0.96rem', fontWeight: '900', color: '#111827', margin: 0 }}>
+ {t('Create Smart Task', 'Gumawa ng Gawain')}
+ </h3>
+ <span style={{ fontSize: '0.68rem', color: '#6b7280' }}>
+ {t('Organized by plot & priority', 'Inayos ayon sa plot at prayoridad')}
+ </span>
+ </div>
+ </div>
+ <button 
+ onClick={() => setShowAddTaskModal(false)}
+ style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+ >
+ <X size={16} />
+ </button>
+ </div>
+
+ {/* Quick Preset Suggestion Chips */}
+ <div style={{ marginBottom: '12px' }}>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+ {t('⚡ QUICK SUGGESTIONS (TAP TO AUTO-FILL):', '⚡ MABILIS NA SUHESTIYON (I-TAP PARA PUNUAN):')}
+ </label>
+ <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+ {TASK_TEMPLATES.map((tmpl, idx) => (
+ <button
+ key={idx}
+ type="button"
+ onClick={() => {
+ setNewTaskTitle(tmpl.title);
+ setNewTaskPlot(tmpl.plot);
+ setNewTaskUrgency(tmpl.urgency);
+ setNewTaskCategory(tmpl.category);
+ setNewTaskDesc(tmpl.desc);
+ }}
+ style={{
+ background: newTaskTitle === tmpl.title ? '#dcfce7' : '#f8fafc',
+ border: newTaskTitle === tmpl.title ? '1.5px solid #16a34a' : '1px solid #e2e8f0',
+ borderRadius: '8px',
+ padding: '4px 8px',
+ fontSize: '0.68rem',
+ fontWeight: '700',
+ color: newTaskTitle === tmpl.title ? '#15803d' : '#334155',
+ cursor: 'pointer',
+ textAlign: 'left'
+ }}
+ >
+ {tmpl.title}
+ </button>
+ ))}
+ </div>
+ </div>
+
+ <form onSubmit={handleCreateNewTask} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {t('Task Title *', 'Pamagat ng Gawain *')}
+ </label>
+ <input
+ type="text"
+ required
+ placeholder={t('e.g. Morning Drip Irrigation', 'hal. Pang-umagang Pagpapatubig')}
+ value={newTaskTitle}
+ onChange={(e) => setNewTaskTitle(e.target.value)}
+ style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem', fontWeight: '700' }}
+ />
+ </div>
+
+ <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {t('Target Plot', 'Plot')}
+ </label>
+ <select
+ value={newTaskPlot}
+ onChange={(e) => setNewTaskPlot(e.target.value)}
+ style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '700' }}
+ >
+ <option value="Plot P-007">Plot P-007 (Tomato)</option>
+ <option value="Plot P-021">Plot P-021 (Eggplant)</option>
+ <option value="Plot P-034">Plot P-034 (Okra)</option>
+ <option value="Barn Shed 2">Barn Shed 2 (Goats)</option>
+ </select>
+ </div>
+
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {t('Priority Urgency', 'Prayoridad')}
+ </label>
+ <select
+ value={newTaskUrgency}
+ onChange={(e) => setNewTaskUrgency(e.target.value)}
+ style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '700' }}
+ >
+ <option value="URGENT">{t('URGENT (Apurado)', 'APURADO')}</option>
+ <option value="OVERDUE">{t('OVERDUE (Lipas Na)', 'LIPAS NA')}</option>
+ <option value="NORMAL">{t('NORMAL (Karaniwan)', 'KARANIWAN')}</option>
+ </select>
+ </div>
+ </div>
+
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {t('Activity Category', 'Kategorya')}
+ </label>
+ <select
+ value={newTaskCategory}
+ onChange={(e) => setNewTaskCategory(e.target.value)}
+ style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '700' }}
+ >
+ <option value="Irrigation">💧 Irrigation (Pagpapatubig)</option>
+ <option value="Crop Care">🌿 Crop Care & Weeding (Pag-aalaga)</option>
+ <option value="Pest Control">🧪 Pest & Disease Control (Peste)</option>
+ <option value="Fertilizer">🌱 Organic Fertilization (Pataba)</option>
+ <option value="Livestock">🐐 Livestock Care (Pangangalaga ng Hayop)</option>
+ <option value="Harvest">🍅 Harvest Operations (Pag-ani)</option>
+ </select>
+ </div>
+
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {t('Instructions / Notes', 'Mga Tagubilin / Paalala')}
+ </label>
+ <textarea
+ rows={2}
+ placeholder={t('Specific dosage, timing, or guidance...', 'Tiyak na sukat, oras, o gabay...')}
+ value={newTaskDesc}
+ onChange={(e) => setNewTaskDesc(e.target.value)}
+ style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.78rem', fontWeight: '600', resize: 'none' }}
+ />
+ </div>
+
+ <div style={{ marginTop: '6px', display: 'flex', gap: '8px' }}>
+ <button
+ type="button"
+ onClick={() => setShowAddTaskModal(false)}
+ style={{ flex: 1, padding: '10px', borderRadius: '10px', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#475569', fontWeight: '800', fontSize: '0.78rem', cursor: 'pointer' }}
+ >
+ {t('Cancel', 'Kanselahin')}
+ </button>
+ <button
+ type="submit"
+ style={{ flex: 1, padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.78rem', border: 'none', cursor: 'pointer' }}
+ >
+ ✓ {t('Save & Create Task', 'I-save ang Gawain')}
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+ )}
+
+ {/* Comprehensive Settings & Profile Dialog Modal */}
+ {activeSettingsDialog && (
+ <div style={{
+ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+ background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 790
+ }}>
+ <div style={{ background: '#ffffff', borderRadius: '20px', padding: '18px', width: '100%', maxWidth: '340px', maxHeight: '540px', display: 'flex', flexDirection: 'column' }}>
+ {/* Header */}
+ <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+ <h3 style={{ fontSize: '0.96rem', fontWeight: '900', color: '#111827', margin: 0 }}>
+ {activeSettingsDialog === 'password' && (isTl ? '🔒 Baguhin ang PIN / Password' : '🔒 Change PIN / Password')}
+ {activeSettingsDialog === 'privacy' && (isTl ? '🛡️ Privacy at Lokal na Datos' : '🛡️ Privacy & Local Data Cache')}
+ {activeSettingsDialog === 'help' && (isTl ? '❓ Tulong at Extension Desk' : '❓ Cooperative Help & Support')}
+ {activeSettingsDialog === 'about' && (isTl ? 'ℹ️ Tungkol sa MARIKHA' : 'ℹ️ About MARIKHA Mobile')}
+ {activeSettingsDialog === 'logout' && (isTl ? '↪ Kumpirmahin ang Pag-log out' : '↪ Confirm Sign Out')}
+ {activeSettingsDialog === 'contact' && (isTl ? '📞 Impormasyon sa Kontak' : '📞 Member Contact Details')}
+ {activeSettingsDialog === 'farm' && (isTl ? '📍 Lokasyon ng Bukid at GPS' : '📍 Farm Location & GPS')}
+ {activeSettingsDialog === 'coop' && (isTl ? '👥 Sertipikasyon ng Kooperatiba' : '👥 Cooperative Certificate')}
+ {activeSettingsDialog === 'plot' && (isTl ? '🌱 Detalye ng Pananim sa Plot' : '🌱 Plot Agronomy Details')}
+ {activeSettingsDialog === 'livestock' && (isTl ? '🐐 Talaan ng mga Hayop' : '🐐 Livestock Herd Ledger')}
+ </h3>
+ <button 
+ onClick={() => { setActiveSettingsDialog(null); setPinSuccessAlert(false); setCacheClearSuccess(false); }}
+ style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}
+ >
+ <X size={16} />
+ </button>
+ </div>
+
+ <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ {/* PASSWORD */}
+ {activeSettingsDialog === 'password' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <p style={{ fontSize: '0.75rem', color: '#475569', margin: 0 }}>
+ {isTl ? 'Magtakda ng bagong security PIN para sa mabilis na pag-sign in.' : 'Set a new security PIN for fast biometric farm login.'}
+ </p>
+ {pinSuccessAlert && (
+ <div style={{ background: '#dcfce7', padding: '8px 12px', borderRadius: '8px', border: '1px solid #86efac', color: '#15803d', fontWeight: '800', fontSize: '0.75rem' }}>
+ ✓ {isTl ? 'Matagumpay na na-update ang PIN!' : 'Security PIN updated successfully!'}
+ </div>
+ )}
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {isTl ? 'Kasalukuyang PIN' : 'Current PIN'}
+ </label>
+ <input 
+ type="password" 
+ value={pinCurrent} 
+ onChange={(e) => setPinCurrent(e.target.value)} 
+ placeholder="••••"
+ style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+ />
+ </div>
+ <div>
+ <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+ {isTl ? 'Bagong PIN' : 'New Security PIN'}
+ </label>
+ <input 
+ type="password" 
+ value={pinNew} 
+ onChange={(e) => setPinNew(e.target.value)} 
+ placeholder="••••"
+ style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.82rem' }}
+ />
+ </div>
+ <button 
+ onClick={() => {
+ setPinSuccessAlert(true);
+ setTimeout(() => {
+ setPinSuccessAlert(false);
+ setActiveSettingsDialog(null);
+ setPinCurrent('');
+ setPinNew('');
+ }, 1200);
+ }}
+ style={{ padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#fff', border: 'none', fontWeight: '800', fontSize: '0.8rem', cursor: 'pointer', marginTop: '6px' }}
+ >
+ {isTl ? 'I-save ang Bagong PIN →' : 'Save New Security PIN →'}
+ </button>
+ </div>
+ )}
+
+ {/* PRIVACY */}
+ {activeSettingsDialog === 'privacy' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+ <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#166534' }}>🛡️ End-to-End Encrypted Sync</div>
+ <div style={{ fontSize: '0.72rem', color: '#15803d', marginTop: '4px', lineHeight: 1.4 }}>
+ {isTl 
+ ? 'Ang lahat ng litrato, GPS coordinates, at logs ay ligtas na naka-encrypt sa lokal na imbakan bago ipadala sa Farm Staff at Super Admin.'
+ : 'All farm photos, telemetry, and activity logs are encrypted locally before syncing to Farm Staff & Super Admin portals.'}
+ </div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.66rem', fontWeight: '800', color: '#64748b' }}>LOCAL STORAGE CACHE</div>
+ <div style={{ fontSize: '1rem', fontWeight: '900', color: '#0f172a', marginTop: '2px' }}>2.4 MB Cached</div>
+ <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '2px' }}>
+ 14 activity logs · 6 planted crop records · 3 livestock tags
+ </div>
+ </div>
+ {cacheClearSuccess && (
+ <div style={{ background: '#dcfce7', padding: '8px', borderRadius: '8px', color: '#15803d', fontWeight: '800', fontSize: '0.75rem' }}>
+ ✓ {isTl ? 'Nalinis ang lokal na cache at na-sync muli!' : 'Local cache refreshed and re-synced!'}
+ </div>
+ )}
+ <button 
+ onClick={() => {
+ setCacheClearSuccess(true);
+ setTimeout(() => setCacheClearSuccess(false), 2000);
+ }}
+ style={{ padding: '10px', borderRadius: '10px', background: '#059669', color: '#fff', border: 'none', fontWeight: '800', fontSize: '0.8rem', cursor: 'pointer' }}
+ >
+ {isTl ? 'Linisin ang Cache at I-sync Muli 🔄' : 'Clear Cache & Re-Sync 🔄'}
+ </button>
+ </div>
+ )}
+
+ {/* HELP */}
+ {activeSettingsDialog === 'help' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#eff6ff', padding: '12px', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
+ <div style={{ fontSize: '0.86rem', fontWeight: '900', color: '#1e40af' }}>📞 Agronomist Hotline</div>
+ <div style={{ fontSize: '0.74rem', color: '#1d4ed8', marginTop: '2px' }}>Likasan Organic Farmers Cooperative Support</div>
+ <div style={{ fontSize: '1.05rem', fontWeight: '900', color: '#0f172a', marginTop: '4px' }}>+63 2 8888 7777</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>🌾 Farm Staff Agronomist Desk</div>
+ <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>Liza Cruz · Assigned Field Agronomist</div>
+ <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700', marginTop: '4px' }}>● Active on Mobile Gateway</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>📋 FAQ: Machine Learning Yields</div>
+ <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '4px', lineHeight: 1.4 }}>
+ {isTl
+ ? 'Gumagamit ang Random Forest algorithm ng makasaysayang datos ng lupa, ulan, at pataba para kalkulahin ang ani at tamang petsa ng pag-aani.'
+ : 'The Random Forest model combines live soil moisture, rainfall history, and organic fertilization dosages to forecast crop yields with 94%+ accuracy.'}
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* ABOUT */}
+ {activeSettingsDialog === 'about' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', textAlign: 'center' }}>
+ <div style={{ width: '56px', height: '56px', borderRadius: '28px', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem' }}>
+ 🌱
+ </div>
+ <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#0c3619' }}>MARIKHA</div>
+ <div style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: '700' }}>Organic Farming Cooperative Portal</div>
+ <div style={{ fontSize: '0.7rem', color: '#64748b' }}>Farmer Mobile Edition · v1.0.0 (Build 2026.09)</div>
+ 
+ <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', width: '100%', textAlign: 'left', marginTop: '6px' }}>
+ <div style={{ fontSize: '0.7rem', fontWeight: '800', color: '#0f172a', marginBottom: '4px' }}>CORE MODULES & FRAMEWORK:</div>
+ <div style={{ fontSize: '0.7rem', color: '#475569', lineHeight: 1.5 }}>
+ • Random Forest v2.4 Multi-Class ML Classifier<br/>
+ • PGS Organic Certification Compliance Matrix<br/>
+ • Real-time Task Prioritization & Photo Validation<br/>
+ • Native Goat Livestock & Medical Ledger<br/>
+ • Cross-Platform WebSocket Cloud Synchronization
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* LOGOUT */}
+ {activeSettingsDialog === 'logout' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+ <div style={{ background: '#fee2e2', padding: '12px', borderRadius: '12px', border: '1px solid #fca5a5' }}>
+ <div style={{ fontSize: '0.86rem', fontWeight: '900', color: '#991b1b' }}>
+ {isTl ? 'Nais mo bang mag-log out?' : 'Are you sure you want to sign out?'}
+ </div>
+ <div style={{ fontSize: '0.74rem', color: '#b91c1c', marginTop: '4px', lineHeight: 1.4 }}>
+ {isTl
+ ? 'Ang iyong mga nakabinbing tala at aktibidad ay ligtas na nakatago sa lokal na memorya at awtomatikong mai-sync sa muling pag-login.'
+ : 'Your local records and offline draft logs are safely persisted on your device and will resume sync upon next sign-in.'}
+ </div>
+ </div>
+ <div style={{ display: 'flex', gap: '8px' }}>
+ <button 
+ onClick={() => setActiveSettingsDialog(null)}
+ style={{ flex: 1, padding: '10px', borderRadius: '10px', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155', fontWeight: '800', fontSize: '0.8rem', cursor: 'pointer' }}
+ >
+ {isTl ? 'Kanselahin' : 'Cancel'}
+ </button>
+ <button 
+ onClick={() => {
+ setActiveSettingsDialog(null);
+ setMobileAuth(false);
+ setMobileScreen('login');
+ }}
+ style={{ flex: 1, padding: '10px', borderRadius: '10px', background: '#dc2626', color: '#fff', border: 'none', fontWeight: '900', fontSize: '0.8rem', cursor: 'pointer' }}
+ >
+ {isTl ? 'Oo, Mag-log out' : 'Yes, Sign Out'}
+ </button>
+ </div>
+ </div>
+ )}
+
+ {/* CONTACT */}
+ {activeSettingsDialog === 'contact' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.64rem', fontWeight: '800', color: '#64748b' }}>REGISTERED MOBILE</div>
+ <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>{profileData.mobile}</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.64rem', fontWeight: '800', color: '#64748b' }}>OFFICIAL EMAIL</div>
+ <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a', marginTop: '2px' }}>{profileData.email}</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.64rem', fontWeight: '800', color: '#64748b' }}>COOPERATIVE MEMBER ID</div>
+ <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0c3619', marginTop: '2px' }}>{profileData.memberId}</div>
+ </div>
+ <button 
+ onClick={() => {
+ setActiveSettingsDialog(null);
+ setTempProfile(profileData);
+ setShowProfileSettingsModal(true);
+ }}
+ style={{ padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#fff', border: 'none', fontWeight: '800', fontSize: '0.8rem', cursor: 'pointer', marginTop: '4px' }}
+ >
+ ✏️ {isTl ? 'Baguhin ang Impormasyon' : 'Edit Contact Info'}
+ </button>
+ </div>
+ )}
+
+ {/* FARM LOCATION */}
+ {activeSettingsDialog === 'farm' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+ <div style={{ fontSize: '0.66rem', fontWeight: '800', color: '#166534' }}>FARM LOCATION & GPS TELEMETRY</div>
+ <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0c3619', marginTop: '4px' }}>📍 {profileData.barangay}</div>
+ <div style={{ fontSize: '0.74rem', color: '#15803d', fontWeight: '700', marginTop: '4px' }}>🧭 Coordinates: {profileData.coordinates}</div>
+ <div style={{ fontSize: '0.74rem', color: '#15803d', fontWeight: '700', marginTop: '2px' }}>🌱 Total Assigned Area: {profileData.totalArea}</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.76rem', fontWeight: '800', color: '#0f172a' }}>Soil Zone & Drainage</div>
+ <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '2px' }}>Antipolo Lowland Valley · Volcanic Loam Layer · Slope &lt; 3%</div>
+ </div>
+ </div>
+ )}
+
+ {/* COOPERATIVE STANDING */}
+ {activeSettingsDialog === 'coop' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px', border: '1px solid #86efac' }}>
+ <div style={{ fontSize: '0.95rem', fontWeight: '900', color: '#0c3619' }}>Likasan Organic Farmers MPC</div>
+ <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700', marginTop: '2px' }}>Cooperative Registration No. 9520-1002341</div>
+ <div style={{ background: '#15803d', color: '#fff', fontSize: '0.65rem', fontWeight: '800', padding: '3px 8px', borderRadius: '8px', display: 'inline-block', marginTop: '6px' }}>
+ PGS CERTIFIED ACTIVE
+ </div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a' }}>Standing: {profileData.standing}</div>
+ <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>Annual Dues: Paid until {profileData.duesPaidUntil}</div>
+ </div>
+ </div>
+ )}
+
+ {/* PLOT AGRONOMY */}
+ {activeSettingsDialog === 'plot' && selectedPlotDetail && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px', border: '1px solid #86efac' }}>
+ <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+ <span style={{ fontSize: '1.1rem', fontWeight: '900', color: '#0c3619' }}>{selectedPlotDetail.id}</span>
+ <span style={{ background: '#15803d', color: '#fff', fontSize: '0.65rem', fontWeight: '800', padding: '2px 8px', borderRadius: '6px' }}>
+ {selectedPlotDetail.status}
+ </span>
+ </div>
+ <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#064e3b', marginTop: '4px' }}>{selectedPlotDetail.crop}</div>
+ <div style={{ fontSize: '0.74rem', color: '#166534', fontWeight: '600' }}>Area: {selectedPlotDetail.area} · Drip Station 1</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a' }}>Agronomy & Soil Matrix</div>
+ <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '4px', lineHeight: 1.4 }}>
+ • Soil Type: Loam with 4.5% Organic Matter<br/>
+ • Moisture Level: 65% (Optimal)<br/>
+ • Nutrition: Vermicompost applied Aug 2026<br/>
+ • Certification: Certified PGS Organic
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* LIVESTOCK */}
+ {activeSettingsDialog === 'livestock' && (
+ <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+ <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px', border: '1px solid #86efac' }}>
+ <div style={{ fontSize: '0.95rem', fontWeight: '900', color: '#0c3619' }}>🐐 Native Goat Herd (GT-014)</div>
+ <div style={{ fontSize: '0.74rem', color: '#15803d', fontWeight: '700', marginTop: '2px' }}>Total Herd Size: 12 heads · Barn Shed 2</div>
+ </div>
+ <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+ <div style={{ fontSize: '0.78rem', fontWeight: '800', color: '#0f172a' }}>Veterinary Status</div>
+ <div style={{ fontSize: '0.72rem', color: '#475569', marginTop: '4px', lineHeight: 1.4 }}>
+ • Deworming: Completed Oct 12, 2026<br/>
+ • Daily Feed: 25kg Napier grass + organic mineral lick<br/>
+ • Next Vet Checkup: Dec 01, 2026
+ </div>
+ </div>
+ </div>
+ )}
+ </div>
  </div>
  </div>
  )}
