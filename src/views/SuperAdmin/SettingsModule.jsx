@@ -57,15 +57,22 @@ const SettingsModule = () => {
     setPasswords({ current: '', newPass: '', confirmPass: '' });
   };
 
-  const handleSignOut = () => {
-    if (window.confirm('Are you sure you want to sign out from the Super Admin portal?')) {
-      if (logout) {
-        logout();
-      } else {
-        window.location.reload();
+  const handleSignOut = async () => {
+  if (window.confirm('Are you sure you want to sign out from the Super Admin portal?')) {
+    try {
+      if (typeof logout === 'function') {
+        await logout();
       }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear token/session explicitly if AuthContext doesn't handle it
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
     }
-  };
+  }
+};
 
   return (
     <div className="superadmin-module animate-fade-in" style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -181,7 +188,7 @@ const SettingsModule = () => {
                 onChange={(e) => setDateFormat(e.target.value)}
                 style={{ width: '100%', padding: '8px 12px', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '8px', background: '#fff' }}
               >
-                <option value="YYYY-MM-DD">YYYY-MM-DD (ISO 8601 Standard)</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                 <option value="MM/DD/YYYY">MM/DD/YYYY</option>
               </select>
             </div>
