@@ -77,9 +77,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 			category: 'ADMINISTRATION',
 			items: [
 				{ id: 'member-records', label: 'Member Records', icon: Users },
-				{ id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
+				{ id: 'roles-permissions', label: 'Roles & Security', icon: ShieldCheck },
 				{ id: 'announcements', label: 'Announcements', icon: Megaphone },
-				{ id: 'reports', label: 'Administrative Reports', icon: FileText },
+				{ id: 'reports', label: 'Reports', icon: FileText },
 			]
 		},
 		{

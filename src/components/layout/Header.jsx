@@ -95,8 +95,8 @@ const Header = () => {
  {/* Right User & Quick Actions info */}
  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
 
- {/* Quick Announcement Push Button - Admin & Super Admin Only */}
- {canBroadcast && (
+ {/* Quick Announcement Push Button - Super Admin Only */}
+ {canBroadcast && currentRole === 'super_admin' && (
  <button
  onClick={() => setShowAnnModal(true)}
  style={{
@@ -160,10 +160,10 @@ const Header = () => {
  >
  <div style={{ textAlign: 'right', lineHeight: 1.1 }}>
  <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
- {currentUser?.name || 'Ramon Bautista'} <Pencil size={11} color="#15803d" />
+ {currentUser?.name || (currentRole === 'admin' ? 'Liza Cruz' : 'Rosa Mendoza')} <Pencil size={11} color="#15803d" />
  </div>
  <div style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
- {currentRole === 'super_admin' ? 'Super Admin' : (currentRole === 'admin' ? 'Administrator' : (currentRole === 'farm_staff' ? 'Farm Staff' : (currentUser?.role || 'User')))}
+ {currentRole === 'super_admin' ? 'Super Admin' : (currentRole === 'admin' ? 'Admin IT/HR' : (currentRole === 'farm_staff' ? 'Farm Staff' : (currentUser?.role || 'User')))}
  </div>
  </div>
  <div style={{
@@ -178,7 +178,7 @@ const Header = () => {
  fontWeight: '800',
  fontSize: '0.8rem'
  }}>
- {currentUser?.initials || (currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'FS')}
+ {currentRole === 'admin' ? 'LC' : (currentUser?.initials || (currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'RM'))}
  </div>
  </button>
  </div>

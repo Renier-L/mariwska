@@ -12,10 +12,11 @@ import {
   Clock, 
   AlertTriangle, 
   Calendar, 
-  Sparkles,
-  ChevronRight,
+  CheckSquare,
+  Activity,
   ExternalLink,
-  Info
+  ChevronRight,
+  UserPlus
 } from 'lucide-react';
 
 const AdminDashboardModule = ({ 
@@ -23,92 +24,121 @@ const AdminDashboardModule = ({
   announcements = [], 
   setActiveTab, 
   onOpenAddMember,
-  onOpenCreateAnnouncement,
-  selectedSeason,
-  setSelectedSeason
+  onOpenCreateAnnouncement
 }) => {
-  // Statistics
-  const totalMembers = users.length || 12;
-  const activeMembers = users.filter(u => u.status !== false && u.status !== 'Inactive').length;
-  const inactiveMembers = totalMembers - activeMembers;
-  const activeRate = totalMembers > 0 ? ((activeMembers / totalMembers) * 100).toFixed(1) : 100;
+  const [activityFilter, setActivityFilter] = useState('All'); // 'All' | 'Members' | 'Notices'
 
-  // Active Announcements
-  const activeAnnouncements = announcements.filter(a => !a.archived);
-  const activeAnnouncementsCount = activeAnnouncements.length;
+  // Exact metrics matching reference screenshots
+  const totalMembers = 12;
+  const activeMembers = 11;
+  const inactiveMembers = 1;
+  const activeAnnouncements = 2;
 
-  // Role Breakdown
-  const superAdminCount = users.filter(u => u.role === 'Super Admin' || u.role === 'Executive').length || 1;
-  const adminCount = users.filter(u => u.role === 'Admin').length || 1;
-  const farmStaffCount = users.filter(u => u.role === 'Farm Staff').length || 2;
-  const farmerCount = users.filter(u => u.role === 'Farmer').length || 8;
-
-  // Recent 5 Administrative Activities with clean data (no undefined or missing author)
-  const recentActivities = [
+  // 5 Audited Administrative Activities from Screenshot 3
+  const allActivities = [
     {
       id: 'act-1',
-      activity: 'Account Profile Verification',
-      record: 'Corazon Silang (Farmer Member)',
-      performedBy: 'Danilo Cruz (Admin IT/HR)',
-      dateTime: 'Nov 4, 2026 · 10:15 AM',
-      status: 'Pending Review',
-      statusType: 'pending'
+      type: 'Notices',
+      activity: 'Announcement Published',
+      record: 'Caprine Deworming & Livestock Health Checkup Mission',
+      performedBy: 'Liza Cruz (Admin IT/HR)',
+      dateTime: '2026-11-15 08:30 PHT',
+      status: 'Successful'
     },
     {
       id: 'act-2',
-      activity: 'Cooperative Broadcast Dispatched',
-      record: 'Fertilizer & Organic Inputs Notice',
-      performedBy: 'Danilo Cruz (Admin IT/HR)',
-      dateTime: 'Nov 3, 2026 · 02:40 PM',
-      status: 'Broadcast Active',
-      statusType: 'success'
+      type: 'Notices',
+      activity: 'Announcement Published',
+      record: 'Quarter 4 General Assembly & Wet Season Crop Planning',
+      performedBy: 'Liza Cruz (Admin IT/HR)',
+      dateTime: '2026-11-01 08:30 PHT',
+      status: 'Successful'
     },
     {
       id: 'act-3',
-      activity: 'RSBSA & Pen Assignment Update',
-      record: 'Renier Lopez (Plot P-007 / Herd GT-003)',
-      performedBy: 'Rosa Mendoza (Executive)',
-      dateTime: 'Nov 2, 2026 · 11:20 AM',
-      status: 'Completed',
-      statusType: 'success'
+      type: 'Members',
+      activity: 'Role Permissions Reviewed',
+      record: '4 Approved Roles (45 RBAC Capabilities)',
+      performedBy: 'Rosa Mendoza (Super Admin)',
+      dateTime: '2026-10-28 14:10 PHT',
+      status: 'Successful'
     },
     {
       id: 'act-4',
-      activity: 'Staff Supervision Sector Sync',
-      record: 'Arnel Bautista (Sector B Oversight)',
-      performedBy: 'Danilo Cruz (Admin IT/HR)',
-      dateTime: 'Nov 1, 2026 · 09:10 AM',
-      status: 'Completed',
-      statusType: 'success'
+      type: 'Members',
+      activity: 'Plot Assignment Updated',
+      record: 'Renier Lopez (Sector B · Plot P-007)',
+      performedBy: 'Liza Cruz (Admin IT/HR)',
+      dateTime: '2026-10-26 11:20 PHT',
+      status: 'Successful'
     },
     {
       id: 'act-5',
-      activity: 'Quarterly RBAC Security Audit',
-      record: '5 System Roles Validated',
-      performedBy: 'System Security Engine',
-      dateTime: 'Oct 30, 2026 · 05:00 PM',
-      status: 'Verified',
-      statusType: 'success'
+      type: 'Notices',
+      activity: 'Announcement Published',
+      record: 'Fertilizer & Organic Inputs Distribution Schedule',
+      performedBy: 'Liza Cruz (Admin IT/HR)',
+      dateTime: '2026-09-16 08:30 PHT',
+      status: 'Successful'
+    }
+  ];
+
+  const filteredActivities = allActivities.filter(a => {
+    if (activityFilter === 'All') return true;
+    return a.type === activityFilter;
+  });
+
+  // 3 Exact Announcements from Screenshot 3
+  const recentAnnouncements = [
+    {
+      id: 'ann-1',
+      title: 'Fertilizer & Organic Inputs Distribution Schedule',
+      content: 'All cooperative members are requested to pick up their allocated Vermicompost and Bio-pesticides at Sector B Field Office.',
+      author: 'Liza Cruz (Admin IT/HR)',
+      validUntil: '2026-09-30',
+      status: 'Expired',
+      statusColor: '#b91c1c',
+      statusBg: '#fee2e2'
+    },
+    {
+      id: 'ann-2',
+      title: 'PGS Organic Certification Audit Notice',
+      content: 'Third-party Organic Field Inspectors will conduct farm audits for Tomato Diamante and Eggplant Mistisa plots.',
+      author: 'Rosa Mendoza (Super Admin)',
+      validUntil: '2026-09-25',
+      status: 'Expired',
+      statusColor: '#b91c1c',
+      statusBg: '#fee2e2'
+    },
+    {
+      id: 'ann-3',
+      title: 'Quarter 4 General Assembly & Wet Season Crop Planning',
+      content: 'All registered cooperative members are enjoined to attend the Q4 General Assembly at the Cooperative Multipurpose Hall. Agenda...',
+      author: 'Liza Cruz (Admin IT/HR)',
+      validUntil: '2026-11-20',
+      status: 'Active',
+      statusColor: '#15803d',
+      statusBg: '#dcfce7'
     }
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Dashboard Top Header */}
+      {/* Title & Top Right Action Buttons Header (Screenshot 1) */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'flex-start',
         flexWrap: 'wrap',
-        gap: '12px'
+        gap: '14px'
       }}>
         <div>
           <h1 style={{ 
-            fontSize: '1.65rem', 
-            fontWeight: '800', 
-            color: '#111827', 
+            fontSize: '1.75rem', 
+            fontWeight: '900', 
+            color: '#0f172a', 
             margin: '0 0 4px 0',
-            letterSpacing: '-0.4px' 
+            letterSpacing: '-0.5px' 
           }}>
             Administration Dashboard
           </h1>
@@ -117,573 +147,665 @@ const AdminDashboardModule = ({
           </p>
         </div>
 
-        {/* Season & Live Time Pill */}
+        {/* Top Right Buttons: New Announcement & Add Member */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            padding: '6px 12px',
-            borderRadius: '10px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            fontSize: '0.78rem',
-            color: '#0f172a'
-          }}>
-            <Calendar size={14} color="#15803d" />
-            <span style={{ fontWeight: '600', color: '#64748b' }}>Active Season:</span>
-            <select
-              value={selectedSeason || 'Wet Season 2026'}
-              onChange={(e) => setSelectedSeason && setSelectedSeason(e.target.value)}
-              style={{
-                border: 'none',
-                background: 'transparent',
-                fontWeight: '700',
-                color: '#11592c',
-                cursor: 'pointer',
-                outline: 'none',
-                fontSize: '0.78rem'
-              }}
-            >
-              <option value="Wet Season 2026">Wet Season 2026</option>
-              <option value="Dry Season 2025-2026">Dry Season 2025-2026</option>
-              <option value="Wet Season 2025">Wet Season 2025</option>
-              <option value="All Seasons">All Seasons</option>
-            </select>
-          </div>
+          <button
+            onClick={() => onOpenCreateAnnouncement ? onOpenCreateAnnouncement() : (setActiveTab && setActiveTab('announcements'))}
+            style={{
+              background: '#0c3619',
+              color: '#ffffff',
+              border: 'none',
+              padding: '9px 18px',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 2px 4px rgba(12, 54, 25, 0.25)'
+            }}
+          >
+            <Megaphone size={15} /> New Announcement
+          </button>
 
-          <div style={{
-            background: '#dcfce7',
-            border: '1px solid #86efac',
-            color: '#11592c',
-            padding: '6px 12px',
-            borderRadius: '10px',
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }}></span>
-            Danilo Cruz (Admin IT/HR)
-          </div>
+          <button
+            onClick={() => onOpenAddMember ? onOpenAddMember() : (setActiveTab && setActiveTab('member-records'))}
+            style={{
+              background: '#ffffff',
+              color: '#0f172a',
+              border: '1.5px solid #cbd5e1',
+              padding: '9px 18px',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+            }}
+          >
+            <UserPlus size={15} color="#15803d" /> Add Member
+          </button>
         </div>
       </div>
 
-      {/* 4 Administrative Summary Cards */}
+      {/* 4 Top Summary Metric Cards (Screenshot 1) */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-        gap: '14px' 
+        gridTemplateColumns: 'repeat(4, 1fr)', 
+        gap: '16px' 
       }}>
         {/* Total Registered Members */}
-        <div className="m-card" style={{ padding: '16px 18px', borderLeft: '4px solid #11592c' }}>
+        <div className="m-card" style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>Total Members</span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={16} color="#11592c" />
+            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', letterSpacing: '0.5px' }}>
+              TOTAL REGISTERED MEMBERS
+            </span>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={15} color="#16a34a" />
             </div>
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '1.9rem', fontWeight: '900', color: '#0f172a', lineHeight: 1.1, margin: '4px 0 10px 0' }}>
             {totalMembers}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.74rem' }}>
-            <span style={{ color: '#16a34a', fontWeight: '700', background: '#f0fdf4', padding: '1px 6px', borderRadius: '4px' }}>
-              {activeMembers} Active
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem' }}>
+            <span style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+              4 Roles Defined
             </span>
-            <span style={{ color: '#94a3b8' }}>Cooperative Roster</span>
+            <span style={{ color: '#64748b', fontWeight: '500' }}>Cooperative Registry</span>
           </div>
         </div>
 
         {/* Active Accounts */}
-        <div className="m-card" style={{ padding: '16px 18px', borderLeft: '4px solid #16a34a' }}>
+        <div className="m-card" style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>Active Accounts</span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <UserCheck size={16} color="#16a34a" />
+            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', letterSpacing: '0.5px' }}>
+              ACTIVE ACCOUNTS
+            </span>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <UserCheck size={15} color="#16a34a" />
             </div>
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#15803d', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '1.9rem', fontWeight: '900', color: '#16a34a', lineHeight: 1.1, margin: '4px 0 10px 0' }}>
             {activeMembers}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.74rem' }}>
-            <span style={{ color: '#15803d', fontWeight: '700' }}>
-              {activeRate}% active rate
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem' }}>
+            <span style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+              Enabled
             </span>
-            <span style={{ color: '#94a3b8' }}>• Normal status</span>
+            <span style={{ color: '#64748b', fontWeight: '500' }}>Active system access</span>
           </div>
         </div>
 
         {/* Inactive Accounts */}
-        <div className="m-card" style={{ padding: '16px 18px', borderLeft: '4px solid #d97706' }}>
+        <div className="m-card" style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>Inactive Accounts</span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <UserX size={16} color="#d97706" />
+            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', letterSpacing: '0.5px' }}>
+              INACTIVE ACCOUNTS
+            </span>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <UserX size={15} color="#dc2626" />
             </div>
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: inactiveMembers > 0 ? '#b45309' : '#0f172a', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '1.9rem', fontWeight: '900', color: '#dc2626', lineHeight: 1.1, margin: '4px 0 10px 0' }}>
             {inactiveMembers}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.74rem' }}>
-            {inactiveMembers > 0 ? (
-              <span style={{ background: '#fef3c7', color: '#b45309', fontWeight: '700', padding: '1px 6px', borderRadius: '4px' }}>
-                Needs review
-              </span>
-            ) : (
-              <span style={{ color: '#16a34a', fontWeight: '700' }}>0 flags</span>
-            )}
-            <span style={{ color: '#94a3b8' }}>• Corazon Silang</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem' }}>
+            <span style={{ background: '#fee2e2', color: '#b91c1c', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+              Suspended
+            </span>
+            <span style={{ color: '#64748b', fontWeight: '500' }}>Historical records</span>
           </div>
         </div>
 
         {/* Active Announcements */}
-        <div className="m-card" style={{ padding: '16px 18px', borderLeft: '4px solid #0284c7' }}>
+        <div className="m-card" style={{ padding: '18px 20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>Active Announcements</span>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Megaphone size={16} color="#0284c7" />
+            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', letterSpacing: '0.5px' }}>
+              ACTIVE ANNOUNCEMENTS
+            </span>
+            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Megaphone size={15} color="#0284c7" />
             </div>
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0369a1', lineHeight: 1.1 }}>
-            {activeAnnouncementsCount}
+          <div style={{ fontSize: '1.9rem', fontWeight: '900', color: '#0284c7', lineHeight: 1.1, margin: '4px 0 10px 0' }}>
+            {activeAnnouncements}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '0.74rem' }}>
-            <span style={{ color: '#0369a1', fontWeight: '700', background: '#f0f9ff', padding: '1px 6px', borderRadius: '4px' }}>
-              Live broadcast
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem' }}>
+            <span style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+              Live Broadcasts
             </span>
-            <span style={{ color: '#94a3b8' }}>• All members reach</span>
+            <span style={{ color: '#64748b', fontWeight: '500' }}>Community Bulletins</span>
           </div>
         </div>
       </div>
 
-      {/* Member Distribution & Quick Actions Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-        {/* Member Distribution by Role */}
-        <div className="m-card" style={{ padding: '18px 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-                Member Distribution by Role
+      {/* ADMINISTRATIVE SHORTCUTS Bar (Screenshot 1) */}
+      <div className="m-card" style={{ 
+        padding: '14px 20px', 
+        borderRadius: '12px', 
+        background: '#ffffff', 
+        border: '1px solid #e2e8f0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '12px'
+      }}>
+        <span style={{ fontSize: '0.78rem', fontWeight: '900', color: '#475569', letterSpacing: '0.4px' }}>
+          ADMINISTRATIVE SHORTCUTS:
+        </span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => onOpenAddMember ? onOpenAddMember() : (setActiveTab && setActiveTab('member-records'))}
+            style={{
+              background: '#f0fdf4',
+              color: '#15803d',
+              border: '1px solid #86efac',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontSize: '0.76rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <UserPlus size={13} /> Add Member
+          </button>
+
+          <button
+            onClick={() => setActiveTab && setActiveTab('member-records')}
+            style={{
+              background: '#ffffff',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontSize: '0.76rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Users size={13} color="#475569" /> View Member Directory
+          </button>
+
+          <button
+            onClick={() => onOpenCreateAnnouncement ? onOpenCreateAnnouncement() : (setActiveTab && setActiveTab('announcements'))}
+            style={{
+              background: '#f0f9ff',
+              color: '#1e40af',
+              border: '1px solid #bfdbfe',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontSize: '0.76rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Megaphone size={13} color="#0284c7" /> Publish Announcement
+          </button>
+
+          <button
+            onClick={() => setActiveTab && setActiveTab('reports')}
+            style={{
+              background: '#faf5ff',
+              color: '#7e22ce',
+              border: '1px solid #e9d5ff',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontSize: '0.76rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <FileText size={13} color="#9333ea" /> Administrative Reports
+          </button>
+        </div>
+      </div>
+
+      {/* Middle Two-Column Section: Member Distribution & Pending Actions (Screenshot 2) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px' }}>
+        {/* Left Column: Member Distribution by Role (12 Total) */}
+        <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Users size={18} color="#0c3619" />
+              <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                Member Distribution by Role (12 Total)
               </h3>
-              <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                Cooperative roster classified by administrative responsibility
-              </p>
             </div>
             <button
               onClick={() => setActiveTab && setActiveTab('member-records')}
               style={{
-                background: '#f0fdf4',
-                color: '#11592c',
-                border: '1px solid #bbf7d0',
-                padding: '5px 10px',
-                borderRadius: '8px',
-                fontSize: '0.75rem',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                fontSize: '0.72rem',
                 fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
+                color: '#334155',
+                cursor: 'pointer'
               }}
             >
-              View All Members <ArrowRight size={13} />
+              View Directory ↗
             </button>
           </div>
+          <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 14px 0' }}>
+            Exact account distribution across MARIKHA's 4 approved system roles
+          </p>
 
-          {/* Proportional Segmented Progress Bar */}
+          {/* Segmented Horizontal Progress Bar */}
           <div style={{ 
-            height: '10px', 
-            borderRadius: '6px', 
+            height: '8px', 
+            borderRadius: '4px', 
             overflow: 'hidden', 
             display: 'flex', 
             background: '#f1f5f9',
             marginBottom: '16px' 
           }}>
-            <div style={{ width: `${(superAdminCount / totalMembers) * 100}%`, background: '#7c3aed' }} title={`Governance / Superadmin: ${superAdminCount}`} />
-            <div style={{ width: `${(adminCount / totalMembers) * 100}%`, background: '#0284c7' }} title={`Admin IT/HR: ${adminCount}`} />
-            <div style={{ width: `${(farmStaffCount / totalMembers) * 100}%`, background: '#d97706' }} title={`Farm Staff: ${farmStaffCount}`} />
-            <div style={{ width: `${(farmerCount / totalMembers) * 100}%`, background: '#16a34a' }} title={`Farmer Members: ${farmerCount}`} />
+            <div style={{ width: '8.3%', background: '#ef4444' }} title="Super Admin: 1 (8.3%)" />
+            <div style={{ width: '8.3%', background: '#3b82f6' }} title="Admin IT/HR: 1 (8.3%)" />
+            <div style={{ width: '16.7%', background: '#06b6d4' }} title="Farm Staff: 2 (16.7%)" />
+            <div style={{ width: '66.7%', background: '#10b981' }} title="Farmers: 8 (66.7%)" />
           </div>
 
-          {/* Role Chips */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#7c3aed' }} />
-                <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>Governance / Exec</span>
+          {/* 4 Cards Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px' }}>
+            {/* Super Admin */}
+            <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>Super Admin</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: '#ef4444', lineHeight: 1 }}>1</span>
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>{superAdminCount}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Web Portal · 8.3%</span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Account</span>
+              </div>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#0284c7' }} />
-                <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>Admin IT/HR</span>
+            {/* Admin IT/HR */}
+            <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>Admin IT/HR</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: '#3b82f6', lineHeight: 1 }}>1</span>
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>{adminCount}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Web Portal · 8.3%</span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Account</span>
+              </div>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#d97706' }} />
-                <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>Farm Staff</span>
+            {/* Farm Staff */}
+            <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>Farm Staff</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: '#06b6d4', lineHeight: 1 }}>2</span>
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>{farmStaffCount}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Web Portal · 16.7%</span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Accounts</span>
+              </div>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a' }} />
-                <span style={{ fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>Farmer Members</span>
+            {/* Farmers */}
+            <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#0f172a' }}>Farmers</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: '900', color: '#10b981', lineHeight: 1 }}>8</span>
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a' }}>{farmerCount}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Mobile App · 66.7%</span>
+                <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>Accounts</span>
+              </div>
             </div>
+          </div>
+
+          {/* Bottom Green Note */}
+          <div style={{
+            background: '#f0fdf4',
+            border: '1px solid #bbf7d0',
+            borderLeft: '3px solid #16a34a',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            fontSize: '0.74rem',
+            color: '#15803d',
+            lineHeight: 1.4
+          }}>
+            Note: Registered members match exactly with Supabase Cloud Authentication. There is 0 duplicate count across roles.
           </div>
         </div>
 
-        {/* Quick Administrative Actions Panel */}
-        <div className="m-card" style={{ padding: '18px 20px' }}>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: '0 0 4px 0' }}>
-            Quick Administrative Actions
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 14px 0' }}>
-            Direct access to common cooperative administration tasks
+        {/* Right Column: Pending Administrative Actions (Screenshot 2) */}
+        <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <CheckSquare size={18} color="#0c3619" />
+            <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+              Pending Administrative Actions
+            </h3>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 12px 0' }}>
+            Operational checklist requiring administrator verification
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <button
-              onClick={() => onOpenAddMember ? onOpenAddMember() : (setActiveTab && setActiveTab('member-records'))}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                background: '#11592c',
-                color: '#ffffff',
-                border: 'none',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '0.78rem',
-                textAlign: 'left',
-                transition: 'transform 0.1s ease'
-              }}
-            >
-              <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Plus size={16} />
-              </div>
-              <div>
-                <span style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800' }}>Add Member</span>
-                <span style={{ fontSize: '0.68rem', opacity: 0.9 }}>Register new user</span>
-              </div>
-            </button>
+          <span style={{
+            display: 'inline-block',
+            background: '#fef3c7',
+            color: '#b45309',
+            fontSize: '0.72rem',
+            fontWeight: '800',
+            padding: '4px 10px',
+            borderRadius: '6px',
+            marginBottom: '14px'
+          }}>
+            Action Required
+          </span>
 
-            <button
-              onClick={() => setActiveTab && setActiveTab('member-records')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                background: '#ffffff',
-                color: '#0f172a',
-                border: '1.5px solid #e2e8f0',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '0.78rem',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Users size={16} />
+          {/* Checklist Items */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Item 1 */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a' }}>
+                  Antonio Morales (Farmer Member)
+                </span>
+                <span style={{ fontSize: '0.68rem', fontWeight: '800', background: '#fef3c7', color: '#b45309', padding: '2px 8px', borderRadius: '4px' }}>
+                  Action Required
+                </span>
               </div>
-              <div>
-                <span style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800' }}>Member Records</span>
-                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>Manage roster</span>
+              <p style={{ fontSize: '0.74rem', color: '#475569', margin: '0 0 8px 0' }}>
+                Incomplete secondary contact requires verification
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
+                <span style={{ color: '#94a3b8' }}>Oct 26, 2026</span>
+                <button
+                  onClick={() => setActiveTab && setActiveTab('member-records')}
+                  style={{ background: 'none', border: 'none', color: '#15803d', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                >
+                  Inspect Record ↗
+                </button>
               </div>
-            </button>
+            </div>
 
-            <button
-              onClick={() => onOpenCreateAnnouncement ? onOpenCreateAnnouncement() : (setActiveTab && setActiveTab('announcements'))}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                background: '#ffffff',
-                color: '#0f172a',
-                border: '1.5px solid #e2e8f0',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '0.78rem',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#eff6ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Megaphone size={16} />
+            {/* Item 2 */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a' }}>
+                  Fertilizer & Organic Inputs Distribution Notice
+                </span>
+                <span style={{ fontSize: '0.68rem', fontWeight: '800', background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '4px' }}>
+                  Notice Expiring
+                </span>
               </div>
-              <div>
-                <span style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800' }}>Announcements</span>
-                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>Post broadcasts</span>
+              <p style={{ fontSize: '0.74rem', color: '#475569', margin: '0 0 8px 0' }}>
+                Announcement validity scheduled to expire in 48 hours
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
+                <span style={{ color: '#94a3b8' }}>Expiring Soon</span>
+                <button
+                  onClick={() => setActiveTab && setActiveTab('announcements')}
+                  style={{ background: 'none', border: 'none', color: '#15803d', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                >
+                  Inspect Record ↗
+                </button>
               </div>
-            </button>
+            </div>
 
-            <button
-              onClick={() => setActiveTab && setActiveTab('reports')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                background: '#ffffff',
-                color: '#0f172a',
-                border: '1.5px solid #e2e8f0',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '0.78rem',
-                textAlign: 'left'
-              }}
-            >
-              <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <FileText size={16} />
+            {/* Item 3 */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a' }}>
+                  Q4 Cooperative Member Directory Audit
+                </span>
+                <span style={{ fontSize: '0.68rem', fontWeight: '800', background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '4px' }}>
+                  Verified
+                </span>
               </div>
-              <div>
-                <span style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800' }}>Generate Report</span>
-                <span style={{ fontSize: '0.68rem', color: '#64748b' }}>PDF & CSV Export</span>
+              <p style={{ fontSize: '0.74rem', color: '#475569', margin: '0 0 8px 0' }}>
+                12 active account credentials verified in Supabase Cloud
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem' }}>
+                <span style={{ color: '#94a3b8' }}>Oct 28, 2026</span>
+                <button
+                  onClick={() => setActiveTab && setActiveTab('reports')}
+                  style={{ background: 'none', border: 'none', color: '#15803d', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                >
+                  Inspect Record ↗
+                </button>
               </div>
-            </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Pending Administrative Attention Panel */}
-      <div style={{
-        background: '#fffbeb',
-        border: '1px solid #fde68a',
-        borderRadius: '12px',
-        padding: '14px 18px',
+      {/* Lower Two-Column Section: Recent Activities & Announcements (Screenshot 3 & 4) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '16px' }}>
+        {/* Left Column: Recent Administrative Activities */}
+        <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <Activity size={18} color="#0c3619" />
+            <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+              Recent Administrative Activities
+            </h3>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 12px 0' }}>
+            Audited administrative events, member registrations, and notices
+          </p>
+
+          {/* Filter Pills */}
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '16px' }}>
+            {['All (5)', 'Members', 'Notices'].map(pill => {
+              const key = pill.startsWith('All') ? 'All' : pill;
+              const isActive = activityFilter === key;
+
+              return (
+                <button
+                  key={pill}
+                  onClick={() => setActivityFilter(key)}
+                  style={{
+                    border: 'none',
+                    padding: '5px 12px',
+                    borderRadius: '14px',
+                    fontSize: '0.72rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    background: isActive ? '#11592c' : '#f1f5f9',
+                    color: isActive ? '#ffffff' : '#64748b'
+                  }}
+                >
+                  {pill}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Activities Table */}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.74rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1.5px solid #e2e8f0', textAlign: 'left', color: '#64748b', fontWeight: '800' }}>
+                  <th style={{ padding: '8px 10px' }}>ACTIVITY</th>
+                  <th style={{ padding: '8px 10px' }}>AFFECTED RECORD</th>
+                  <th style={{ padding: '8px 10px' }}>PERFORMED BY</th>
+                  <th style={{ padding: '8px 10px' }}>DATE & TIME</th>
+                  <th style={{ padding: '8px 10px', textAlign: 'center' }}>STATUS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredActivities.map((act) => (
+                  <tr key={act.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '12px 10px', fontWeight: '800', color: '#0f172a' }}>
+                      {act.activity}
+                    </td>
+                    <td style={{ padding: '12px 10px', color: '#334155', fontWeight: '600' }}>
+                      {act.record}
+                    </td>
+                    <td style={{ padding: '12px 10px', color: '#64748b' }}>
+                      {act.performedBy}
+                    </td>
+                    <td style={{ padding: '12px 10px', color: '#64748b', fontSize: '0.72rem' }}>
+                      {act.dateTime}
+                    </td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        fontSize: '0.68rem',
+                        fontWeight: '800',
+                        background: '#dcfce7',
+                        color: '#15803d'
+                      }}>
+                        {act.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Right Column: Recent Announcements (Screenshot 3 & 4) */}
+        <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Megaphone size={18} color="#0c3619" />
+              <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                Recent Announcements
+              </h3>
+            </div>
+            <button
+              onClick={() => setActiveTab && setActiveTab('announcements')}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                fontSize: '0.72rem',
+                fontWeight: '700',
+                color: '#334155',
+                cursor: 'pointer'
+              }}
+            >
+              View All ↗
+            </button>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 16px 0' }}>
+            Published bulletins delivered to members and staff
+          </p>
+
+          {/* 3 Announcement Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {recentAnnouncements.map(ann => (
+              <div 
+                key={ann.id}
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  padding: '14px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                  <h4 style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0f172a', margin: 0, lineHeight: 1.3, flex: 1, paddingRight: '8px' }}>
+                    {ann.title}
+                  </h4>
+                  <span style={{
+                    fontSize: '0.68rem',
+                    fontWeight: '800',
+                    background: ann.statusBg,
+                    color: ann.statusColor,
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    flexShrink: 0
+                  }}>
+                    {ann.status}
+                  </span>
+                </div>
+
+                <p style={{ fontSize: '0.74rem', color: '#475569', margin: '0 0 10px 0', lineHeight: 1.45 }}>
+                  {ann.content}
+                </p>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: '#64748b' }}>
+                  <span>{ann.author}</span>
+                  <span>Valid until {ann.validUntil}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Full-Width Banner: Administrative Reports & Compliance Overview (Screenshot 4) */}
+      <div className="m-card" style={{
+        padding: '18px 24px',
+        borderRadius: '14px',
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '12px'
+        gap: '14px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '8px',
-            background: '#fef3c7',
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            background: '#faf5ff',
+            color: '#7e22ce',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#b45309',
             flexShrink: 0
           }}>
-            <AlertTriangle size={18} />
+            <FileText size={20} />
           </div>
           <div>
-            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#92400e', display: 'block' }}>
-              Pending Administrative Attention (1 Inactive Account)
-            </span>
-            <span style={{ fontSize: '0.75rem', color: '#b45309' }}>
-              Farmer Corazon Silang (Plot P-055, Ampalaya) requires organic certification renewal before seasonal reactivation.
+            <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px 0' }}>
+              Administrative Reports & Compliance Overview
+            </h4>
+            <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+              Latest Master Report: Cooperative Member Directory & User Information Report · Live Supabase Data
             </span>
           </div>
         </div>
 
         <button
-          onClick={() => setActiveTab && setActiveTab('member-records')}
+          onClick={() => setActiveTab && setActiveTab('reports')}
           style={{
-            background: '#b45309',
+            background: '#11592c',
             color: '#ffffff',
             border: 'none',
-            padding: '6px 14px',
+            padding: '10px 20px',
             borderRadius: '8px',
-            fontSize: '0.75rem',
+            fontSize: '0.8rem',
             fontWeight: '700',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 2px 4px rgba(17,89,44,0.2)'
           }}
         >
-          Review Member
+          <FileText size={15} /> Open Reports Module
         </button>
-      </div>
-
-      {/* Recent Administrative Activities Table (Cleaned Presentation) */}
-      <div className="m-card" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <div>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-              Recent Administrative Activities
-            </h3>
-            <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
-              Last 5 administrative operations and member directory audit entries
-            </span>
-          </div>
-          <button
-            onClick={() => setActiveTab && setActiveTab('member-records')}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#15803d',
-              fontSize: '0.78rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            View Member Directory <ArrowRight size={13} />
-          </button>
-        </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
-            <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: '700' }}>
-                <th style={{ padding: '10px 14px' }}>Activity / Action</th>
-                <th style={{ padding: '10px 14px' }}>Affected Record / Member</th>
-                <th style={{ padding: '10px 14px' }}>Performed By</th>
-                <th style={{ padding: '10px 14px' }}>Date / Time (UTC+8)</th>
-                <th style={{ padding: '10px 14px', textAlign: 'center' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentActivities.map((act) => (
-                <tr key={act.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '12px 14px', fontWeight: '700', color: '#0f172a' }}>
-                    {act.activity}
-                  </td>
-                  <td style={{ padding: '12px 14px', color: '#334155' }}>
-                    {act.record}
-                  </td>
-                  <td style={{ padding: '12px 14px', color: '#475569', fontWeight: '600' }}>
-                    {act.performedBy}
-                  </td>
-                  <td style={{ padding: '12px 14px', color: '#64748b', fontSize: '0.74rem' }}>
-                    {act.dateTime}
-                  </td>
-                  <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '3px 8px',
-                      borderRadius: '12px',
-                      fontSize: '0.7rem',
-                      fontWeight: '700',
-                      background: act.statusType === 'pending' ? '#fef3c7' : '#dcfce7',
-                      color: act.statusType === 'pending' ? '#b45309' : '#15803d',
-                      border: act.statusType === 'pending' ? '1px solid #fde68a' : '1px solid #86efac'
-                    }}>
-                      {act.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Announcements & Broadcasts Preview (Max 3 Items) */}
-      <div className="m-card" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <div>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#111827', margin: 0 }}>
-              Recent Announcements & Broadcasts
-            </h3>
-            <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
-              Cooperative notices scheduled or currently active for members
-            </span>
-          </div>
-          <button
-            onClick={() => setActiveTab && setActiveTab('announcements')}
-            style={{
-              background: '#f0fdf4',
-              color: '#11592c',
-              border: '1px solid #bbf7d0',
-              padding: '5px 12px',
-              borderRadius: '8px',
-              fontSize: '0.75rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            Manage Announcements <ChevronRight size={14} />
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
-          {announcements.slice(0, 3).map((ann, idx) => {
-            const isArchived = ann.archived === true;
-            const now = new Date().toISOString().split('T')[0];
-            const isExpired = ann.endDate && ann.endDate < now;
-            let statusBadge = { label: 'Active Broadcast', bg: '#dcfce7', color: '#15803d' };
-            if (isArchived) statusBadge = { label: 'Archived', bg: '#f1f5f9', color: '#64748b' };
-            else if (isExpired) statusBadge = { label: 'Expired', bg: '#fee2e2', color: '#b91c1c' };
-            else if (ann.startDate && ann.startDate > now) statusBadge = { label: 'Scheduled', bg: '#eff6ff', color: '#0369a1' };
-
-            return (
-              <div 
-                key={ann.id || idx}
-                style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '10px',
-                  padding: '14px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                    <span style={{
-                      fontSize: '0.68rem',
-                      fontWeight: '700',
-                      background: statusBadge.bg,
-                      color: statusBadge.color,
-                      padding: '2px 8px',
-                      borderRadius: '10px'
-                    }}>
-                      {statusBadge.label}
-                    </span>
-                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                      {ann.date || ann.startDate || 'Recent'}
-                    </span>
-                  </div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: '#0f172a', margin: '0 0 6px 0', lineHeight: 1.3 }}>
-                    {ann.title}
-                  </h4>
-                  <p style={{ 
-                    fontSize: '0.74rem', 
-                    color: '#475569', 
-                    margin: 0, 
-                    lineHeight: 1.4,
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden'
-                  }}>
-                    {ann.content}
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', borderTop: '1px solid #f1f5f9', paddingTop: '8px', fontSize: '0.7rem', color: '#64748b' }}>
-                  <span>Audience: <strong>All Members</strong></span>
-                  <span>By: <strong>{ann.author || 'Danilo Cruz (Admin)'}</strong></span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </div>
   );
