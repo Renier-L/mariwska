@@ -73,7 +73,7 @@ const Login = () => {
  }
  }
 
- if (cleanUser === 'admin' || cleanUser === 'liza@mariwska.coop' || cleanUser === 'liza') {
+ if (cleanUser === 'admin' || cleanUser === 'danilo' || cleanUser === 'danilo.cruz@marikha.org' || cleanUser === 'liza@mariwska.coop' || cleanUser === 'liza') {
  if (isAdminPass) {
  loginAsRole('admin');
  return;
@@ -83,7 +83,7 @@ const Login = () => {
  }
  }
 
- if (cleanUser === 'staff' || cleanUser === 'ramon@mariwska.coop' || cleanUser === 'farm staff' || cleanUser === 'ramon') {
+ if (cleanUser === 'staff' || cleanUser === 'arnel' || cleanUser === 'arnel.bautista@marikha.org' || cleanUser === 'ramon@mariwska.coop' || cleanUser === 'farm staff' || cleanUser === 'ramon') {
  if (isStaffPass) {
  loginAsRole('farm_staff');
  return;
