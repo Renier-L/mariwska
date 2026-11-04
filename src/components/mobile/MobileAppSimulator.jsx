@@ -159,7 +159,16 @@ const MobileAppSimulator = () => {
  marketPrice: '₱65.00 / kg'
  });
 
- const latestPushAnnouncement = selectedAnnouncement || activePushNotice || (announcements && announcements[0]);
+ const farmerDirectives = (announcements || []).filter(a => 
+    !a.archived && (
+      a.targetAudience === 'farmers' || 
+      a.targetAudience === 'all' || 
+      !a.targetAudience || 
+      (a.title && a.title.toLowerCase().includes('farmer')) || 
+      (a.audienceLabel && a.audienceLabel.toLowerCase().includes('farmer'))
+    )
+  );
+  const latestPushAnnouncement = selectedAnnouncement || activePushNotice || farmerDirectives[0] || (announcements && announcements[0]);
  const notificationCount = announcements ? announcements.length : 0;
 
  // Compress image to lightweight Data URL (< 20KB) for 100% reliable cross-window & Supabase transmission
@@ -606,7 +615,49 @@ const MobileAppSimulator = () => {
  </div>
  </div>
 
- {/* Dashboard Options */}
+ {/* PROMINENT LIVE FARMER FIELD DIRECTIVE BANNER */}
+      {latestPushAnnouncement && (
+        <div 
+          onClick={() => {
+            setSelectedAnnouncement(latestPushAnnouncement);
+            setShowNotificationModal(true);
+          }}
+          style={{
+            margin: '14px 18px 0 18px',
+            background: latestPushAnnouncement.targetAudience === 'farmers' ? '#ecfdf5' : '#fffbeb',
+            border: latestPushAnnouncement.targetAudience === 'farmers' ? '1.5px solid #86efac' : '1.5px solid #fde68a',
+            borderRadius: '14px',
+            padding: '12px 14px',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a', display: 'inline-block', boxShadow: '0 0 0 3px rgba(22, 163, 74, 0.25)' }} />
+              <span style={{ fontSize: '0.68rem', fontWeight: '800', color: latestPushAnnouncement.targetAudience === 'farmers' ? '#166534' : '#b45309', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {latestPushAnnouncement.targetAudience === 'farmers' ? '🌾 Farmer Activity Directive' : '📢 Cooperative Push Directive'}
+              </span>
+            </div>
+            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: '#64748b' }}>
+              {latestPushAnnouncement.date || 'Today'}
+            </span>
+          </div>
+          <strong style={{ fontSize: '0.84rem', color: '#0f172a', display: 'block', marginBottom: '2px', lineHeight: 1.3 }}>
+            {latestPushAnnouncement.title}
+          </strong>
+          <p style={{ fontSize: '0.76rem', color: '#475569', margin: '0 0 6px 0', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {latestPushAnnouncement.content}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem' }}>
+            <span style={{ color: '#64748b', fontWeight: '600' }}>By {latestPushAnnouncement.author || 'Super Admin'}</span>
+            <span style={{ color: '#16a34a', fontWeight: '800' }}>Tap to view full details →</span>
+          </div>
+        </div>
+      )}
+
+      {/* Dashboard Options */}
  <div style={{ padding: '18px' }}>
  <h3 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#111827', marginBottom: '14px' }}>
  What would you like to do?
@@ -1852,46 +1903,56 @@ const MobileAppSimulator = () => {
  </div>
 
  {/* Real-Time Announcement Push Modal (High Priority zIndex 800) */}
- {showNotificationModal && latestPushAnnouncement && (
- <div style={{
- position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
- background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 800
- }}>
- <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', animation: 'slideIn 0.2s ease-out' }}>
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
- <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
- <Bell size={18} color="#d97706" />
- <span style={{ fontWeight: '800', fontSize: '0.85rem', color: '#111827' }}>Cooperative Push Alert</span>
- </div>
- <button onClick={() => setShowNotificationModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
- <X size={18} />
- </button>
- </div>
+      {showNotificationModal && latestPushAnnouncement && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 800
+        }}>
+          <div style={{ background: '#ffffff', borderRadius: '18px', padding: '20px', width: '100%', maxWidth: '330px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', animation: 'slideIn 0.2s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ background: '#dcfce7', width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Bell size={16} color="#11592c" />
+                </div>
+                <div>
+                  <span style={{ fontWeight: '800', fontSize: '0.86rem', color: '#111827', display: 'block', lineHeight: 1.1 }}>
+                    Cooperative Directive
+                  </span>
+                  <span style={{ fontSize: '0.67rem', fontWeight: '800', color: latestPushAnnouncement.targetAudience === 'farmers' ? '#15803d' : '#0369a1' }}>
+                    {latestPushAnnouncement.targetAudience === 'farmers' ? '🌾 For: Registered Farmers' : '🌐 Cooperative-Wide Directive'}
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setShowNotificationModal(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280' }}>
+                <X size={16} />
+              </button>
+            </div>
 
- <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '10px', padding: '12px', marginBottom: '14px' }}>
- <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#78350f', marginBottom: '6px' }}>
- {latestPushAnnouncement.title || 'Cooperative Broadcast Notice'}
- </h4>
- <p style={{ fontSize: '0.88rem', color: '#92400e', lineHeight: 1.4, margin: 0, fontWeight: '700' }}>
- "{latestPushAnnouncement.content}"
- </p>
- </div>
+            <div style={{ background: latestPushAnnouncement.targetAudience === 'farmers' ? '#f0fdf4' : '#fffbeb', border: latestPushAnnouncement.targetAudience === 'farmers' ? '1.5px solid #86efac' : '1.5px solid #fcd34d', borderRadius: '12px', padding: '14px', marginBottom: '14px' }}>
+              <h4 style={{ fontSize: '0.92rem', fontWeight: '800', color: latestPushAnnouncement.targetAudience === 'farmers' ? '#14532d' : '#78350f', margin: '0 0 6px 0', lineHeight: 1.3 }}>
+                {latestPushAnnouncement.title || 'Farmer Field Activity Directive'}
+              </h4>
+              <p style={{ fontSize: '0.84rem', color: latestPushAnnouncement.targetAudience === 'farmers' ? '#166534' : '#92400e', lineHeight: 1.45, margin: 0, fontWeight: '600' }}>
+                "{latestPushAnnouncement.content}"
+              </p>
+            </div>
 
- <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '16px' }}>
- Dispatched by {latestPushAnnouncement.author || 'Liza Cruz (Admin)'} · {latestPushAnnouncement.date}
- </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: '#6b7280', marginBottom: '16px', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px' }}>
+              <span>Dispatched by: <strong style={{ color: '#0f172a' }}>{latestPushAnnouncement.author || 'Super Admin'}</strong></span>
+              <span>{latestPushAnnouncement.date || 'Today'}</span>
+            </div>
 
- <button
- onClick={() => setShowNotificationModal(false)}
- style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#0c3619', color: '#ffffff', fontWeight: '800', fontSize: '0.82rem', border: 'none', cursor: 'pointer' }}
- >
- Acknowledge Notice
- </button>
- </div>
- </div>
- )}
+            <button
+              onClick={() => setShowNotificationModal(false)}
+              style={{ width: '100%', padding: '12px', borderRadius: '10px', background: '#11592c', color: '#ffffff', fontWeight: '800', fontSize: '0.86rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 10px rgba(17,89,44,0.3)' }}
+            >
+              ✓ Acknowledge Directive
+            </button>
+          </div>
+        </div>
+      )}
 
- {/* Notification History List Sheet Modal */}
+      {/* Notification History List Sheet Modal */}
  {showHistoryModal && (
  <div style={{
  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,

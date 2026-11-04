@@ -90,6 +90,8 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [announcementTitle, setAnnouncementTitle] = useState('');
   const [announcementText, setAnnouncementText] = useState('');
+  const [announcementAudience, setAnnouncementAudience] = useState('all'); // 'all', 'farmers', 'scheduling', 'staff'
+  const [broadcastSuccessNotice, setBroadcastSuccessNotice] = useState('');
 
   // Overview Productivity Trend Data (Jan - Aug 2026)
   const overviewTrendData = [
@@ -168,18 +170,39 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   // Handle publishing announcement
   const handlePublishAnnouncement = (e) => {
     e.preventDefault();
-    if (!announcementTitle.trim() || !announcementText.trim()) return;
+    const cleanText = announcementText.trim();
+    let cleanTitle = announcementTitle.trim();
+
+    if (!cleanText && !cleanTitle) {
+      alert('Please enter announcement text or title.');
+      return;
+    }
+
+    if (!cleanTitle) {
+      cleanTitle = 
+        announcementAudience === 'farmers' ? 'Farmer Field Activity Directive' :
+        announcementAudience === 'scheduling' ? 'Cooperative Operations & Scheduling Protocol' :
+        announcementAudience === 'staff' ? 'Farm Staff Operations Notice' : 'Cooperative General Operational Directive';
+    }
+
     if (publishAnnouncement) {
       publishAnnouncement({
-        title: announcementTitle,
-        content: announcementText,
-        author: 'Rosa Mendoza',
-        date: 'Today, Just now'
+        title: cleanTitle,
+        content: cleanText || cleanTitle,
+        targetAudience: announcementAudience,
+        author: 'Rosa Mendoza (Super Admin)',
+        instantPush: true
       });
     }
+
     setAnnouncementTitle('');
     setAnnouncementText('');
-    alert('Notice broadcast live across cooperative channels.');
+    setBroadcastSuccessNotice(`✓ Notice broadcast live to: ${
+      announcementAudience === 'farmers' ? '🌾 Farmers Only (Mobile Directives)' :
+      announcementAudience === 'scheduling' ? '📅 Operations & Scheduling Protocols' :
+      announcementAudience === 'staff' ? '👥 Farm Staff Operations' : '🌐 Cooperative-Wide (All Roles & Mobile)'
+    }`);
+    setTimeout(() => setBroadcastSuccessNotice(''), 5000);
   };
 
   const scrollToConcernQueue = () => {
@@ -611,52 +634,101 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </h4>
         </div>
 
-        <form onSubmit={handlePublishAnnouncement} style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-          <input 
-            type="text" 
-            placeholder="Notice Title (e.g. Mandatory PGS Organic Soil Inspection Schedule)"
-            value={announcementTitle}
-            onChange={(e) => setAnnouncementTitle(e.target.value)}
-            style={{ width: '100%', padding: '9px 14px', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '8px' }}
-          />
+        <form onSubmit={handlePublishAnnouncement} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '22px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 320px) 1fr', gap: '12px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#334155', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                Target Recipient / Audience:
+              </label>
+              <select 
+                value={announcementAudience}
+                onChange={(e) => setAnnouncementAudience(e.target.value)}
+                style={{ width: '100%', padding: '9px 12px', fontSize: '0.82rem', fontWeight: '700', border: '1.5px solid #11592c', borderRadius: '8px', background: '#f0fdf4', color: '#11592c', outline: 'none' }}
+              >
+                <option value="all">🌐 Cooperative-Wide (All Roles & Mobile)</option>
+                <option value="farmers">🌾 Farmers Only (Mobile App Directives)</option>
+                <option value="scheduling">📅 Scheduling & Operational Protocols</option>
+                <option value="staff">👥 Farm Staff Operations</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#334155', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                Directive Title:
+              </label>
+              <input 
+                type="text" 
+                placeholder="Notice Title (Optional - auto-assigned if blank)"
+                value={announcementTitle}
+                onChange={(e) => setAnnouncementTitle(e.target.value)}
+                style={{ width: '100%', padding: '9px 14px', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '8px' }}
+              />
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: '10px' }}>
             <textarea 
-              placeholder="Enter notice body, instructions, or meeting agenda for members and staff..."
+              placeholder="Enter directive body, operational instructions, or scheduled activity guidelines..."
               value={announcementText}
               onChange={(e) => setAnnouncementText(e.target.value)}
-              style={{ flex: 1, height: '60px', padding: '8px 12px', fontSize: '0.8rem', border: '1px solid #cbd5e1', borderRadius: '8px', resize: 'none' }}
+              style={{ flex: 1, height: '64px', padding: '10px 12px', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '8px', resize: 'none' }}
             />
             <button 
               type="submit"
-              style={{ padding: '0 24px', background: '#11592c', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ padding: '0 26px', background: '#11592c', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '0.84rem', fontWeight: '800', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '3px', boxShadow: '0 2px 4px rgba(17,89,44,0.2)' }}
             >
-              Broadcast Notice
+              <span>Broadcast Notice</span>
+              <span style={{ fontSize: '0.67rem', opacity: 0.9, fontWeight: '500' }}>Cloud & Mobile Sync</span>
             </button>
           </div>
+
+          {broadcastSuccessNotice && (
+            <div style={{ padding: '10px 14px', background: '#ecfdf5', color: '#065f46', border: '1.5px solid #6ee7b7', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>{broadcastSuccessNotice}</span>
+            </div>
+          )}
         </form>
 
         {/* Existing Announcements Feed */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {(announcements && announcements.length > 0 ? announcements : [
-            { id: 'ANN-01', title: 'PGS Quarterly Audit Verification', content: 'DA municipal organic peer-review committee arriving on November 12 for composite soil testing.', author: 'Rosa Mendoza', date: 'Today, 09:00 AM' },
-            { id: 'ANN-02', title: 'Boer Flock Hoof Trimming Reminder', content: 'Staff assigned to Pen Bravo must complete antiseptic foot bath before 11:00 AM.', author: 'Dr. V. Reyes', date: 'Yesterday' }
-          ]).map((ann) => (
-            <div key={ann.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <div>
-                <strong style={{ fontSize: '0.85rem', color: '#0f172a', display: 'block' }}>{ann.title}</strong>
-                <span style={{ fontSize: '0.78rem', color: '#475569' }}>{ann.content}</span>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '2px' }}>By {ann.author} · {ann.date}</span>
+            { id: 'ANN-01', title: 'PGS Quarterly Audit Verification', content: 'DA municipal organic peer-review committee arriving on November 12 for composite soil testing.', author: 'Rosa Mendoza', date: 'Today, 09:00 AM', targetAudience: 'all', audienceLabel: 'All Cooperative Members' },
+            { id: 'ANN-02', title: 'Boer Flock Hoof Trimming Reminder', content: 'Staff assigned to Pen Bravo must complete antiseptic foot bath before 11:00 AM.', author: 'Dr. V. Reyes', date: 'Yesterday', targetAudience: 'staff', audienceLabel: 'Farm Staff Operations' }
+          ]).map((ann) => {
+            const isFarmerTarget = ann.targetAudience === 'farmers' || ann.title?.includes('Farmers Only') || ann.audienceLabel?.includes('Farmers');
+            const isSchedTarget = ann.targetAudience === 'scheduling' || ann.title?.includes('Scheduling');
+            const isStaffTarget = ann.targetAudience === 'staff' || ann.title?.includes('Farm Staff');
+
+            return (
+              <div key={ann.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px', flexWrap: 'wrap' }}>
+                    <strong style={{ fontSize: '0.86rem', color: '#0f172a' }}>{ann.title}</strong>
+                    <span style={{ 
+                      fontSize: '0.68rem', 
+                      fontWeight: '800', 
+                      padding: '2px 8px', 
+                      borderRadius: '12px',
+                      background: isFarmerTarget ? '#dbeafe' : isSchedTarget ? '#fef3c7' : isStaffTarget ? '#f3e8ff' : '#dcfce7',
+                      color: isFarmerTarget ? '#1e40af' : isSchedTarget ? '#92400e' : isStaffTarget ? '#6b21a8' : '#11592c'
+                    }}>
+                      {ann.audienceLabel || (isFarmerTarget ? '🌾 Farmers Only (Mobile)' : isSchedTarget ? '📅 Scheduling Protocol' : isStaffTarget ? '👥 Farm Staff' : '🌐 Cooperative-Wide')}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.8rem', color: '#475569', display: 'block', lineHeight: 1.4 }}>{ann.content}</span>
+                  <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '3px' }}>By {ann.author} · {ann.date}</span>
+                </div>
+                {deleteAnnouncement && (
+                  <button 
+                    onClick={() => deleteAnnouncement(ann.id)}
+                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '6px', marginLeft: '12px' }}
+                    title="Delete notice"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                )}
               </div>
-              {deleteAnnouncement && (
-                <button 
-                  onClick={() => deleteAnnouncement(ann.id)}
-                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

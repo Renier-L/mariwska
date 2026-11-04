@@ -452,18 +452,46 @@ export const AuthProvider = ({ children }) => {
  // 2. ANNOUNCEMENTS SYNC
  const { data: annData } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
  if (annData && annData.length > 0) {
- const formatted = annData.map(a => ({
- id: String(a.id),
- title: a.title || 'Cooperative Broadcast Notice',
- content: a.content,
- author: a.author || 'Liza Cruz (Admin)',
- instantPush: true,
- date: a.start_date || new Date(a.created_at || Date.now()).toISOString().split('T')[0],
- startDate: a.start_date || new Date(a.created_at || Date.now()).toISOString().split('T')[0],
- endDate: a.end_date || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
- archived: a.is_archived || a.archived || false
- }));
- setAnnouncements(prev => {
+ const formatted = annData.map(a => {
+      const rawTitle = a.title || 'Cooperative Broadcast Notice';
+      let targetAudience = 'all';
+      let audienceLabel = 'All Cooperative Members';
+      let cleanDisplayTitle = rawTitle;
+
+      if (rawTitle.includes('[Target: Farmers Only') || rawTitle.toLowerCase().includes('farmers only')) {
+        targetAudience = 'farmers';
+        audienceLabel = 'Farmers Only (Mobile)';
+      } else if (rawTitle.includes('[Target: Farm Staff') || rawTitle.toLowerCase().includes('farm staff')) {
+        targetAudience = 'staff';
+        audienceLabel = 'Farm Staff Operations';
+      } else if (rawTitle.includes('[Target: Scheduling') || rawTitle.toLowerCase().includes('scheduling')) {
+        targetAudience = 'scheduling';
+        audienceLabel = 'Scheduling & Protocol';
+      }
+
+      if (rawTitle.startsWith('[Target:')) {
+        const closeBracket = rawTitle.indexOf(']');
+        if (closeBracket !== -1) {
+          cleanDisplayTitle = rawTitle.substring(closeBracket + 1).trim();
+        }
+      }
+
+      return {
+        id: String(a.id),
+        title: cleanDisplayTitle,
+        rawTitle: rawTitle,
+        content: a.content,
+        author: a.author || 'Rosa Mendoza (Super Admin)',
+        targetAudience,
+        audienceLabel,
+        instantPush: true,
+        date: a.start_date || new Date(a.created_at || Date.now()).toISOString().split('T')[0],
+        startDate: a.start_date || new Date(a.created_at || Date.now()).toISOString().split('T')[0],
+        endDate: a.end_date || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+        archived: a.is_archived || a.archived || false
+      };
+    });
+    setAnnouncements(prev => {
  const merged = [...formatted];
  prev.forEach(p => {
  if (!merged.some(m => String(m.id) === String(p.id) || m.content === p.content)) {
@@ -590,16 +618,43 @@ export const AuthProvider = ({ children }) => {
  .channel('announcements_realtime_channel')
  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, (payload) => {
  const newRecord = payload.new;
- const newAnn = {
- id: String(newRecord.id),
- title: newRecord.title || 'Cooperative Broadcast Notice',
- content: newRecord.content,
- author: newRecord.author || 'Liza Cruz (Admin)',
- instantPush: true,
- date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
- pushId: Math.random()
- };
- setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
+ const rawTitle = newRecord.title || 'Cooperative Broadcast Notice';
+        let targetAudience = 'all';
+        let audienceLabel = 'All Cooperative Members';
+        let cleanDisplayTitle = rawTitle;
+
+        if (rawTitle.includes('[Target: Farmers Only') || rawTitle.toLowerCase().includes('farmers only')) {
+          targetAudience = 'farmers';
+          audienceLabel = 'Farmers Only (Mobile)';
+        } else if (rawTitle.includes('[Target: Farm Staff') || rawTitle.toLowerCase().includes('farm staff')) {
+          targetAudience = 'staff';
+          audienceLabel = 'Farm Staff Operations';
+        } else if (rawTitle.includes('[Target: Scheduling') || rawTitle.toLowerCase().includes('scheduling')) {
+          targetAudience = 'scheduling';
+          audienceLabel = 'Scheduling & Protocol';
+        }
+
+        if (rawTitle.startsWith('[Target:')) {
+          const closeBracket = rawTitle.indexOf(']');
+          if (closeBracket !== -1) {
+            cleanDisplayTitle = rawTitle.substring(closeBracket + 1).trim();
+          }
+        }
+
+        const newAnn = {
+          id: String(newRecord.id),
+          title: cleanDisplayTitle,
+          rawTitle: rawTitle,
+          content: newRecord.content,
+          author: newRecord.author || 'Rosa Mendoza (Super Admin)',
+          targetAudience,
+          audienceLabel,
+          instantPush: true,
+          date: new Date(newRecord.created_at || Date.now()).toISOString().split('T')[0],
+          pushId: Math.random(),
+          _autoOpenModal: true
+        };
+        setAnnouncements(prev => [newAnn, ...prev.filter(a => a.id !== newAnn.id)]);
  setActivePushNotice(newAnn);
  })
  .subscribe();
@@ -894,95 +949,104 @@ export const AuthProvider = ({ children }) => {
  }
  };
 
- // INSTANT MULTI-WINDOW REALTIME BROADCAST WITH START/END DATES & ARCHIVE
- const publishAnnouncement = async (title, content, instantPush, startDate, endDate) => {
- let annTitle = title;
- let annContent = content;
- let push = instantPush;
- let sDate = startDate || new Date().toISOString().split('T')[0];
- let eDate = endDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+  // INSTANT MULTI-WINDOW REALTIME BROADCAST WITH TARGET AUDIENCE & SUPABASE SYNC
+  const publishAnnouncement = async (title, content, instantPush, startDate, endDate, audience) => {
+    let annTitle = '';
+    let annContent = '';
+    let push = true;
+    let targetAudience = audience || 'all'; // 'all', 'farmers', 'staff', 'scheduling'
+    let sDate = startDate || new Date().toISOString().split('T')[0];
+    let eDate = endDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+    let author = currentUser?.name || 'Rosa Mendoza (Super Admin)';
 
- // Support object argument: publishAnnouncement({ title: '...', content: '...', startDate: '...', endDate: '...' })
- if (typeof title === 'object' && title !== null) {
- annTitle = title.title || title.announcementTitle || title.name || 'Cooperative Broadcast Notice';
- annContent = title.content || title.announcementText || title.text || '';
- push = title.instantPush ?? title.pushToggle ?? true;
- sDate = title.startDate || title.sDate || new Date().toISOString().split('T')[0];
- eDate = title.endDate || title.eDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
- } else if (!content && typeof title === 'string') {
- // Support single string argument: publishAnnouncement('Announcement content here')
- annContent = title;
- annTitle = 'Cooperative Broadcast Notice';
- }
+    // Support object argument: publishAnnouncement({ title: '...', content: '...', targetAudience: '...' })
+    if (typeof title === 'object' && title !== null) {
+      annTitle = title.title || title.announcementTitle || title.name || '';
+      annContent = title.content || title.announcementText || title.text || '';
+      push = title.instantPush ?? title.pushToggle ?? true;
+      targetAudience = title.targetAudience || title.target || title.audience || targetAudience;
+      sDate = title.startDate || title.sDate || title.date || sDate;
+      eDate = title.endDate || title.eDate || eDate;
+      if (title.author) author = title.author;
+    } else if (typeof title === 'string') {
+      annTitle = title;
+      annContent = content || '';
+      push = instantPush ?? true;
+    }
 
- const cleanTitle = String(annTitle || 'Cooperative Broadcast Notice').trim();
- const cleanText = String(annContent || '').trim();
- if (!cleanText) {
- console.warn('publishAnnouncement cancelled: empty content text');
- return null;
- }
+    // Smart fallback if only title or only content was typed
+    if (!annTitle.trim() && annContent.trim()) {
+      annTitle = targetAudience === 'farmers' ? 'Farmer Field Activity Directive' : targetAudience === 'scheduling' ? 'Cooperative Operations Schedule' : 'Cooperative Operational Directive';
+    } else if (annTitle.trim() && !annContent.trim()) {
+      annContent = annTitle.trim();
+      annTitle = targetAudience === 'farmers' ? 'Farmer Field Activity Notice' : targetAudience === 'scheduling' ? 'Field Scheduling Notice' : 'Cooperative Broadcast Directive';
+    }
 
- const newAnn = { 
- id: `ANN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
- title: cleanTitle, 
- content: cleanText, 
- date: sDate, 
- startDate: sDate,
- endDate: eDate,
- archived: false,
- author: currentUser?.name || 'Liza Cruz (Admin)', 
- instantPush: push !== false,
- pushId: Date.now() + Math.random()
- };
- 
- setAnnouncements(prev => {
- const next = [newAnn, ...prev.filter(a => a.id !== newAnn.id)];
- try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {}
- return next;
- });
+    const cleanTitle = String(annTitle || 'Cooperative Broadcast Directive').trim();
+    const cleanText = String(annContent || 'New operational notice broadcasted to cooperative members.').trim();
 
- setActivePushNotice(newAnn);
+    const audienceLabel = 
+      targetAudience === 'farmers' ? 'Farmers Only (Mobile)' :
+      targetAudience === 'staff' ? 'Farm Staff Operations' :
+      targetAudience === 'scheduling' ? 'Scheduling & Protocol' : 'All Cooperative Members';
 
- if (broadcastChannel) {
- try {
- broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_PUSH', payload: newAnn });
- } catch (e) {}
- }
+    const newAnn = { 
+      id: `ANN-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
+      title: cleanTitle, 
+      content: cleanText, 
+      date: sDate, 
+      startDate: sDate, 
+      endDate: eDate, 
+      archived: false, 
+      author: author, 
+      targetAudience, 
+      audienceLabel, 
+      instantPush: push !== false, 
+      pushId: Date.now() + Math.random(), 
+      _autoOpenModal: true 
+    };
 
- try {
- localStorage.setItem('marikha_live_push', JSON.stringify({ ...newAnn, _t: Date.now() }));
- } catch (e) {}
+    setAnnouncements(prev => { 
+      const next = [newAnn, ...prev.filter(a => a.id !== newAnn.id)]; 
+      try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {} 
+      return next; 
+    });
 
- try {
- const { data, error } = await supabase.from('announcements').insert([{ 
- title: cleanTitle, 
- content: cleanText, 
- author: currentUser?.name || 'Liza Cruz (Admin)', 
- instant_push: push !== false,
- start_date: sDate,
- end_date: eDate,
- is_archived: false
- }]).select();
+    setActivePushNotice(newAnn);
 
- if (error) {
- // Fallback insert without start_date / end_date / is_archived if columns don't exist yet
- await supabase.from('announcements').insert([{ 
- title: cleanTitle, 
- content: cleanText, 
- author: currentUser?.name || 'Liza Cruz (Admin)', 
- instant_push: push !== false
- }]);
- } else {
- console.log('Supabase Announcement Inserted Live:', data);
- }
- } catch (e) {
- console.log('Supabase sync error:', e);
- }
+    if (broadcastChannel) { 
+      try { 
+        broadcastChannel.postMessage({ type: 'ANNOUNCEMENT_PUSH', payload: newAnn }); 
+      } catch (e) {} 
+    }
 
- return newAnn;
- };
+    try { 
+      localStorage.setItem('marikha_live_push', JSON.stringify({ ...newAnn, _t: Date.now() })); 
+    } catch (e) {}
 
- const toggleArchiveAnnouncement = async (annId) => {
+    // Live Supabase Cloud Sync
+    try { 
+      const formattedTitle = `[Target: ${audienceLabel}] ${cleanTitle}`; 
+      const { data, error } = await supabase.from('announcements').insert([{ 
+        title: formattedTitle, 
+        content: cleanText, 
+        author: author, 
+        instant_push: push !== false 
+      }]).select(); 
+
+      if (error) { 
+        console.warn('Supabase announcement insert notice:', error.message); 
+      } else { 
+        console.log('✓ Announcement Synced Live to Supabase:', data); 
+      } 
+    } catch (e) { 
+      console.log('Supabase sync error:', e); 
+    }
+
+    return newAnn; 
+  };
+
+  const toggleArchiveAnnouncement = async (annId) => {
  let targetAnn = null;
  setAnnouncements(prev => {
  const next = prev.map(a => {

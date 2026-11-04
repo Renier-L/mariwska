@@ -25,7 +25,10 @@ import {
  X,
  Sprout,
  Droplets,
-  Users
+  Users,
+  Megaphone,
+  Send,
+  Smartphone
 } from 'lucide-react';
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -97,6 +100,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  schedules,
  addSchedule,
  publishAnnouncement,
+    announcements = [],
  users,
  selectedSeason,
  setSelectedSeason
@@ -148,7 +152,49 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  });
  const seasonFilteredSchedules = filterBySeason(safeSchedules);
 
- const [preventivePlanApplied, setPreventivePlanApplied] = useState(false);
+ // Farmer Directive Announcement State (Farmers Only)
+  const [farmerDirectiveTitle, setFarmerDirectiveTitle] = useState('');
+  const [farmerDirectiveContent, setFarmerDirectiveContent] = useState('');
+  const [directiveFeedbackNotice, setDirectiveFeedbackNotice] = useState('');
+
+  const quickDirectiveTemplates = [
+    { title: 'Weeding & Bed Aeration Directive', content: 'All assigned farmers are requested to conduct manual weeding and loose soil aeration around root bases before 10:00 AM.' },
+    { title: 'Organic Foliar Compost Tea Spraying', content: 'Favorable morning humidity window detected. Conduct foliar spraying of organic fermented plant juice (FPJ) on vegetative plots.' },
+    { title: 'Watering Ration & Drip Check', content: 'Scheduled afternoon drip irrigation cycle begins at 03:00 PM. Inspect lateral tubes for blockages and ensure soil moistness.' },
+    { title: 'Urgent Pre-Harvest Pest Inspection', content: 'Conduct comprehensive leaf undersurface check for hornworms and aphids. Submit photo validation immediately via mobile app.' }
+  ];
+
+  const handleBroadcastFarmerDirective = async (e) => {
+    e.preventDefault();
+    const cleanContent = farmerDirectiveContent.trim();
+    let cleanTitle = farmerDirectiveTitle.trim();
+
+    if (!cleanContent && !cleanTitle) {
+      alert('Please enter a field directive message or title for registered farmers.');
+      return;
+    }
+
+    if (!cleanTitle) {
+      cleanTitle = 'Farmer Field Activity Directive';
+    }
+
+    if (publishAnnouncement) {
+      await publishAnnouncement({
+        title: cleanTitle,
+        content: cleanContent || cleanTitle,
+        targetAudience: 'farmers',
+        author: 'Farm Staff Supervisor',
+        instantPush: true
+      });
+    }
+
+    setFarmerDirectiveTitle('');
+    setFarmerDirectiveContent('');
+    setDirectiveFeedbackNotice('✓ Directive dispatched to Registered Farmers & pushed to Mobile App!');
+    setTimeout(() => setDirectiveFeedbackNotice(''), 5000);
+  };
+
+  const [preventivePlanApplied, setPreventivePlanApplied] = useState(false);
  const [isReRunningRF, setIsReRunningRF] = useState(false);
  const [rfRunTimestamp, setRfRunTimestamp] = useState('05:00 AM Today');
 
@@ -655,7 +701,143 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </div>
  </div>
  </div>
- </div>
+ 
+        {/* ROW 3: Direct Farmer Field Activity Directives (Push to Registered Farmers Mobile App) */}
+        <div style={{ background: '#ffffff', borderRadius: '14px', border: '1.5px solid #bbf7d0', padding: '22px', marginTop: '20px', boxShadow: '0 2px 8px rgba(17,89,44,0.04)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ background: '#dcfce7', padding: '6px', borderRadius: '8px' }}>
+                <Megaphone size={18} color="#11592c" />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                  Farmer Field Activity Directive Publisher
+                </h4>
+                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                  Announce tasks, spraying windows, and field activities directly to registered farmers (Pushed to Mobile App)
+                </span>
+              </div>
+            </div>
+            <span style={{ background: '#11592c', color: '#ffffff', padding: '4px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Smartphone size={13} /> Target: Farmers Only (Mobile)
+            </span>
+          </div>
+
+          {/* Quick Activity Preset Chips */}
+          <div style={{ marginBottom: '14px' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+              Quick Activity Presets:
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {quickDirectiveTemplates.map((t, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setFarmerDirectiveTitle(t.title);
+                    setFarmerDirectiveContent(t.content);
+                  }}
+                  style={{
+                    background: '#f0fdf4',
+                    border: '1px solid #86efac',
+                    borderRadius: '6px',
+                    padding: '5px 10px',
+                    fontSize: '0.74rem',
+                    fontWeight: '700',
+                    color: '#15803d',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  + {t.title}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <form onSubmit={handleBroadcastFarmerDirective} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 340px) 1fr', gap: '10px' }}>
+              <input
+                type="text"
+                placeholder="Directive Title (e.g. Urgent Bed Weeding Window)"
+                value={farmerDirectiveTitle}
+                onChange={(e) => setFarmerDirectiveTitle(e.target.value)}
+                style={{ padding: '9px 12px', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '8px' }}
+              />
+              <input
+                type="text"
+                disabled
+                value="Recipient Channel: 🌾 All Registered Farmers (Mobile App Simulator & Realtime)"
+                style={{ padding: '9px 12px', fontSize: '0.8rem', fontWeight: '700', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#166534' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <textarea
+                placeholder="Type specific instructions for farmers (e.g. Please weed Sector B before 10 AM, use compost tea only on plots with flowering stages)..."
+                value={farmerDirectiveContent}
+                onChange={(e) => setFarmerDirectiveContent(e.target.value)}
+                style={{ flex: 1, height: '64px', padding: '10px 12px', fontSize: '0.82rem', border: '1px solid #cbd5e1', borderRadius: '8px', resize: 'none' }}
+              />
+              <button
+                type="submit"
+                style={{
+                  padding: '0 24px',
+                  background: '#11592c',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.84rem',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '3px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Send size={14} /> Send to Farmers
+                </div>
+                <span style={{ fontSize: '0.67rem', opacity: 0.85, fontWeight: '500' }}>Push to Mobile</span>
+              </button>
+            </div>
+
+            {directiveFeedbackNotice && (
+              <div style={{ padding: '9px 14px', background: '#ecfdf5', color: '#065f46', border: '1.5px solid #6ee7b7', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700' }}>
+                {directiveFeedbackNotice}
+              </div>
+            )}
+          </form>
+
+          {/* Recent Directives Feed */}
+          {announcements && announcements.filter(a => a.targetAudience === 'farmers' || a.title?.includes('Farmer') || a.audienceLabel?.includes('Farmer')).length > 0 && (
+            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #e2e8f0' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                Active Farmer Directives Dispatched:
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {announcements
+                  .filter(a => a.targetAudience === 'farmers' || a.title?.includes('Farmer') || a.audienceLabel?.includes('Farmer'))
+                  .slice(0, 3)
+                  .map(a => (
+                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div>
+                        <strong style={{ fontSize: '0.84rem', color: '#0f172a' }}>{a.title}</strong>
+                        <p style={{ fontSize: '0.78rem', color: '#475569', margin: '2px 0 0 0' }}>{a.content}</p>
+                        <span style={{ fontSize: '0.68rem', color: '#94a3b8' }}>By {a.author} · {a.date}</span>
+                      </div>
+                      <span style={{ background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: '800', whiteSpace: 'nowrap' }}>
+                        🌾 Mobile Pushed
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
  );
  };
 

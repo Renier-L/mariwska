@@ -104,6 +104,18 @@ const MainContent = () => {
  <h4 style={{ fontSize: '0.88rem', fontWeight: '800', color: '#111827', margin: 0 }}>
  {activePushNotice.title}
  </h4>
+                    <span style={{ 
+                      fontSize: '0.64rem', 
+                      fontWeight: '800', 
+                      padding: '2px 8px', 
+                      borderRadius: '10px',
+                      display: 'inline-block',
+                      marginTop: '4px',
+                      background: activePushNotice.targetAudience === 'farmers' ? '#dbeafe' : activePushNotice.targetAudience === 'scheduling' ? '#fef3c7' : '#dcfce7',
+                      color: activePushNotice.targetAudience === 'farmers' ? '#1e40af' : activePushNotice.targetAudience === 'scheduling' ? '#92400e' : '#11592c'
+                    }}>
+                      Target: {activePushNotice.audienceLabel || (activePushNotice.targetAudience === 'farmers' ? '🌾 Farmers Only' : '🌐 Cooperative-Wide')}
+                    </span>
  </div>
  </div>
  <button onClick={dismissPushNotice} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
@@ -168,6 +180,17 @@ const MainContent = () => {
  <div style={{ fontSize: '0.78rem', color: '#4b5563', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
  <span style={{ fontWeight: '700', color: '#11592c' }}>Author:</span>
  <span>{activePushNotice?.author || 'Liza Cruz (Admin)'}</span>
+                <span style={{ 
+                  fontSize: '0.68rem', 
+                  fontWeight: '800', 
+                  padding: '2px 10px', 
+                  borderRadius: '12px',
+                  marginLeft: 'auto',
+                  background: activePushNotice?.targetAudience === 'farmers' ? '#dbeafe' : activePushNotice?.targetAudience === 'scheduling' ? '#fef3c7' : '#dcfce7',
+                  color: activePushNotice?.targetAudience === 'farmers' ? '#1e40af' : activePushNotice?.targetAudience === 'scheduling' ? '#92400e' : '#11592c'
+                }}>
+                  Recipient: {activePushNotice?.audienceLabel || (activePushNotice?.targetAudience === 'farmers' ? '🌾 Farmers Only' : '🌐 Cooperative-Wide')}
+                </span>
  </div>
 
  <div style={{

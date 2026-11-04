@@ -114,7 +114,30 @@ const SchedulesTaskModule = ({ schedules = [], addSchedule, updateScheduleStatus
     }
   ];
 
-  const taskList = (schedules && schedules.length > 0) ? schedules : defaultTasks;
+  const rawTaskList = (schedules && schedules.length > 0) ? schedules : defaultTasks;
+  const taskList = rawTaskList.map((t, idx) => {
+    const target = t.target || t.plot || t.targetAsset || (t.category === 'livestock' ? 'Herd HRD-GT-001 · Anglo-Nubian Goats' : `Plot P-00${(idx % 6) + 1} · Organic Crops`);
+    const farmer = t.farmer || t.assignedTo || t.assignedFarmer || (idx % 2 === 0 ? 'Juan Dela Cruz (RSBSA-04-1234)' : 'Roberto Cruz (RSBSA-04-5678)');
+    const dueDate = t.dueDate || t.date || '2026-11-15';
+    const time = t.time || '08:00 AM';
+    const category = t.category ? (t.category.charAt(0).toUpperCase() + t.category.slice(1)) : 'Field Operations';
+    const priority = t.priority ? (t.priority.toUpperCase() === 'HIGH' ? 'High' : t.priority.toUpperCase() === 'MEDIUM' ? 'Medium' : t.priority.toUpperCase() === 'LOW' ? 'Low' : t.priority) : 'Medium';
+    const status = t.status ? (t.status === 'Upcoming' ? 'Pending' : t.status === 'Scheduled' ? 'In Progress' : t.status) : 'Pending';
+
+    return {
+      ...t,
+      category,
+      target,
+      plot: target,
+      farmer,
+      assignedTo: farmer,
+      dueDate,
+      date: dueDate,
+      time,
+      priority,
+      status
+    };
+  });
 
   // New task form state
   const [formData, setFormData] = useState({
@@ -401,15 +424,21 @@ const SchedulesTaskModule = ({ schedules = [], addSchedule, updateScheduleStatus
                         {task.category}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 16px', color: '#334155' }}>
-                      {task.target}
+                    <td style={{ padding: '14px 16px', color: '#0f172a' }}>
+                      <div style={{ fontWeight: '700', fontSize: '0.84rem' }}>{task.target}</div>
+                      <span style={{ fontSize: '0.7rem', color: '#16a34a', fontWeight: '700' }}>Active Field Target</span>
                     </td>
-                    <td style={{ padding: '14px 16px', color: '#0f172a', fontWeight: '500' }}>
-                      {task.farmer}
+                    <td style={{ padding: '14px 16px', color: '#0f172a' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#dcfce7', color: '#11592c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <User size={13} />
+                        </div>
+                        <span style={{ fontWeight: '700', fontSize: '0.84rem' }}>{task.farmer}</span>
+                      </div>
                     </td>
                     <td style={{ padding: '14px 16px', color: '#475569' }}>
-                      <div>{task.dueDate}</div>
-                      <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>{task.time}</span>
+                      <div style={{ fontWeight: '700', color: '#0f172a' }}>{task.dueDate}</div>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>{task.time}</span>
                     </td>
                     <td style={{ padding: '14px 16px' }}>
                       <span style={{
