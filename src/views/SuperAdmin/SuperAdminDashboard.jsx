@@ -693,7 +693,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           {(announcements && announcements.length > 0 ? announcements : [
             { id: 'ANN-01', title: 'PGS Quarterly Audit Verification', content: 'DA municipal organic peer-review committee arriving on November 12 for composite soil testing.', author: 'Rosa Mendoza', date: 'Today, 09:00 AM', targetAudience: 'all', audienceLabel: 'All Cooperative Members' },
             { id: 'ANN-02', title: 'Boer Flock Hoof Trimming Reminder', content: 'Staff assigned to Pen Bravo must complete antiseptic foot bath before 11:00 AM.', author: 'Dr. V. Reyes', date: 'Yesterday', targetAudience: 'staff', audienceLabel: 'Farm Staff Operations' }
-          ]).map((ann) => {
+          ]).filter(ann => {
+            const isFarmStaffPrivate = (ann.targetAudience === 'farmers' && (ann.author?.toLowerCase().includes('staff') || ann.author?.toLowerCase().includes('farm staff'))) || (ann.title?.startsWith('[Target: Farmers Only') && ann.author?.toLowerCase().includes('staff'));
+            return !isFarmStaffPrivate;
+          }).map((ann) => {
             const isFarmerTarget = ann.targetAudience === 'farmers' || ann.title?.includes('Farmers Only') || ann.audienceLabel?.includes('Farmers');
             const isSchedTarget = ann.targetAudience === 'scheduling' || ann.title?.includes('Scheduling');
             const isStaffTarget = ann.targetAudience === 'staff' || ann.title?.includes('Farm Staff');

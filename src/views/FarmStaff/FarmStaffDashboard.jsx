@@ -28,7 +28,8 @@ import {
   Users,
   Megaphone,
   Send,
-  Smartphone
+  Smartphone,
+  ExternalLink
 } from 'lucide-react';
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -198,7 +199,8 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  const [isReRunningRF, setIsReRunningRF] = useState(false);
  const [rfRunTimestamp, setRfRunTimestamp] = useState('05:00 AM Today');
 
- const [selectedValId, setSelectedValId] = useState(safeValidations[0]?.id || 'val-1');
+   const [showLocationModal, setShowLocationModal] = useState(null); // { coords, plot, farmer, activity }
+  const [selectedValId, setSelectedValId] = useState(safeValidations[0]?.id || 'val-1');
  const [staffNote, setStaffNote] = useState('');
  const [reportsTab, setReportsTab] = useState('productivity');
  const [farmerSearchQuery, setFarmerSearchQuery] = useState('');
@@ -1040,25 +1042,74 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </div>
 
  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px', fontSize: '0.8rem' }}>
- <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
- <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>FARMER</span>
- <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
- </div>
- <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
- <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>PLOT</span>
- <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.plot}</strong>
- </div>
- <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
- <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
- <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
- </div>
- <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
- <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>REALTIME LOCATION</span>
- <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
- <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || 'Live Mobile GPS'}
- </strong>
- </div>
- <div style={{ gridColumn: 'span 2', background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              {/* Interactive Farmer Link */}
+              <div 
+                onClick={() => {
+                  if (selectedValidation.farmer) setFarmerSearch(selectedValidation.farmer);
+                  if (setActiveTab) setActiveTab('farmer-management');
+                }}
+                title="Click to view and supervise this farmer's profile"
+                style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', cursor: 'pointer', transition: 'all 0.15s ease' }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#16a34a'}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase' }}>FARMER</span>
+                  <span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: '800' }}>Direct Link ↗</span>
+                </div>
+                <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.farmer}</strong>
+              </div>
+
+              {/* Interactive Plot Link */}
+              <div 
+                onClick={() => {
+                  if (selectedValidation.plot) setCropSearchQuery(selectedValidation.plot);
+                  if (setActiveTab) setActiveTab('crop-management');
+                }}
+                title="Click to view and monitor this crop plot"
+                style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', cursor: 'pointer', transition: 'all 0.15s ease' }}
+                onMouseEnter={(e) => e.currentTarget.style.borderColor = '#16a34a'}
+                onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase' }}>PLOT</span>
+                  <span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: '800' }}>Direct Link ↗</span>
+                </div>
+                <strong style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#11592c' }}>{selectedValidation.plot}</strong>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>TASK TYPE</span>
+                <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{selectedValidation.taskType || selectedValidation.activity}</strong>
+              </div>
+
+              {/* Interactive Connected GPS Realtime Location Link */}
+              <div 
+                onClick={() => {
+                  const loc = selectedValidation.location || selectedValidation.gps || '14.5995° N, 121.1794° E';
+                  setShowLocationModal({
+                    coords: loc,
+                    plot: selectedValidation.plot,
+                    farmer: selectedValidation.farmer,
+                    activity: selectedValidation.taskType || selectedValidation.activity
+                  });
+                }}
+                title="Click to direct to exact field GPS coordinates on Google Maps"
+                style={{ background: '#f0fdf4', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #86efac', cursor: 'pointer', transition: 'all 0.15s ease' }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#dcfce7'}
+                onMouseLeave={(e) => e.currentTarget.style.background = '#f0fdf4'}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                  <span style={{ color: '#166534', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase' }}>REALTIME LOCATION</span>
+                  <span style={{ fontSize: '0.66rem', color: '#15803d', fontWeight: '800', background: '#dcfce7', padding: '1px 6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    View Map ↗
+                  </span>
+                </div>
+                <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <MapPin size={13} color="#15803d" /> {selectedValidation.location || selectedValidation.gps || '14.5995° N, 121.1794° E'}
+                </strong>
+              </div>
+            <div style={{ gridColumn: 'span 2', background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
  <span style={{ color: '#64748b', fontSize: '0.68rem', fontWeight: '800', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>SUBMITTED DATE & TIME</span>
  <strong style={{ fontSize: '0.85rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
  <Clock size={14} color="#0284c7" /> {formatFullTimestamp(selectedValidation.createdAt || selectedValidation.created_at)} ({formatRelativeTime(selectedValidation.createdAt || selectedValidation.created_at)})
@@ -3110,9 +3161,118 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 
  const renderContainerWithModal = (content) => (
 		<>
-			{renderTopNav()}
+			{/* Top duplicate sub-nav removed for formal clean UI */}
+
 			{content}
- {/* FULLSCREEN LIGHTBOX IMAGE MODAL */}
+ 
+        {/* GPS SATELLITE FIELD GEOLOCATION MODAL */}
+        {showLocationModal && (
+          <div 
+            onClick={() => setShowLocationModal(null)}
+            style={{
+              position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+              background: 'rgba(15, 23, 42, 0.7)', zIndex: 99999, display: 'flex',
+              alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(6px)'
+            }}
+          >
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="m-card" 
+              style={{ width: '100%', maxWidth: '540px', background: '#ffffff', borderRadius: '18px', padding: '24px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <MapPin size={20} color="#11592c" />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#0f172a' }}>
+                      Field Location & GPS Pinpoint
+                    </h3>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                      Verified mobile satellite coordinates for {showLocationModal.plot || 'Active Plot'}
+                    </span>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowLocationModal(null)}
+                  style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Satellite Map Preview Mockup Card */}
+              <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '12px', overflow: 'hidden', marginBottom: '16px', background: '#0f172a' }}>
+                <img 
+                  src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80" 
+                  alt="Cooperative Field Topography"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }}
+                />
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ background: '#16a34a', color: '#ffffff', padding: '8px 16px', borderRadius: '24px', fontWeight: '800', fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 14px rgba(0,0,0,0.5)' }}>
+                    <MapPin size={16} color="#ffffff" />
+                    <span>{showLocationModal.plot || 'Plot P-007'} Target Pin</span>
+                  </div>
+                  <span style={{ marginTop: '6px', fontSize: '0.7rem', color: '#ffffff', background: 'rgba(0,0,0,0.65)', padding: '2px 8px', borderRadius: '4px' }}>
+                    {showLocationModal.coords || '14.5995° N, 121.1794° E'}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '18px' }}>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', display: 'block' }}>ASSIGNED FARMER</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{showLocationModal.farmer || 'Juan Dela Cruz'}</strong>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', display: 'block' }}>FIELD ACTIVITY</span>
+                  <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{showLocationModal.activity || 'Field Verification'}</strong>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', gridColumn: 'span 2' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', display: 'block' }}>GEOFENCE AUDIT STATUS</span>
+                  <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <CheckCircle2 size={14} color="#16a34a" /> Verified Inside Antipolo Organic Cooperative Sector B (Accuracy ±2.8m)
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowLocationModal(null)}
+                  style={{ padding: '9px 16px', background: '#f1f5f9', border: 'none', borderRadius: '8px', fontSize: '0.82rem', fontWeight: '700', color: '#475569', cursor: 'pointer' }}
+                >
+                  Close
+                </button>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    String(showLocationModal.coords || '14.5995, 121.1794').replace(/[^\d.,-]/g, ' ').trim().replace(/\s+/g, ',') || '14.5995,121.1794'
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: '9px 18px',
+                    background: '#11592c',
+                    color: '#ffffff',
+                    borderRadius: '8px',
+                    fontSize: '0.82rem',
+                    fontWeight: '800',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(17,89,44,0.3)'
+                  }}
+                >
+                  <ExternalLink size={14} /> Open in Google Maps ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* FULLSCREEN LIGHTBOX IMAGE MODAL */}
  {previewModalUrl && (
  <div 
  onClick={() => setPreviewModalUrl(null)}

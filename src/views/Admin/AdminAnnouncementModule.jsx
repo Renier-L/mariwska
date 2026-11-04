@@ -35,7 +35,7 @@ const AdminAnnouncementModule = ({
   // Form State
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [targetAudience, setTargetAudience] = useState('All Members');
+  const [targetAudience, setTargetAudience] = useState('all');
   const [startDate, setStartDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(() => new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
   const [instantPush, setInstantPush] = useState(true);
@@ -57,7 +57,14 @@ const AdminAnnouncementModule = ({
   const expiredOrArchivedCount = announcements.filter(a => getStatus(a).key === 'expired' || getStatus(a).key === 'archived').length;
 
   // Filtered Announcements
-  const filteredAnnouncements = announcements.filter(a => {
+  const filteredAnnouncements = announcements
+    .filter(a => {
+      const isFarmStaffPrivate = 
+        (a.targetAudience === 'farmers' && (a.author?.toLowerCase().includes('staff') || a.author?.toLowerCase().includes('farm staff'))) ||
+        (a.title?.startsWith('[Target: Farmers Only') && a.author?.toLowerCase().includes('staff'));
+      return !isFarmStaffPrivate;
+    })
+    .filter(a => {
     const status = getStatus(a).key;
     if (tabFilter !== 'all' && status !== tabFilter) return false;
 
@@ -73,7 +80,7 @@ const AdminAnnouncementModule = ({
   const handleOpenCreate = () => {
     setTitle('');
     setContent('');
-    setTargetAudience('All Members');
+    setTargetAudience('all');
     setStartDate(new Date().toISOString().split('T')[0]);
     setEndDate(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
     setInstantPush(true);
@@ -500,12 +507,11 @@ const AdminAnnouncementModule = ({
                 <select
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value)}
-                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #11592c', fontSize: '0.82rem', fontWeight: '700', color: '#11592c', background: '#f0fdf4' }}
                 >
-                  <option value="All Members">All Members</option>
-                  <option value="Farmers Only">Farmers Only</option>
-                  <option value="Farm Staff Only">Farm Staff Only</option>
-                  <option value="Governance Board">Governance Board</option>
+                  <option value="all">🌐 Everyone Across All Platforms (Cooperative-Wide)</option>
+                  <option value="farmers">🌾 Farmers Only (Mobile App Directives)</option>
+                  <option value="staff">👥 Farm Staff Operations Only</option>
                 </select>
               </div>
 

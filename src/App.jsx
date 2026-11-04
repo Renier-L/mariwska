@@ -77,11 +77,25 @@ const MainContent = () => {
  </main>
  </div>
 
- {/* Floating Instant Push Notification Toast Banner */}
- {activePushNotice && (
- <div style={{
- position: 'fixed',
- top: '24px',
+ // Farm staff announcements are private directives to farmers (mobile app).
+  // Hide completely from Super Admin and Admin notification alerts & popups!
+  const isFarmStaffPrivateDirective = 
+    activePushNotice && (
+      activePushNotice.targetAudience === 'farmers' ||
+      (activePushNotice.audienceLabel && activePushNotice.audienceLabel.toLowerCase().includes('farmers only')) ||
+      (activePushNotice.author && activePushNotice.author.toLowerCase().includes('farm staff')) ||
+      (activePushNotice.title && activePushNotice.title.toLowerCase().includes('farmer field activity'))
+    );
+
+  const shouldShowPushToCurrentRole = 
+    activePushNotice && 
+    (!isFarmStaffPrivateDirective || (currentRole !== 'super_admin' && currentRole !== 'admin'));
+
+  {/* Floating Instant Push Notification Toast Banner */}
+ {shouldShowPushToCurrentRole && (
+				<div style={{
+					position: 'fixed',
+					top: '24px',
  right: '24px',
  zIndex: 99999,
  width: '380px',
@@ -140,7 +154,7 @@ const MainContent = () => {
  )}
 
  {/* POP-UP ANNOUNCEMENT MODAL */}
- {(showFullNoticeModal || (activePushNotice && activePushNotice._autoOpenModal)) && (
+ {shouldShowPushToCurrentRole && (showFullNoticeModal || (activePushNotice && activePushNotice._autoOpenModal)) && (
  <div style={{
  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
  background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)',

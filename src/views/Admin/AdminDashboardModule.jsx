@@ -710,7 +710,7 @@ const AdminDashboardModule = ({
 
           {/* 3 Announcement Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {recentAnnouncements.map(ann => (
+            {(announcements && announcements.length > 0 ? announcements.filter(a => !((a.targetAudience === 'farmers' && (a.author?.toLowerCase().includes('staff') || a.author?.toLowerCase().includes('farm staff'))) || (a.title?.startsWith('[Target: Farmers Only') && a.author?.toLowerCase().includes('staff')))).slice(0, 3) : recentAnnouncements).map(ann => (
               <div 
                 key={ann.id}
                 style={{
