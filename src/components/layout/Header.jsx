@@ -19,6 +19,24 @@ const Header = () => {
 
  const canBroadcast = currentRole === 'admin';
 
+ const displayName = currentUser?.name || (currentRole === 'admin' ? 'Danilo Cruz' : 'Rosa Mendoza');
+ const userInitials = (() => {
+ if (currentUser?.initials) return currentUser.initials;
+ if (displayName) {
+ const parts = displayName.trim().split(/\s+/).filter(Boolean);
+ if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+ return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+ }
+ return 'RM';
+ })();
+
+ const displayRoleLabel = (() => {
+ if (currentRole === 'super_admin') return 'Super Admin';
+ if (currentRole === 'admin') return 'Admin IT/HR';
+ if (currentRole === 'farm_staff') return 'Farm Staff';
+ return currentUser?.role || 'User';
+ })();
+
 
  const handleOpenModal = () => {
  if (!currentUser) return;
@@ -160,10 +178,10 @@ const Header = () => {
  >
  <div style={{ textAlign: 'right', lineHeight: 1.1 }}>
  <div style={{ fontWeight: '800', fontSize: '0.82rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '4px' }}>
- {currentUser?.name || (currentRole === 'admin' ? 'Liza Cruz' : 'Rosa Mendoza')} <Pencil size={11} color="#15803d" />
+ {displayName} <Pencil size={11} color="#15803d" />
  </div>
  <div style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
- {currentRole === 'super_admin' ? 'Super Admin' : (currentRole === 'admin' ? 'Admin IT/HR' : (currentRole === 'farm_staff' ? 'Farm Staff' : (currentUser?.role || 'User')))}
+ {displayRoleLabel}
  </div>
  </div>
  <div style={{
@@ -178,7 +196,7 @@ const Header = () => {
  fontWeight: '800',
  fontSize: '0.8rem'
  }}>
- {currentRole === 'admin' ? 'LC' : (currentUser?.initials || (currentUser?.name ? currentUser.name.substring(0, 2).toUpperCase() : 'RM'))}
+ {userInitials}
  </div>
  </button>
  </div>

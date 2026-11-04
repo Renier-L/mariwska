@@ -36,7 +36,28 @@ export const AuthProvider = ({ children }) => {
  } catch (e) {}
  };
 
- const [currentUser, setCurrentUser] = useState(initialUsers[0]);
+	const [currentUser, setCurrentUser] = useState(() => {
+		try {
+			const savedUser = localStorage.getItem('marikha_current_user');
+			if (savedUser) {
+				const parsed = JSON.parse(savedUser);
+				if (parsed && (parsed.name || parsed.email)) return parsed;
+			}
+			const savedRole = localStorage.getItem('marikha_current_role');
+			const savedUsers = localStorage.getItem('marikha_registered_users');
+			const userPool = (savedUsers && JSON.parse(savedUsers)) || initialUsers;
+			if (savedRole === 'admin') {
+				return userPool.find(u => u.role === 'Admin') || userPool[1] || initialUsers[1];
+			} else if (savedRole === 'farm_staff') {
+				return userPool.find(u => u.role === 'Farm Staff') || userPool[2] || initialUsers[2];
+			} else if (savedRole === 'mobile_app') {
+				return userPool.find(u => u.role === 'Farmer') || userPool[4] || initialUsers[4];
+			}
+			return userPool.find(u => u.role === 'Executive' || u.role === 'Super Admin') || userPool[0] || initialUsers[0];
+		} catch (e) {
+			return initialUsers[0];
+		}
+	});
  const [tenantInfo] = useState({
  name: 'Antipolo Organic Farming Cooperative',
  id: 'ANT-ORG-001',
@@ -238,6 +259,7 @@ export const AuthProvider = ({ children }) => {
  try {
  if (roleKey === 'login') {
  localStorage.removeItem('marikha_current_role');
+ localStorage.removeItem('marikha_current_user');
  } else {
  localStorage.setItem('marikha_current_role', roleKey);
  }
@@ -246,42 +268,24 @@ export const AuthProvider = ({ children }) => {
 
  const loginAsRole = (roleKey, targetUser = null) => {
  setCurrentRole(roleKey);
- if (targetUser) {
- setCurrentUser(targetUser);
- return;
- }
-
+ let chosenUser = targetUser;
+ if (!chosenUser) {
  if (roleKey === 'super_admin') {
- const superAdmin = users.find(u => u.role === 'Executive' || u.role === 'Super Admin') || users[0] || initialUsers[0];
- setCurrentUser(superAdmin);
+ chosenUser = users.find(u => u.role === 'Executive' || u.role === 'Super Admin') || users[0] || initialUsers[0];
  } else if (roleKey === 'admin') {
- const adminUser = users.find(u => u.role === 'Admin') || users[1] || initialUsers[1];
- setCurrentUser(adminUser);
+ chosenUser = users.find(u => u.role === 'Admin') || users[1] || initialUsers[1];
  } else if (roleKey === 'farm_staff') {
- const staffUser = (users && users.find(u => u.role === 'Farm Staff')) || initialUsers[2] || {
- id: 'staff-default',
- name: 'Ramon Bautista',
- role: 'Farm Staff',
- email: 'ramon@mariwska.coop',
- phone: '+63 917 555 0100',
- password: 'staff123',
- status: true,
- initials: 'RB'
- };
- setCurrentUser(staffUser);
+ chosenUser = (users && users.find(u => u.role === 'Farm Staff')) || initialUsers[2];
  } else if (roleKey === 'mobile_app') {
- const farmerUser = users.find(u => u.role === 'Farmer') || users[3] || {
- id: 'farmer-default',
- name: 'rei lopez',
- role: 'Farmer',
- email: 'lopezrenier97@gmail.com',
- phone: '+63 917 555 0100',
- password: 'password123',
- status: true,
- initials: 'RL'
- };
- setCurrentUser(farmerUser);
+ chosenUser = users.find(u => u.role === 'Farmer') || users[4] || initialUsers[4];
+ } else {
+ chosenUser = users[0] || initialUsers[0];
  }
+ }
+ setCurrentUser(chosenUser);
+ try {
+ localStorage.setItem('marikha_current_user', JSON.stringify(chosenUser));
+ } catch (e) {}
  };
 
  // Cross-Window Instant Sync via BroadcastChannel & LocalStorage!
@@ -335,6 +339,22 @@ export const AuthProvider = ({ children }) => {
  });
  };
 
+ const handleIncomingProfileUpdate = (updatedUser) => {
+ if (!updatedUser) return;
+ setCurrentUser(prev => {
+ if (!prev) return updatedUser;
+ if (String(prev.id) === String(updatedUser.id) || prev.email === updatedUser.email) {
+ return { ...prev, ...updatedUser };
+ }
+ return prev;
+ });
+ setUsers(prev => prev.map(u => (String(u.id) === String(updatedUser.id) || u.email === updatedUser.email) ? { ...u, ...updatedUser } : u));
+ };
+
+ const handleIncomingStatusToggle = ({ id, status }) => {
+ setUsers(prev => prev.map(u => (String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', '')) ? { ...u, status, isActive: status } : u));
+ };
+
  if (broadcastChannel) {
  broadcastChannel.onmessage = (event) => {
  if (event.data && event.data.type === 'ANNOUNCEMENT_PUSH') {
@@ -343,9 +363,13 @@ export const AuthProvider = ({ children }) => {
  handleIncomingValidation(event.data.payload);
  } else if (event.data && event.data.type === 'USER_CREATED_PUSH') {
  handleIncomingUser(event.data.payload);
+ } else if (event.data && event.data.type === 'PROFILE_UPDATED_PUSH') {
+ handleIncomingProfileUpdate(event.data.payload);
+ } else if (event.data && event.data.type === 'USER_STATUS_TOGGLED') {
+ handleIncomingStatusToggle(event.data.payload);
  } else if (event.data && event.data.type === 'RBAC_UPDATED_PUSH') {
-        setRbacCategories(event.data.payload);
-      } else if (event.data && event.data.type === 'USER_DELETED_PUSH') {
+ setRbacCategories(event.data.payload);
+ } else if (event.data && event.data.type === 'USER_DELETED_PUSH') {
  handleDeletedUser(event.data.payload);
  }
  };
@@ -367,9 +391,14 @@ export const AuthProvider = ({ children }) => {
  const parsed = JSON.parse(e.newValue);
  handleIncomingUser(parsed);
  } catch (err) {}
+ } else if (e.key === 'marikha_current_user' && e.newValue) {
+ try {
+ const parsed = JSON.parse(e.newValue);
+ handleIncomingProfileUpdate(parsed);
+ } catch (err) {}
  } else if (e.key === 'marikha_rbac_matrix_v3' && e.newValue) {
-        try { setRbacCategories(JSON.parse(e.newValue)); } catch (err) {}
-      } else if (e.key === 'marikha_deleted_user' && e.newValue) {
+ try { setRbacCategories(JSON.parse(e.newValue)); } catch (err) {}
+ } else if (e.key === 'marikha_deleted_user' && e.newValue) {
  try {
  const parsed = JSON.parse(e.newValue);
  handleDeletedUser(parsed.id);
@@ -678,14 +707,47 @@ export const AuthProvider = ({ children }) => {
  };
  }, []);
 
- const toggleUserStatus = (id) => {
+ const toggleUserStatus = async (id) => {
  setUsers(prev => {
- const target = prev.find(u => u.id === id);
- if (target && (target.role === 'Executive' || target.role === 'Admin')) return prev;
- const next = prev.map(u => u.id === id ? { ...u, status: !u.status } : u);
+ const target = prev.find(u => String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', ''));
+ if (!target) return prev;
+
+ // Prevent deactivating own logged-in user account
+ if (currentUser && (String(target.id) === String(currentUser.id) || target.email === currentUser.email)) {
+ alert("Action Restricted: You cannot deactivate your own active session account.");
+ return prev;
+ }
+
+ const currentActive = target.status === true || target.status === 'Active' || target.isActive === true;
+ const nextActive = !currentActive;
+
+ const next = prev.map(u => {
+ if (String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', '')) {
+ return {
+ ...u,
+ status: nextActive,
+ isActive: nextActive
+ };
+ }
+ return u;
+ });
+
  try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+ if (broadcastChannel) {
+ broadcastChannel.postMessage({ type: 'USER_STATUS_TOGGLED', payload: { id, status: nextActive } });
+ }
  return next;
  });
+
+ try {
+ const target = users.find(u => String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', ''));
+ if (target) {
+ const currentActive = target.status === true || target.status === 'Active' || target.isActive === true;
+ await supabase.from('users').update({ status: !currentActive }).eq('email', target.email);
+ }
+ } catch (e) {
+ console.log('Supabase user toggle error:', e);
+ }
  };
 
  const addUser = async (newUser) => {
@@ -751,17 +813,23 @@ export const AuthProvider = ({ children }) => {
  };
 
  const updateUser = async (userId, updatedData) => {
- const targetUser = users.find(u => u.id === userId);
  setUsers(prev => {
- const next = prev.map(u => u.id === userId ? { 
+ const next = prev.map(u => (String(u.id) === String(userId) || u.email === updatedData.email) ? { 
  ...u, 
  ...updatedData, 
  password: updatedData.password ? String(updatedData.password).trim() : u.password,
- initials: updatedData.name ? updatedData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : u.initials 
+ initials: updatedData.name ? updatedData.name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() : u.initials 
  } : u);
  try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
  return next;
  });
+
+ if (currentUser && (String(currentUser.id) === String(userId) || currentUser.email === updatedData.email)) {
+ const newInitials = updatedData.name ? updatedData.name.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() : currentUser.initials;
+ const updatedCurr = { ...currentUser, ...updatedData, initials: newInitials };
+ setCurrentUser(updatedCurr);
+ try { localStorage.setItem('marikha_current_user', JSON.stringify(updatedCurr)); } catch (e) {}
+ }
 
  try {
  const payload = {
@@ -1320,8 +1388,8 @@ export const AuthProvider = ({ children }) => {
  const updateProfile = async (updatedFields) => {
  if (!currentUser) return;
  const newInitials = updatedFields.name
- ? updatedFields.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
- : currentUser.initials;
+ ? updatedFields.name.trim().split(/\s+/).map(n => n[0]).join('').substring(0, 2).toUpperCase()
+ : (currentUser.initials || 'U');
 
  const updatedUser = {
  ...currentUser,
@@ -1330,7 +1398,19 @@ export const AuthProvider = ({ children }) => {
  };
 
  setCurrentUser(updatedUser);
- setUsers(prev => prev.map(u => (u.id === currentUser.id || u.email === currentUser.email) ? updatedUser : u));
+ try {
+ localStorage.setItem('marikha_current_user', JSON.stringify(updatedUser));
+ } catch (e) {}
+
+ setUsers(prev => {
+ const next = prev.map(u => (String(u.id) === String(currentUser.id) || u.email === currentUser.email) ? { ...u, ...updatedUser } : u);
+ try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+ return next;
+ });
+
+ if (broadcastChannel) {
+ broadcastChannel.postMessage({ type: 'PROFILE_UPDATED_PUSH', payload: updatedUser });
+ }
 
  try {
  const payload = {
@@ -1344,6 +1424,7 @@ export const AuthProvider = ({ children }) => {
  } catch (e) {
  console.log('Supabase profile update error:', e);
  }
+ return updatedUser;
  };
 
  const togglePermission = (role, capability) => {

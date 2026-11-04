@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { 
   UserCheck, 
   Mail, 
@@ -15,22 +16,33 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const AdminProfileModule = ({ currentUser = {} }) => {
+const AdminProfileModule = ({ currentUser: propUser = {} }) => {
+  const { currentUser: authUser, updateProfile } = useAuth();
+  const effectiveUser = authUser || propUser || {};
+
   const [showEditModal, setShowEditModal] = useState(false);
-  const [phone, setPhone] = useState(currentUser.phone || '+63 917 555 0102');
-  const [emergencyContact, setEmergencyContact] = useState(currentUser.emergencyContact || 'Mark Cruz (+63 918 333 4444)');
+  const [adminName, setAdminName] = useState(effectiveUser.name || 'Danilo Cruz');
+  const [phone, setPhone] = useState(effectiveUser.phone || '+63 917 555 0102');
+  const [emergencyContact, setEmergencyContact] = useState(effectiveUser.emergencyContact || 'Mark Cruz (+63 918 333 4444)');
   const [bio, setBio] = useState('Administrative IT/HR Lead overseeing cooperative member records, user access governance, and field communication pipelines.');
 
-  const adminName = currentUser.fullName || currentUser.name || 'Liza Cruz';
-  const adminEmail = currentUser.email || 'liza.cruz@marikha.org';
-  const initials = adminName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'LC';
+  const adminEmail = effectiveUser.email || 'danilo.cruz@marikha.org';
+  const initials = adminName.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'DC';
   const adminRole = 'Admin IT/HR';
   const adminId = 'ADM-2023-002';
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
+    if (updateProfile) {
+      await updateProfile({
+        name: adminName.trim(),
+        phone: phone.trim(),
+        emergencyContact: emergencyContact.trim(),
+        bio: bio.trim()
+      });
+    }
     setShowEditModal(false);
-    alert('Profile updated successfully!');
+    alert('Profile updated live! Realtime sync active across header, member directory, and cloud database.');
   };
 
   return (
@@ -212,6 +224,17 @@ const AdminProfileModule = ({ currentUser = {} }) => {
             </div>
 
             <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '4px' }}>Full Legal Name</label>
+                <input
+                  type="text"
+                  value={adminName}
+                  onChange={(e) => setAdminName(e.target.value)}
+                  required
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: '700' }}
+                />
+              </div>
+
               <div>
                 <label style={{ fontSize: '0.74rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '4px' }}>Primary Phone Number</label>
                 <input
