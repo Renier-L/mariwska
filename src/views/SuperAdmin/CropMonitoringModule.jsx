@@ -308,12 +308,17 @@ const CropMonitoringModule = ({
 		}
 
 		// Validation: Prevent duplicate active plot for same farmer & plot
-		const isDuplicate = (crops || []).some(c => 
-			c.cropStatus !== 'Archived' && 
-			c.cropStatus !== 'Harvested' && // <--- Allow registration if previous crop is Harvested
-			String(c.farmer).toLowerCase() === registrationForm.farmerName.toLowerCase() &&
-			String(c.plot).toLowerCase() === registrationForm.plot.trim().toLowerCase()
-		);
+		const targetPlot = registrationForm.plot.trim().toLowerCase();
+		const cleanPlot = targetPlot.startsWith('plot') ? targetPlot : `plot ${targetPlot}`;
+
+		const isDuplicate = (crops || []).some(c => {
+			const isInactive = c.cropStatus === 'Archived' || c.cropStatus === 'Harvested';
+			const sameFarmer = String(c.farmer || '').trim().toLowerCase() === registrationForm.farmerName.toLowerCase();
+			const existingPlot = String(c.plot || '').trim().toLowerCase();
+			const samePlot = existingPlot === cleanPlot || existingPlot === targetPlot;
+
+			return !isInactive && sameFarmer && samePlot;
+		});
 
 		if (isDuplicate) {
 			setFormError(`An active crop plot is already registered for ${registrationForm.farmerName} at ${registrationForm.plot.trim()}. Please specify a unique plot or harvest the existing crop.`);
