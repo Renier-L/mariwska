@@ -11,7 +11,10 @@ import {
   Award, 
   Activity, 
   ChevronRight,
-  Database
+  Database,
+  FileSpreadsheet,
+  Cpu,
+  CheckCircle2
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -176,7 +179,8 @@ const AgriculturalAnalyticsModule = () => {
       <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #e2e8f0', marginBottom: '20px' }}>
         {[
           { id: 'performance', label: 'Performance & Harvest Analytics' },
-          { id: 'evaluation', label: 'Model Evaluation & Score Engine' }
+          { id: 'evaluation', label: 'Model Evaluation & Score Engine' },
+          { id: 'datasets', label: 'Trained Models & Yesh Datasets' }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -315,7 +319,7 @@ const AgriculturalAnalyticsModule = () => {
             </div>
           </div>
         </>
-      ) : (
+      ) : activeTab === 'evaluation' ? (
         /* Evaluation & Farmer Score Engine */
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '20px' }}>
           {/* Farmer Performance Score Engine */}
@@ -370,6 +374,262 @@ const AgriculturalAnalyticsModule = () => {
                     <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#16a34a' }}>{item.value}</span>
                   </div>
                   <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{item.desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Machine Learning Models & Yesh Datasets Registry */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Top Banner */}
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '12px',
+            border: '1.5px solid #bbf7d0',
+            padding: '20px 24px',
+            boxShadow: '0 4px 16px -2px rgba(17, 89, 44, 0.06)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#dcfce7', color: '#11592c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Cpu size={22} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                  Machine Learning Model Provenance & Training Datasets (Yesh Repository)
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                  All 8 Machine Learning Random Forest models are compiled from 13 verified agricultural & caprine datasets (14,000+ total observations). Active artifacts (<code style={{ background: '#f1f5f9', padding: '1px 5px', borderRadius: '4px' }}>.joblib</code>) are integrated directly into the portal's inference engines.
+                </span>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', gap: '12px', marginTop: '16px', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', color: '#15803d' }}>
+                <CheckCircle2 size={13} /> 8 Random Forest Models (.joblib)
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', color: '#15803d' }}>
+                <CheckCircle2 size={13} /> 13 Source CSV Datasets (Yesh)
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', color: '#1d4ed8' }}>
+                <Database size={13} /> Local Path: src/data/datasets/yesh/
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', color: '#1d4ed8' }}>
+                <Cpu size={13} /> Model Path: src/data/models/
+              </span>
+            </div>
+          </div>
+
+          {/* Section 1: The 8 Trained Machine Learning Models */}
+          <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                  Deployed Random Forest Inference Models
+                </h4>
+                <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '4px 0 0 0' }}>
+                  Model specifications and validation metrics from <code style={{ background: '#f1f5f9', padding: '1px 5px', borderRadius: '4px' }}>training_results.json</code>
+                </p>
+              </div>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: '700' }}>
+                    <th style={{ padding: '12px 14px' }}>Model & Artifact</th>
+                    <th style={{ padding: '12px 14px' }}>Source Training CSV</th>
+                    <th style={{ padding: '12px 14px' }}>Target Variable</th>
+                    <th style={{ padding: '12px 14px' }}>Train / Test Split</th>
+                    <th style={{ padding: '12px 14px' }}>Evaluation Metric</th>
+                    <th style={{ padding: '12px 14px' }}>Predictor Features</th>
+                    <th style={{ padding: '12px 14px' }}>In-Portal Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    {
+                      name: 'Crop Harvest Yield Regressor',
+                      file: 'crop_yield.joblib',
+                      dataset: 'train_crop_yield.csv',
+                      target: 'actual_yield_kg',
+                      split: '1,579 / 421 rows',
+                      metric: 'MAE: 193.74 kg (R² = 0.914)',
+                      metricColor: '#15803d',
+                      features: 'crop, area_m2, soil_type, soil_ph, drainage, season, temp_c, rainfall',
+                      role: 'Agricultural Analytics & Crop Yield Forecasting'
+                    },
+                    {
+                      name: 'Crop Pest & Weather Risk',
+                      file: 'crop_risk.joblib',
+                      dataset: 'train_crop_risk.csv',
+                      target: 'pest_incident_next_30d',
+                      split: '1,579 / 421 rows',
+                      metric: '70.55% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'crop, area_m2, soil_type, soil_ph, drainage, season, temp_c, rainfall',
+                      role: 'Decision Support Critical Risk Alerts'
+                    },
+                    {
+                      name: 'Optimal Crop Recommendation',
+                      file: 'crop_recommendation.joblib',
+                      dataset: 'train_crop_recommendation.csv',
+                      target: 'planting_success',
+                      split: '1,579 / 421 rows',
+                      metric: '70.07% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'crop, area_m2, soil_type, soil_ph, drainage, season, temp_c, rainfall',
+                      role: 'Plot-to-Crop Suitability Matcher'
+                    },
+                    {
+                      name: 'PGS Organic Crop Compliance',
+                      file: 'crop_compliance.joblib',
+                      dataset: 'train_crop_compliance.csv',
+                      target: 'inspection_noncompliant',
+                      split: '1,600 / 400 rows',
+                      metric: '94.75% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'crop, organic_input_verified, documentation_complete',
+                      role: 'Compliance Audit & Peer Certification'
+                    },
+                    {
+                      name: 'Crop Task Priority Dispatch',
+                      file: 'crop_tasks.joblib',
+                      dataset: 'train_crop_tasks.csv',
+                      target: 'priority (High/Med/Low)',
+                      split: '1,600 / 400 rows',
+                      metric: '100% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'crop, days_until_due, pest_alert, soil_moisture_pct',
+                      role: 'Field Task Scheduling & Mobile Push Alerts'
+                    },
+                    {
+                      name: 'Caprine Health Risk Engine',
+                      file: 'goat_health_risk.joblib',
+                      dataset: 'train_goat_health_risk.csv',
+                      target: 'veterinary_attention_next_7d',
+                      split: '808 / 192 rows',
+                      metric: '71.35% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'age_months, weight_kg, appetite, lethargy, diarrhea, body_temp_c',
+                      role: 'Livestock Veterinary Surveillance'
+                    },
+                    {
+                      name: 'Goat Husbandry Compliance',
+                      file: 'goat_compliance.joblib',
+                      dataset: 'train_goat_compliance.csv',
+                      target: 'inspection_noncompliant',
+                      split: '808 / 192 rows',
+                      metric: '94.27% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'feed_source_verified, treatment_records_complete',
+                      role: 'Animal Welfare & Organic Standards'
+                    },
+                    {
+                      name: 'Goat Task Priority Classifier',
+                      file: 'goat_tasks.joblib',
+                      dataset: 'train_goat_tasks.csv',
+                      target: 'priority (High/Med/Low)',
+                      split: '808 / 192 rows',
+                      metric: '100% Accuracy',
+                      metricColor: '#15803d',
+                      features: 'days_until_due, health_alert',
+                      role: 'Veterinary Deworming & Vaccination Schedules'
+                    }
+                  ].map((m, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '12px 14px' }}>
+                        <strong style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block' }}>{m.name}</strong>
+                        <code style={{ fontSize: '0.72rem', color: '#11592c', background: '#dcfce7', padding: '1px 5px', borderRadius: '4px' }}>{m.file}</code>
+                      </td>
+                      <td style={{ padding: '12px 14px', color: '#475569' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                          <FileSpreadsheet size={12} /> {m.dataset}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.75rem', color: '#0f172a' }}>
+                        {m.target}
+                      </td>
+                      <td style={{ padding: '12px 14px', color: '#64748b', fontSize: '0.75rem' }}>
+                        {m.split}
+                      </td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <span style={{ fontWeight: '700', color: m.metricColor, background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '2px 8px', borderRadius: '6px', fontSize: '0.75rem', display: 'inline-block' }}>
+                          {m.metric}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 14px', fontSize: '0.72rem', color: '#64748b', maxWidth: '220px' }}>
+                        {m.features}
+                      </td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#1e293b' }}>
+                          {m.role}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Section 2: Farm Operational & Baseline Datasets */}
+          <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0' }}>
+              Field Operational & Historical Datasets (Yesh)
+            </h4>
+            <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0 0 16px 0' }}>
+              These 5 core operational datasets provide the cooperative baseline infrastructure (soil chemistry, planting cycles, pen locations, and feeding rations).
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+              {[
+                {
+                  file: 'farm_blocks.csv',
+                  count: '21 blocks (B001 - B020)',
+                  columns: 'block_id, soil_type, soil_ph, drainage',
+                  desc: 'Defines soil pH (5.69 - 6.94) and soil texture (Loam, Sandy loam) across cooperative sectors.'
+                },
+                {
+                  file: 'planting_records.csv',
+                  count: '2,001 planting instances',
+                  columns: 'planting_id, block_id, crop, area_m2, season, temp_c, rainfall_mm',
+                  desc: 'Historical records of Tomato, Eggplant, Okra, and Squash cultivations across wet and dry seasons.'
+                },
+                {
+                  file: 'harvest_records.csv',
+                  count: '2,001 harvest yields',
+                  columns: 'planting_id, actual_yield_kg, planting_success',
+                  desc: 'Scale logs of harvested weight (kg) and planting success indicators per crop plot.'
+                },
+                {
+                  file: 'goat_profiles.csv',
+                  count: '201 caprine head profiles',
+                  columns: 'goat_id, breed, age_months, weight_kg',
+                  desc: 'Biometrics of Anglo-Nubian and Boer cross caprine herds across pens.'
+                },
+                {
+                  file: 'goat_feeding_records.csv',
+                  count: '1,001 daily feeding logs',
+                  columns: 'record_id, goat_id, feed_type, feed_kg_day, water_available',
+                  desc: 'Daily forage/grass rations and clean water availability per livestock cluster.'
+                }
+              ].map((d, i) => (
+                <div key={i} style={{ padding: '14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <code style={{ fontSize: '0.8rem', fontWeight: '700', color: '#11592c', background: '#dcfce7', padding: '2px 6px', borderRadius: '4px' }}>
+                      {d.file}
+                    </code>
+                    <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#2563eb', background: '#eff6ff', padding: '2px 6px', borderRadius: '4px' }}>
+                      {d.count}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: '#475569', fontFamily: 'monospace' }}>
+                    {d.columns}
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                    {d.desc}
+                  </span>
                 </div>
               ))}
             </div>
