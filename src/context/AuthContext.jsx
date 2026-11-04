@@ -544,22 +544,53 @@ export const AuthProvider = ({ children }) => {
  }
 
  // 4. CROPS SYNC
- const { data: cropData } = await supabase.from('crops').select('*').order('created_at', { ascending: false });
- if (cropData && cropData.length > 0) {
- const formattedCrops = cropData.map(c => ({
- id: String(c.id),
- variety: c.variety,
- plot: c.plot,
- growthStage: c.growth_stage || c.growthStage || 'Vegetative',
- fertilizer: c.fertilizer || 'Organic Compost',
- irrigation: c.irrigation || 'Drip System',
- yield: c.yield || '350 kg'
- }));
- setCrops(formattedCrops);
- try { localStorage.setItem('marikha_crops_list', JSON.stringify(formattedCrops)); } catch (e) {}
- }
+    const { data: cropData } = await supabase.from('crops').select('*').order('created_at', { ascending: false });
+    if (cropData && cropData.length > 0) {
+      setCrops(prev => {
+        const formattedCrops = cropData.map((c, idx) => {
+          const existing = prev.find(p => String(p.id) === String(c.id) || String(p.plot) === String(c.plot));
+          const farmers = ['Renier Lopez', 'Mang Juan Dela Cruz', 'Elena Velasco'];
+          const farmer = c.farmer || c.farmer_name || (existing && existing.farmer) || farmers[idx % farmers.length];
+          const cropType = c.crop_type || c.cropType || (existing && existing.cropType) ||
+            (String(c.variety || '').includes('Eggplant') ? 'Eggplant' :
+             String(c.variety || '').includes('Okra') ? 'Okra' :
+             String(c.variety || '').includes('Squash') ? 'Squash' : 'Tomato');
+          const plantingDate = c.planting_date || c.plantingDate || (existing && existing.plantingDate) || (idx % 2 === 0 ? '2026-06-15' : '2026-07-01');
+          const cultivatedArea = Number(c.cultivated_area || c.cultivatedArea) || (existing && existing.cultivatedArea) || (350 + (idx * 50));
+          const plannedPlantingCount = Number(c.planned_count || c.plannedPlantingCount) || (existing && existing.plannedPlantingCount) || (400 + (idx * 50));
+          const actualPlantedCount = Number(c.actual_count || c.actualPlantedCount) || (existing && existing.actualPlantedCount) || (plannedPlantingCount - (idx * 10 + 5));
+          const stage = c.growth_stage || c.growthStage || (existing && existing.growthStage) || 'Vegetative';
+          const predictedYield = Number(c.predicted_yield || c.predictedYield) || (existing && existing.predictedYield) || (c.yield && !isNaN(parseInt(c.yield)) ? parseInt(c.yield) + 15 : 350);
+          const actualYield = c.actual_yield !== undefined ? Number(c.actual_yield) : ((existing && existing.actualYield !== undefined) ? existing.actualYield : (c.yield && !isNaN(parseInt(c.yield)) ? parseInt(c.yield) : 0));
 
- // 5. LIVESTOCK SYNC
+          return {
+            id: String(c.id),
+            farmer,
+            farmerId: c.farmer_id || (existing && existing.farmerId) || (farmer === 'Renier Lopez' ? '4' : farmer === 'Mang Juan Dela Cruz' ? '5' : '3'),
+            cropType,
+            variety: c.variety || ` Standard`,
+            plot: c.plot || (existing && existing.plot) || `Plot P-00`,
+            plantingDate,
+            cultivatedArea,
+            areaUnit: c.area_unit || (existing && existing.areaUnit) || 'sq.m',
+            plannedPlantingCount,
+            actualPlantedCount,
+            growthStage: stage,
+            confirmedGrowthStage: c.confirmed_growth_stage || (existing && existing.confirmedGrowthStage) || stage,
+            cropStatus: (stage === 'Harvest' || stage === 'Harvesting') ? 'Harvest Ready' : ((existing && existing.cropStatus) || 'Active'),
+            fertilizer: c.fertilizer || (existing && existing.fertilizer) || 'Organic Compost',
+            irrigation: c.irrigation || (existing && existing.irrigation) || 'Drip System',
+            predictedYield,
+            actualYield,
+            yield: c.yield || (existing && existing.yield) || ` kg`
+          };
+        });
+        try { localStorage.setItem('marikha_crops_list', JSON.stringify(formattedCrops)); } catch (e) {}
+        return formattedCrops;
+      });
+    }
+
+  // 5. LIVESTOCK SYNC
  const { data: liveData } = await supabase.from('livestock').select('*').order('created_at', { ascending: false });
  if (liveData && liveData.length > 0) {
  const formattedLive = liveData.map(l => ({
@@ -1223,11 +1254,14 @@ export const AuthProvider = ({ children }) => {
 				fertilizer: cropObj.fertilizer,
 				irrigation: cropObj.irrigation,
 				yield: cropObj.yield,
-				farmer_name: cropObj.farmer,
+				farmer: cropObj.farmer,
+				crop_type: cropObj.cropType,
 				planting_date: cropObj.plantingDate,
 				cultivated_area: cropObj.cultivatedArea,
 				planned_count: cropObj.plannedPlantingCount,
-				actual_count: cropObj.actualPlantedCount
+				actual_count: cropObj.actualPlantedCount,
+				predicted_yield: cropObj.predictedYield,
+				actual_yield: cropObj.actualYield
 			}]);
 		} catch (e) {
 			console.log('Supabase crop insert error:', e);
@@ -1247,14 +1281,22 @@ export const AuthProvider = ({ children }) => {
 
  try {
  const payload = {
- variety: updatedFields.variety,
- plot: updatedFields.plot,
- growth_stage: updatedFields.growthStage,
- fertilizer: updatedFields.fertilizer,
- irrigation: updatedFields.irrigation,
- yield: updatedFields.yield
- };
- await supabase.from('crops').update(payload).eq('id', cropId);
+      ...(updatedFields.variety !== undefined && { variety: updatedFields.variety }),
+      ...(updatedFields.plot !== undefined && { plot: updatedFields.plot }),
+      ...(updatedFields.growthStage !== undefined && { growth_stage: updatedFields.growthStage }),
+      ...(updatedFields.fertilizer !== undefined && { fertilizer: updatedFields.fertilizer }),
+      ...(updatedFields.irrigation !== undefined && { irrigation: updatedFields.irrigation }),
+      ...(updatedFields.yield !== undefined && { yield: updatedFields.yield }),
+      ...(updatedFields.farmer !== undefined && { farmer: updatedFields.farmer }),
+      ...(updatedFields.cropType !== undefined && { crop_type: updatedFields.cropType }),
+      ...(updatedFields.plantingDate !== undefined && { planting_date: updatedFields.plantingDate }),
+      ...(updatedFields.cultivatedArea !== undefined && { cultivated_area: updatedFields.cultivatedArea }),
+      ...(updatedFields.plannedPlantingCount !== undefined && { planned_count: updatedFields.plannedPlantingCount }),
+      ...(updatedFields.actualPlantedCount !== undefined && { actual_count: updatedFields.actualPlantedCount }),
+      ...(updatedFields.predictedYield !== undefined && { predicted_yield: updatedFields.predictedYield }),
+      ...(updatedFields.actualYield !== undefined && { actual_yield: updatedFields.actualYield })
+    };
+    await supabase.from('crops').update(payload).eq('id', cropId);
  } catch (e) {
  console.log('Supabase crop update error:', e);
  }
@@ -1563,18 +1605,26 @@ export const AuthProvider = ({ children }) => {
  }
 
  // 4. Sync Crops
- for (const c of crops) {
- await supabase.from('crops').insert({
- variety: c.variety,
- plot: c.plot,
- growth_stage: c.growthStage,
- fertilizer: c.fertilizer,
- irrigation: c.irrigation,
- yield: c.yield
- });
- }
+    for (const c of crops) {
+      await supabase.from('crops').insert({
+        variety: c.variety,
+        plot: c.plot,
+        growth_stage: c.growthStage,
+        fertilizer: c.fertilizer,
+        irrigation: c.irrigation,
+        yield: c.yield,
+        farmer: c.farmer,
+        crop_type: c.cropType,
+        planting_date: c.plantingDate,
+        cultivated_area: c.cultivatedArea,
+        planned_count: c.plannedPlantingCount,
+        actual_count: c.actualPlantedCount,
+        predicted_yield: c.predictedYield,
+        actual_yield: c.actualYield
+      });
+    }
 
- // 5. Sync Livestock
+  // 5. Sync Livestock
  for (const l of livestock) {
  await supabase.from('livestock').insert({
  group_name: l.group,
