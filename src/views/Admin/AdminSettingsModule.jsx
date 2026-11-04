@@ -18,7 +18,23 @@ import {
 import { useAuth } from '../../context/AuthContext';
 
 const AdminSettingsModule = () => {
-  const { loginAsRole } = useAuth();
+  const { loginAsRole, logout } = useAuth();
+
+  const handleSignOut = async () => {
+    if (window.confirm('Are you sure you want to sign out from the Admin portal?')) {
+      try {
+        if (typeof logout === 'function') {
+          await logout();
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '/';
+      }
+    }
+  };
 
   // Notification Toggles
   const [inAppNotice, setInAppNotice] = useState(true);
@@ -269,7 +285,7 @@ const AdminSettingsModule = () => {
             </div>
 
             <button
-              onClick={() => loginAsRole('login')}
+              onClick={handleSignOut}
               style={{
                 background: '#fff1f2',
                 color: '#e11d48',

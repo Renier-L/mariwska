@@ -21,8 +21,9 @@ const AdminProfileModule = ({ currentUser = {} }) => {
   const [emergencyContact, setEmergencyContact] = useState(currentUser.emergencyContact || 'Mark Cruz (+63 918 333 4444)');
   const [bio, setBio] = useState('Administrative IT/HR Lead overseeing cooperative member records, user access governance, and field communication pipelines.');
 
-  const adminName = currentUser.name || 'Danilo Cruz';
-  const adminEmail = currentUser.email || 'danilo.cruz@marikha.org';
+  const adminName = currentUser.fullName || currentUser.name || 'Liza Cruz';
+  const adminEmail = currentUser.email || 'liza.cruz@marikha.org';
+  const initials = adminName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'LC';
   const adminRole = 'Admin IT/HR';
   const adminId = 'ADM-2023-002';
 
@@ -82,7 +83,7 @@ const AdminProfileModule = ({ currentUser = {} }) => {
             fontWeight: '800',
             boxShadow: '0 4px 10px rgba(17,89,44,0.25)'
           }}>
-            DC
+            {initials}
           </div>
 
           <div style={{ flex: 1 }}>

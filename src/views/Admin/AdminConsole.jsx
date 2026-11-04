@@ -52,6 +52,7 @@ const AdminConsole = ({ activeTab, setActiveTab }) => {
         publishAnnouncement={publishAnnouncement}
         deleteAnnouncement={deleteAnnouncement}
         toggleArchiveAnnouncement={toggleArchiveAnnouncement}
+        currentUser={currentUser}
       />
     );
   }

@@ -20,7 +20,23 @@ import {
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
-	const { currentRole, loginAsRole } = useAuth();
+	const { currentRole, loginAsRole, logout } = useAuth();
+
+	const handleSignOut = async () => {
+		if (window.confirm('Are you sure you want to sign out?')) {
+			try {
+				if (typeof logout === 'function') {
+					await logout();
+				}
+			} catch (error) {
+				console.error('Logout error:', error);
+			} finally {
+				localStorage.clear();
+				sessionStorage.clear();
+				window.location.href = '/';
+			}
+		}
+	};
 
 	let portalTitle = 'Super Admin Portal';
 
@@ -209,7 +225,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 			{/* Pinned Bottom Sign Out */}
 			<div style={{ flexShrink: 0, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', marginTop: '10px' }}>
 				<button
-					onClick={() => loginAsRole('login')}
+					onClick={handleSignOut}
 					style={{
 						display: 'flex',
 						alignItems: 'center',

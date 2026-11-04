@@ -23,7 +23,8 @@ const AdminAnnouncementModule = ({
   announcements = [],
   publishAnnouncement,
   deleteAnnouncement,
-  toggleArchiveAnnouncement
+  toggleArchiveAnnouncement,
+  currentUser = {}
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [tabFilter, setTabFilter] = useState('all'); // 'all' | 'active' | 'scheduled' | 'expired' | 'archived'
@@ -94,7 +95,7 @@ const AdminAnnouncementModule = ({
         startDate,
         endDate,
         instantPush,
-        author: 'Danilo Cruz (Admin IT/HR)'
+        author: currentUser?.name || currentUser?.fullName || 'Liza Cruz (Admin IT/HR)'
       });
     }
 
