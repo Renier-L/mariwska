@@ -374,7 +374,7 @@ const UserManagementModule = ({ users = [], addUser, updateUser, deleteUser, tog
                           <button 
                             onClick={() => {
                               if (toggleUserStatus) {
-                                toggleUserStatus(user.id);
+                                toggleUserStatus(user.id, user.email);
                               }
                             }}
                             title={user.isActive ? "Deactivate User Account" : "Activate User Account"}

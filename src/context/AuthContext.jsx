@@ -415,27 +415,38 @@ export const AuthProvider = ({ children }) => {
  // Fetch initial announcements, users, and validations from Supabase Realtime!
  useEffect(() => {
  async function fetchSupabaseData() {
- try {
- const { data: userData } = await supabase.from('users').select('*');
- if (userData && userData.length > 0) {
- const formattedUsers = userData.map(u => ({
- id: String(u.id),
- name: u.name,
- role: u.role,
- email: u.email,
- phone: u.phone || '+63 917 555 0100',
- assignedPlot: u.assigned_plot || u.assignedPlot || (u.role === 'Executive' ? 'Administrative HQ' : u.role === 'Admin' ? 'Operations & Compliance Center' : u.role === 'Farm Staff' ? 'Sector B (Plot P-007)' : 'Plot P-007 (Tomato Diamante)'),
- rsbsaNo: u.rsbsa_no || u.rsbsaNo || (u.role === 'Farmer' ? 'RSBSA-03-1425-001' : 'RSBSA-03-1000-COOP'),
- certification: u.certification || (u.role === 'Farmer' ? 'PGS Certified Organic Farmer' : u.role === 'Farm Staff' ? 'PGS Level II Supervisor' : 'Certified Organic Auditor'),
- emergencyContact: u.emergency_contact || u.emergencyContact || 'Family Contact (+63 918 555 0100)',
- joinDate: u.join_date || u.joinDate || '2024-03-15',
- password: u.password || 'password123',
- status: u.status !== false,
- initials: u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
- }));
- setUsers(formattedUsers);
- try { localStorage.setItem('marikha_registered_users', JSON.stringify(formattedUsers)); } catch (e) {}
- } else {
+ try {  const { data: userData } = await supabase.from('users').select('*');
+  if (userData && userData.length > 0) {
+    let savedLocalUser = null;
+    try {
+      const rawUser = localStorage.getItem('marikha_current_user');
+      if (rawUser) savedLocalUser = JSON.parse(rawUser);
+    } catch (e) {}
+
+    const formattedUsers = userData.map(u => {
+      const isSavedMatch = savedLocalUser && (u.email === savedLocalUser.email || String(u.id) === String(savedLocalUser.id));
+      const isActive = (u.status === true || u.status === 'Active' || u.status === 'true' || u.status === 1) && u.status !== false && u.status !== 'false' && u.status !== 'Inactive' && u.status !== 'disabled';
+      const effectiveName = (isSavedMatch && savedLocalUser.name) ? savedLocalUser.name : u.name;
+      return {
+        id: String(u.id),
+        name: effectiveName,
+        role: u.role,
+        email: u.email,
+        phone: (isSavedMatch && savedLocalUser.phone) ? savedLocalUser.phone : (u.phone || '+63 917 555 0100'),
+        assignedPlot: u.assigned_plot || u.assignedPlot || (u.role === 'Executive' ? 'Administrative HQ' : u.role === 'Admin' ? 'Operations & Compliance Center' : u.role === 'Farm Staff' ? 'Sector B (Plot P-007)' : 'Plot P-007 (Tomato Diamante)'),
+        rsbsaNo: u.rsbsa_no || u.rsbsaNo || (u.role === 'Farmer' ? 'RSBSA-03-1425-001' : 'RSBSA-03-1000-COOP'),
+        certification: u.certification || (u.role === 'Farmer' ? 'PGS Certified Organic Farmer' : u.role === 'Farm Staff' ? 'PGS Level II Supervisor' : 'Certified Organic Auditor'),
+        emergencyContact: u.emergency_contact || u.emergencyContact || 'Family Contact (+63 918 555 0100)',
+        joinDate: u.join_date || u.joinDate || '2024-03-15',
+        password: u.password || 'password123',
+        status: isActive,
+        isActive: isActive,
+        initials: effectiveName ? effectiveName.split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'
+      };
+    });
+    setUsers(formattedUsers);
+    try { localStorage.setItem('marikha_registered_users', JSON.stringify(formattedUsers)); } catch (e) {}
+  } else {
  // Auto-direct seed core users into empty Supabase users table!
  for (const u of initialUsers) {
  await supabase.from('users').insert([{
@@ -762,50 +773,59 @@ export const AuthProvider = ({ children }) => {
  };
  }, []);
 
- const toggleUserStatus = async (id) => {
- setUsers(prev => {
- const target = prev.find(u => String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', ''));
- if (!target) return prev;
+  const toggleUserStatus = async (id, optionalEmail = null) => {
+    let targetEmail = optionalEmail || null;
+    let nextActiveStatus = false;
 
- // Prevent deactivating own logged-in user account
- if (currentUser && (String(target.id) === String(currentUser.id) || target.email === currentUser.email)) {
- alert("Action Restricted: You cannot deactivate your own active session account.");
- return prev;
- }
+    setUsers(prev => {
+      const target = prev.find(u => 
+        (id && (String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', ''))) ||
+        (optionalEmail && u.email && u.email.toLowerCase() === optionalEmail.toLowerCase()) ||
+        (id && u.email && u.email.toLowerCase() === String(id).toLowerCase())
+      );
+      if (!target) return prev;
 
- const currentActive = target.status === true || target.status === 'Active' || target.isActive === true;
- const nextActive = !currentActive;
+      const currentActive = target.status === true || target.status === 'Active' || target.isActive === true;
+      // Only restrict self-deactivation if currently active
+      if (currentActive && currentUser && (String(target.id) === String(currentUser.id) || (target.email && currentUser.email && target.email.toLowerCase() === currentUser.email.toLowerCase()))) {
+        alert("Action Restricted: You cannot deactivate your own active session account.");
+        return prev;
+      }
 
- const next = prev.map(u => {
- if (String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', '')) {
- return {
- ...u,
- status: nextActive,
- isActive: nextActive
- };
- }
- return u;
- });
+      nextActiveStatus = !currentActive;
+      targetEmail = target.email || optionalEmail;
 
- try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
- if (broadcastChannel) {
- broadcastChannel.postMessage({ type: 'USER_STATUS_TOGGLED', payload: { id, status: nextActive } });
- }
- return next;
- });
+      const next = prev.map(u => {
+        const isMatch = (id && (String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', ''))) ||
+          (targetEmail && u.email && u.email.toLowerCase() === targetEmail.toLowerCase()) ||
+          (id && u.email && u.email.toLowerCase() === String(id).toLowerCase());
+        if (isMatch) {
+          return {
+            ...u,
+            status: nextActiveStatus,
+            isActive: nextActiveStatus
+          };
+        }
+        return u;
+      });
 
- try {
- const target = users.find(u => String(u.id) === String(id) || String(u.id).replace('USR-', '') === String(id).replace('USR-', ''));
- if (target) {
- const currentActive = target.status === true || target.status === 'Active' || target.isActive === true;
- await supabase.from('users').update({ status: !currentActive }).eq('email', target.email);
- }
- } catch (e) {
- console.log('Supabase user toggle error:', e);
- }
- };
+      try { localStorage.setItem('marikha_registered_users', JSON.stringify(next)); } catch (e) {}
+      if (broadcastChannel) {
+        broadcastChannel.postMessage({ type: 'USER_STATUS_TOGGLED', payload: { id, email: targetEmail, status: nextActiveStatus } });
+      }
+      return next;
+    });
 
- const addUser = async (newUser) => {
+    if (targetEmail) {
+      try {
+        await supabase.from('users').update({ status: nextActiveStatus }).eq('email', targetEmail);
+      } catch (e) {
+        console.log('Supabase user toggle error:', e);
+      }
+    }
+  };
+
+  const addUser = async (newUser) => {
  const userObj = { 
  ...newUser, 
  id: String(Date.now()), 
@@ -1650,11 +1670,12 @@ export const AuthProvider = ({ children }) => {
  addLivestock,
  updateLivestock,
  deleteLivestock,
-
- togglePermission,
- setCurrentRole,
- syncSeedToSupabase
- }}>
+	togglePermission,
+	setCurrentRole,
+	setCurrentUser,
+	updateProfile,
+	syncSeedToSupabase
+	}}>
  {children}
  </AuthContext.Provider>
  );
