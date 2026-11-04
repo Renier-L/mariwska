@@ -21,6 +21,7 @@ import {
 	Archive, 
 	Check 
 } from 'lucide-react';
+import { predictCropYield } from '../../utils/randomForestEngine';
 
 // 1. Defined Crop Development Reference Data for the 4 Supported MARIKHA Organic Crops
 export const CROP_GROWTH_PROFILES = {
@@ -359,27 +360,30 @@ const CropMonitoringModule = ({
 		});
 	};
 
-	// 5. On-Demand Random Forest Prediction Generator
-	const handleGeneratePrediction = (crop) => {
+	// 5. On-Demand Random Forest Prediction Generator (Connected to crop_yield.joblib model)
+	const handleGeneratePrediction = async (crop) => {
 		setIsGeneratingPrediction(true);
 		setPredictionNotice('');
 
-		setTimeout(() => {
-			// Formula based on trained Random Forest v2.4 model inputs:
-			// Crop baseline * area index * plant count efficiency * historical factor
-			const plants = Number(crop.actualPlantedCount) || Number(crop.plannedPlantingCount) || 450;
-			
-			let baseKgPerPlant = 0.85; // Tomato
-			if (crop.cropType === 'Eggplant') baseKgPerPlant = 0.72;
-			if (crop.cropType === 'Okra') baseKgPerPlant = 0.60;
-			if (crop.cropType === 'Squash') baseKgPerPlant = 0.55;
+		try {
+			// Execute real 100-tree Random Forest Regressor trained on MARIKHA datasets
+			const result = await predictCropYield({
+				cropType: crop.cropType,
+				cultivatedArea: crop.cultivatedArea,
+				actualPlantedCount: crop.actualPlantedCount,
+				plannedPlantingCount: crop.plannedPlantingCount,
+				plantingDate: crop.plantingDate,
+				soil_type: crop.soilType || 'Loam',
+				drainage: crop.drainage || 'Good'
+			});
 
-			const predictedKg = Math.round(plants * baseKgPerPlant * 1.05);
+			const predictedKg = result.predictedKg;
+			const yieldStr = ` kg (RF v2.4 est)`;
 
 			if (updateCrop) {
-				updateCrop(crop.id, {
+				await updateCrop(crop.id, {
 					predictedYield: predictedKg,
-					yield: `${predictedKg} kg (RF v2.4 est)`
+					yield: yieldStr
 				});
 			}
 
@@ -387,12 +391,18 @@ const CropMonitoringModule = ({
 			setSelectedCropDetails(prev => prev ? ({
 				...prev,
 				predictedYield: predictedKg,
-				yield: `${predictedKg} kg (RF v2.4 est)`
+				yield: yieldStr
 			}) : null);
 
+			setPredictionNotice(
+				`Random Forest v2.4 (100 Trees) Inference Completed:  kg harvest yield predicted for  ( ,  Season,  Soil).`
+			);
+		} catch (err) {
+			console.error('RF Prediction Error:', err);
+			setPredictionNotice('Prediction failed to compute with Random Forest model.');
+		} finally {
 			setIsGeneratingPrediction(false);
-			setPredictionNotice(`Random Forest v2.4 Inference Completed: ${predictedKg} kg harvest forecast generated based on ${plants} plants over ${crop.cultivatedArea} ${crop.areaUnit}.`);
-		}, 800);
+		}
 	};
 
 	// 6. Archive Crop Handler
