@@ -189,13 +189,18 @@ const AdminRolesPermissionsModule = () => {
     }
 
     const colorScheme = {
-      edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac', label: '✓ Can Edit' },
-      view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe', label: '👁 View-Only' },
-      restricted: { bg: '#f8fafc', text: '#64748b', border: '#cbd5e1', label: '— Restricted' }
-    }[status] || { bg: '#f8fafc', text: '#64748b', border: '#cbd5e1', label: '— Restricted' };
+      edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac', icon: Check, label: 'Can Edit' },
+      view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe', icon: Eye, label: 'View-Only' },
+      restricted: { bg: '#f8fafc', text: '#64748b', border: '#cbd5e1', icon: Minus, label: 'Restricted' }
+    }[status] || { bg: '#f8fafc', text: '#64748b', border: '#cbd5e1', icon: Minus, label: 'Restricted' };
 
-    const handleSelectChange = (e) => {
-      const nextVal = e.target.value;
+    const IconComp = colorScheme.icon;
+
+    const cycleNext = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const cycleMap = { edit: 'view', view: 'restricted', restricted: 'edit' };
+      const nextVal = cycleMap[status] || 'edit';
       if (updateRbacCapability) {
         updateRbacCapability(catId, cap.id, roleKey, nextVal);
       }
@@ -205,41 +210,35 @@ const AdminRolesPermissionsModule = () => {
     };
 
     return (
-      <select
-        value={status}
-        onChange={handleSelectChange}
-        title={`Click to change access for ${roleTitle}`}
+      <button
+        type="button"
+        onClick={cycleNext}
+        title={`Click to switch: Can Edit ➔ View-Only ➔ Restricted (Current: ${colorScheme.label})`}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          padding: '6px 26px 6px 12px',
+          justifyContent: 'center',
+          gap: '6px',
+          padding: '6px 14px',
           borderRadius: '16px',
-          fontSize: '0.74rem',
-          fontWeight: '800',
+          fontSize: '0.75rem',
+          fontWeight: '700',
           background: colorScheme.bg,
           color: colorScheme.text,
           border: `1.5px solid ${colorScheme.border}`,
           cursor: 'pointer',
           outline: 'none',
           whiteSpace: 'nowrap',
-          appearance: 'none',
-          WebkitAppearance: 'none',
-          MozAppearance: 'none',
-          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colorScheme.text)}' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'right 8px center',
-          backgroundSize: '12px',
           boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-          transition: 'all 0.15s ease',
-          textAlign: 'center'
+          transition: 'all 0.15s ease'
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.96)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.96)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'scale(1)'; }}
       >
-        <option value="edit" style={{ background: '#ffffff', color: '#15803d', fontWeight: '700' }}>✓ Can Edit</option>
-        <option value="view" style={{ background: '#ffffff', color: '#0284c7', fontWeight: '700' }}>👁 View-Only</option>
-        <option value="restricted" style={{ background: '#ffffff', color: '#64748b', fontWeight: '600' }}>— Restricted</option>
-      </select>
+        <IconComp size={13} color={colorScheme.text} />
+        <span>{colorScheme.label}</span>
+        <ChevronDown size={11} color={colorScheme.text} style={{ opacity: 0.65, marginLeft: '1px' }} />
+      </button>
     );
   };
 
