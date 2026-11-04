@@ -13,12 +13,23 @@ import './styles/theme.css';
 const VALID_TABS = {
 	super_admin: ['dashboard', 'audit-logs', 'crop-monitoring', 'livestock-monitoring', 'activity-monitoring', 'scheduling', 'announcements', 'analytics', 'decision-support', 'reports', 'user-accounts', 'member-records', 'roles-permissions', 'profile', 'settings'],
 	admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports', 'profile', 'settings'],
-	farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'reports']
+	farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'announcements', 'reports']
 };
 
 const MainContent = () => {
-	const { currentRole, activePushNotice, dismissPushNotice } = useAuth();
+	const { currentRole, activePushNotice } = useAuth();
 	const [showFullNoticeModal, setShowFullNoticeModal] = useState(false);
+	const [dismissedNoticePerRole, setDismissedNoticePerRole] = useState({});
+
+	const handleDismissPush = () => {
+		if (activePushNotice) {
+			setDismissedNoticePerRole(prev => ({
+				...prev,
+				[currentRole]: activePushNotice.id
+			}));
+		}
+		setShowFullNoticeModal(false);
+	};
 	
 	// Persist activeTab per role in localStorage so page refresh maintains exact position & view!
 	const [activeTab, setActiveTabState] = useState(() => {
@@ -68,8 +79,13 @@ const MainContent = () => {
 		)
 	);
 
+	const isDismissedForCurrentRole = Boolean(
+		activePushNotice && dismissedNoticePerRole[currentRole] === activePushNotice.id
+	);
+
 	const shouldShowPushToCurrentRole = Boolean(
 		activePushNotice && 
+		!isDismissedForCurrentRole &&
 		(!isFarmStaffPrivateDirective || (currentRole !== 'super_admin' && currentRole !== 'admin'))
 	);
 
@@ -134,7 +150,7 @@ const MainContent = () => {
 								</span>
 							</div>
 						</div>
-						<button onClick={dismissPushNotice} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+						<button onClick={handleDismissPush} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
 							<X size={18} />
 						</button>
 					</div>
@@ -185,7 +201,7 @@ const MainContent = () => {
 								</div>
 							</div>
 							<button
-								onClick={() => { setShowFullNoticeModal(false); dismissPushNotice(); }}
+								onClick={handleDismissPush}
 								style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff' }}
 							>
 								<X size={18} />
@@ -225,7 +241,7 @@ const MainContent = () => {
 
 							<div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
 								<button
-									onClick={() => { setShowFullNoticeModal(false); dismissPushNotice(); }}
+									onClick={handleDismissPush}
 									className="btn-primary"
 									style={{ padding: '10px 20px', fontSize: '0.85rem' }}
 								>

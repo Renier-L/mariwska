@@ -521,7 +521,68 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </p>
  </div>
 
- <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
+ {/* Cooperative Management Directives Alert Banner (Received from Super Admin / Admin) */}
+				{(() => {
+					const latestCoopDirective = (announcements || []).find(a => 
+						!a.archived && (
+							a.targetAudience === 'all' || 
+							a.targetAudience === 'staff' || 
+							a.targetAudience === 'scheduling' || 
+							!a.targetAudience ||
+							(a.audienceLabel && !a.audienceLabel.toLowerCase().includes('farmers only'))
+						)
+					);
+
+					if (!latestCoopDirective) return null;
+
+					return (
+						<div 
+							onClick={() => setActiveTab && setActiveTab('announcements')}
+							style={{
+								background: '#f0fdf4',
+								border: '1.5px solid #86efac',
+								borderRadius: '12px',
+								padding: '14px 18px',
+								marginBottom: '18px',
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center',
+								cursor: 'pointer',
+								boxShadow: '0 2px 8px rgba(17,89,44,0.06)'
+							}}
+						>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+								<div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+									<Megaphone size={20} color="#11592c" />
+								</div>
+								<div>
+									<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+										<span style={{ fontSize: '0.66rem', fontWeight: '800', background: '#11592c', color: '#ffffff', padding: '2px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>
+											Management Directive Received
+										</span>
+										<span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+											From: <strong style={{ color: '#0f172a' }}>{latestCoopDirective.author || 'Super Admin'}</strong> · {latestCoopDirective.date || 'Today'}
+										</span>
+									</div>
+									<h4 style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a', margin: '2px 0 0 0' }}>
+										{latestCoopDirective.title}
+									</h4>
+									<p style={{ fontSize: '0.82rem', color: '#166534', margin: '2px 0 0 0', fontWeight: '600' }}>
+										"{latestCoopDirective.content}"
+									</p>
+								</div>
+							</div>
+							<button 
+								onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('announcements'); }}
+								style={{ background: '#11592c', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '800', cursor: 'pointer', whiteSpace: 'nowrap' }}
+							>
+								View All Directives →
+							</button>
+						</div>
+					);
+				})()}
+
+				<div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '20px' }}>
  <div className="m-card">
  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Pending Validations</div>
  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: '#111827' }}>{pendingValidationsList.length || safeValidations.length}</div>
@@ -2826,8 +2887,255 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
 		);
 	};
 
+	const renderAnnouncements = () => {
+		const incomingCoopAnnouncements = (announcements || []).filter(a => 
+			!a.archived && (
+				a.targetAudience === 'all' || 
+				a.targetAudience === 'staff' || 
+				a.targetAudience === 'scheduling' || 
+				!a.targetAudience ||
+				(a.audienceLabel && !a.audienceLabel.toLowerCase().includes('farmers only'))
+			)
+		);
+
+		const farmerDispatchedDirectives = (announcements || []).filter(a =>
+			!a.archived && (
+				a.targetAudience === 'farmers' ||
+				(a.audienceLabel && a.audienceLabel.toLowerCase().includes('farmers only')) ||
+				(a.author && a.author.toLowerCase().includes('farm staff')) ||
+				(a.title && a.title.toLowerCase().includes('farmer field activity'))
+			)
+		);
+
+		return (
+			<div>
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+					<div>
+						<h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+							<Megaphone size={28} color="#11592c" /> Cooperative Directives & Announcements Desk
+						</h1>
+						<p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+							Live operational broadcasts from Super Admin & Admin, plus field directives dispatched to mobile farmers
+						</p>
+					</div>
+					<div style={{ display: 'flex', gap: '10px' }}>
+						<button 
+							onClick={() => setActiveTab && setActiveTab('operations-dashboard')}
+							className="btn-outline"
+						>
+							← Back to Operations
+						</button>
+					</div>
+				</div>
+
+				<div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '24px' }}>
+					{/* LEFT COLUMN: Incoming Cooperative Broadcasts from Super Admin & Admin */}
+					<div>
+						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+								<span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+								<h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+									Received Management Broadcasts ({incomingCoopAnnouncements.length})
+								</h3>
+							</div>
+							<span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700', background: '#dcfce7', padding: '3px 8px', borderRadius: '10px' }}>
+								Super Admin & Admin Feed
+							</span>
+						</div>
+
+						<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+							{incomingCoopAnnouncements.length === 0 ? (
+								<div className="m-card" style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
+									<p style={{ margin: 0, fontSize: '0.88rem' }}>No general management broadcasts posted yet.</p>
+								</div>
+							) : (
+								incomingCoopAnnouncements.map((ann, idx) => (
+									<div 
+										key={ann.id || idx}
+										className="m-card"
+										style={{
+											borderLeft: '4px solid #11592c',
+											padding: '18px 20px',
+											background: '#ffffff',
+											boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+										}}
+									>
+										<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+											<div>
+												<span style={{
+													fontSize: '0.68rem',
+													fontWeight: '800',
+													textTransform: 'uppercase',
+													padding: '2px 8px',
+													borderRadius: '6px',
+													background: ann.targetAudience === 'scheduling' ? '#fef3c7' : '#dcfce7',
+													color: ann.targetAudience === 'scheduling' ? '#92400e' : '#11592c',
+													display: 'inline-block',
+													marginBottom: '4px'
+												}}>
+													{ann.audienceLabel || 'Cooperative-Wide Directive'}
+												</span>
+												<h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#0f172a', margin: '2px 0 0 0' }}>
+													{ann.title}
+												</h4>
+											</div>
+											<span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>
+												{ann.date || 'Today'}
+											</span>
+										</div>
+
+										<p style={{ fontSize: '0.86rem', color: '#334155', lineHeight: 1.5, margin: '0 0 12px 0', background: '#f8fafc', padding: '12px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+											"{ann.content}"
+										</p>
+
+										<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', color: '#64748b' }}>
+											<span>Dispatched by: <strong style={{ color: '#0f172a' }}>{ann.author || 'Super Admin'}</strong></span>
+											<span style={{ color: '#16a34a', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
+												<CheckCircle2 size={14} color="#16a34a" /> Active Directive
+											</span>
+										</div>
+									</div>
+								))
+							)}
+						</div>
+					</div>
+
+					{/* RIGHT COLUMN: Farmer Directive Publisher (Strictly for Registered Farmers on Mobile) */}
+					<div>
+						<div style={{ background: '#ffffff', borderRadius: '14px', border: '1.5px solid #bbf7d0', padding: '20px', boxShadow: '0 2px 8px rgba(17,89,44,0.04)' }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+								<div style={{ background: '#dcfce7', padding: '6px', borderRadius: '8px' }}>
+									<Send size={18} color="#11592c" />
+								</div>
+								<div>
+									<h4 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+										Dispatch Field Directive to Farmers
+									</h4>
+									<span style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: '700' }}>
+										🌾 Pushed Directly to Farmers Mobile App
+									</span>
+								</div>
+							</div>
+
+							<p style={{ fontSize: '0.76rem', color: '#64748b', marginBottom: '14px' }}>
+								As Farm Staff, your directives are sent strictly to registered farmers on their mobile app and kept private from executive dashboards.
+							</p>
+
+							{/* Quick Preset Suggestion Chips */}
+							<div style={{ marginBottom: '12px' }}>
+								<label style={{ fontSize: '0.7rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+									Quick Directive Templates:
+								</label>
+								<div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+									{quickDirectiveTemplates.map((tmpl, idx) => (
+										<button
+											key={idx}
+											type="button"
+											onClick={() => {
+												setFarmerDirectiveTitle(tmpl.title);
+												setFarmerDirectiveContent(tmpl.content);
+											}}
+											style={{
+												background: farmerDirectiveTitle === tmpl.title ? '#dcfce7' : '#f8fafc',
+												border: farmerDirectiveTitle === tmpl.title ? '1.5px solid #16a34a' : '1px solid #e2e8f0',
+												color: farmerDirectiveTitle === tmpl.title ? '#15803d' : '#334155',
+												padding: '4px 8px',
+												borderRadius: '6px',
+												fontSize: '0.72rem',
+												fontWeight: '700',
+												cursor: 'pointer',
+												textAlign: 'left'
+											}}
+										>
+											{tmpl.title}
+										</button>
+									))}
+								</div>
+							</div>
+
+							<form onSubmit={handleBroadcastFarmerDirective} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+								<div>
+									<label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+										Directive Title
+									</label>
+									<input 
+										type="text"
+										value={farmerDirectiveTitle}
+										onChange={(e) => setFarmerDirectiveTitle(e.target.value)}
+										placeholder="e.g. Afternoon Drip Irrigation & Spraying Window"
+										style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: '700' }}
+									/>
+								</div>
+
+								<div>
+									<label style={{ fontSize: '0.72rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+										Field Instructions for Farmers
+									</label>
+									<textarea 
+										rows={3}
+										value={farmerDirectiveContent}
+										onChange={(e) => setFarmerDirectiveContent(e.target.value)}
+										placeholder="Specify dosage, plots, or instructions..."
+										style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', resize: 'vertical' }}
+									/>
+								</div>
+
+								{directiveFeedbackNotice && (
+									<div style={{ background: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '8px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '800', textAlign: 'center' }}>
+										{directiveFeedbackNotice}
+									</div>
+								)}
+
+								<button
+									type="submit"
+									className="btn-primary"
+									style={{ width: '100%', padding: '10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+								>
+									<Send size={15} /> Dispatch Directive to Farmers Mobile App
+								</button>
+							</form>
+
+							{/* Sent Directives History */}
+							{farmerDispatchedDirectives.length > 0 && (
+								<div style={{ marginTop: '18px', borderTop: '1px solid #e2e8f0', paddingTop: '14px' }}>
+									<label style={{ fontSize: '0.7rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+										Recently Dispatched Farmer Directives ({farmerDispatchedDirectives.length})
+									</label>
+									<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
+										{farmerDispatchedDirectives.slice(0, 4).map((d, i) => (
+											<div key={d.id || i} style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.75rem' }}>
+												<strong style={{ color: '#0f172a', display: 'block' }}>{d.title}</strong>
+												<span style={{ color: '#64748b', display: 'block', marginTop: '2px' }}>"{d.content}"</span>
+												<span style={{ color: '#15803d', fontSize: '0.68rem', fontWeight: '700', marginTop: '4px', display: 'block' }}>
+													✓ Pushed to Mobile Farmers · {d.date || 'Today'}
+												</span>
+											</div>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
 	const renderReports = () => (
  <div>
+      {/* Formal Cooperative Header for Physical & PDF Print Output */}
+      <div className="print-only-header">
+        <h1 style={{ fontSize: '18pt', fontWeight: '900', color: '#0c3619', margin: '0 0 4px 0', textAlign: 'center' }}>
+          MARIKHA AGRICULTURAL COOPERATIVE FEDERATION
+        </h1>
+        <p style={{ fontSize: '10pt', color: '#334155', margin: '0 0 4px 0', textAlign: 'center' }}>
+          Official Operational Registry, Agronomy Compliance & Audit Dossier · Antipolo, Rizal
+        </p>
+        <div style={{ fontSize: '8.5pt', color: '#64748b', fontWeight: '700', textAlign: 'center', marginBottom: '14px' }}>
+          Official Certified Output · Generated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} · Confidential Cooperative Record
+        </div>
+      </div>
+
  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
  <div>
  <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px' }}>
@@ -3314,6 +3622,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  if (activeTab === 'crop-management') return renderContainerWithModal(renderCropManagement());
 	if (activeTab === 'farmer-management') return renderContainerWithModal(renderFarmerManagement());
  if (activeTab === 'livestock-management') return renderContainerWithModal(renderLivestockManagement());
+ if (activeTab === 'announcements') return renderContainerWithModal(renderAnnouncements());
  if (activeTab === 'reports') return renderContainerWithModal(renderReports());
  return renderContainerWithModal(renderOperations());
 };

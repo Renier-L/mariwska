@@ -230,24 +230,82 @@ input:focus, textarea:focus, select:focus {
   height: 22px;
 }
 
-/* Printable Paper Report Styles */
+/* Formal Capstone Defense Printable Report Styles */
 @media print {
-  body * {
-    visibility: hidden;
+  /* Hide navigation, headers, interactive buttons, floating modals, and tools */
+  .sidebar-nav,
+  header,
+  .header-container,
+  .btn-primary,
+  .btn-outline,
+  .btn-secondary,
+  button,
+  .no-print,
+  .tab-capsule-container,
+  input,
+  select,
+  textarea {
+    display: none !important;
   }
-  .printable-paper-report, .printable-paper-report * {
-    visibility: visible;
+
+  body, html {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 10pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  .printable-paper-report {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 20px;
+
+  .app-container {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .main-viewport {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .content-inner {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .m-card {
     box-shadow: none !important;
-    border: none !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    break-inside: avoid;
+    margin-bottom: 16px !important;
+    padding: 14px !important;
+    background: #ffffff !important;
   }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 10px !important;
+  }
+
+  th, td {
+    border: 1px solid #e2e8f0 !important;
+    padding: 6px 8px !important;
+    font-size: 9pt !important;
+  }
+
+  /* Formal Report Header for Print */
+  .print-only-header {
+    display: block !important;
+    text-align: center;
+    border-bottom: 2px solid #0c3619;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+}
+
+.print-only-header {
+  display: none;
 }
 
 .toggle-switch input { opacity: 0; width: 0; height: 0; }

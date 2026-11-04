@@ -117,53 +117,60 @@ const MobileAppSimulator = () => {
  const isTl = settingsData.language === 'Tagalog';
  const t = (en, tl) => (isTl ? (tl || en) : en);
 
- // Completed tasks state & Dynamic Task Prioritization
- const [tasks, setTasks] = useState([
- { id: 't1', title: 'Apply compost - Plot P-021', status: 'OVERDUE', time: '● YESTERDAY', desc: 'Missed scheduled cycle - re-do today', border: '#ef4444', badgeBg: '#fee2e2', badgeColor: '#dc2626', urgency: 'OVERDUE', plot: 'Plot P-021' },
- { id: 't2', title: 'Water Plot P-007 (Tomato)', status: 'URGENT', time: '● 06:00 TODAY', desc: 'Heat advisory - double the morning ratio', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706', urgency: 'URGENT', plot: 'Plot P-007' },
- { id: 't3', title: 'Feed Goat Herd GT-014', status: 'URGENT', time: '● 07:00 TODAY', desc: 'Morning ration + 5kg forage', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706', urgency: 'URGENT', plot: 'Barn Shed 2' },
- { id: 't4', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Pods 7-9cm length ready', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b', urgency: 'NORMAL', plot: 'Plot P-034' },
- { id: 't5', title: 'Water Plot P-002', status: 'NORMAL', time: '● 16:00 TODAY', desc: 'Evening ration - 80L drip', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b', urgency: 'NORMAL', plot: 'Plot P-002' }
- ]);
- const [completedTasks, setCompletedTasks] = useState({ t5: true });
- const [taskFilter, setTaskFilter] = useState('ALL');
- const [showAddTaskModal, setShowAddTaskModal] = useState(false);
- const [newTaskTitle, setNewTaskTitle] = useState('Morning Drip Irrigation · Plot P-007');
- const [newTaskPlot, setNewTaskPlot] = useState('Plot P-007');
- const [newTaskUrgency, setNewTaskUrgency] = useState('URGENT');
- const [newTaskCategory, setNewTaskCategory] = useState('Irrigation');
- const [newTaskDesc, setNewTaskDesc] = useState('Inspect drip emitters and apply 15L organic foliar cycle.');
- const [selectedPlotDetail, setSelectedPlotDetail] = useState(null);
+  // Completed tasks state & Dynamic Real-Time Task Prioritization
+  const [tasks, setTasks] = useState([
+    { id: 't1', title: 'Apply compost - Plot P-021', status: 'OVERDUE', time: 'Yesterday · 04:00 PM', dueDate: 'Yesterday', dueTime: '04:00 PM', desc: 'Missed scheduled cycle - re-do today', border: '#ef4444', badgeBg: '#fee2e2', badgeColor: '#dc2626', urgency: 'OVERDUE', plot: 'Plot P-021', completedAt: null },
+    { id: 't2', title: 'Water Plot P-007 (Tomato)', status: 'URGENT', time: 'Today · 06:00 AM', dueDate: 'Today', dueTime: '06:00 AM', desc: 'Heat advisory - double the morning ratio', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706', urgency: 'URGENT', plot: 'Plot P-007', completedAt: null },
+    { id: 't3', title: 'Feed Goat Herd GT-014', status: 'URGENT', time: 'Today · 07:30 AM', dueDate: 'Today', dueTime: '07:30 AM', desc: 'Morning ration + 5kg forage', border: '#f59e0b', badgeBg: '#fef3c7', badgeColor: '#d97706', urgency: 'URGENT', plot: 'Barn Shed 2', completedAt: null },
+    { id: 't4', title: 'Harvest okra · Plot P-034', status: 'NORMAL', time: 'Today · 04:00 PM', dueDate: 'Today', dueTime: '04:00 PM', desc: 'Pods 7-9cm length ready', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b', urgency: 'NORMAL', plot: 'Plot P-034', completedAt: null },
+    { id: 't5', title: 'Water Plot P-002', status: 'NORMAL', time: 'Today · 05:30 PM', dueDate: 'Today', dueTime: '05:30 PM', desc: 'Evening ration - 80L drip', border: '#cbd5e1', badgeBg: '#f1f5f9', badgeColor: '#64748b', urgency: 'NORMAL', plot: 'Plot P-002', completedAt: 'Today · 06:14 AM' }
+  ]);
+  const [completedTasks, setCompletedTasks] = useState({ t5: true });
+  const [taskCompletedTimes, setTaskCompletedTimes] = useState({ t5: 'Today · 06:14 AM' });
+  const [taskFilter, setTaskFilter] = useState('ALL');
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('Morning Drip Irrigation · Plot P-007');
+  const [newTaskPlot, setNewTaskPlot] = useState('Plot P-007');
+  const [newTaskDueDate, setNewTaskDueDate] = useState('Today');
+  const [newTaskDueTime, setNewTaskDueTime] = useState('08:00 AM');
+  const [newTaskUrgency, setNewTaskUrgency] = useState('URGENT');
+  const [newTaskCategory, setNewTaskCategory] = useState('Irrigation');
+  const [newTaskDesc, setNewTaskDesc] = useState('Inspect drip emitters and apply 15L organic foliar cycle.');
+  const [selectedPlotDetail, setSelectedPlotDetail] = useState(null);
 
- const TASK_TEMPLATES = [
- { title: '💧 Morning Drip Irrigation', plot: 'Plot P-007', urgency: 'URGENT', category: 'Irrigation', desc: 'Inspect drip emitters and apply 15L organic foliar cycle.' },
- { title: '🌿 Bed Weeding & Cultivation', plot: 'Plot P-021', urgency: 'NORMAL', category: 'Crop Care', desc: 'Remove surface weeds around eggplant root zones.' },
- { title: '🧪 Organic Neem Spray Application', plot: 'Plot P-007', urgency: 'URGENT', category: 'Pest Control', desc: 'Apply organic neem leaf repellent against fruit borers.' },
- { title: '🌱 Vermicompost Soil Top-Dressing', plot: 'Plot P-014', urgency: 'NORMAL', category: 'Fertilizer', desc: 'Spread 15kg certified organic vermicompost per bed.' },
- { title: '🐐 Feed Goat Herd & Clean Pens', plot: 'Barn Shed 2', urgency: 'URGENT', category: 'Livestock', desc: 'Deliver 25kg cut napier grass and check water troughs.' },
- { title: '🍅 Harvest Ripe Produce (PGS Spec)', plot: 'Plot P-034', urgency: 'NORMAL', category: 'Harvest', desc: 'Harvest Grade A organic crops for cooperative packhouse.' }
- ];
+  const TASK_TEMPLATES = [
+    { title: '💧 Morning Drip Irrigation', plot: 'Plot P-007', urgency: 'URGENT', category: 'Irrigation', dueDate: 'Today', dueTime: '06:00 AM', desc: 'Inspect drip emitters and apply 15L organic foliar cycle.' },
+    { title: '🌿 Bed Weeding & Cultivation', plot: 'Plot P-021', urgency: 'NORMAL', category: 'Crop Care', dueDate: 'Today', dueTime: '08:30 AM', desc: 'Remove surface weeds around eggplant root zones.' },
+    { title: '🧪 Organic Neem Spray Application', plot: 'Plot P-007', urgency: 'URGENT', category: 'Pest Control', dueDate: 'Today', dueTime: '02:00 PM', desc: 'Apply organic neem leaf repellent against fruit borers.' },
+    { title: '🌱 Vermicompost Soil Top-Dressing', plot: 'Plot P-014', urgency: 'NORMAL', category: 'Fertilizer', dueDate: 'Tomorrow', dueTime: '07:00 AM', desc: 'Spread 15kg certified organic vermicompost per bed.' },
+    { title: '🐐 Feed Goat Herd & Clean Pens', plot: 'Barn Shed 2', urgency: 'URGENT', category: 'Livestock', dueDate: 'Today', dueTime: '07:30 AM', desc: 'Deliver 25kg cut napier grass and check water troughs.' },
+    { title: '🍅 Harvest Ripe Produce (PGS Spec)', plot: 'Plot P-034', urgency: 'NORMAL', category: 'Harvest', dueDate: 'Today', dueTime: '04:00 PM', desc: 'Harvest Grade A organic crops for cooperative packhouse.' }
+  ];
 
- const handleCreateNewTask = (e) => {
- if (e && e.preventDefault) e.preventDefault();
- const finalTitle = newTaskTitle.trim() || `${newTaskCategory || 'Field Task'} · ${newTaskPlot || 'Plot P-007'}`;
- const newTaskObj = {
- id: `task-${Date.now()}`,
- title: finalTitle,
- status: newTaskUrgency,
- time: '● 08:00 TODAY',
- desc: newTaskDesc || `Scheduled for ${newTaskPlot}`,
- border: newTaskUrgency === 'OVERDUE' ? '#ef4444' : (newTaskUrgency === 'URGENT' ? '#f59e0b' : '#cbd5e1'),
- badgeBg: newTaskUrgency === 'OVERDUE' ? '#fee2e2' : (newTaskUrgency === 'URGENT' ? '#fef3c7' : '#f1f5f9'),
- badgeColor: newTaskUrgency === 'OVERDUE' ? '#dc2626' : (newTaskUrgency === 'URGENT' ? '#d97706' : '#64748b'),
- urgency: newTaskUrgency,
- plot: newTaskPlot
- };
- setTasks(prev => [newTaskObj, ...prev]);
- setShowAddTaskModal(false);
- setNewTaskTitle('Morning Drip Irrigation · Plot P-007');
- setNewTaskDesc('');
- };
+  const handleCreateNewTask = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const finalTitle = newTaskTitle.trim() || `${newTaskCategory || 'Field Task'} · ${newTaskPlot || 'Plot P-007'}`;
+    const formattedDue = `${newTaskDueDate || 'Today'} · ${newTaskDueTime || '08:00 AM'}`;
+    const newTaskObj = {
+      id: `task-${Date.now()}`,
+      title: finalTitle,
+      status: newTaskUrgency,
+      time: formattedDue,
+      dueDate: newTaskDueDate || 'Today',
+      dueTime: newTaskDueTime || '08:00 AM',
+      desc: newTaskDesc || `Scheduled for ${newTaskPlot}`,
+      border: newTaskUrgency === 'OVERDUE' ? '#ef4444' : (newTaskUrgency === 'URGENT' ? '#f59e0b' : '#cbd5e1'),
+      badgeBg: newTaskUrgency === 'OVERDUE' ? '#fee2e2' : (newTaskUrgency === 'URGENT' ? '#fef3c7' : '#f1f5f9'),
+      badgeColor: newTaskUrgency === 'OVERDUE' ? '#dc2626' : (newTaskUrgency === 'URGENT' ? '#d97706' : '#64748b'),
+      urgency: newTaskUrgency,
+      plot: newTaskPlot,
+      completedAt: null
+    };
+    setTasks(prev => [newTaskObj, ...prev]);
+    setShowAddTaskModal(false);
+    setNewTaskTitle('Morning Drip Irrigation · Plot P-007');
+    setNewTaskDesc('');
+  };
 
  const handleApplyRFRecommendation = () => {
  const rfTask1 = {
@@ -200,14 +207,27 @@ const MobileAppSimulator = () => {
  );
  };
 
- // REAL-TIME AUTO POPUP FOR EVERY NEW ANNOUNCEMENT
- useEffect(() => {
- if (activePushNotice) {
- setSelectedAnnouncement(activePushNotice);
- setShowHistoryModal(false); 
- setShowNotificationModal(true); // Always pop up live notice!
- }
- }, [activePushNotice]);
+  // REAL-TIME AUTO POPUP FOR EVERY NEW DIRECTIVE / ANNOUNCEMENT
+  useEffect(() => {
+    if (activePushNotice) {
+      setSelectedAnnouncement(activePushNotice);
+      setShowHistoryModal(false); 
+      setShowNotificationModal(true);
+      return;
+    }
+
+    // On initial load, verify if the latest directive has been acknowledged
+    const latestDirect = (farmerDirectives && farmerDirectives[0]) || (announcements && announcements[0]);
+    if (latestDirect && latestDirect.id) {
+      try {
+        const ackId = localStorage.getItem('marikha_mobile_ack_notice_id');
+        if (ackId !== String(latestDirect.id)) {
+          setSelectedAnnouncement(latestDirect);
+          setShowNotificationModal(true);
+        }
+      } catch (e) {}
+    }
+  }, [activePushNotice, announcements]);
 
  // Form States
  const [mobileNumber, setMobileNumber] = useState('@danilo');
@@ -432,12 +452,19 @@ const MobileAppSimulator = () => {
  }, 600);
  };
 
- const toggleTaskCompleted = (taskId) => {
- setCompletedTasks(prev => ({
- ...prev,
- [taskId]: !prev[taskId]
- }));
- };
+  const toggleTaskCompleted = (taskId) => {
+    setCompletedTasks(prev => {
+      const willBeDone = !prev[taskId];
+      if (willBeDone) {
+        const nowStr = `Today · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        setTaskCompletedTimes(times => ({ ...times, [taskId]: nowStr }));
+      }
+      return {
+        ...prev,
+        [taskId]: willBeDone
+      };
+    });
+  };
 
  const getHeaderBg = () => {
  if (mobileScreen === 'splash') return '#0c3619';
@@ -1469,19 +1496,31 @@ const MobileAppSimulator = () => {
  boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
  }}
  >
- <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
- <span style={{ fontSize: '0.68rem', color: isDone ? '#16a34a' : t.border, fontWeight: '800' }}>{t.time}</span>
- <span style={{ background: isDone ? '#dcfce7' : t.badgeBg, color: isDone ? '#15803d' : t.badgeColor, fontSize: '0.65rem', padding: '2px 8px', borderRadius: '10px', fontWeight: '900' }}>
- {isDone ? (isTl ? 'TAPOS NA ✓' : 'COMPLETED ✓') : (isTl && t.status === 'OVERDUE' ? 'LIPAS NA' : (isTl && t.status === 'URGENT' ? 'APURADO' : t.status))}
- </span>
- </div>
- <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: isDone ? '#15803d' : '#111827', margin: '0 0 2px 0', textDecoration: isDone ? 'line-through' : 'none' }}>
- {isDone ? '✅ ' : '⬜ '}{t.title}
- </h4>
- <p style={{ fontSize: '0.72rem', color: '#6b7280', margin: 0 }}>{t.desc}</p>
- </div>
- );
- })}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.68rem', color: isDone ? '#16a34a' : (t.status === 'OVERDUE' ? '#dc2626' : t.border), fontWeight: '800' }}>
+                      {isDone 
+                        ? `✅ ${t('Completed at', 'Natapos noong')} ${taskCompletedTimes[t.id] || t.completedAt || 'Today · 06:14 AM'}`
+                        : (t.status === 'OVERDUE' 
+                          ? `🔴 ${t('Overdue:', 'Lipas na:')} ${t.dueDate || 'Yesterday'} · ${t.dueTime || '04:00 PM'}`
+                          : `⏰ ${t('Due:', 'Nakatakda:')} ${t.dueDate || 'Today'} · ${t.dueTime || '08:00 AM'}`)}
+                    </span>
+                    <span style={{ background: isDone ? '#dcfce7' : t.badgeBg, color: isDone ? '#15803d' : t.badgeColor, fontSize: '0.65rem', padding: '2px 8px', borderRadius: '10px', fontWeight: '900' }}>
+                      {isDone ? (isTl ? 'TAPOS NA ✓' : 'COMPLETED ✓') : (isTl && t.status === 'OVERDUE' ? 'LIPAS NA' : (isTl && t.status === 'URGENT' ? 'APURADO' : t.status))}
+                    </span>
+                  </div>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: '800', color: isDone ? '#15803d' : '#111827', margin: '0 0 2px 0', textDecoration: isDone ? 'line-through' : 'none' }}>
+                    {isDone ? '✅ ' : '⬜ '}{t.title}
+                  </h4>
+                  <p style={{ fontSize: '0.72rem', color: '#6b7280', margin: '0 0 6px 0' }}>{t.desc}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', color: '#64748b', paddingTop: '4px', borderTop: '1px solid #f1f5f9' }}>
+                    <span>📍 {t.plot}</span>
+                    <span style={{ color: isDone ? '#16a34a' : '#d97706', fontWeight: '700' }}>
+                      {isDone ? '✓ Verified in cloud' : '● Tap to toggle'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
  </div>
 
  {/* PGS ORGANIC CERTIFICATION CARD WITH CHECKLIST ITEM ALERT (Image 3) */}
@@ -2110,7 +2149,12 @@ const MobileAppSimulator = () => {
             </div>
 
             <button
-              onClick={() => setShowNotificationModal(false)}
+              onClick={() => {
+                if (latestPushAnnouncement && latestPushAnnouncement.id) {
+                  try { localStorage.setItem('marikha_mobile_ack_notice_id', String(latestPushAnnouncement.id)); } catch (e) {}
+                }
+                setShowNotificationModal(false);
+              }}
               style={{ width: '100%', padding: '12px', borderRadius: '10px', background: '#11592c', color: '#ffffff', fontWeight: '800', fontSize: '0.86rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 10px rgba(17,89,44,0.3)' }}
             >
               ✓ Acknowledge Directive
@@ -2263,6 +2307,8 @@ const MobileAppSimulator = () => {
  setNewTaskUrgency(tmpl.urgency);
  setNewTaskCategory(tmpl.category);
  setNewTaskDesc(tmpl.desc);
+                          if (tmpl.dueDate) setNewTaskDueDate(tmpl.dueDate);
+                          if (tmpl.dueTime) setNewTaskDueTime(tmpl.dueTime);
  }}
  style={{
  background: newTaskTitle === tmpl.title ? '#dcfce7' : '#f8fafc',
@@ -2347,6 +2393,74 @@ const MobileAppSimulator = () => {
  <option value="Harvest">🍅 Harvest Operations (Pag-ani)</option>
  </select>
  </div>
+
+                {/* Real-time Due Date & Time Selectors */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+                      📅 {t('Due Date', 'Araw ng Gawain')}
+                    </label>
+                    <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
+                      {['Today', 'Tomorrow', 'Next Week'].map(d => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => setNewTaskDueDate(d)}
+                          style={{
+                            padding: '3px 6px',
+                            fontSize: '0.64rem',
+                            fontWeight: '800',
+                            borderRadius: '6px',
+                            border: '1px solid #cbd5e1',
+                            background: newTaskDueDate === d ? '#d97706' : '#f8fafc',
+                            color: newTaskDueDate === d ? '#ffffff' : '#475569',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {d === 'Today' ? t('Today', 'Ngayon') : d === 'Tomorrow' ? t('Tomorrow', 'Bukas') : t('Next Week', 'Susunod')}
+                        </button>
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      value={newTaskDueDate}
+                      onChange={(e) => setNewTaskDueDate(e.target.value)}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.74rem', fontWeight: '700' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+                      ⏰ {t('Due Time', 'Oras ng Gawain')}
+                    </label>
+                    <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
+                      {['06:00 AM', '08:00 AM', '02:00 PM', '05:30 PM'].map(tm => (
+                        <button
+                          key={tm}
+                          type="button"
+                          onClick={() => setNewTaskDueTime(tm)}
+                          style={{
+                            padding: '3px 4px',
+                            fontSize: '0.6rem',
+                            fontWeight: '800',
+                            borderRadius: '6px',
+                            border: '1px solid #cbd5e1',
+                            background: newTaskDueTime === tm ? '#d97706' : '#f8fafc',
+                            color: newTaskDueTime === tm ? '#ffffff' : '#475569',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {tm.replace(':00', '').replace(' ', '')}
+                        </button>
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      value={newTaskDueTime}
+                      onChange={(e) => setNewTaskDueTime(e.target.value)}
+                      style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '0.74rem', fontWeight: '700' }}
+                    />
+                  </div>
+                </div>
 
  <div>
  <label style={{ fontSize: '0.66rem', fontWeight: '800', color: '#374151', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>

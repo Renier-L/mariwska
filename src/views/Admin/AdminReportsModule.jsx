@@ -162,6 +162,19 @@ const AdminReportsModule = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Formal Cooperative Header for Physical & PDF Print Output */}
+      <div className="print-only-header">
+        <h1 style={{ fontSize: '18pt', fontWeight: '900', color: '#0c3619', margin: '0 0 4px 0', textAlign: 'center' }}>
+          MARIKHA AGRICULTURAL COOPERATIVE FEDERATION
+        </h1>
+        <p style={{ fontSize: '10pt', color: '#334155', margin: '0 0 4px 0', textAlign: 'center' }}>
+          Official Operational Registry, Agronomy Compliance & Audit Dossier · Antipolo, Rizal
+        </p>
+        <div style={{ fontSize: '8.5pt', color: '#64748b', fontWeight: '700', textAlign: 'center', marginBottom: '14px' }}>
+          Official Certified Output · Generated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} · Confidential Cooperative Record
+        </div>
+      </div>
+
       {/* Top Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
         <div>

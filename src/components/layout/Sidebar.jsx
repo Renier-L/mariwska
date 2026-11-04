@@ -70,6 +70,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 			items: [
 				{ id: 'user-accounts', label: 'User Management', icon: Users },
 				{ id: 'roles-permissions', label: 'Roles & Security', icon: ShieldCheck },
+				{ id: 'announcements', label: 'Announcements', icon: Megaphone },
 			]
 		},
 		{
@@ -113,6 +114,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 			category: 'FIELD OPERATIONS',
 			items: [
 				{ id: 'operations-dashboard', label: 'Operations Overview', icon: LayoutDashboard },
+				{ id: 'announcements', label: 'Directives & Announcements', icon: Megaphone },
 				{ id: 'activity-validation', label: 'Activity Validation', icon: CheckSquare },
 				{ id: 'ml-audit', label: 'ML Audit & Risk', icon: ShieldAlert },
 			]
