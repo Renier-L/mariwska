@@ -309,7 +309,8 @@ const CropMonitoringModule = ({
 
 		// Validation: Prevent duplicate active plot for same farmer & plot
 		const isDuplicate = (crops || []).some(c => 
-			c.cropStatus !== 'Archived' &&
+			c.cropStatus !== 'Archived' && 
+			c.cropStatus !== 'Harvested' && // <--- Allow registration if previous crop is Harvested
 			String(c.farmer).toLowerCase() === registrationForm.farmerName.toLowerCase() &&
 			String(c.plot).toLowerCase() === registrationForm.plot.trim().toLowerCase()
 		);
