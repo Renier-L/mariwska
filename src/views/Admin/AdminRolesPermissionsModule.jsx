@@ -17,14 +17,46 @@ import {
   BrainCircuit, 
   Megaphone, 
   FileText,
-  RotateCcw
+  RotateCcw,
+  Edit,
+  Save,
+  CheckCircle2,
+  AlertCircle,
+  Eye,
+  SlidersHorizontal
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { ACCESS_LEVELS } from '../../data/rbacData';
+
+const ICON_MAP = {
+  Server,
+  Users,
+  Sprout,
+  Binary,
+  Calendar,
+  CheckSquare,
+  BarChart3,
+  BrainCircuit,
+  Megaphone,
+  FileText
+};
 
 const AdminRolesPermissionsModule = () => {
+  const { 
+    rbacCategories = [], 
+    updateRbacCapability, 
+    resetRbacToDefault,
+    currentRole 
+  } = useAuth();
+
+  // Mode & Filters
+  const [isEditMode, setIsEditMode] = useState(() => currentRole === 'super_admin');
   const [selectedRoleView, setSelectedRoleView] = useState('All'); // 'All' | 'Super Admin' | 'Admin IT/HR' | 'Farm Staff' | 'Farmer'
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const [onlyAllowed, setOnlyAllowed] = useState(false);
+  const [accessLevelFilter, setAccessLevelFilter] = useState('all'); // 'all' | 'edit' | 'view' | 'restricted'
+  const [saveNotice, setSaveNotice] = useState('');
+
   const [expandedCategories, setExpandedCategories] = useState({
     sys_admin: true,
     user_mgmt: true,
@@ -44,19 +76,40 @@ const AdminRolesPermissionsModule = () => {
 
   const handleExpandAll = () => {
     const allOpen = {};
-    categories.forEach(c => { allOpen[c.id] = true; });
+    rbacCategories.forEach(c => { allOpen[c.id] = true; });
     setExpandedCategories(allOpen);
+  };
+
+  const handleCollapseAll = () => {
+    const allClosed = {};
+    rbacCategories.forEach(c => { allClosed[c.id] = false; });
+    setExpandedCategories(allClosed);
   };
 
   const handleResetFilters = () => {
     setSelectedRoleView('All');
     setCategoryFilter('All');
     setSearchTerm('');
-    setOnlyAllowed(false);
+    setAccessLevelFilter('all');
     handleExpandAll();
   };
 
-  // 4 Roles Overview Cards (Screenshot 1)
+  const handleManualSave = () => {
+    setSaveNotice('All Access Control policies successfully saved and enforced in real time!');
+    setTimeout(() => setSaveNotice(''), 5000);
+  };
+
+  const handleResetDefaults = () => {
+    if (window.confirm('Reset all role permissions to the initial approved cooperative defaults?')) {
+      if (resetRbacToDefault) {
+        resetRbacToDefault();
+        setSaveNotice('RBAC matrix reset to approved cooperative defaults.');
+        setTimeout(() => setSaveNotice(''), 4000);
+      }
+    }
+  };
+
+  // 4 Roles Overview Cards
   const roleCards = [
     {
       id: 'super_admin',
@@ -66,7 +119,7 @@ const AdminRolesPermissionsModule = () => {
       badgeColor: '#b91c1c',
       userCount: '1 User',
       portal: 'Web Management Portal',
-      description: 'System administrator responsible for system-wide oversight, security, service telemetry, audit logs, and protected configurations.',
+      description: 'System administrator with system-wide oversight, security, service telemetry, audit logs, and permission configuration.',
       footer: 'Full System & Security Governance',
       isProtected: true
     },
@@ -109,864 +162,556 @@ const AdminRolesPermissionsModule = () => {
     }
   ];
 
-  // 10 Detailed Categories & Capabilities (Screenshots 2 to 5)
-  const categories = [
-    {
-      id: 'sys_admin',
-      title: 'System Administration',
-      subtitle: 'Core infrastructure telemetry, system audit logs, and protected security configurations.',
-      icon: Server,
-      iconBg: '#dcfce7',
-      iconColor: '#16a34a',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View System Dashboard',
-          description: 'Access comprehensive system dashboard overview and cooperative KPI metrics.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'Monitor Service Health & Telemetry',
-          description: 'Inspect 5 core services telemetry, cloud latency, and database storage utilization.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View System Audit Logs',
-          description: 'Inspect immutable security audit trail, IP addresses, and user activity timestamps.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Configure',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Manage Protected System Settings',
-          protected: true,
-          description: 'Configure cloud database endpoints, backup frequencies, and global security policies.',
-          superAdmin: 'protected',
-          admin: 'restricted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Configure',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Configure Roles & Permissions Matrix',
-          protected: true,
-          description: 'Modify and commit role-based access control capabilities across user tiers.',
-          superAdmin: 'protected',
-          admin: 'restricted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        }
-      ]
-    },
-    {
-      id: 'user_mgmt',
-      title: 'User & Member Management',
-      subtitle: 'User authentication accounts, permission levels, and cooperative member profiles.',
-      icon: Users,
-      iconBg: '#dcfce7',
-      iconColor: '#16a34a',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View User Directory',
-          description: 'Browse registered accounts, assigned roles, and member contact information.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Create',
-          badgeColor: '#16a34a',
-          badgeBg: '#dcfce7',
-          title: 'Create User Accounts',
-          description: 'Register new accounts with role-based access permissions and secure email invite.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Edit',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Edit Member Information',
-          description: 'Update member names, mobile phone numbers, and assigned sectors.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Configure',
-          badgeColor: '#7e22ce',
-          badgeBg: '#f3e8ff',
-          title: 'Activate or Deactivate Accounts',
-          description: 'Suspend or restore account login authentication without deleting historical logs.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Configure',
-          badgeColor: '#7e22ce',
-          badgeBg: '#f3e8ff',
-          title: 'Assign System Roles',
-          protected: true,
-          description: 'Assign or modify system access roles according to approved MARIKHA structure.',
-          superAdmin: 'protected',
-          admin: 'granted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        }
-      ]
-    },
-    {
-      id: 'crops',
-      title: 'Crop Production Monitoring',
-      subtitle: 'Field crop plots, vegetative growth steppers, organic inputs, and harvest records.',
-      icon: Sprout,
-      iconBg: '#dcfce7',
-      iconColor: '#16a34a',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Crop Plot Records',
-          description: 'Inspect registered crop plot details, planting dates, and vegetative stages.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'granted'
-        },
-        {
-          badge: 'Create',
-          badgeColor: '#16a34a',
-          badgeBg: '#dcfce7',
-          title: 'Register New Crop Plots',
-          description: 'Register crop plots with land area, variety, and initial organic inputs.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Edit',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Edit Crop Information',
-          description: 'Update organic fertilizer inputs, drip irrigation systems, and target yields.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Update',
-          badgeColor: '#d97706',
-          badgeBg: '#fef3c7',
-          title: 'Track Growth Stages & Yield Stepper',
-          description: 'Advance vegetative growth cycles (Seedling, Vegetative, Flowering, Fruiting, Harvest).',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'granted'
-        }
-      ]
-    },
-    {
-      id: 'livestock',
-      title: 'Livestock Monitoring (Goats)',
-      subtitle: 'Caprine herd inventory, pen locations, health observations, and vaccination protocols.',
-      icon: Binary,
-      iconBg: '#fef3c7',
-      iconColor: '#d97706',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Livestock Herd Records',
-          description: 'Inspect caprine herd headcounts, breed breakdowns (Anglo-Nubian, Boer), and pens.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'granted'
-        },
-        {
-          badge: 'Create',
-          badgeColor: '#16a34a',
-          badgeBg: '#dcfce7',
-          title: 'Register Goat Herds & Pen Locations',
-          description: 'Register new goat herd groups and barn pen locations in Supabase.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Edit',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Edit Livestock Information',
-          description: 'Update forage feed rations, buck/doe/kid headcounts, and average herd weights.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Update',
-          badgeColor: '#d97706',
-          badgeBg: '#fef3c7',
-          title: 'Track Health & Vaccination Protocols',
-          description: 'Log CDT toxoid, broad-spectrum deworming, and veterinary health observations.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'granted'
-        }
-      ]
-    },
-    {
-      id: 'scheduling',
-      title: 'Scheduling and Task Management',
-      subtitle: 'Cooperative master calendar, agronomic tasks, farm events, and assignment workflows.',
-      icon: Calendar,
-      iconBg: '#eff6ff',
-      iconColor: '#2563eb',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Schedules & Task Calendar',
-          description: 'View cooperative-wide calendar, planned activities, and assigned deadlines.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'granted'
-        },
-        {
-          badge: 'Create',
-          badgeColor: '#16a34a',
-          badgeBg: '#dcfce7',
-          title: 'Create Agricultural Tasks',
-          description: 'Create scheduled tasks with target date, priority, and organic protocol instructions.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Edit',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Edit & Reschedule Tasks',
-          description: 'Modify task dates, times, priority levels, and agronomic guidelines.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Assign',
-          badgeColor: '#4f46e5',
-          badgeBg: '#e0e7ff',
-          title: 'Assign Tasks to Farmers & Staff',
-          description: 'Allocate operational task responsibility to registered farmers and supervisors.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Update',
-          badgeColor: '#d97706',
-          badgeBg: '#fef3c7',
-          title: 'Mark Tasks Completed',
-          description: 'Mark assigned operational tasks as completed upon field execution.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'granted'
-        }
-      ]
-    },
-    {
-      id: 'validation',
-      title: 'Farmer Mobile Activity Validation',
-      subtitle: 'Field inspection of photo proofs, GPS coordinates, and PGS organic verification.',
-      icon: CheckSquare,
-      iconBg: '#dcfce7',
-      iconColor: '#15803d',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Pending Mobile Activity Queue',
-          description: 'Review submissions from farmers with photo proofs, timestamps, and GPS.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Validate',
-          badgeColor: '#15803d',
-          badgeBg: '#dcfce7',
-          title: 'Approve or Reject Farm Activities',
-          description: 'Validate farmer field entries for PGS compliance or flag for physical reinspection.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        }
-      ]
-    },
-    {
-      id: 'analytics',
-      title: 'Agricultural Analytics & Random Forest',
-      subtitle: 'Random Forest Regressor (v2.4-rf-agri) harvest predictions, R² scores, and variance audits.',
-      icon: BarChart3,
-      iconBg: '#f3e8ff',
-      iconColor: '#7e22ce',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Harvest Yield Analytics & Trends',
-          description: 'Inspect actual vs Random Forest predicted yields and historical variance curves.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Compute',
-          badgeColor: '#7e22ce',
-          badgeBg: '#f3e8ff',
-          title: 'Recalculate Yield Regression Models',
-          description: 'Trigger Random Forest model retrain with latest validated seasonal inputs.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        }
-      ]
-    },
-    {
-      id: 'decision',
-      title: 'Decision Support & Operational Plan',
-      subtitle: '8-week predictive yield horizon, feature weights, risk factors, and agronomic interventions.',
-      icon: BrainCircuit,
-      iconBg: '#f0fdf4',
-      iconColor: '#15803d',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Decision Support Recommendations',
-          description: 'Inspect identified risk factors, predictive yield horizon, and suggested tasks.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Action',
-          badgeColor: '#15803d',
-          badgeBg: '#dcfce7',
-          title: 'Commit Recommendations to Schedule',
-          description: 'Approve agronomic recommendations and schedule as cooperative tasks.',
-          superAdmin: 'granted',
-          admin: 'restricted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        }
-      ]
-    },
-    {
-      id: 'broadcast',
-      title: 'Cooperative Broadcast & Announcements',
-      subtitle: 'Create, schedule, and push cooperative broadcast notices to member web and mobile devices.',
-      icon: Megaphone,
-      iconBg: '#eff6ff',
-      iconColor: '#2563eb',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'View Broadcast Directory',
-          description: 'Browse scheduled, active, and expired announcements.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'granted',
-          farmer: 'granted'
-        },
-        {
-          badge: 'Create',
-          badgeColor: '#16a34a',
-          badgeBg: '#dcfce7',
-          title: 'Publish & Push Announcements',
-          description: 'Create announcements with target audience filters and instant push notifications.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Manage',
-          badgeColor: '#b45309',
-          badgeBg: '#fef3c7',
-          title: 'Archive or Delete Announcements',
-          description: 'Manage expiration schedules and remove outdated broadcasts.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'restricted',
-          farmer: 'restricted'
-        }
-      ]
-    },
-    {
-      id: 'reports',
-      title: 'Administrative Reports & Data Export',
-      subtitle: 'Export member directories, RSBSA registries, staff assignments, and A4 audit dossiers.',
-      icon: FileText,
-      iconBg: '#f8fafc',
-      iconColor: '#475569',
-      capabilities: [
-        {
-          badge: 'View',
-          badgeColor: '#0284c7',
-          badgeBg: '#eff6ff',
-          title: 'Preview Official Reports',
-          description: 'View A4 live document layout with letterheads and administrative sign-offs.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'granted',
-          farmer: 'restricted'
-        },
-        {
-          badge: 'Export',
-          badgeColor: '#15803d',
-          badgeBg: '#dcfce7',
-          title: 'Export PDF & CSV Master Dossiers',
-          description: 'Download member directories, RSBSA rosters, and farm oversight reports.',
-          superAdmin: 'granted',
-          admin: 'granted',
-          staff: 'granted',
-          farmer: 'restricted'
-        }
-      ]
-    }
-  ];
+  // Helper to render role cell with edit controls
+  const renderCell = (catId, cap, roleKey, roleTitle) => {
+    const rawVal = cap[roleKey] || 'restricted';
+    const status = rawVal === 'granted' ? 'edit' : rawVal;
 
-  // Helper to render cell value
-  const renderCell = (status) => {
-    if (status === 'granted') {
-      return (
-        <span style={{ color: '#16a34a', fontWeight: '800', fontSize: '0.9rem' }}>
-          ✓
-        </span>
-      );
-    }
-    if (status === 'protected') {
+    // Super Admin protected capabilities
+    if (cap.protected && roleKey === 'superAdmin') {
       return (
         <span style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '4px',
+          padding: '4px 8px',
+          borderRadius: '6px',
+          fontSize: '0.72rem',
+          fontWeight: '700',
           background: '#fee2e2',
           color: '#b91c1c',
-          padding: '2px 8px',
-          borderRadius: '6px',
-          fontSize: '0.68rem',
-          fontWeight: '800'
+          border: '1px solid #fecdd3'
         }}>
-          🔒 Protected
+          <Lock size={12} /> Protected
+        </span>
+      );
+    }
+
+    if (isEditMode) {
+      const colorScheme = {
+        edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
+        view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe' },
+        restricted: { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1' }
+      }[status] || { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1' };
+
+      return (
+        <select
+          value={status}
+          onChange={(e) => {
+            const nextVal = e.target.value;
+            if (updateRbacCapability) {
+              updateRbacCapability(catId, cap.id, roleKey, nextVal);
+            }
+            const labelMap = { edit: 'Can Edit & Manage', view: 'View-Only Access', restricted: 'Restricted' };
+            setSaveNotice(`Access updated: ${roleTitle} is now set to '${labelMap[nextVal]}' for "${cap.title}".`);
+            setTimeout(() => setSaveNotice(''), 4500);
+          }}
+          style={{
+            padding: '5px 8px',
+            fontSize: '0.72rem',
+            fontWeight: '700',
+            borderRadius: '6px',
+            border: `1.5px solid ${colorScheme.border}`,
+            background: colorScheme.bg,
+            color: colorScheme.text,
+            cursor: 'pointer',
+            outline: 'none',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+          }}
+          title={`Click to change ${roleTitle} access level`}
+        >
+          <option value="edit">✓ Can Edit & Manage</option>
+          <option value="view">👁 View-Only Access</option>
+          <option value="restricted">— Restricted</option>
+        </select>
+      );
+    }
+
+    // View-Only Static Badges
+    if (status === 'edit') {
+      return (
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          padding: '3px 8px',
+          borderRadius: '6px',
+          fontSize: '0.74rem',
+          fontWeight: '700',
+          background: '#dcfce7',
+          color: '#15803d',
+          border: '1px solid #86efac'
+        }}>
+          <Check size={12} /> Can Edit
+        </span>
+      );
+    }
+    if (status === 'view') {
+      return (
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          padding: '3px 8px',
+          borderRadius: '6px',
+          fontSize: '0.74rem',
+          fontWeight: '700',
+          background: '#eff6ff',
+          color: '#0284c7',
+          border: '1px solid #bfdbfe'
+        }}>
+          <Eye size={12} /> View-Only
         </span>
       );
     }
     return (
-      <span style={{ color: '#cbd5e1', fontWeight: '700', fontSize: '0.85rem' }}>
-        —
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '3px 8px',
+        borderRadius: '6px',
+        fontSize: '0.74rem',
+        fontWeight: '600',
+        background: '#f1f5f9',
+        color: '#94a3b8',
+        border: '1px solid #e2e8f0'
+      }}>
+        <Minus size={12} /> Restricted
       </span>
     );
   };
 
   // Filter Categories
-  const filteredCategories = categories.filter(cat => {
-    if (categoryFilter !== 'All' && cat.id !== categoryFilter) return false;
+  const filteredCategories = rbacCategories.filter(cat => {
+    if (categoryFilter !== 'All' && cat.title !== categoryFilter && cat.id !== categoryFilter) {
+      return false;
+    }
     return true;
   }).map(cat => {
-    let filteredCaps = cat.capabilities.filter(cap => {
-      // Search
-      const q = searchTerm.toLowerCase().trim();
-      if (q && !cap.title.toLowerCase().includes(q) && !cap.description.toLowerCase().includes(q)) {
-        return false;
+    const q = searchTerm.toLowerCase().trim();
+    const matchingCaps = cat.capabilities.filter(cap => {
+      // Access Level Filter
+      if (accessLevelFilter !== 'all') {
+        const statuses = [cap.superAdmin, cap.admin, cap.staff, cap.farmer];
+        const hasLevel = statuses.some(s => (s === 'granted' ? 'edit' : s) === accessLevelFilter);
+        if (!hasLevel) return false;
       }
 
-      // Role filter check
-      if (selectedRoleView === 'Super Admin' && onlyAllowed && cap.superAdmin === 'restricted') return false;
-      if (selectedRoleView === 'Admin IT/HR' && onlyAllowed && cap.admin === 'restricted') return false;
-      if (selectedRoleView === 'Farm Staff' && onlyAllowed && cap.staff === 'restricted') return false;
-      if (selectedRoleView === 'Farmer' && onlyAllowed && cap.farmer === 'restricted') return false;
-
-      return true;
+      if (!q) return true;
+      return (
+        cap.title.toLowerCase().includes(q) ||
+        cap.description.toLowerCase().includes(q) ||
+        cap.badge.toLowerCase().includes(q)
+      );
     });
 
-    return { ...cat, capabilities: filteredCaps };
+    return {
+      ...cat,
+      capabilities: matchingCaps
+    };
   }).filter(cat => cat.capabilities.length > 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Top Header Section (Screenshot 1) */}
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-0.5px' }}>
-            Roles & Permissions
-          </h1>
-          <span style={{
-            background: '#dcfce7',
-            color: '#15803d',
-            border: '1px solid #86efac',
-            padding: '2px 10px',
-            borderRadius: '12px',
-            fontSize: '0.72rem',
-            fontWeight: '800'
-          }}>
-            Cloud RBAC Enforced
-          </span>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <h1 style={{ fontSize: '1.65rem', fontWeight: '800', color: '#111827', margin: 0, letterSpacing: '-0.4px' }}>
+              Roles & Permissions
+            </h1>
+            <span style={{
+              background: '#dcfce7',
+              color: '#15803d',
+              border: '1px solid #86efac',
+              fontSize: '0.68rem',
+              fontWeight: '700',
+              padding: '2px 8px',
+              borderRadius: '6px'
+            }}>
+              Cloud RBAC Enforced
+            </span>
+            {isEditMode && (
+              <span style={{
+                background: '#fef3c7',
+                color: '#b45309',
+                border: '1px solid #fde68a',
+                fontSize: '0.68rem',
+                fontWeight: '800',
+                padding: '2px 8px',
+                borderRadius: '6px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <Edit size={11} /> Edit Mode Active
+              </span>
+            )}
+          </div>
+          <p style={{ fontSize: '0.84rem', color: '#64748b', margin: 0 }}>
+            Configure access control across shared modules. Define whether Admin and Farm Staff have View-Only access or Can Edit.
+          </p>
         </div>
-        <p style={{ fontSize: '0.84rem', color: '#64748b', margin: 0 }}>
-          View system roles, access permissions, and assigned capabilities.
-        </p>
+
+        {/* Action Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setIsEditMode(prev => !prev)}
+            style={{
+              background: isEditMode ? '#11592c' : '#ffffff',
+              color: isEditMode ? '#ffffff' : '#11592c',
+              border: '1.5px solid #11592c',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              fontSize: '0.78rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <SlidersHorizontal size={14} />
+            {isEditMode ? 'Exit Edit Mode' : 'Configure Permissions'}
+          </button>
+
+          {isEditMode && (
+            <button
+              onClick={handleManualSave}
+              style={{
+                background: 'linear-gradient(135deg, #15803d 0%, #11592c 100%)',
+                color: '#ffffff',
+                border: 'none',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 4px rgba(21,128,61,0.2)'
+              }}
+            >
+              <Save size={14} /> Save Policies
+            </button>
+          )}
+
+          <button
+            onClick={handleResetDefaults}
+            style={{
+              background: '#ffffff',
+              color: '#64748b',
+              border: '1px solid #cbd5e1',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              fontSize: '0.78rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            title="Reset to default cooperative permissions"
+          >
+            <RotateCcw size={13} /> Reset Defaults
+          </button>
+        </div>
       </div>
 
-      {/* Read-Only Access Banner (Screenshot 1) */}
+      {/* Real-time Save Feedback Alert */}
+      {saveNotice && (
+        <div style={{
+          background: '#dcfce7',
+          border: '1px solid #86efac',
+          borderRadius: '10px',
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '0.82rem',
+          fontWeight: '700',
+          color: '#15803d',
+          boxShadow: '0 2px 8px rgba(22,163,74,0.1)'
+        }}>
+          <CheckCircle2 size={18} />
+          <span>{saveNotice}</span>
+        </div>
+      )}
+
+      {/* Access Control Information Banner */}
       <div style={{
-        background: '#ffffff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '12px',
-        padding: '12px 18px',
+        background: isEditMode ? '#f0fdf4' : '#eff6ff',
+        border: `1px solid ${isEditMode ? '#86efac' : '#bfdbfe'}`,
+        borderRadius: '10px',
+        padding: '12px 16px',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '12px'
       }}>
-        <ShieldCheck size={18} color="#15803d" />
-        <span style={{ fontSize: '0.78rem', color: '#334155' }}>
-          <strong style={{ color: '#0f172a' }}>Read-Only Access:</strong> You can view role permissions. Only the Superadmin can modify permission settings.
-        </span>
-      </div>
-
-      {/* SYSTEM ROLES OVERVIEW (4 ROLES DEFINED) (Screenshot 1) */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Users size={16} color="#0c3619" />
-            <span style={{ fontSize: '0.78rem', fontWeight: '900', color: '#0f172a', letterSpacing: '0.4px' }}>
-              SYSTEM ROLES OVERVIEW (4 ROLES DEFINED)
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {isEditMode ? <SlidersHorizontal size={18} color="#15803d" /> : <ShieldCheck size={18} color="#0284c7" />}
+          <div>
+            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: isEditMode ? '#15803d' : '#0369a1', display: 'block' }}>
+              {isEditMode 
+                ? 'Super Admin Access Control Editor Active' 
+                : 'Role-Based Access Control (RBAC) Inspection'}
+            </span>
+            <span style={{ fontSize: '0.74rem', color: isEditMode ? '#166534' : '#1e40af' }}>
+              {isEditMode
+                ? 'Super Admin, Admin, and Farm Staff share the same set of modules. Click any dropdown below to configure Can Edit, View-Only, or Restricted.'
+                : 'Super Admin, Admin, and Farm Staff share the same set of modules. Click "Configure Permissions" above to adjust access levels.'}
             </span>
           </div>
-          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-            Click any role card below to inspect its permissions
-          </span>
         </div>
 
-        {/* 4 Role Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px' }}>
-          {roleCards.map(rc => {
-            const isSelected = selectedRoleView === rc.name;
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>STATUS:</span>
+          <span style={{
+            fontSize: '0.72rem',
+            fontWeight: '800',
+            background: isEditMode ? '#dcfce7' : '#e0f2fe',
+            color: isEditMode ? '#15803d' : '#0284c7',
+            padding: '2px 8px',
+            borderRadius: '4px'
+          }}>
+            {isEditMode ? 'Interactive Editing' : 'Enforced Live'}
+          </span>
+        </div>
+      </div>
 
-            return (
-              <div
-                key={rc.id}
-                onClick={() => setSelectedRoleView(selectedRoleView === rc.name ? 'All' : rc.name)}
-                className="m-card"
+      {/* 4 Roles Overview Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }}>
+        {roleCards.map(role => (
+          <div 
+            key={role.id}
+            className="m-card"
+            style={{
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              borderTop: role.isProtected ? '3px solid #b91c1c' : '3px solid #11592c'
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{
+                  fontSize: '0.68rem',
+                  fontWeight: '800',
+                  background: role.badgeBg,
+                  color: role.badgeColor,
+                  padding: '2px 8px',
+                  borderRadius: '4px'
+                }}>
+                  {role.badge}
+                </span>
+
+                <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#0f172a' }}>
+                  {role.userCount}
+                </span>
+              </div>
+
+              <h3 style={{ fontSize: '0.96rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px 0' }}>
+                {role.name}
+              </h3>
+
+              <span style={{ fontSize: '0.72rem', color: role.portalColor || '#15803d', fontWeight: '700', display: 'block', marginBottom: '8px' }}>
+                {role.portal}
+              </span>
+
+              <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '0 0 12px 0', lineHeight: 1.45 }}>
+                {role.description}
+              </p>
+            </div>
+
+            <div style={{
+              borderTop: '1px solid #f1f5f9',
+              paddingTop: '8px',
+              fontSize: '0.7rem',
+              fontWeight: '700',
+              color: '#475569',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <span>{role.footer}</span>
+              {role.isProtected && (
+                <span style={{ color: '#b91c1c', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                  <Lock size={11} /> Protected
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter and Control Bar */}
+      <div className="m-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          {/* Role View Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#64748b', marginRight: '4px' }}>
+              ROLE VIEW:
+            </span>
+            {['All', 'Super Admin', 'Admin IT/HR', 'Farm Staff', 'Farmer'].map(role => (
+              <button
+                key={role}
+                onClick={() => setSelectedRoleView(role)}
                 style={{
-                  padding: '16px 18px',
-                  borderRadius: '12px',
-                  background: isSelected ? '#f0fdf4' : '#ffffff',
-                  border: isSelected ? '2px solid #11592c' : '1px solid #e2e8f0',
+                  padding: '5px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.74rem',
+                  fontWeight: selectedRoleView === role ? '800' : '600',
+                  background: selectedRoleView === role ? '#11592c' : '#f1f5f9',
+                  color: selectedRoleView === role ? '#ffffff' : '#475569',
+                  border: 'none',
                   cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
                   transition: 'all 0.15s ease'
                 }}
               >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{
-                      fontSize: '0.7rem',
-                      fontWeight: '800',
-                      background: rc.badgeBg,
-                      color: rc.badgeColor,
-                      padding: '2px 8px',
-                      borderRadius: '6px'
-                    }}>
-                      {rc.badge}
-                    </span>
-                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '700', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px' }}>
-                      {rc.userCount}
-                    </span>
-                  </div>
+                {role}
+              </button>
+            ))}
+          </div>
 
-                  <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: '0 0 2px 0' }}>
-                    {rc.name}
-                  </h3>
-                  <span style={{ fontSize: '0.7rem', color: rc.portalColor || '#64748b', fontWeight: '600', display: 'block', marginBottom: '8px' }}>
-                    {rc.portal}
-                  </span>
-
-                  <p style={{ fontSize: '0.72rem', color: '#475569', margin: '0 0 12px 0', lineHeight: 1.4 }}>
-                    {rc.description}
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '8px', fontSize: '0.68rem', color: '#64748b' }}>
-                  <span>{rc.footer}</span>
-                  {rc.isProtected && (
-                    <span style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '3px',
-                      background: '#fef3c7',
-                      color: '#b45309',
-                      padding: '1px 6px',
-                      borderRadius: '4px',
-                      fontWeight: '700'
-                    }}>
-                      🔒 Protected
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Role View Filters Bar (Screenshot 1) */}
-      <div className="m-card" style={{ padding: '16px 20px', borderRadius: '12px', background: '#ffffff', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {/* Row 1: ROLE VIEW Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#475569', letterSpacing: '0.3px' }}>
-            ROLE VIEW:
-          </span>
-
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {['All Roles (Comparison)', 'Super Admin', 'Admin IT/HR', 'Farm Staff', 'Farmer'].map(tab => {
-              const tabKey = tab.startsWith('All') ? 'All' : tab;
-              const isActive = selectedRoleView === tabKey;
-
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setSelectedRoleView(tabKey)}
-                  style={{
-                    border: isActive ? 'none' : '1px solid #cbd5e1',
-                    padding: '5px 12px',
-                    borderRadius: '20px',
-                    fontSize: '0.72rem',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    background: isActive ? '#0c3619' : '#ffffff',
-                    color: isActive ? '#ffffff' : '#475569',
-                    boxShadow: isActive ? '0 2px 4px rgba(12, 54, 25, 0.25)' : 'none'
-                  }}
-                >
-                  {tab}
-                </button>
-              );
-            })}
+          {/* Quick Buttons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              onClick={handleExpandAll}
+              style={{ background: 'none', border: 'none', fontSize: '0.74rem', color: '#15803d', fontWeight: '700', cursor: 'pointer' }}
+            >
+              Expand All
+            </button>
+            <span style={{ color: '#cbd5e1' }}>·</span>
+            <button
+              onClick={handleCollapseAll}
+              style={{ background: 'none', border: 'none', fontSize: '0.74rem', color: '#64748b', fontWeight: '700', cursor: 'pointer' }}
+            >
+              Collapse All
+            </button>
+            <span style={{ color: '#cbd5e1' }}>·</span>
+            <button
+              onClick={handleResetFilters}
+              style={{ background: 'none', border: 'none', fontSize: '0.74rem', color: '#64748b', fontWeight: '600', cursor: 'pointer' }}
+            >
+              Reset Filters
+            </button>
           </div>
         </div>
 
-        {/* Row 2: Category Dropdown, Search Input, Expand All, Reset Filters */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        {/* Category & Search Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          {/* Category Dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>CATEGORIES:</span>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               style={{
-                padding: '7px 12px',
+                padding: '6px 12px',
+                fontSize: '0.78rem',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                border: '1.5px solid #cbd5e1',
-                fontSize: '0.76rem',
-                fontWeight: '700',
-                color: '#334155',
                 background: '#ffffff',
+                color: '#0f172a',
                 outline: 'none',
-                cursor: 'pointer'
+                fontWeight: '600'
               }}
             >
-              <option value="All">All Modules (10 Categories)</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.title}</option>
+              <option value="All">All Categories ({rbacCategories.length})</option>
+              {rbacCategories.map(cat => (
+                <option key={cat.id} value={cat.title}>{cat.title}</option>
               ))}
             </select>
-
-            <div style={{ position: 'relative', width: '260px' }}>
-              <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: '10px', top: '10px' }} />
-              <input
-                type="text"
-                placeholder="Search capability or key..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '7px 10px 7px 32px',
-                  borderRadius: '8px',
-                  border: '1.5px solid #cbd5e1',
-                  fontSize: '0.76rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
           </div>
 
+          {/* Access Level Filter Dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              onClick={handleExpandAll}
+            <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748b' }}>ACCESS LEVEL:</span>
+            <select
+              value={accessLevelFilter}
+              onChange={(e) => setAccessLevelFilter(e.target.value)}
               style={{
-                background: '#ffffff',
+                padding: '6px 12px',
+                fontSize: '0.78rem',
                 border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                padding: '6px 12px',
-                fontSize: '0.74rem',
-                fontWeight: '700',
-                color: '#334155',
-                cursor: 'pointer'
+                background: '#ffffff',
+                color: '#0f172a',
+                outline: 'none',
+                fontWeight: '600'
               }}
             >
-              Expand All
-            </button>
+              <option value="all">All Access Levels</option>
+              <option value="edit">Can Edit & Manage</option>
+              <option value="view">View-Only Access</option>
+              <option value="restricted">Restricted Only</option>
+            </select>
+          </div>
 
-            <button
-              onClick={handleResetFilters}
+          {/* Live Search */}
+          <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <input
+              type="text"
+              placeholder="Search capabilities across 10 modules..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                background: '#ffffff',
+                width: '100%',
+                padding: '6px 12px 6px 30px',
+                fontSize: '0.78rem',
                 border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                padding: '6px 12px',
-                fontSize: '0.74rem',
-                fontWeight: '700',
-                color: '#334155',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
+                outline: 'none',
+                background: '#ffffff'
               }}
-            >
-              <RotateCcw size={12} /> Reset Filters
-            </button>
-          </div>
-        </div>
-
-        {/* Row 3: Read-Only Mode & Legend */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '10px', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <span style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              padding: '4px 10px',
-              borderRadius: '6px',
-              fontSize: '0.72rem',
-              fontWeight: '700',
-              color: '#475569'
-            }}>
-              <Lock size={12} /> Read-Only Mode
-            </span>
-
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.74rem', color: '#475569', cursor: 'pointer', fontWeight: '600' }}>
-              <input
-                type="checkbox"
-                checked={onlyAllowed}
-                onChange={(e) => setOnlyAllowed(e.target.checked)}
-                style={{ cursor: 'pointer' }}
-              />
-              Show Allowed Permissions Only
-            </label>
+            />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '0.72rem', color: '#64748b', fontWeight: '700' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ color: '#16a34a' }}>✓</span> Granted
+          {/* Access Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.72rem', fontWeight: '700' }}>
+            <span style={{ color: '#15803d', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a' }}></span>
+              Can Edit
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ color: '#cbd5e1' }}>—</span> Restricted
+            <span style={{ color: '#0284c7', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#0284c7' }}></span>
+              View-Only
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ color: '#b45309' }}>🔒</span> Protected
+            <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '3px' }}>
+              <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#94a3b8' }}></span>
+              Restricted
             </span>
           </div>
         </div>
       </div>
 
-      {/* Accordion Categories List (Screenshots 2 to 5) */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* 10 Accordion Categories */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {filteredCategories.map(cat => {
-          const Icon = cat.icon;
           const isExpanded = expandedCategories[cat.id] !== false;
+          const IconComp = ICON_MAP[cat.iconName] || ShieldCheck;
 
           return (
-            <div
-              key={cat.id}
-              className="m-card"
-              style={{
-                borderRadius: '14px',
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                overflow: 'hidden'
-              }}
-            >
-              {/* Category Header */}
-              <button
+            <div key={cat.id} className="m-card" style={{ padding: 0, overflow: 'hidden' }}>
+              {/* Category Header Bar */}
+              <div
                 onClick={() => toggleCategory(cat.id)}
                 style={{
-                  width: '100%',
-                  padding: '16px 20px',
-                  background: '#ffffff',
-                  border: 'none',
+                  padding: '14px 20px',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   cursor: 'pointer',
-                  textAlign: 'left'
+                  background: isExpanded ? '#f8fafc' : '#ffffff',
+                  borderBottom: isExpanded ? '1px solid #e2e8f0' : 'none',
+                  transition: 'background 0.15s ease'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -974,51 +719,62 @@ const AdminRolesPermissionsModule = () => {
                     width: '32px',
                     height: '32px',
                     borderRadius: '8px',
-                    background: cat.iconBg,
-                    color: cat.iconColor,
+                    background: cat.iconBg || '#dcfce7',
+                    color: cat.iconColor || '#15803d',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    <Icon size={16} />
+                    <IconComp size={16} />
                   </div>
+
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: '800', color: '#0f172a' }}>
-                      {cat.title}
-                    </h3>
-                    <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+                        {cat.title}
+                      </h4>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '700', background: '#e2e8f0', color: '#475569', padding: '1px 6px', borderRadius: '4px' }}>
+                        {cat.capabilities.length} capabilities
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       {cat.subtitle}
                     </span>
                   </div>
                 </div>
 
-                {isExpanded ? <ChevronUp size={18} color="#64748b" /> : <ChevronDown size={18} color="#64748b" />}
-              </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: '600' }}>
+                    {isExpanded ? 'Collapse' : 'Expand'}
+                  </span>
+                  {isExpanded ? <ChevronUp size={16} color="#64748b" /> : <ChevronDown size={16} color="#64748b" />}
+                </div>
+              </div>
 
-              {/* Capabilities Table */}
+              {/* Table of Capabilities */}
               {isExpanded && (
-                <div style={{ overflowX: 'auto', borderTop: '1px solid #f1f5f9' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.78rem' }}>
                     <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', color: '#64748b', fontWeight: '800', textAlign: 'center' }}>
-                        <th style={{ padding: '10px 20px', textAlign: 'left' }}>CAPABILITY & ACTION</th>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.7rem', fontWeight: '800' }}>
+                        <th style={{ padding: '10px 20px' }}>CAPABILITY / ACTION</th>
                         {(selectedRoleView === 'All' || selectedRoleView === 'Super Admin') && (
-                          <th style={{ padding: '10px 14px', width: '110px' }}>SUPER ADMIN</th>
+                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>SUPER ADMIN</th>
                         )}
                         {(selectedRoleView === 'All' || selectedRoleView === 'Admin IT/HR') && (
-                          <th style={{ padding: '10px 14px', width: '110px' }}>ADMIN IT/HR</th>
+                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>ADMIN IT/HR</th>
                         )}
                         {(selectedRoleView === 'All' || selectedRoleView === 'Farm Staff') && (
-                          <th style={{ padding: '10px 14px', width: '110px' }}>FARM STAFF</th>
+                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>FARM STAFF</th>
                         )}
                         {(selectedRoleView === 'All' || selectedRoleView === 'Farmer') && (
-                          <th style={{ padding: '10px 14px', width: '110px' }}>FARMER</th>
+                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>FARMER</th>
                         )}
                       </tr>
                     </thead>
                     <tbody>
-                      {cat.capabilities.map((cap, capIdx) => (
-                        <tr key={capIdx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      {cat.capabilities.map((cap) => (
+                        <tr key={cap.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                           {/* Capability Name & Description */}
                           <td style={{ padding: '14px 20px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
@@ -1061,29 +817,29 @@ const AdminRolesPermissionsModule = () => {
 
                           {/* Super Admin */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Super Admin') && (
-                            <td style={{ padding: '14px 14px', textAlign: 'center' }}>
-                              {renderCell(cap.superAdmin)}
+                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                              {renderCell(cat.id, cap, 'superAdmin', 'Super Admin')}
                             </td>
                           )}
 
                           {/* Admin IT/HR */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Admin IT/HR') && (
-                            <td style={{ padding: '14px 14px', textAlign: 'center' }}>
-                              {renderCell(cap.admin)}
+                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                              {renderCell(cat.id, cap, 'admin', 'Admin IT/HR')}
                             </td>
                           )}
 
                           {/* Farm Staff */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Farm Staff') && (
-                            <td style={{ padding: '14px 14px', textAlign: 'center' }}>
-                              {renderCell(cap.staff)}
+                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                              {renderCell(cat.id, cap, 'staff', 'Farm Staff')}
                             </td>
                           )}
 
                           {/* Farmer */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Farmer') && (
-                            <td style={{ padding: '14px 14px', textAlign: 'center' }}>
-                              {renderCell(cap.farmer)}
+                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                              {renderCell(cat.id, cap, 'farmer', 'Farmer')}
                             </td>
                           )}
                         </tr>

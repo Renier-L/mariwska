@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialUsers, initialCrops, initialLivestock, initialAnnouncements, initialValidations, initialMLClassifications, initialSchedules } from '../data/mockData';
+import { INITIAL_RBAC_CATEGORIES } from '../data/rbacData';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
@@ -185,6 +186,53 @@ export const AuthProvider = ({ children }) => {
  };
  });
 
+  // Granular 10-Category RBAC Matrix State (Editable across Super Admin & Admin)
+  const [rbacCategories, setRbacCategories] = useState(() => {
+    try {
+      const saved = localStorage.getItem("marikha_rbac_matrix_v3");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_RBAC_CATEGORIES;
+  });
+
+  const updateRbacCapability = (categoryId, capabilityId, roleKey, newAccessLevel) => {
+    setRbacCategories(prev => {
+      const next = prev.map(cat => {
+        if (cat.id !== categoryId) return cat;
+        return {
+          ...cat,
+          capabilities: cat.capabilities.map(cap => {
+            if (cap.id !== capabilityId) return cap;
+            return {
+              ...cap,
+              [roleKey]: newAccessLevel
+            };
+          })
+        };
+      });
+      try {
+        localStorage.setItem("marikha_rbac_matrix_v3", JSON.stringify(next));
+      } catch (e) {}
+      if (broadcastChannel) {
+        broadcastChannel.postMessage({ type: "RBAC_UPDATED_PUSH", payload: next });
+      }
+      return next;
+    });
+  };
+
+  const resetRbacToDefault = () => {
+    setRbacCategories(INITIAL_RBAC_CATEGORIES);
+    try {
+      localStorage.removeItem("marikha_rbac_matrix_v3");
+    } catch (e) {}
+    if (broadcastChannel) {
+      broadcastChannel.postMessage({ type: "RBAC_UPDATED_PUSH", payload: INITIAL_RBAC_CATEGORIES });
+    }
+  };
+
  const setCurrentRole = (roleKey) => {
  setCurrentRoleState(roleKey);
  try {
@@ -295,7 +343,9 @@ export const AuthProvider = ({ children }) => {
  handleIncomingValidation(event.data.payload);
  } else if (event.data && event.data.type === 'USER_CREATED_PUSH') {
  handleIncomingUser(event.data.payload);
- } else if (event.data && event.data.type === 'USER_DELETED_PUSH') {
+ } else if (event.data && event.data.type === 'RBAC_UPDATED_PUSH') {
+        setRbacCategories(event.data.payload);
+      } else if (event.data && event.data.type === 'USER_DELETED_PUSH') {
  handleDeletedUser(event.data.payload);
  }
  };
@@ -317,7 +367,9 @@ export const AuthProvider = ({ children }) => {
  const parsed = JSON.parse(e.newValue);
  handleIncomingUser(parsed);
  } catch (err) {}
- } else if (e.key === 'marikha_deleted_user' && e.newValue) {
+ } else if (e.key === 'marikha_rbac_matrix_v3' && e.newValue) {
+        try { setRbacCategories(JSON.parse(e.newValue)); } catch (err) {}
+      } else if (e.key === 'marikha_deleted_user' && e.newValue) {
  try {
  const parsed = JSON.parse(e.newValue);
  handleDeletedUser(parsed.id);
@@ -1430,6 +1482,9 @@ export const AuthProvider = ({ children }) => {
  validations,
  mlClassifications,
  permissionsMatrix,
+    rbacCategories,
+    updateRbacCapability,
+    resetRbacToDefault,
  activePushNotice,
  activePushValidation,
  loginAsRole,
