@@ -334,14 +334,16 @@ const AdminMemberRecordsModule = ({
 
   // Status toggle
   const handleToggleStatus = (memberId) => {
+    let memberEmail = null;
     setMemberList(prev => prev.map(m => {
       if (m.id === memberId) {
+        memberEmail = m.email;
         const nextStatus = m.status === 'Active' ? 'Inactive' : 'Active';
         return { ...m, status: nextStatus };
       }
       return m;
     }));
-    if (toggleUserStatus) toggleUserStatus(memberId);
+    if (toggleUserStatus) toggleUserStatus(memberId, memberEmail);
     setActiveMenuId(null);
   };
 

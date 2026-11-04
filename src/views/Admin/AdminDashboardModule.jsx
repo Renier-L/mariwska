@@ -124,7 +124,10 @@ const AdminDashboardModule = ({
     }
   ];
 
-  const displayAnnouncements = Array.isArray(announcements) && announcements.length > 0 ? announcements : defaultAnnouncements;
+  const displayAnnouncements = (Array.isArray(announcements) && announcements.length > 0 ? announcements : defaultAnnouncements).filter(ann => {
+    const isFarmStaffPrivate = (ann.targetAudience === 'farmers' || (ann.audienceLabel && ann.audienceLabel.includes('Farmers Only')) || (ann.title && ann.title.includes('Farmer Field Activity'))) && (ann.author && (ann.author.toLowerCase().includes('staff') || ann.author.toLowerCase().includes('arnel')));
+    return !isFarmStaffPrivate;
+  });
 
   const handleAddMemberClick = () => {
     if (typeof onOpenAddMember === 'function') {

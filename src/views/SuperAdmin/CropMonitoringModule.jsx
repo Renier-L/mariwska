@@ -378,7 +378,7 @@ const CropMonitoringModule = ({
 			});
 
 			const predictedKg = result.predictedKg;
-			const yieldStr = ` kg (RF v2.4 est)`;
+			const yieldStr = `${predictedKg} kg (RF v2.4 est)`;
 
 			if (updateCrop) {
 				await updateCrop(crop.id, {
@@ -395,7 +395,7 @@ const CropMonitoringModule = ({
 			}) : null);
 
 			setPredictionNotice(
-				`Random Forest v2.4 (100 Trees) Inference Completed:  kg harvest yield predicted for  ( ,  Season,  Soil).`
+				`Random Forest v2.4 (100 Trees) Inference Completed: ${predictedKg} kg harvest yield predicted for ${crop.variety || crop.cropType} (${crop.cultivatedArea || 450} sq.m, 2026 Season, ${crop.soilType || 'Loam'} Soil).`
 			);
 		} catch (err) {
 			console.error('RF Prediction Error:', err);
