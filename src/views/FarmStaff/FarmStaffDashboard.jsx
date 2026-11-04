@@ -1966,106 +1966,86 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
  </tr>
  </thead>
  <tbody>
- {filteredLivestock.length === 0 ? (
- <tr>
- <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#64748b', fontSize: '0.85rem' }}>
- No livestock groups matching "{livestockSearchQuery}". Click "+ Register New Livestock Group" above to add one!
- </td>
- </tr>
- ) : (
- filteredLivestock.map(r => {
- const groupCode = r.groupCode || r.code || `GL-${String(r.id).substring(0, 4)}`;
- const animalText = r.group || r.animalType || 'Livestock Herd';
- const headCount = r.headCount || 12;
- const health = r.healthStatus || r.health || 'Excellent';
- const vax = r.vaccination || r.vax || 'Deworming + Vit B (Aug 2026)';
- const forage = r.forage || r.forage_source || 'Organic Napier Grass';
- const plot = r.plot || 'Plot P-055';
- const status = r.status || 'Compliant';
+  {filteredLivestock.length === 0 ? (
+    <tr>
+      <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#64748b', fontSize: '0.85rem' }}>
+        No livestock groups matching "{livestockSearchQuery}". Click "+ Register New Livestock Group" above to add one!
+      </td>
+    </tr>
+  ) : (
+    filteredLivestock.map(r => {
+      const groupCode = r.groupCode || r.code || `GL-${String(r.id).substring(0, 4)}`;
+      const animalText = r.group || r.animalType || 'Livestock Herd';
+      const headCount = r.headCount || 12;
+      const health = r.healthStatus || r.health || 'Excellent';
+      const vax = r.vaccination || r.vax || 'Deworming + Vit B (Aug 2026)';
+      const forage = r.forage || r.forage_source || 'Organic Napier Grass';
+      const plot = r.plot || 'Plot P-055';
+      const status = r.status || 'Compliant';
 
- return (
- <tr key={r.id || groupCode} style={{ borderBottom: '1px solid #f1f5f9' }}>
- <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c', fontSize: '0.9rem' }}>
- {groupCode}
- </td>
- <td style={{ padding: '12px 14px' }}>
- <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>{animalText}</div>
- <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>{headCount} Heads (Goats)</span>
- </td>
- <td style={{ padding: '12px 14px' }}>
- <span style={{
- fontWeight: '800',
- fontSize: '0.8rem',
- color: health === 'Excellent' || health === 'Healthy' ? '#15803d' :
- health === 'Good' || health === 'Normal' ? '#0284c7' : '#b45309'
- }}>
- {health}
- </span>
- </td>
-									<td style={{ padding: '12px 14px' }}>
-										<div style={{ display: 'flex', flexDirection: 'column' }}>
-											<span style={{ fontWeight: '800', color: '#111827', fontSize: '0.82rem' }}>
-												{c.predictedHarvestDate || (c.variety && c.variety.includes('Eggplant') ? 'Dec 20, 2024' : c.variety && c.variety.includes('Tomato') ? 'Nov 28, 2024' : 'Dec 15, 2024')}
-											</span>
-											<span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
-												{c.daysLeft || (c.variety && c.variety.includes('Eggplant') ? '48 days left' : '26 days left')}
-											</span>
-										</div>
-									</td>
-									<td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
- {vax}
- </td>
-									<td style={{ padding: '12px 14px' }}>
-										<div style={{ display: 'flex', flexDirection: 'column' }}>
-											<span style={{ fontWeight: '800', color: '#111827', fontSize: '0.82rem' }}>
-												{c.predictedHarvestDate || (c.variety && c.variety.includes('Eggplant') ? 'Dec 20, 2024' : c.variety && c.variety.includes('Tomato') ? 'Nov 28, 2024' : 'Dec 15, 2024')}
-											</span>
-											<span style={{ fontSize: '0.7rem', color: '#15803d', fontWeight: '700' }}>
-												{c.daysLeft || (c.variety && c.variety.includes('Eggplant') ? '48 days left' : '26 days left')}
-											</span>
-										</div>
-									</td>
-									<td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
- {forage}
- </td>
- <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.82rem', fontWeight: '700', color: '#475569' }}>
- {plot}
- </td>
- <td style={{ padding: '12px 14px' }}>
- <span className={`pill ${status === 'Compliant' ? 'pill-compliant' : 'pill-review'}`} style={{ fontWeight: '800' }}>
- {status}
- </span>
- </td>
- <td style={{ padding: '12px 14px', textAlign: 'right' }}>
- <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
- <button
- onClick={() => setSelectedLivestockDetail(r)}
- title="View Details"
- style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#334155' }}
- >
- <Eye size={14} />
- </button>
- <button
- onClick={() => handleOpenEditLivestockModal(r)}
- title="Edit Record"
- style={{ background: '#f0fdf4', border: '1px solid #86efac', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#15803d' }}
- >
- <Pencil size={14} />
- </button>
- <button
- onClick={() => handleDeleteLivestockClick(r.id, groupCode)}
- title="Delete Record"
- style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#dc2626' }}
- >
- <Trash2 size={14} />
- </button>
- </div>
- </td>
- </tr>
- );
- })
- )}
- </tbody>
+      return (
+        <tr key={r.id || groupCode} style={{ borderBottom: '1px solid #f1f5f9' }}>
+          <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontWeight: '800', color: '#11592c', fontSize: '0.9rem' }}>
+            {groupCode}
+          </td>
+          <td style={{ padding: '12px 14px' }}>
+            <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '0.88rem' }}>{animalText}</div>
+            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600' }}>{headCount} Heads (Goats)</span>
+          </td>
+          <td style={{ padding: '12px 14px' }}>
+            <span style={{
+              fontWeight: '800',
+              fontSize: '0.8rem',
+              color: health === 'Excellent' || health === 'Healthy' ? '#15803d' :
+                     health === 'Good' || health === 'Normal' ? '#0284c7' : '#b45309'
+            }}>
+              {health}
+            </span>
+          </td>
+          <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+            {vax}
+          </td>
+          <td style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#334155', fontWeight: '600' }}>
+            {forage}
+          </td>
+          <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.82rem', fontWeight: '700', color: '#475569' }}>
+            {plot}
+          </td>
+          <td style={{ padding: '12px 14px' }}>
+            <span className={`pill ${status === 'Compliant' ? 'pill-compliant' : 'pill-review'}`} style={{ fontWeight: '800' }}>
+              {status}
+            </span>
+          </td>
+          <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
+              <button
+                onClick={() => setSelectedLivestockDetail(r)}
+                title="View Details"
+                style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#334155' }}
+              >
+                <Eye size={14} />
+              </button>
+              <button
+                onClick={() => handleOpenEditLivestockModal(r)}
+                title="Edit Record"
+                style={{ background: '#f0fdf4', border: '1px solid #86efac', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#15803d' }}
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                onClick={() => handleDeleteLivestockClick(r.id, groupCode)}
+                title="Delete Record"
+                style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '5px 8px', borderRadius: '6px', cursor: 'pointer', color: '#dc2626' }}
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          </td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
  </table>
  </div>
  </div>
