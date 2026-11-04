@@ -158,7 +158,7 @@ const AdminRolesPermissionsModule = () => {
     }
   ];
 
-  // Helper to render role cell with 1-click toggle button AND dropdown
+  // Helper to render role cell with a single unified, sleek interactive pill badge
   const renderCell = (catId, cap, roleKey, roleTitle) => {
     const rawVal = cap[roleKey] || 'restricted';
     const status = rawVal === 'granted' ? 'edit' : rawVal;
@@ -172,13 +172,14 @@ const AdminRolesPermissionsModule = () => {
             alignItems: 'center',
             gap: '4px',
             padding: '5px 12px',
-            borderRadius: '20px',
+            borderRadius: '16px',
             fontSize: '0.74rem',
             fontWeight: '800',
             background: '#fee2e2',
             color: '#b91c1c',
             border: '1.5px solid #fecdd3',
-            cursor: 'not-allowed'
+            cursor: 'not-allowed',
+            whiteSpace: 'nowrap'
           }}
           title="Protected Super Admin governance setting"
         >
@@ -188,95 +189,57 @@ const AdminRolesPermissionsModule = () => {
     }
 
     const colorScheme = {
-      edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac', icon: Check, label: 'Can Edit' },
-      view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe', icon: Eye, label: 'View-Only' },
-      restricted: { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1', icon: Minus, label: 'Restricted' }
-    }[status] || { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1', icon: Minus, label: 'Restricted' };
+      edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac', label: '✓ Can Edit' },
+      view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe', label: '👁 View-Only' },
+      restricted: { bg: '#f8fafc', text: '#64748b', border: '#cbd5e1', label: '— Restricted' }
+    }[status] || { bg: '#f8fafc', text: '#64748b', border: '#cbd5e1', label: '— Restricted' };
 
-    const IconComp = colorScheme.icon;
-
-    // 1-Click Cycle Action: Can Edit -> View-Only -> Restricted -> Can Edit
-    const handleCycleClick = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const cycleMap = { edit: 'view', view: 'restricted', restricted: 'edit' };
-      const nextVal = cycleMap[status] || 'edit';
-      if (updateRbacCapability) {
-        updateRbacCapability(catId, cap.id, roleKey, nextVal);
-      }
-      const labelMap = { edit: 'Can Edit & Manage', view: 'View-Only Access', restricted: 'Restricted' };
-      setSaveNotice(`✓ Updated: ${roleTitle} is now '${labelMap[nextVal]}' for "${cap.title}".`);
-      setTimeout(() => setSaveNotice(''), 4500);
-    };
-
-    // Dropdown direct select action
     const handleSelectChange = (e) => {
       const nextVal = e.target.value;
       if (updateRbacCapability) {
         updateRbacCapability(catId, cap.id, roleKey, nextVal);
       }
-      const labelMap = { edit: 'Can Edit & Manage', view: 'View-Only Access', restricted: 'Restricted' };
-      setSaveNotice(`✓ Updated: ${roleTitle} is now '${labelMap[nextVal]}' for "${cap.title}".`);
+      const labelMap = { edit: 'Can Edit', view: 'View-Only', restricted: 'Restricted' };
+      setSaveNotice(`✓ Updated: ${roleTitle} is now set to '${labelMap[nextVal]}' for "${cap.title}".`);
       setTimeout(() => setSaveNotice(''), 4500);
     };
 
     return (
-      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-        {/* Clickable Badge Button that cycles on click */}
-        <button
-          type="button"
-          onClick={handleCycleClick}
-          title={`Click to switch: Can Edit ➔ View-Only ➔ Restricted (Current: ${colorScheme.label})`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '5px',
-            padding: '5px 10px',
-            borderRadius: '20px 0 0 20px',
-            fontSize: '0.74rem',
-            fontWeight: '800',
-            background: colorScheme.bg,
-            color: colorScheme.text,
-            border: `1.5px solid ${colorScheme.border}`,
-            borderRight: 'none',
-            cursor: 'pointer',
-            outline: 'none',
-            transition: 'all 0.15s ease',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.95)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
-        >
-          <IconComp size={12} />
-          <span>{colorScheme.label}</span>
-        </button>
-
-        {/* Dropdown Selector to directly choose */}
-        <select
-          value={status}
-          onChange={handleSelectChange}
-          title={`Or select access level directly for ${roleTitle}`}
-          style={{
-            padding: '5px 6px 5px 2px',
-            borderRadius: '0 20px 20px 0',
-            fontSize: '0.74rem',
-            fontWeight: '800',
-            background: colorScheme.bg,
-            color: colorScheme.text,
-            border: `1.5px solid ${colorScheme.border}`,
-            borderLeft: `1px solid ${colorScheme.border}`,
-            cursor: 'pointer',
-            outline: 'none',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.95)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
-        >
-          <option value="edit">✓ Edit</option>
-          <option value="view">👁 View</option>
-          <option value="restricted">— Block</option>
-        </select>
-      </div>
+      <select
+        value={status}
+        onChange={handleSelectChange}
+        title={`Click to change access for ${roleTitle}`}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '6px 26px 6px 12px',
+          borderRadius: '16px',
+          fontSize: '0.74rem',
+          fontWeight: '800',
+          background: colorScheme.bg,
+          color: colorScheme.text,
+          border: `1.5px solid ${colorScheme.border}`,
+          cursor: 'pointer',
+          outline: 'none',
+          whiteSpace: 'nowrap',
+          appearance: 'none',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(colorScheme.text)}' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right 8px center',
+          backgroundSize: '12px',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+          transition: 'all 0.15s ease',
+          textAlign: 'center'
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.96)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
+      >
+        <option value="edit" style={{ background: '#ffffff', color: '#15803d', fontWeight: '700' }}>✓ Can Edit</option>
+        <option value="view" style={{ background: '#ffffff', color: '#0284c7', fontWeight: '700' }}>👁 View-Only</option>
+        <option value="restricted" style={{ background: '#ffffff', color: '#64748b', fontWeight: '600' }}>— Restricted</option>
+      </select>
     );
   };
 
@@ -786,28 +749,28 @@ const AdminRolesPermissionsModule = () => {
 
                           {/* Super Admin */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Super Admin') && (
-                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                               {renderCell(cat.id, cap, 'superAdmin', 'Super Admin')}
                             </td>
                           )}
 
                           {/* Admin IT/HR */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Admin IT/HR') && (
-                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                               {renderCell(cat.id, cap, 'admin', 'Admin IT/HR')}
                             </td>
                           )}
 
                           {/* Farm Staff */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Farm Staff') && (
-                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                               {renderCell(cat.id, cap, 'staff', 'Farm Staff')}
                             </td>
                           )}
 
                           {/* Farmer */}
                           {(selectedRoleView === 'All' || selectedRoleView === 'Farmer') && (
-                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
                               {renderCell(cat.id, cap, 'farmer', 'Farmer')}
                             </td>
                           )}
