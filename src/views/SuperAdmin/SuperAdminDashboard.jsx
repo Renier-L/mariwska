@@ -59,29 +59,30 @@ import RolesPermissionsModule from './RolesPermissionsModule';
 import ProfileModule from './ProfileModule';
 import SettingsModule from './SettingsModule';
 
-const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
+const SuperAdminDashboard = ({ activeTab, setActiveTab = () => {} }) => {
+  const auth = useAuth() || {};
   const { 
     users = [], 
     crops = [], 
     livestock = [], 
     schedules = [], 
     announcements = [], 
-    addCrop, 
-    updateCrop, 
-    deleteCrop, 
-    addLivestock, 
-    updateLivestock, 
-    deleteLivestock, 
-    addUser, 
-    updateUser, 
-    deleteUser, 
-    toggleUserStatus, 
-    addSchedule, 
-    updateScheduleStatus, 
-    deleteSchedule, 
-    publishAnnouncement, 
-    deleteAnnouncement 
-  } = useAuth();
+    addCrop = () => {}, 
+    updateCrop = () => {}, 
+    deleteCrop = () => {}, 
+    addLivestock = () => {}, 
+    updateLivestock = () => {}, 
+    deleteLivestock = () => {}, 
+    addUser = () => {}, 
+    updateUser = () => {}, 
+    deleteUser = () => {}, 
+    toggleUserStatus = () => {}, 
+    addSchedule = () => {}, 
+    updateScheduleStatus = () => {}, 
+    deleteSchedule = () => {}, 
+    publishAnnouncement = () => {}, 
+    deleteAnnouncement = () => {} 
+  } = auth;
 
   // Overview internal state
   const [trendSeason, setTrendSeason] = useState('2026');
@@ -105,7 +106,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     { month: 'Aug', index: 94, target: 85 },
   ];
 
-  // Grouped Bar Chart: Actual harvests vs Random Forest forecast (Jun - Nov)
+  // Grouped Bar Chart: Actual harvests vs Random Forest forecast
   const yieldComparisonData = [
     { month: 'Jun', actual: 320, forecast: 340 },
     { month: 'Jul', actual: 360, forecast: 375 },
@@ -123,7 +124,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     { name: 'Squash', value: 158, color: '#16a34a' },
   ];
 
-  // Exactly 3 Active Alerts (1 Critical, 2 Warnings)
+  // Active Alerts List
   const activeAlertsList = [
     {
       id: 'ALT-01',
@@ -161,11 +162,13 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
   ];
 
   // Statistics counts
-  const totalUsersCount = 12;
-  const activeUsersCount = 11;
-  const totalCropsCount = crops.length > 0 ? crops.length : 6;
-  const totalGoatsCount = livestock.reduce((acc, l) => acc + (parseInt(l.heads, 10) || 0), 0) || 380;
-  const scheduledTasksCount = schedules.length > 0 ? schedules.length : 18;
+  const totalUsersCount = Array.isArray(users) && users.length > 0 ? users.length : 12;
+  const activeUsersCount = Array.isArray(users) && users.length > 0 ? users.filter(u => u.status === 'Active' || u.active).length : 11;
+  const totalCropsCount = Array.isArray(crops) && crops.length > 0 ? crops.length : 6;
+  const totalGoatsCount = Array.isArray(livestock) && livestock.length > 0 
+    ? livestock.reduce((acc, l) => acc + (parseInt(l.heads || l.headCount, 10) || 0), 0) 
+    : 380;
+  const scheduledTasksCount = Array.isArray(schedules) && schedules.length > 0 ? schedules.length : 18;
 
   // Handle publishing announcement
   const handlePublishAnnouncement = (e) => {
@@ -185,7 +188,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         announcementAudience === 'staff' ? 'Farm Staff Operations Notice' : 'Cooperative General Operational Directive';
     }
 
-    if (publishAnnouncement) {
+    if (typeof publishAnnouncement === 'function') {
       publishAnnouncement({
         title: cleanTitle,
         content: cleanText || cleanTitle,
@@ -212,10 +215,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
     }
   };
 
-  // Render Overview Dashboard (Matches media_1793713113535.png)
+  // Render Overview Dashboard
   const renderOverviewDashboard = () => (
     <div className="superadmin-module animate-fade-in" style={{ padding: '24px', maxWidth: '1600px', margin: '0 auto' }}>
-            {/* Overview Title & Subtitle (Tenant header already in global Header bar) */}
       <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', letterSpacing: '-0.02em' }}>
           Super Admin Overview & System Governance
@@ -228,7 +230,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
       {/* Row 1: 4 System Governance Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <div 
-          onClick={() => setActiveTab && setActiveTab('user-accounts')}
+          onClick={() => setActiveTab('user-accounts')}
           style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -246,7 +248,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
 
         <div 
-          onClick={() => setActiveTab && setActiveTab('user-accounts')}
+          onClick={() => setActiveTab('user-accounts')}
           style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -264,7 +266,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
 
         <div 
-          onClick={() => setActiveTab && setActiveTab('user-accounts')}
+          onClick={() => setActiveTab('user-accounts')}
           style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -281,11 +283,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </span>
         </div>
 
-        {/* Card 4: System Alerts -> Directs to Alerts Modal & Concern Queue */}
         <div 
           onClick={() => setShowAlertsModal(true)}
           style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #fed7aa', padding: '18px 20px', cursor: 'pointer', transition: 'transform 0.15s, box-shadow 0.15s', boxShadow: '0 2px 4px rgba(239,68,68,0.06)' }}
-          title="Click to inspect all 3 active alerts (1 critical, 2 warnings)"
+          title="Click to inspect all 3 active alerts"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -316,7 +317,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
           {/* Card 1: Crop Plots */}
           <div 
-            onClick={() => setActiveTab && setActiveTab('crop-monitoring')}
+            onClick={() => setActiveTab('crop-monitoring')}
             style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', padding: '16px', cursor: 'pointer' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -340,7 +341,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
           {/* Card 2: Livestock */}
           <div 
-            onClick={() => setActiveTab && setActiveTab('livestock-monitoring')}
+            onClick={() => setActiveTab('livestock-monitoring')}
             style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', padding: '16px', cursor: 'pointer' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -364,7 +365,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
           {/* Card 3: Schedules */}
           <div 
-            onClick={() => setActiveTab && setActiveTab('scheduling')}
+            onClick={() => setActiveTab('scheduling')}
             style={{ background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', padding: '16px', cursor: 'pointer' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -386,7 +387,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
             </span>
           </div>
 
-          {/* Card 4: Unresolved Concerns -> Scrolls directly to concern queue section */}
+          {/* Card 4: Unresolved Concerns */}
           <div 
             onClick={scrollToConcernQueue}
             style={{ background: '#fef2f2', borderRadius: '10px', border: '1px solid #fecaca', padding: '16px', cursor: 'pointer' }}
@@ -412,9 +413,9 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Row 3: Dual Charts (Trends & Machine Learning Yield) */}
+      {/* Row 3: Dual Charts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-        {/* Left Chart: Cooperative Productivity Trends */}
+        {/* Left Chart: Productivity Trends */}
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
             <div>
@@ -459,7 +460,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </div>
         </div>
 
-        {/* Right Chart: Organic Yield & Random Forest Prediction (Random Forest) */}
+        {/* Right Chart: RF Yield Prediction */}
         <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div>
@@ -498,7 +499,6 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
 
-          {/* Small prediction banner */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '8px 12px', marginBottom: '14px' }}>
             <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '700' }}>
               Predicted Harvest: 1,602 kg (Q4 2026)
@@ -536,7 +536,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Row 4: Dedicated Unresolved Field Concerns & Live Risk Queue Section (Shows ALL 3 Items: 1 Crit, 2 Warn) */}
+      {/* Row 4: Unresolved Concerns Queue Section */}
       <div id="concern-queue-section" style={{ background: '#ffffff', borderRadius: '14px', border: '2px solid #fed7aa', padding: '22px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
           <div>
@@ -555,7 +555,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
           </div>
 
           <button 
-            onClick={() => setActiveTab && setActiveTab('decision-support')}
+            onClick={() => setActiveTab('decision-support')}
             style={{ padding: '7px 14px', background: '#11592c', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             Launch Decision Support <ExternalLink size={14} />
@@ -625,7 +625,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Row 5: Live Cooperative Announcements Publisher */}
+      {/* Row 5: Live Announcements Publisher */}
       <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
           <Megaphone size={18} color="#11592c" />
@@ -690,13 +690,10 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
 
         {/* Existing Announcements Feed */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {(announcements && announcements.length > 0 ? announcements : [
+          {(Array.isArray(announcements) && announcements.length > 0 ? announcements : [
             { id: 'ANN-01', title: 'PGS Quarterly Audit Verification', content: 'DA municipal organic peer-review committee arriving on November 12 for composite soil testing.', author: 'Rosa Mendoza', date: 'Today, 09:00 AM', targetAudience: 'all', audienceLabel: 'All Cooperative Members' },
             { id: 'ANN-02', title: 'Boer Flock Hoof Trimming Reminder', content: 'Staff assigned to Pen Bravo must complete antiseptic foot bath before 11:00 AM.', author: 'Dr. V. Reyes', date: 'Yesterday', targetAudience: 'staff', audienceLabel: 'Farm Staff Operations' }
-          ]).filter(ann => {
-            const isFarmStaffPrivate = (ann.targetAudience === 'farmers' && (ann.author?.toLowerCase().includes('staff') || ann.author?.toLowerCase().includes('farm staff'))) || (ann.title?.startsWith('[Target: Farmers Only') && ann.author?.toLowerCase().includes('staff'));
-            return !isFarmStaffPrivate;
-          }).map((ann) => {
+          ]).map((ann) => {
             const isFarmerTarget = ann.targetAudience === 'farmers' || ann.title?.includes('Farmers Only') || ann.audienceLabel?.includes('Farmers');
             const isSchedTarget = ann.targetAudience === 'scheduling' || ann.title?.includes('Scheduling');
             const isStaffTarget = ann.targetAudience === 'staff' || ann.title?.includes('Farm Staff');
@@ -720,7 +717,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
                   <span style={{ fontSize: '0.8rem', color: '#475569', display: 'block', lineHeight: 1.4 }}>{ann.content}</span>
                   <span style={{ fontSize: '0.7rem', color: '#94a3b8', display: 'block', marginTop: '3px' }}>By {ann.author} · {ann.date}</span>
                 </div>
-                {deleteAnnouncement && (
+                {typeof deleteAnnouncement === 'function' && (
                   <button 
                     onClick={() => deleteAnnouncement(ann.id)}
                     style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '6px', marginLeft: '12px' }}
@@ -735,7 +732,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Modal: Active System Alerts (Shows all 3 items: 1 Crit, 2 Warn) */}
+      {/* Modal: Active System Alerts */}
       {showAlertsModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '16px' }}>
           <div style={{ background: '#ffffff', borderRadius: '16px', maxWidth: '600px', width: '100%', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
@@ -789,7 +786,7 @@ const SuperAdminDashboard = ({ activeTab, setActiveTab }) => {
               <button 
                 onClick={() => {
                   setShowAlertsModal(false);
-                  setActiveTab && setActiveTab('decision-support');
+                  setActiveTab('decision-support');
                 }}
                 style={{ background: '#11592c', color: '#ffffff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
               >

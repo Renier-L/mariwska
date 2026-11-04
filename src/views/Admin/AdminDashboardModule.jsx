@@ -22,19 +22,21 @@ import {
 const AdminDashboardModule = ({ 
   users = [], 
   announcements = [], 
-  setActiveTab, 
+  setActiveTab = () => {}, 
   onOpenAddMember,
   onOpenCreateAnnouncement
 }) => {
   const [activityFilter, setActivityFilter] = useState('All'); // 'All' | 'Members' | 'Notices'
 
-  // Exact metrics matching reference screenshots
-  const totalMembers = 12;
-  const activeMembers = 11;
-  const inactiveMembers = 1;
-  const activeAnnouncements = 2;
+  // Exact metrics matching reference design
+  const totalMembers = Array.isArray(users) && users.length > 0 ? users.length : 12;
+  const activeMembers = Array.isArray(users) && users.length > 0 ? users.filter(u => u.status === 'Active' || u.active).length : 11;
+  const inactiveMembers = Math.max(0, totalMembers - activeMembers);
+  const activeAnnouncementsCount = Array.isArray(announcements) && announcements.length > 0 
+    ? announcements.filter(a => a.status === 'Active' || !a.status).length 
+    : 2;
 
-  // 5 Audited Administrative Activities from Screenshot 3
+  // 5 Audited Administrative Activities
   const allActivities = [
     {
       id: 'act-1',
@@ -88,8 +90,8 @@ const AdminDashboardModule = ({
     return a.type === activityFilter;
   });
 
-  // 3 Exact Announcements from Screenshot 3
-  const recentAnnouncements = [
+  // Default Recent Announcements if empty
+  const defaultAnnouncements = [
     {
       id: 'ann-1',
       title: 'Fertilizer & Organic Inputs Distribution Schedule',
@@ -122,9 +124,27 @@ const AdminDashboardModule = ({
     }
   ];
 
+  const displayAnnouncements = Array.isArray(announcements) && announcements.length > 0 ? announcements : defaultAnnouncements;
+
+  const handleAddMemberClick = () => {
+    if (typeof onOpenAddMember === 'function') {
+      onOpenAddMember();
+    } else if (typeof setActiveTab === 'function') {
+      setActiveTab('member-records');
+    }
+  };
+
+  const handleCreateAnnouncementClick = () => {
+    if (typeof onOpenCreateAnnouncement === 'function') {
+      onOpenCreateAnnouncement();
+    } else if (typeof setActiveTab === 'function') {
+      setActiveTab('announcements');
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Title & Top Right Action Buttons Header (Screenshot 1) */}
+      {/* Title & Top Right Action Buttons Header */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -150,7 +170,7 @@ const AdminDashboardModule = ({
         {/* Top Right Buttons: New Announcement & Add Member */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
-            onClick={() => onOpenCreateAnnouncement ? onOpenCreateAnnouncement() : (setActiveTab && setActiveTab('announcements'))}
+            onClick={handleCreateAnnouncementClick}
             style={{
               background: '#0c3619',
               color: '#ffffff',
@@ -170,7 +190,7 @@ const AdminDashboardModule = ({
           </button>
 
           <button
-            onClick={() => onOpenAddMember ? onOpenAddMember() : (setActiveTab && setActiveTab('member-records'))}
+            onClick={handleAddMemberClick}
             style={{
               background: '#ffffff',
               color: '#0f172a',
@@ -191,7 +211,7 @@ const AdminDashboardModule = ({
         </div>
       </div>
 
-      {/* 4 Top Summary Metric Cards (Screenshot 1) */}
+      {/* 4 Top Summary Metric Cards */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(4, 1fr)', 
@@ -271,7 +291,7 @@ const AdminDashboardModule = ({
             </div>
           </div>
           <div style={{ fontSize: '1.9rem', fontWeight: '900', color: '#0284c7', lineHeight: 1.1, margin: '4px 0 10px 0' }}>
-            {activeAnnouncements}
+            {activeAnnouncementsCount}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem' }}>
             <span style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
@@ -282,7 +302,7 @@ const AdminDashboardModule = ({
         </div>
       </div>
 
-      {/* ADMINISTRATIVE SHORTCUTS Bar (Screenshot 1) */}
+      {/* ADMINISTRATIVE SHORTCUTS Bar */}
       <div className="m-card" style={{ 
         padding: '14px 20px', 
         borderRadius: '12px', 
@@ -300,7 +320,7 @@ const AdminDashboardModule = ({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => onOpenAddMember ? onOpenAddMember() : (setActiveTab && setActiveTab('member-records'))}
+            onClick={handleAddMemberClick}
             style={{
               background: '#f0fdf4',
               color: '#15803d',
@@ -338,7 +358,7 @@ const AdminDashboardModule = ({
           </button>
 
           <button
-            onClick={() => onOpenCreateAnnouncement ? onOpenCreateAnnouncement() : (setActiveTab && setActiveTab('announcements'))}
+            onClick={handleCreateAnnouncementClick}
             style={{
               background: '#f0f9ff',
               color: '#1e40af',
@@ -377,9 +397,9 @@ const AdminDashboardModule = ({
         </div>
       </div>
 
-      {/* Middle Two-Column Section: Member Distribution & Pending Actions (Screenshot 2) */}
+      {/* Middle Two-Column Section */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px' }}>
-        {/* Left Column: Member Distribution by Role (12 Total) */}
+        {/* Left Column: Member Distribution by Role */}
         <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -474,7 +494,6 @@ const AdminDashboardModule = ({
             </div>
           </div>
 
-          {/* Bottom Green Note */}
           <div style={{
             background: '#f0fdf4',
             border: '1px solid #bbf7d0',
@@ -489,7 +508,7 @@ const AdminDashboardModule = ({
           </div>
         </div>
 
-        {/* Right Column: Pending Administrative Actions (Screenshot 2) */}
+        {/* Right Column: Pending Administrative Actions */}
         <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <CheckSquare size={18} color="#0c3619" />
@@ -514,9 +533,7 @@ const AdminDashboardModule = ({
             Action Required
           </span>
 
-          {/* Checklist Items */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Item 1 */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a' }}>
@@ -540,7 +557,6 @@ const AdminDashboardModule = ({
               </div>
             </div>
 
-            {/* Item 2 */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a' }}>
@@ -564,7 +580,6 @@ const AdminDashboardModule = ({
               </div>
             </div>
 
-            {/* Item 3 */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#0f172a' }}>
@@ -591,7 +606,7 @@ const AdminDashboardModule = ({
         </div>
       </div>
 
-      {/* Lower Two-Column Section: Recent Activities & Announcements (Screenshot 3 & 4) */}
+      {/* Lower Two-Column Section */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '16px' }}>
         {/* Left Column: Recent Administrative Activities */}
         <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
@@ -605,7 +620,6 @@ const AdminDashboardModule = ({
             Audited administrative events, member registrations, and notices
           </p>
 
-          {/* Filter Pills */}
           <div style={{ display: 'flex', gap: '6px', marginBottom: '16px' }}>
             {['All (5)', 'Members', 'Notices'].map(pill => {
               const key = pill.startsWith('All') ? 'All' : pill;
@@ -632,7 +646,6 @@ const AdminDashboardModule = ({
             })}
           </div>
 
-          {/* Activities Table */}
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.74rem' }}>
               <thead>
@@ -679,7 +692,7 @@ const AdminDashboardModule = ({
           </div>
         </div>
 
-        {/* Right Column: Recent Announcements (Screenshot 3 & 4) */}
+        {/* Right Column: Recent Announcements */}
         <div className="m-card" style={{ padding: '20px', borderRadius: '14px', background: '#ffffff', border: '1px solid #e2e8f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -708,11 +721,10 @@ const AdminDashboardModule = ({
             Published bulletins delivered to members and staff
           </p>
 
-          {/* 3 Announcement Cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {(announcements && announcements.length > 0 ? announcements.filter(a => !((a.targetAudience === 'farmers' && (a.author?.toLowerCase().includes('staff') || a.author?.toLowerCase().includes('farm staff'))) || (a.title?.startsWith('[Target: Farmers Only') && a.author?.toLowerCase().includes('staff')))).slice(0, 3) : recentAnnouncements).map(ann => (
+            {displayAnnouncements.map((ann, idx) => (
               <div 
-                key={ann.id}
+                key={ann.id || idx}
                 style={{
                   background: '#f8fafc',
                   border: '1px solid #e2e8f0',
@@ -727,13 +739,13 @@ const AdminDashboardModule = ({
                   <span style={{
                     fontSize: '0.68rem',
                     fontWeight: '800',
-                    background: ann.statusBg,
-                    color: ann.statusColor,
+                    background: ann.statusBg || '#dcfce7',
+                    color: ann.statusColor || '#15803d',
                     padding: '2px 8px',
                     borderRadius: '6px',
                     flexShrink: 0
                   }}>
-                    {ann.status}
+                    {ann.status || 'Active'}
                   </span>
                 </div>
 
@@ -742,8 +754,8 @@ const AdminDashboardModule = ({
                 </p>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: '#64748b' }}>
-                  <span>{ann.author}</span>
-                  <span>Valid until {ann.validUntil}</span>
+                  <span>{ann.author || 'Admin'}</span>
+                  <span>Valid until {ann.validUntil || '2026-12-31'}</span>
                 </div>
               </div>
             ))}
@@ -751,14 +763,14 @@ const AdminDashboardModule = ({
         </div>
       </div>
 
-      {/* Bottom Full-Width Banner: Administrative Reports & Compliance Overview (Screenshot 4) */}
+      {/* Bottom Full-Width Banner */}
       <div className="m-card" style={{
         padding: '18px 24px',
         borderRadius: '14px',
         background: '#ffffff',
         border: '1px solid #e2e8f0',
         display: 'flex',
-        justifyContent: 'space-between',
+        justify: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: '14px'
