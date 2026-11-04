@@ -18,15 +18,13 @@ import {
   Megaphone, 
   FileText,
   RotateCcw,
-  Edit,
   Save,
   CheckCircle2,
-  AlertCircle,
   Eye,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Info
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { ACCESS_LEVELS } from '../../data/rbacData';
 
 const ICON_MAP = {
   Server,
@@ -45,12 +43,10 @@ const AdminRolesPermissionsModule = () => {
   const { 
     rbacCategories = [], 
     updateRbacCapability, 
-    resetRbacToDefault,
-    currentRole 
+    resetRbacToDefault 
   } = useAuth();
 
-  // Mode & Filters
-  const [isEditMode, setIsEditMode] = useState(() => currentRole === 'super_admin');
+  // Filters
   const [selectedRoleView, setSelectedRoleView] = useState('All'); // 'All' | 'Super Admin' | 'Admin IT/HR' | 'Farm Staff' | 'Farmer'
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -95,7 +91,7 @@ const AdminRolesPermissionsModule = () => {
   };
 
   const handleManualSave = () => {
-    setSaveNotice('All Access Control policies successfully saved and enforced in real time!');
+    setSaveNotice('All Access Control policies successfully saved and active in real time!');
     setTimeout(() => setSaveNotice(''), 5000);
   };
 
@@ -162,7 +158,7 @@ const AdminRolesPermissionsModule = () => {
     }
   ];
 
-  // Helper to render role cell with edit controls
+  // Helper to render role cell with 1-click toggle button AND dropdown
   const renderCell = (catId, cap, roleKey, roleTitle) => {
     const rawVal = cap[roleKey] || 'restricted';
     const status = rawVal === 'granted' ? 'edit' : rawVal;
@@ -170,115 +166,117 @@ const AdminRolesPermissionsModule = () => {
     // Super Admin protected capabilities
     if (cap.protected && roleKey === 'superAdmin') {
       return (
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '4px 8px',
-          borderRadius: '6px',
-          fontSize: '0.72rem',
-          fontWeight: '700',
-          background: '#fee2e2',
-          color: '#b91c1c',
-          border: '1px solid #fecdd3'
-        }}>
+        <span 
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            padding: '5px 12px',
+            borderRadius: '20px',
+            fontSize: '0.74rem',
+            fontWeight: '800',
+            background: '#fee2e2',
+            color: '#b91c1c',
+            border: '1.5px solid #fecdd3',
+            cursor: 'not-allowed'
+          }}
+          title="Protected Super Admin governance setting"
+        >
           <Lock size={12} /> Protected
         </span>
       );
     }
 
-    if (isEditMode) {
-      const colorScheme = {
-        edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac' },
-        view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe' },
-        restricted: { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1' }
-      }[status] || { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1' };
+    const colorScheme = {
+      edit: { bg: '#dcfce7', text: '#15803d', border: '#86efac', icon: Check, label: 'Can Edit' },
+      view: { bg: '#eff6ff', text: '#0284c7', border: '#bfdbfe', icon: Eye, label: 'View-Only' },
+      restricted: { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1', icon: Minus, label: 'Restricted' }
+    }[status] || { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1', icon: Minus, label: 'Restricted' };
 
-      return (
-        <select
-          value={status}
-          onChange={(e) => {
-            const nextVal = e.target.value;
-            if (updateRbacCapability) {
-              updateRbacCapability(catId, cap.id, roleKey, nextVal);
-            }
-            const labelMap = { edit: 'Can Edit & Manage', view: 'View-Only Access', restricted: 'Restricted' };
-            setSaveNotice(`Access updated: ${roleTitle} is now set to '${labelMap[nextVal]}' for "${cap.title}".`);
-            setTimeout(() => setSaveNotice(''), 4500);
-          }}
+    const IconComp = colorScheme.icon;
+
+    // 1-Click Cycle Action: Can Edit -> View-Only -> Restricted -> Can Edit
+    const handleCycleClick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const cycleMap = { edit: 'view', view: 'restricted', restricted: 'edit' };
+      const nextVal = cycleMap[status] || 'edit';
+      if (updateRbacCapability) {
+        updateRbacCapability(catId, cap.id, roleKey, nextVal);
+      }
+      const labelMap = { edit: 'Can Edit & Manage', view: 'View-Only Access', restricted: 'Restricted' };
+      setSaveNotice(`✓ Updated: ${roleTitle} is now '${labelMap[nextVal]}' for "${cap.title}".`);
+      setTimeout(() => setSaveNotice(''), 4500);
+    };
+
+    // Dropdown direct select action
+    const handleSelectChange = (e) => {
+      const nextVal = e.target.value;
+      if (updateRbacCapability) {
+        updateRbacCapability(catId, cap.id, roleKey, nextVal);
+      }
+      const labelMap = { edit: 'Can Edit & Manage', view: 'View-Only Access', restricted: 'Restricted' };
+      setSaveNotice(`✓ Updated: ${roleTitle} is now '${labelMap[nextVal]}' for "${cap.title}".`);
+      setTimeout(() => setSaveNotice(''), 4500);
+    };
+
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Clickable Badge Button that cycles on click */}
+        <button
+          type="button"
+          onClick={handleCycleClick}
+          title={`Click to switch: Can Edit ➔ View-Only ➔ Restricted (Current: ${colorScheme.label})`}
           style={{
-            padding: '5px 8px',
-            fontSize: '0.72rem',
-            fontWeight: '700',
-            borderRadius: '6px',
-            border: `1.5px solid ${colorScheme.border}`,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+            padding: '5px 10px',
+            borderRadius: '20px 0 0 20px',
+            fontSize: '0.74rem',
+            fontWeight: '800',
             background: colorScheme.bg,
             color: colorScheme.text,
+            border: `1.5px solid ${colorScheme.border}`,
+            borderRight: 'none',
+            cursor: 'pointer',
+            outline: 'none',
+            transition: 'all 0.15s ease',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.95)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
+        >
+          <IconComp size={12} />
+          <span>{colorScheme.label}</span>
+        </button>
+
+        {/* Dropdown Selector to directly choose */}
+        <select
+          value={status}
+          onChange={handleSelectChange}
+          title={`Or select access level directly for ${roleTitle}`}
+          style={{
+            padding: '5px 6px 5px 2px',
+            borderRadius: '0 20px 20px 0',
+            fontSize: '0.74rem',
+            fontWeight: '800',
+            background: colorScheme.bg,
+            color: colorScheme.text,
+            border: `1.5px solid ${colorScheme.border}`,
+            borderLeft: `1px solid ${colorScheme.border}`,
             cursor: 'pointer',
             outline: 'none',
             boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
           }}
-          title={`Click to change ${roleTitle} access level`}
+          onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(0.95)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.filter = 'none'; }}
         >
-          <option value="edit">✓ Can Edit & Manage</option>
-          <option value="view">👁 View-Only Access</option>
-          <option value="restricted">— Restricted</option>
+          <option value="edit">✓ Edit</option>
+          <option value="view">👁 View</option>
+          <option value="restricted">— Block</option>
         </select>
-      );
-    }
-
-    // View-Only Static Badges
-    if (status === 'edit') {
-      return (
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '3px 8px',
-          borderRadius: '6px',
-          fontSize: '0.74rem',
-          fontWeight: '700',
-          background: '#dcfce7',
-          color: '#15803d',
-          border: '1px solid #86efac'
-        }}>
-          <Check size={12} /> Can Edit
-        </span>
-      );
-    }
-    if (status === 'view') {
-      return (
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '3px 8px',
-          borderRadius: '6px',
-          fontSize: '0.74rem',
-          fontWeight: '700',
-          background: '#eff6ff',
-          color: '#0284c7',
-          border: '1px solid #bfdbfe'
-        }}>
-          <Eye size={12} /> View-Only
-        </span>
-      );
-    }
-    return (
-      <span style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '3px 8px',
-        borderRadius: '6px',
-        fontSize: '0.74rem',
-        fontWeight: '600',
-        background: '#f1f5f9',
-        color: '#94a3b8',
-        border: '1px solid #e2e8f0'
-      }}>
-        <Minus size={12} /> Restricted
-      </span>
+      </div>
     );
   };
 
@@ -332,36 +330,34 @@ const AdminRolesPermissionsModule = () => {
             }}>
               Cloud RBAC Enforced
             </span>
-            {isEditMode && (
-              <span style={{
-                background: '#fef3c7',
-                color: '#b45309',
-                border: '1px solid #fde68a',
-                fontSize: '0.68rem',
-                fontWeight: '800',
-                padding: '2px 8px',
-                borderRadius: '6px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                <Edit size={11} /> Edit Mode Active
-              </span>
-            )}
+            <span style={{
+              background: '#fef3c7',
+              color: '#b45309',
+              border: '1px solid #fde68a',
+              fontSize: '0.68rem',
+              fontWeight: '800',
+              padding: '2px 8px',
+              borderRadius: '6px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              ⚡ Live Interactive Editor Active
+            </span>
           </div>
           <p style={{ fontSize: '0.84rem', color: '#64748b', margin: 0 }}>
-            Configure access control across shared modules. Define whether Admin and Farm Staff have View-Only access or Can Edit.
+            Super Admin, Admin, and Farm Staff share the same set of modules. Click any badge to cycle access or select Can Edit, View-Only, or Restricted.
           </p>
         </div>
 
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => setIsEditMode(prev => !prev)}
+            onClick={handleManualSave}
             style={{
-              background: isEditMode ? '#11592c' : '#ffffff',
-              color: isEditMode ? '#ffffff' : '#11592c',
-              border: '1.5px solid #11592c',
+              background: 'linear-gradient(135deg, #15803d 0%, #11592c 100%)',
+              color: '#ffffff',
+              border: 'none',
               padding: '8px 14px',
               borderRadius: '8px',
               fontSize: '0.78rem',
@@ -370,34 +366,11 @@ const AdminRolesPermissionsModule = () => {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              transition: 'all 0.15s ease'
+              boxShadow: '0 2px 4px rgba(21,128,61,0.2)'
             }}
           >
-            <SlidersHorizontal size={14} />
-            {isEditMode ? 'Exit Edit Mode' : 'Configure Permissions'}
+            <Save size={14} /> Save Policies
           </button>
-
-          {isEditMode && (
-            <button
-              onClick={handleManualSave}
-              style={{
-                background: 'linear-gradient(135deg, #15803d 0%, #11592c 100%)',
-                color: '#ffffff',
-                border: 'none',
-                padding: '8px 14px',
-                borderRadius: '8px',
-                fontSize: '0.78rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                boxShadow: '0 2px 4px rgba(21,128,61,0.2)'
-              }}
-            >
-              <Save size={14} /> Save Policies
-            </button>
-          )}
 
           <button
             onClick={handleResetDefaults}
@@ -441,10 +414,10 @@ const AdminRolesPermissionsModule = () => {
         </div>
       )}
 
-      {/* Access Control Information Banner */}
+      {/* Interactive Helper Banner */}
       <div style={{
-        background: isEditMode ? '#f0fdf4' : '#eff6ff',
-        border: `1px solid ${isEditMode ? '#86efac' : '#bfdbfe'}`,
+        background: '#f0fdf4',
+        border: '1px solid #86efac',
         borderRadius: '10px',
         padding: '12px 16px',
         display: 'flex',
@@ -454,32 +427,28 @@ const AdminRolesPermissionsModule = () => {
         gap: '12px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {isEditMode ? <SlidersHorizontal size={18} color="#15803d" /> : <ShieldCheck size={18} color="#0284c7" />}
+          <SlidersHorizontal size={18} color="#15803d" />
           <div>
-            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: isEditMode ? '#15803d' : '#0369a1', display: 'block' }}>
-              {isEditMode 
-                ? 'Super Admin Access Control Editor Active' 
-                : 'Role-Based Access Control (RBAC) Inspection'}
+            <span style={{ fontSize: '0.82rem', fontWeight: '800', color: '#15803d', display: 'block' }}>
+              Interactive Access Control Active
             </span>
-            <span style={{ fontSize: '0.74rem', color: isEditMode ? '#166534' : '#1e40af' }}>
-              {isEditMode
-                ? 'Super Admin, Admin, and Farm Staff share the same set of modules. Click any dropdown below to configure Can Edit, View-Only, or Restricted.'
-                : 'Super Admin, Admin, and Farm Staff share the same set of modules. Click "Configure Permissions" above to adjust access levels.'}
+            <span style={{ fontSize: '0.74rem', color: '#166534' }}>
+              Click any badge in the table to toggle its permission (<strong>Can Edit ➔ View-Only ➔ Restricted</strong>), or use the attached dropdown selector.
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>STATUS:</span>
+          <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#64748b' }}>CONTROL:</span>
           <span style={{
             fontSize: '0.72rem',
             fontWeight: '800',
-            background: isEditMode ? '#dcfce7' : '#e0f2fe',
-            color: isEditMode ? '#15803d' : '#0284c7',
+            background: '#dcfce7',
+            color: '#15803d',
             padding: '2px 8px',
             borderRadius: '4px'
           }}>
-            {isEditMode ? 'Interactive Editing' : 'Enforced Live'}
+            1-Click Toggle & Dropdown Enabled
           </span>
         </div>
       </div>
@@ -759,16 +728,16 @@ const AdminRolesPermissionsModule = () => {
                       <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.7rem', fontWeight: '800' }}>
                         <th style={{ padding: '10px 20px' }}>CAPABILITY / ACTION</th>
                         {(selectedRoleView === 'All' || selectedRoleView === 'Super Admin') && (
-                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>SUPER ADMIN</th>
+                          <th style={{ padding: '10px 14px', width: '180px', textAlign: 'center' }}>SUPER ADMIN</th>
                         )}
                         {(selectedRoleView === 'All' || selectedRoleView === 'Admin IT/HR') && (
-                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>ADMIN IT/HR</th>
+                          <th style={{ padding: '10px 14px', width: '180px', textAlign: 'center' }}>ADMIN IT/HR</th>
                         )}
                         {(selectedRoleView === 'All' || selectedRoleView === 'Farm Staff') && (
-                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>FARM STAFF</th>
+                          <th style={{ padding: '10px 14px', width: '180px', textAlign: 'center' }}>FARM STAFF</th>
                         )}
                         {(selectedRoleView === 'All' || selectedRoleView === 'Farmer') && (
-                          <th style={{ padding: '10px 14px', width: '170px', textAlign: 'center' }}>FARMER</th>
+                          <th style={{ padding: '10px 14px', width: '180px', textAlign: 'center' }}>FARMER</th>
                         )}
                       </tr>
                     </thead>
