@@ -367,49 +367,53 @@ const CropMonitoringModule = ({
 	};
 
 	// 5. On-Demand Random Forest Prediction Generator (Connected to crop_yield.joblib model)
-	const handleGeneratePrediction = async (crop) => {
-		setIsGeneratingPrediction(true);
-		setPredictionNotice('');
+const handleGeneratePrediction = async (crop) => {
+	setIsGeneratingPrediction(true);
+	setPredictionNotice('');
 
-		try {
-			// Execute real 100-tree Random Forest Regressor trained on MARIKHA datasets
-			const result = await predictCropYield({
-				cropType: crop.cropType,
-				cultivatedArea: crop.cultivatedArea,
-				actualPlantedCount: crop.actualPlantedCount,
-				plannedPlantingCount: crop.plannedPlantingCount,
-				plantingDate: crop.plantingDate,
-				soil_type: crop.soilType || 'Loam',
-				drainage: crop.drainage || 'Good'
+	try {
+		// Execute real 100-tree Random Forest Regressor trained on MARIKHA datasets
+		const result = await predictCropYield({
+			cropType: crop.cropType,
+			cultivatedArea: crop.cultivatedArea,
+			actualPlantedCount: crop.actualPlantedCount,
+			plannedPlantingCount: crop.plannedPlantingCount,
+			plantingDate: crop.plantingDate,
+			soil_type: crop.soilType || 'Loam',
+			drainage: crop.drainage || 'Good'
+		});
+
+		const predictedKg = result.predictedKg;
+		const yieldStr = `${predictedKg} kg (RF v2.4 est)`;
+
+		// 1. Persist the updated prediction via updateCrop
+		if (updateCrop) {
+			await updateCrop(crop.id, {
+				predictedYield: predictedKg,
+				yield: yieldStr
 			});
+		}
 
-			const predictedKg = result.predictedKg;
-			const yieldStr = `${predictedKg} kg (RF v2.4 est)`;
-
-			if (updateCrop) {
-				await updateCrop(crop.id, {
-					predictedYield: predictedKg,
-					yield: yieldStr
-				});
-			}
-
-			// Update modal view
-			setSelectedCropDetails(prev => prev ? ({
+		// 2. Direct state update ensuring immediate re-render of modal without refresh
+		setSelectedCropDetails(prev => {
+			if (!prev) return null;
+			return {
 				...prev,
 				predictedYield: predictedKg,
 				yield: yieldStr
-			}) : null);
+			};
+		});
 
-			setPredictionNotice(
-				`Random Forest v2.4 (100 Trees) Inference Completed: ${predictedKg} kg harvest yield predicted for ${crop.variety || crop.cropType} (${crop.cultivatedArea || 450} sq.m, 2026 Season, ${crop.soilType || 'Loam'} Soil).`
-			);
-		} catch (err) {
-			console.error('RF Prediction Error:', err);
-			setPredictionNotice('Prediction failed to compute with Random Forest model.');
-		} finally {
-			setIsGeneratingPrediction(false);
-		}
-	};
+		setPredictionNotice(
+			`Random Forest v2.4 (100 Trees) Inference Completed: ${predictedKg} kg harvest yield predicted for ${crop.variety || crop.cropType} (${crop.cultivatedArea || 450} sq.m, 2026 Season, ${crop.soilType || 'Loam'} Soil).`
+		);
+	} catch (err) {
+		console.error('RF Prediction Error:', err);
+		setPredictionNotice('Prediction failed to compute with Random Forest model.');
+	} finally {
+		setIsGeneratingPrediction(false);
+	}
+};
 
 	// 6. Archive Crop Handler
 	const handleArchiveCrop = (cropId, plotName) => {
