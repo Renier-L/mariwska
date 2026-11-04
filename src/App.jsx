@@ -12,7 +12,7 @@ import './styles/theme.css';
 
 const VALID_TABS = {
  super_admin: ['dashboard', 'audit-logs', 'crop-monitoring', 'livestock-monitoring', 'activity-monitoring', 'scheduling', 'announcements', 'analytics', 'decision-support', 'reports', 'user-accounts', 'member-records', 'roles-permissions', 'profile', 'settings'],
- admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports'],
+ admin: ['operations-dashboard', 'user-accounts', 'member-records', 'roles-permissions', 'announcements', 'reports', 'profile', 'settings'],
  farm_staff: ['operations-dashboard', 'activity-validation', 'ml-audit', 'crop-management', 'farmer-management', 'livestock-management', 'reports']
 };
 
@@ -72,7 +72,7 @@ const MainContent = () => {
  <Header />
  <main className="content-inner">
 					{currentRole === 'super_admin' && <SuperAdminDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
- {currentRole === 'admin' && <AdminConsole activeTab={activeTab} />}
+ {currentRole === 'admin' && <AdminConsole activeTab={activeTab} setActiveTab={setActiveTab} />}
  {currentRole === 'farm_staff' && <FarmStaffDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
  </main>
  </div>

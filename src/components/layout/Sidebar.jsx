@@ -68,18 +68,25 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 	// Categorized Navigation for Admin Console
 	const adminCategories = [
 		{
-			category: 'OPERATIONS & USERS',
+			category: 'OVERVIEW',
 			items: [
-				{ id: 'operations-dashboard', label: 'Operations Dashboard', icon: LayoutDashboard },
-				{ id: 'member-records', label: 'User Management', icon: Users },
-				{ id: 'roles-permissions', label: 'Roles & Security', icon: ShieldCheck },
+				{ id: 'operations-dashboard', label: 'Dashboard', icon: LayoutDashboard },
 			]
 		},
 		{
-			category: 'BROADCAST & AUDIT',
+			category: 'ADMINISTRATION',
 			items: [
-				{ id: 'announcements', label: 'Announcements Push', icon: Megaphone },
-				{ id: 'reports', label: 'Reports & Export', icon: FileText },
+				{ id: 'member-records', label: 'Member Records', icon: Users },
+				{ id: 'roles-permissions', label: 'Roles & Permissions', icon: ShieldCheck },
+				{ id: 'announcements', label: 'Announcements', icon: Megaphone },
+				{ id: 'reports', label: 'Administrative Reports', icon: FileText },
+			]
+		},
+		{
+			category: 'ACCOUNT',
+			items: [
+				{ id: 'profile', label: 'My Profile', icon: UserCheck },
+				{ id: 'settings', label: 'Settings', icon: Settings },
 			]
 		}
 	];
@@ -107,7 +114,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
 	let categories = superAdminCategories;
 	if (currentRole === 'admin') {
-		portalTitle = 'Administrator Console';
+		portalTitle = 'Admin IT/HR Portal';
 		categories = adminCategories;
 	} else if (currentRole === 'farm_staff') {
 		portalTitle = 'Farm Staff Validation';
@@ -162,6 +169,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 									const Icon = item.icon;
 									// Distinct, accurate active check without accidental multi-active highlights
 									const isActive = activeTab === item.id || 
+										(item.id === 'operations-dashboard' && (!activeTab || activeTab === 'dashboard')) ||
 										(item.id === 'user-accounts' && (activeTab === 'member-records' || activeTab === 'user-accounts')) ||
 										(item.id === 'member-records' && (activeTab === 'user-accounts' || activeTab === 'member-records')) ||
 										(item.id === 'dashboard' && !activeTab);
@@ -169,17 +177,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 									return (
 										<button
 											key={item.id}
-											onClick={() => {
-												if (item.id === 'profile') {
-													const profileBtn = document.querySelector('[title*="Edit My Profile"]');
-													if (profileBtn) profileBtn.click();
-												} else if (item.id === 'settings') {
-													const guideBtn = document.querySelector('[title*="System Architecture"]');
-													if (guideBtn) guideBtn.click();
-												} else {
-													setActiveTab(item.id);
-												}
-											}}
+											onClick={() => setActiveTab(item.id)}
 											style={{
 												display: 'flex',
 												alignItems: 'center',
