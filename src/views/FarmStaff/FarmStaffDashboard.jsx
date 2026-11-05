@@ -104,7 +104,7 @@ const FarmStaffDashboard = ({ activeTab, setActiveTab }) => {
     announcements = [],
  users,
  selectedSeason,
- setSelectedSeason
+ setSelectedSeason, addFarmerSubmission
  } = useAuth();
 
  const safeValidations = Array.isArray(validations) ? validations : [];

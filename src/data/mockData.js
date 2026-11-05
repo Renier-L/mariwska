@@ -230,28 +230,110 @@ export const initialLivestock = [
 ];
 
 export const initialAnnouncements = [
- {
- id: 'ann-1',
- title: 'Fertilizer & Organic Inputs Distribution Schedule',
- content: 'All cooperative members are requested to pick up their allocated Vermicompost and Bio-pesticides at Sector B Field Office.',
- author: 'Liza Cruz (Admin)',
- date: '2026-09-16',
- startDate: '2026-09-16',
- endDate: '2026-09-30',
- archived: false,
- instantPush: true
- },
- {
- id: 'ann-2',
- title: 'PGS Organic Certification Audit Notice',
- content: 'Third-party Organic Field Inspectors will conduct farm audits for Tomato Diamante and Eggplant Mistisa plots.',
- author: 'Rosa Mendoza (Executive)',
- date: '2026-09-10',
- startDate: '2026-09-10',
- endDate: '2026-09-25',
- archived: false,
- instantPush: true
- }
+  {
+    id: '47',
+    title: 'High Yield Organic Protocol',
+    content: 'Farm staff have deployed automated rice hull rations.',
+    author: 'Arnel Bautista',
+    targetAudience: 'all',
+    audienceLabel: 'All Cooperative Members',
+    date: '2026-11-04',
+    startDate: '2026-11-04',
+    endDate: '2026-11-18',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: '44',
+    title: 'Farmer Urgent Advisory',
+    content: 'water asap',
+    author: 'Farm Staff Supervisor',
+    targetAudience: 'farmers',
+    audienceLabel: 'Farmers Only (Mobile)',
+    date: '2026-11-04',
+    startDate: '2026-11-04',
+    endDate: '2026-11-18',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: '43',
+    title: 'Weeding & Plot Inspection Directive',
+    content: 'All assigned farmers are requested to clean furrow lines and log photo proofs before 5:00 PM.',
+    author: 'Farm Staff Supervisor',
+    targetAudience: 'farmers',
+    audienceLabel: 'Farmers Only (Mobile)',
+    date: '2026-11-04',
+    startDate: '2026-11-04',
+    endDate: '2026-11-18',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: '42',
+    title: 'Farmer Notice',
+    content: 'Dear farmers',
+    author: 'Farm Staff Supervisor',
+    targetAudience: 'farmers',
+    audienceLabel: 'Farmers Only (Mobile)',
+    date: '2026-11-04',
+    startDate: '2026-11-04',
+    endDate: '2026-11-18',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: '41',
+    title: 'High Yield Organic Fertilizer Distribution',
+    content: 'Farm staff have deployed automated rice hull and vermicompost rations across Sector B plots.',
+    author: 'Arnel Bautista',
+    targetAudience: 'all',
+    audienceLabel: 'All Cooperative Members',
+    date: '2026-11-04',
+    startDate: '2026-11-04',
+    endDate: '2026-11-18',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: '7',
+    title: 'Cooperative Broadcast Notice',
+    content: 'wdads',
+    author: 'Liza Cruz',
+    targetAudience: 'all',
+    audienceLabel: 'All Cooperative Members',
+    date: '2026-09-12',
+    startDate: '2026-09-12',
+    endDate: '2026-09-26',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: 'ann-1',
+    title: 'Fertilizer & Organic Inputs Distribution Schedule',
+    content: 'All cooperative members are requested to pick up their allocated Vermicompost and Bio-pesticides at Sector B Field Office.',
+    author: 'Liza Cruz (Admin)',
+    targetAudience: 'all',
+    audienceLabel: 'All Cooperative Members',
+    date: '2026-09-16',
+    startDate: '2026-09-16',
+    endDate: '2026-09-30',
+    archived: false,
+    instantPush: true
+  },
+  {
+    id: 'ann-2',
+    title: 'PGS Organic Certification Audit Notice',
+    content: 'Third-party Organic Field Inspectors will conduct farm audits for Tomato Diamante and Eggplant Mistisa plots.',
+    author: 'Rosa Mendoza (Executive)',
+    targetAudience: 'all',
+    audienceLabel: 'All Cooperative Members',
+    date: '2026-09-10',
+    startDate: '2026-09-10',
+    endDate: '2026-09-25',
+    archived: false,
+    instantPush: true
+  }
 ];
 
 export const initialValidations = [

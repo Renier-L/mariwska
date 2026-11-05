@@ -163,26 +163,42 @@ export const AuthProvider = ({ children }) => {
  });
 
  const [announcements, setAnnouncements] = useState(() => {
- try {
- const saved = localStorage.getItem('marikha_announcements_list');
- if (saved) {
- const parsed = JSON.parse(saved);
- if (Array.isArray(parsed)) return parsed;
- }
- } catch (e) {}
- return initialAnnouncements;
- });
+		try {
+			const saved = localStorage.getItem('marikha_announcements_list');
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				if (Array.isArray(parsed) && parsed.length > 0) {
+					const merged = [...parsed];
+					initialAnnouncements.forEach(init => {
+						if (!merged.some(m => String(m.id) === String(init.id) || m.content === init.content)) {
+							merged.push(init);
+						}
+					});
+					return merged;
+				}
+			}
+		} catch (e) {}
+		return initialAnnouncements;
+	});
 
  const [validations, setValidations] = useState(() => {
- try {
- const saved = localStorage.getItem('marikha_validations_list');
- if (saved) {
- const parsed = JSON.parse(saved);
- if (Array.isArray(parsed)) return parsed;
- }
- } catch (e) {}
- return initialValidations;
- });
+		try {
+			const saved = localStorage.getItem('marikha_validations_list');
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				if (Array.isArray(parsed) && parsed.length > 0) {
+					const merged = [...parsed];
+					initialValidations.forEach(init => {
+						if (!merged.some(m => String(m.id) === String(init.id))) {
+							merged.push(init);
+						}
+					});
+					return merged;
+				}
+			}
+		} catch (e) {}
+		return initialValidations;
+	});
  const [mlClassifications, setMlClassifications] = useState(initialMLClassifications);
  
  // Unlimited Real-time Push Notification Popup state
@@ -407,8 +423,52 @@ export const AuthProvider = ({ children }) => {
  };
  window.addEventListener('storage', handleStorageEvent);
 
+		// Instant LAN Sync Polling (Port 3001) for Mobile Phone Submissions & Announcements
+		const pollLanSync = async () => {
+			try {
+				const valRes = await fetch('http://localhost:3001/api/validations', { signal: AbortSignal.timeout(1500) }).catch(() => null);
+				if (valRes && valRes.ok) {
+					const liveVals = await valRes.json();
+					if (Array.isArray(liveVals) && liveVals.length > 0) {
+						setValidations(prev => {
+							const currentIds = new Set(prev.map(v => String(v.id)));
+							const incomingNew = liveVals.filter(v => !currentIds.has(String(v.id)));
+							if (incomingNew.length > 0) {
+								const next = [...incomingNew, ...prev];
+								try { localStorage.setItem('marikha_validations_list', JSON.stringify(next)); } catch (e) {}
+								setActivePushValidation(incomingNew[0]);
+								return next;
+							}
+							return prev;
+						});
+					}
+				}
+
+				const annRes = await fetch('http://localhost:3001/api/announcements', { signal: AbortSignal.timeout(1500) }).catch(() => null);
+				if (annRes && annRes.ok) {
+					const liveAnns = await annRes.json();
+					if (Array.isArray(liveAnns) && liveAnns.length > 0) {
+						setAnnouncements(prev => {
+							const currentIds = new Set(prev.map(a => String(a.id)));
+							const incomingNew = liveAnns.filter(a => !currentIds.has(String(a.id)));
+							if (incomingNew.length > 0) {
+								const next = [...incomingNew, ...prev];
+								try { localStorage.setItem('marikha_announcements_list', JSON.stringify(next)); } catch (e) {}
+								return next;
+							}
+							return prev;
+						});
+					}
+				}
+			} catch (err) {}
+		};
+
+		pollLanSync();
+		const lanInterval = setInterval(pollLanSync, 1500);
+
  return () => {
  window.removeEventListener('storage', handleStorageEvent);
+			clearInterval(lanInterval);
  };
  }, []);
 
